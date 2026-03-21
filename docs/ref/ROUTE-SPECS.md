@@ -55,7 +55,7 @@
 ### `/admin/runs`
 - 목적: 수집/가공/초안 실행 이력 확인
 - 핵심 섹션: run status table, retry actions
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold table 구현, 실제 retry mutation은 후속 작업
 
 ### `/admin/publish`
 - 목적: 승인 후 배포 대기와 예약 상태 확인

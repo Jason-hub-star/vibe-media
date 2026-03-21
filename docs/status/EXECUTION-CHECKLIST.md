@@ -17,7 +17,7 @@
 ## P1 — Pipeline Core
 - [x] `sources` / `ingest_runs` / `ingested_items` / `item_classifications` SQL 초안 작성
 - [x] `/admin/inbox` 스캐폴드 구현
-- [ ] `/admin/runs` 스캐폴드 구현
+- [x] `/admin/runs` 스캐폴드 구현
 - [ ] `/admin/review` 스캐폴드 구현
 - [ ] `/admin/publish` 스캐폴드 구현
 - [ ] `/admin/exceptions` 스캐폴드 구현

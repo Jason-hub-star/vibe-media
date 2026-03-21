@@ -1,4 +1,4 @@
-import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, SourceEntry, VideoJob } from "@vibehub/content-contracts";
+import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, IngestRun, SourceEntry, VideoJob } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
 
 export const briefDetails: BriefDetail[] = [
@@ -94,6 +94,36 @@ export const inboxItems: InboxItem[] = [
     targetSurface: "discover",
     confidence: 0.88,
     parsedSummary: "행사 페이지에서 일정과 링크를 뽑아냈고, discover용 액션 링크 후보까지 생성된 상태입니다."
+  }
+];
+
+export const ingestRuns: IngestRun[] = [
+  {
+    id: "run-openai-0322-am",
+    sourceName: "OpenAI News",
+    runStatus: "classified",
+    startedAt: "2026-03-22T07:30:00.000Z",
+    finishedAt: "2026-03-22T07:34:00.000Z",
+    itemCount: 4,
+    errorMessage: null
+  },
+  {
+    id: "run-karpathy-transcript",
+    sourceName: "Transcript Mirror",
+    runStatus: "review",
+    startedAt: "2026-03-22T08:10:00.000Z",
+    finishedAt: null,
+    itemCount: 1,
+    errorMessage: null
+  },
+  {
+    id: "run-worlds-fair",
+    sourceName: "AI Engineer World's Fair",
+    runStatus: "failed",
+    startedAt: "2026-03-22T12:30:00.000Z",
+    finishedAt: "2026-03-22T12:32:00.000Z",
+    itemCount: 0,
+    errorMessage: "Render pass timed out before CTA links were extracted."
   }
 ];
 
