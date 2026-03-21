@@ -26,8 +26,8 @@
 - [x] `video_jobs` 상태 모델을 `auto analysis -> CapCut -> parent review -> private upload` 흐름으로 확장
 - [ ] `target_surface = brief | discover | both | archive | discard` 흐름을 UI와 데이터에 연결
 - [ ] `human-on-exception` 큐 조건을 실제 상태값으로 반영
-- [ ] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
-- [ ] `video_jobs`를 publish queue / exceptions와 연결
+- [x] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
+- [x] `video_jobs`를 publish queue / exceptions와 연결
 
 ## P1 — LLM / Orchestration
 - [ ] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
@@ -73,14 +73,15 @@
 - [x] 운영 문서 세트
 - [x] LLM 병행 오케스트레이션 문서
 - [x] video pipeline SSOT + `video_jobs` 상태 모델
+- [x] video worker contract + queue routing
 - [ ] 파이프라인 실제 구현
 - [ ] Supabase SQL 실제 구현
 - [ ] admin 파이프라인 화면 실제 구현
 - [ ] source/tool/orchestration 최종 채택
 
 ## Recommended Next Sequence
-1. `/admin/publish`와 `/admin/exceptions`를 먼저 연다.
-2. 그 다음 `video_jobs`를 publish queue / exceptions와 연결한다.
+1. `target_surface = brief | discover | both | archive | discard` 흐름을 UI와 데이터에 연결한다.
+2. `human-on-exception` 큐 조건을 실제 상태값으로 반영한다.
 3. 병행해서 `P1 LLM / Orchestration`과 source research를 진행한다.
-4. 파이프라인 골격이 더 열리면 `P2 Frontend / UX`를 한다.
-5. 마지막에 `P3 Hardening`으로 들어간다.
+4. 그 다음 `watch folder` 워커를 실제 파일 감지 파이프라인으로 구현한다.
+5. 파이프라인 골격이 더 열리면 `P2 Frontend / UX`, 마지막에 `P3 Hardening`으로 들어간다.

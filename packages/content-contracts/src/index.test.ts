@@ -27,6 +27,7 @@ describe("shared contract shapes", () => {
       transcriptState: "draft",
       highlightCount: 3,
       riskySegmentCount: 1,
+      exceptionReason: null,
       nextAction: "Finish subtitles and timing in CapCut."
     };
 

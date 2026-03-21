@@ -25,5 +25,6 @@ export interface VideoJob {
   transcriptState: TranscriptState;
   highlightCount: number;
   riskySegmentCount: number;
+  exceptionReason: string | null;
   nextAction: string;
 }

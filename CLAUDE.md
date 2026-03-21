@@ -18,10 +18,11 @@
 13. `docs/ref/SOURCE-RESEARCH-METHOD.md`
 14. `docs/ref/LLM-ORCHESTRATION-MAP.md`
 15. `docs/ref/VIDEO-PIPELINE.md`
-16. `docs/ref/STITCH-WORKFLOW.md`
-17. `docs/ref/ROUTE-SPECS.md`
-18. `docs/status/PROJECT-STATUS.md`
-19. `docs/status/DECISION-LOG.md`
+16. `docs/ref/VIDEO-WORKER-CONTRACT.md`
+17. `docs/ref/STITCH-WORKFLOW.md`
+18. `docs/ref/ROUTE-SPECS.md`
+19. `docs/status/PROJECT-STATUS.md`
+20. `docs/status/DECISION-LOG.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.
@@ -69,6 +70,7 @@
 - `docs/ref/SOURCE-RESEARCH-METHOD.md`
 - `docs/ref/LLM-ORCHESTRATION-MAP.md`
 - `docs/ref/VIDEO-PIPELINE.md`
+- `docs/ref/VIDEO-WORKER-CONTRACT.md`
 - `docs/ref/STITCH-WORKFLOW.md`
 - `docs/ref/ROUTE-SPECS.md`
 - `docs/status/PAGE-UPGRADE-BOARD.md`

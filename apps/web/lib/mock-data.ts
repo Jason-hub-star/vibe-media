@@ -6,11 +6,18 @@ import type {
   InboxItem,
   IngestRun,
   PublishQueueItem,
-  ReviewItem,
-  SourceEntry,
-  VideoJob
+  SourceEntry
 } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
+import { reviewItems } from "./review-queue-mock";
+import {
+  deriveVideoExceptionQueueItems,
+  deriveVideoPublishQueueItems,
+  videoJobs
+} from "./video-pipeline-mock";
+
+export { reviewItems } from "./review-queue-mock";
+export { videoJobs } from "./video-pipeline-mock";
 
 export const briefDetails: BriefDetail[] = [
   {
@@ -138,81 +145,7 @@ export const ingestRuns: IngestRun[] = [
   }
 ];
 
-export const reviewItems: ReviewItem[] = [
-  {
-    id: "review-openai-agents-sdk",
-    sourceLabel: "OpenAI News",
-    sourceHref: "https://openai.com/news/",
-    sourceExcerpt: "SDK 업데이트 원문과 changelog를 묶어 읽고, 한국어 브리프로 내릴 가치가 높은 항목입니다.",
-    parsedSummary: "도구 호출 경계와 운영 추적성이 바뀐 점을 brief와 discover 둘 다에 반영할 수 있게 정리된 상태입니다.",
-    keyPoints: [
-      "source count 3 확보",
-      "target surface both 후보",
-      "critic pass 전 마지막 human check 필요"
-    ],
-    targetSurface: "both",
-    confidence: 0.92,
-    previewTitle: "OpenAI Agents SDK update",
-    previewSummary: "자동화 파이프라인 관점에서 SDK 변화가 왜 중요한지 한국어로 빠르게 읽히는 preview 초안입니다."
-  },
-  {
-    id: "review-karpathy-interview",
-    sourceLabel: "Transcript Mirror",
-    sourceHref: "https://youtu.be/kwSVtQ7dziU",
-    sourceExcerpt: "긴 인터뷰 원문을 브리프로 내리기 전에 직접 인용과 요약, 주장 강도를 다시 정리해야 하는 예외 케이스입니다.",
-    parsedSummary: "에이전트 운영, human-on-exception, 장기 실행 메모리라는 세 축은 정리됐지만 인용 범위와 톤 보정이 남아 있습니다.",
-    keyPoints: [
-      "long-form source review needed",
-      "brief surface candidate",
-      "quote boundary needs human check"
-    ],
-    targetSurface: "brief",
-    confidence: 0.78,
-    previewTitle: "Karpathy on the loopy era of AI",
-    previewSummary: "에이전트 운영 능력이 개발자의 핵심 숙련으로 이동하고 있다는 관점을 VibeHub 문맥으로 재구성한 preview 초안입니다."
-  }
-];
-
-export const videoJobs: VideoJob[] = [
-  {
-    id: "job-minecraft-1",
-    title: "Minecraft survival session",
-    kind: "gameplay",
-    status: "capcut_pending",
-    assetLinkState: "partial",
-    sourceSession: "minecraft-0319",
-    transcriptState: "draft",
-    highlightCount: 4,
-    riskySegmentCount: 2,
-    nextAction: "Finish subtitles and pacing inside CapCut."
-  },
-  {
-    id: "job-roblox-2",
-    title: "Roblox recap",
-    kind: "recap",
-    status: "parent_review",
-    assetLinkState: "complete",
-    sourceSession: "roblox-0320",
-    transcriptState: "approved",
-    highlightCount: 3,
-    riskySegmentCount: 1,
-    nextAction: "Confirm privacy checklist, then move to private upload."
-  },
-  {
-    id: "job-mario-3",
-    title: "Mario Kart highlight clip",
-    kind: "clip",
-    status: "analysis_running",
-    assetLinkState: "missing",
-    sourceSession: "mariokart-0321",
-    transcriptState: "missing",
-    highlightCount: 0,
-    riskySegmentCount: 0,
-    nextAction: "Wait for Whisper, scene detect, and auto-cut outputs."
-  }
-];
-
-export const publishQueueItems: PublishQueueItem[] = [
+const basePublishQueueItems: PublishQueueItem[] = [
   {
     id: "publish-openai-agents-sdk",
     title: "OpenAI Agents SDK update",
@@ -230,28 +163,15 @@ export const publishQueueItems: PublishQueueItem[] = [
     sourceLabel: "AI Engineer World's Fair",
     scheduledFor: "2026-03-22T20:00:00.000Z",
     nextAction: "Recheck outbound event links before queue execution."
-  },
-  {
-    id: "publish-roblox-recap",
-    title: "Roblox recap",
-    targetType: "video",
-    queueStatus: "uploaded_private",
-    sourceLabel: "roblox-0320",
-    scheduledFor: null,
-    nextAction: "Private upload is ready. Parent can approve final publish timing."
-  },
-  {
-    id: "publish-minecraft-session",
-    title: "Minecraft survival session",
-    targetType: "video",
-    queueStatus: "upload_ready",
-    sourceLabel: "minecraft-0319",
-    scheduledFor: null,
-    nextAction: "Finish CapCut handoff and move into private upload."
   }
 ];
 
-export const exceptionQueueItems: ExceptionQueueItem[] = [
+export const publishQueueItems: PublishQueueItem[] = [
+  ...basePublishQueueItems,
+  ...deriveVideoPublishQueueItems(videoJobs)
+];
+
+const baseExceptionQueueItems: ExceptionQueueItem[] = [
   {
     id: "exception-karpathy-brief",
     title: "Karpathy on the loopy era of AI",
@@ -271,17 +191,12 @@ export const exceptionQueueItems: ExceptionQueueItem[] = [
     confidence: 0.66,
     sourceLabel: "AI Engineer World's Fair",
     nextAction: "Retry browser render and verify outbound links."
-  },
-  {
-    id: "exception-minecraft-video",
-    title: "Minecraft survival session",
-    targetType: "video",
-    currentStage: "blocked",
-    reason: "parent review flagged privacy-sensitive voice chat",
-    confidence: 0.9,
-    sourceLabel: "minecraft-0319",
-    nextAction: "Mute the flagged segment in CapCut before re-entering publish."
   }
+];
+
+export const exceptionQueueItems: ExceptionQueueItem[] = [
+  ...baseExceptionQueueItems,
+  ...deriveVideoExceptionQueueItems(videoJobs)
 ];
 
 export const discoverItems: DiscoverItem[] = [

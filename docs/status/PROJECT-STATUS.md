@@ -19,6 +19,7 @@
 - admin policies scaffold: done
 - admin programs scaffold: done
 - video pipeline scaffold refresh: done
+- video worker contract + queue routing docs: done
 - operating docs set: done
 - shared contracts: done
 - token system: done
@@ -40,6 +41,8 @@
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
 - `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
 - `admin/video-jobs`는 이제 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영하는 scaffold 상태다
+- `video_jobs`는 `upload_ready/uploaded_private -> publish`, `blocked -> exceptions` 규칙까지 mock data와 문서 기준으로 연결된 상태다
+- `docs/ref/VIDEO-WORKER-CONTRACT.md`가 watch folder -> auto analysis -> CapCut handoff -> parent review 계약을 정의한다
 - ingest core SQL draft is added, but Supabase apply/verification is still pending
 - video job schema 확장 마이그레이션은 추가됐지만 Supabase apply/verification은 아직 pending
 - source/tool/orchestration final decision remains pending and is now tracked in `docs/status/DECISION-LOG.md`

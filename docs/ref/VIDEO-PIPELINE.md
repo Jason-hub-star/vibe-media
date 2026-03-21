@@ -57,7 +57,14 @@
 - `transcript_state`
 - `highlight_count`
 - `risky_segment_count`
+- `exception_reason`
 - `next_action`
+
+## Queue Routing
+- `upload_ready`와 `uploaded_private`는 `publish queue` 후보가 된다.
+- `blocked`는 `exceptions`로 바로 들어간다.
+- `parent_review`는 부모 승인 전까지 publish queue에 진입하지 않는다.
+- 실제 watch-folder intake와 분석 출력 계약은 `docs/ref/VIDEO-WORKER-CONTRACT.md`를 따른다.
 
 ## Automation Boundary
 - 자동화가 만드는 것
