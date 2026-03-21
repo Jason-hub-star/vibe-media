@@ -11,8 +11,8 @@
 ## P0 — Immediate Blockers
 - [x] JS 런타임 기준 확정 + `apps/web` typecheck 안정화
 - [x] `PROJECT-STATUS.md`와 실제 검증 상태 다시 동기화
-- [ ] git 초기화 및 원격 연결 전략 확정
-- [ ] source/tool/orchestration research pending 상태를 decision log로 분리
+- [x] git 초기화 및 원격 연결 전략 확정
+- [x] source/tool/orchestration research pending 상태를 decision log로 분리
 
 ## P1 — Pipeline Core
 - [ ] `sources` / `ingest_runs` / `ingested_items` / `item_classifications` SQL 초안 작성

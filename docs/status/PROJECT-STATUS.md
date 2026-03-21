@@ -3,6 +3,7 @@
 ## Current Phase
 - bootstrap scaffold complete: done
 - P0-1 JS runtime baseline + typecheck stabilization: done
+- P0-2 git bootstrap + decision-log split: done
 
 ## Active Tracks
 - frontend shell: done
@@ -29,6 +30,7 @@
 - page-level loading/empty/error states need explicit implementation pass
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
 - ingest / inbox / classification / publish queue admin routes are documented but not implemented
-- source/tool/orchestration final decision remains research/evaluation pending
+- source/tool/orchestration final decision remains pending and is now tracked in `docs/status/DECISION-LOG.md`
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
+- remote push to `origin` still requires GitHub 인증이 가능한 세션
