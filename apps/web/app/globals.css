@@ -210,7 +210,10 @@ p {
 }
 
 .status-draft,
-.status-collected {
+.status-collected,
+.status-parsed,
+.status-classified,
+.status-fetching {
   background: rgba(142, 168, 255, 0.18);
   color: var(--color-sky);
 }
@@ -227,14 +230,33 @@ p {
 }
 
 .status-published,
-.status-ready {
+.status-ready,
+.status-approved,
+.status-discover {
   background: rgba(152, 240, 225, 0.18);
   color: var(--color-mint);
 }
 
-.status-asset_pending {
+.status-asset_pending,
+.status-failed,
+.status-discard {
   background: rgba(217, 107, 136, 0.18);
   color: var(--color-rose);
+}
+
+.status-brief {
+  background: rgba(142, 168, 255, 0.18);
+  color: var(--color-sky);
+}
+
+.status-both {
+  background: rgba(247, 214, 74, 0.18);
+  color: var(--color-yellow);
+}
+
+.status-archive {
+  background: rgba(244, 238, 226, 0.14);
+  color: rgba(244, 238, 226, 0.8);
 }
 
 .source-row {

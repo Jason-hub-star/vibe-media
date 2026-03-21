@@ -5,20 +5,32 @@ import { ReviewWorkbench } from "@/features/review/view/ReviewWorkbench";
 
 export default function AdminReviewPage() {
   const items = listReviewItems();
-  const current = items[0];
 
   return (
     <AdminShell
       subtitle="Human review only appears on exceptions, so each candidate must show source, parsed context, and preview at once."
       title="Review"
     >
-      {!current ? (
+      {items.length === 0 ? (
         <EmptyState
           body="Only exception cases or high-impact drafts will open a review workspace here."
           title="No review items"
         />
       ) : (
-        <ReviewWorkbench item={current} />
+        <div className="stack-tight">
+          {items.map((item, index) => (
+            <section className="stack-tight" key={item.id}>
+              <div className="row-between">
+                <div className="stack-tight">
+                  <p className="eyebrow">Queue item {index + 1}</p>
+                  <h2>{item.previewTitle}</h2>
+                </div>
+                <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>
+              </div>
+              <ReviewWorkbench item={item} />
+            </section>
+          ))}
+        </div>
       )}
     </AdminShell>
   );

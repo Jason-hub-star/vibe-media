@@ -8,7 +8,10 @@ import { getAdminSession, setAdminSession } from "@/lib/admin-session";
 
 const adminLinks = [
   { href: "/admin", label: "Overview" },
+  { href: "/admin/inbox", label: "Inbox" },
   { href: "/admin/briefs", label: "Brief review" },
+  { href: "/admin/review", label: "Review" },
+  { href: "/admin/runs", label: "Runs" },
   { href: "/admin/discover", label: "Discover" },
   { href: "/admin/video-jobs", label: "Video jobs" },
   { href: "/admin/sources", label: "Sources" },
