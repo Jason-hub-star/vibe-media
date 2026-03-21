@@ -1,4 +1,4 @@
-import type { AssetSlot, BriefDetail, DiscoverItem, SourceEntry, VideoJob } from "@vibehub/content-contracts";
+import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, SourceEntry, VideoJob } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
 
 export const briefDetails: BriefDetail[] = [
@@ -58,6 +58,42 @@ export const sourceEntries: SourceEntry[] = [
     category: "research",
     href: "https://www.anthropic.com/research",
     freshness: "weekly"
+  }
+];
+
+export const inboxItems: InboxItem[] = [
+  {
+    id: "inbox-openai-agents-sdk",
+    sourceName: "OpenAI News",
+    sourceTier: "auto-safe",
+    title: "OpenAI Agents SDK update",
+    contentType: "article",
+    stage: "classified",
+    targetSurface: "both",
+    confidence: 0.94,
+    parsedSummary: "에이전트 SDK 변경점이 brief와 radar 둘 다에 걸리는 high-signal 항목으로 들어왔습니다."
+  },
+  {
+    id: "inbox-karpathy-interview",
+    sourceName: "YouTube Transcript Mirror",
+    sourceTier: "manual-review-required",
+    title: "Andrej Karpathy on code agents and AutoResearch",
+    contentType: "doc",
+    stage: "parsed",
+    targetSurface: "brief",
+    confidence: 0.81,
+    parsedSummary: "긴 인터뷰라 원문 파싱은 완료됐고, 핵심 주장과 직접 인용 구간 분리가 필요한 상태입니다."
+  },
+  {
+    id: "inbox-worlds-fair",
+    sourceName: "AI Engineer World's Fair",
+    sourceTier: "render-required",
+    title: "AI Engineer World's Fair 2026",
+    contentType: "event",
+    stage: "drafted",
+    targetSurface: "discover",
+    confidence: 0.88,
+    parsedSummary: "행사 페이지에서 일정과 링크를 뽑아냈고, discover용 액션 링크 후보까지 생성된 상태입니다."
   }
 ];
 

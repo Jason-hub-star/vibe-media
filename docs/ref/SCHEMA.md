@@ -18,6 +18,7 @@
 - `BriefListItem`
 - `BriefDetail`
 - `DiscoverItem`
+- `InboxItem`
 - `VideoJob`
 - `AssetSlot`
 

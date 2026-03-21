@@ -11,6 +11,7 @@
 - discovery/radar shell: done
 - pipeline operating model docs: done
 - ingest core SQL draft: done
+- admin inbox scaffold: done
 - operating docs set: done
 - shared contracts: done
 - token system: done
@@ -30,7 +31,7 @@
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
 - page-level loading/empty/error states need explicit implementation pass
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
-- ingest / inbox / classification / publish queue admin routes are documented but not implemented
+- `admin/inbox`는 scaffold 구현 완료, 나머지 ingest / runs / review / publish routes는 아직 미구현
 - ingest core SQL draft is added, but Supabase apply/verification is still pending
 - source/tool/orchestration final decision remains pending and is now tracked in `docs/status/DECISION-LOG.md`
 - design docs need route-by-route expansion for Claude-led frontend refinement

@@ -50,7 +50,7 @@
 ### `/admin/inbox`
 - 목적: 새로 수집된 item 확인
 - 핵심 섹션: source / parsed content / classification candidate
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold table 구현, 실제 classification mutation은 후속 작업
 
 ### `/admin/runs`
 - 목적: 수집/가공/초안 실행 이력 확인

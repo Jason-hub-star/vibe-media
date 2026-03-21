@@ -8,8 +8,16 @@ export default function AdminPage() {
     >
       <div className="summary-grid">
         <article className="panel stack-tight">
+          <p className="eyebrow">Inbox</p>
+          <p>Newly collected items waiting for surface routing</p>
+        </article>
+        <article className="panel stack-tight">
           <p className="eyebrow">Briefs</p>
           <p>Review and scheduling queue</p>
+        </article>
+        <article className="panel stack-tight">
+          <p className="eyebrow">Runs</p>
+          <p>Collection and parsing history with retry checkpoints</p>
         </article>
         <article className="panel stack-tight">
           <p className="eyebrow">Video jobs</p>

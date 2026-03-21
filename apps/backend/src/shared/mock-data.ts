@@ -1,4 +1,4 @@
-import type { AssetSlot, BriefDetail, DiscoverItem, SourceEntry, VideoJob } from "@vibehub/content-contracts";
+import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, SourceEntry, VideoJob } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
 
 export const briefDetails: BriefDetail[] = [
@@ -58,6 +58,42 @@ export const sourceEntries: SourceEntry[] = [
     category: "release",
     href: "https://developers.googleblog.com/",
     freshness: "daily"
+  }
+];
+
+export const inboxEntries: InboxItem[] = [
+  {
+    id: "inbox-openai-agents-sdk",
+    sourceName: "OpenAI News",
+    sourceTier: "auto-safe",
+    title: "OpenAI Agents SDK update",
+    contentType: "article",
+    stage: "classified",
+    targetSurface: "both",
+    confidence: 0.94,
+    parsedSummary: "OpenAI SDK 변경점이 brief와 discover를 동시에 만족할 가능성이 높은 항목입니다."
+  },
+  {
+    id: "inbox-karpathy-interview",
+    sourceName: "Transcript Mirror",
+    sourceTier: "manual-review-required",
+    title: "Andrej Karpathy on code agents and AutoResearch",
+    contentType: "doc",
+    stage: "parsed",
+    targetSurface: "brief",
+    confidence: 0.81,
+    parsedSummary: "긴 인터뷰를 구조화했고, 직접 인용과 요약 경계를 한 번 더 검수해야 하는 상태입니다."
+  },
+  {
+    id: "inbox-worlds-fair",
+    sourceName: "AI Engineer World's Fair",
+    sourceTier: "render-required",
+    title: "AI Engineer World's Fair 2026",
+    contentType: "event",
+    stage: "drafted",
+    targetSurface: "discover",
+    confidence: 0.88,
+    parsedSummary: "행사 페이지 링크, 일정, 빠른 액션 후보를 추출해 discover 레지스트리 진입 직전 상태입니다."
   }
 ];
 
