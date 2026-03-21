@@ -23,6 +23,7 @@
 - target_surface routing + human-on-exception state wiring: done
 - ingest stack decision: done
 - source catalog v1: done
+- brief/discover dry-run worker: done
 - orchestration trial runbook: done
 - telegram-orchestrator contract: done
 - orchestration trial log template: done
@@ -50,6 +51,7 @@
 - `video_jobs`는 `upload_ready/uploaded_private -> publish`, `blocked -> exceptions` 규칙까지 mock data와 문서 기준으로 연결된 상태다
 - `docs/ref/VIDEO-WORKER-CONTRACT.md`가 watch folder -> auto analysis -> CapCut handoff -> parent review 계약을 정의한다
 - inbox의 `target_surface`는 이제 `review/publish/archive/discard` 다음 큐로 실제 파생되고, human exception 규칙은 review/exceptions에 반영된다
+- `npm run pipeline:brief-discover`로 non-video 파이프라인의 최소 dry-run을 실제로 돌릴 수 있다
 - ingest core SQL draft is added, but Supabase apply/verification is still pending
 - video job schema 확장 마이그레이션은 추가됐지만 Supabase apply/verification은 아직 pending
 - source/tool decision is fixed for v1; orchestration final choice remains pending and is tracked in `docs/status/DECISION-LOG.md`

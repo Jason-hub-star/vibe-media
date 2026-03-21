@@ -9,4 +9,5 @@ export * from "./features/review/list-review-items";
 export * from "./features/runs/list-runs";
 export * from "./features/sources/list-sources";
 export * from "./features/video-jobs/list-video-jobs";
+export * from "./shared/brief-discover-cycle";
 export * from "./shared/status-rules";

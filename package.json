@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev:web": "npm run dev -w @vibehub/web",
+    "pipeline:brief-discover": "npm run pipeline:brief-discover -w @vibehub/backend",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@playwright/test": "^1.53.2",
     "@types/node": "^24.5.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   }

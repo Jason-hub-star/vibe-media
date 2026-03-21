@@ -28,6 +28,7 @@
 - [x] `human-on-exception` 큐 조건을 실제 상태값으로 반영
 - [x] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
 - [x] `video_jobs`를 publish queue / exceptions와 연결
+- [x] `Brief + Discover` dry-run worker를 실제 실행 가능한 스크립트로 추가
 
 ## P1 — LLM / Orchestration
 - [x] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
@@ -77,6 +78,7 @@
 - [x] video pipeline SSOT + `video_jobs` 상태 모델
 - [x] video worker contract + queue routing
 - [ ] 파이프라인 실제 구현
+- [x] `Brief + Discover` dry-run 실행기
 - [ ] Supabase SQL 실제 구현
 - [ ] admin 파이프라인 화면 실제 구현
 - [x] source/tool 최종 채택
