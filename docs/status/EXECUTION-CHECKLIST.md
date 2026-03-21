@@ -30,13 +30,15 @@
 - [x] `video_jobs`를 publish queue / exceptions와 연결
 
 ## P1 — LLM / Orchestration
-- [ ] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
-- [ ] `classifier` shadow 비교 규칙 문서화
-- [ ] `brief draft` shadow 비교 규칙 문서화
-- [ ] `discover draft` shadow 비교 규칙 문서화
-- [ ] `critic` shadow 비교 규칙 문서화
-- [ ] `telegram-orchestrator`와 VibeHub 연동 계약 정리
-- [ ] 로컬/Claude/hybrid 실험 로그 포맷 정의
+- [x] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
+- [x] `classifier` shadow 비교 규칙 문서화
+- [x] `brief draft` shadow 비교 규칙 문서화
+- [x] `discover draft` shadow 비교 규칙 문서화
+- [x] `critic` shadow 비교 규칙 문서화
+- [x] `telegram-orchestrator`와 VibeHub 연동 계약 정리
+- [x] 로컬/Claude/hybrid 실험 로그 포맷 정의
+- [ ] 첫 stage shadow trial 실행
+- [ ] first promote / keep-active decision 기록
 
 ## P1 — Source Research
 - [x] 수집기 후보 조사
@@ -77,7 +79,7 @@
 - [ ] 파이프라인 실제 구현
 - [ ] Supabase SQL 실제 구현
 - [ ] admin 파이프라인 화면 실제 구현
-- [ ] source/tool/orchestration 최종 채택
+- [x] source/tool 최종 채택
 - [ ] orchestration 최종 채택
 
 ## Recommended Next Sequence

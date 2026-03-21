@@ -4,6 +4,8 @@
 - 오케스트레이션은 문서에서 미리 고정하지 않는다.
 - 로컬 only, Claude only, hybrid를 실제로 돌려 본 뒤 결정한다.
 - 현재 기본 후보는 `hybrid`다.
+- stage-level 비교 규칙은 `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`를 따른다.
+- `telegram-orchestrator`와의 역할 경계는 `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`를 따른다.
 
 ## Candidates
 - `local only`
@@ -43,6 +45,7 @@
   - search over-trigger
   - memory false positive drift
   - exception queue inflow
+- 모든 결과는 `docs/status/ORCHESTRATION-TRIAL-LOG.md`에 기록한다.
 
 ## Acceptance
 - 가장 적은 human interrupts로 가장 높은 queue 도달률을 보인 방식을 우선 채택한다.

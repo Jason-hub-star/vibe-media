@@ -23,6 +23,9 @@
 - target_surface routing + human-on-exception state wiring: done
 - ingest stack decision: done
 - source catalog v1: done
+- orchestration trial runbook: done
+- telegram-orchestrator contract: done
+- orchestration trial log template: done
 - operating docs set: done
 - shared contracts: done
 - token system: done
@@ -50,6 +53,7 @@
 - ingest core SQL draft is added, but Supabase apply/verification is still pending
 - video job schema 확장 마이그레이션은 추가됐지만 Supabase apply/verification은 아직 pending
 - source/tool decision is fixed for v1; orchestration final choice remains pending and is tracked in `docs/status/DECISION-LOG.md`
+- stage-level shadow rules, integration contract, and log format are now fixed; actual trial execution is still pending
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - remote push to `origin` is working in the current SSH-authenticated environment

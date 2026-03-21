@@ -66,6 +66,8 @@
 - 어느 한쪽을 먼저 영구 고정하지 않는다.
 - 단계별로 promote 조건을 만족한 모델만 active로 승격시킨다.
 - 승격 후 drift가 기준을 넘으면 rollback한다.
+- stage별 표본 수와 promote gate는 `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`를 따른다.
+- control plane 경계는 `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`를 따른다.
 
 ## Fallback Rule
 - 한쪽 모델이 더 우월해도 다른 한쪽은 fallback으로 유지한다.

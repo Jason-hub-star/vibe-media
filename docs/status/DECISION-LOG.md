@@ -55,6 +55,8 @@
 - 기준 문서:
   - `docs/ref/ORCHESTRATION-EVALUATION.md`
   - `docs/ref/LLM-ORCHESTRATION-MAP.md`
+  - `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
+  - `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
 
 ### Stage-Level Model Winners
 - 상태: pending
@@ -65,6 +67,8 @@
   - `critic` 기본 active
 - 기준 문서:
   - `docs/ref/LLM-ORCHESTRATION-MAP.md`
+  - `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
+  - `docs/status/ORCHESTRATION-TRIAL-LOG.md`
   - `telegram-orchestrator` shadow/eval 결과
 
 ## Next Review Order
