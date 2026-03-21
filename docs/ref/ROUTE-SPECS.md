@@ -65,7 +65,7 @@
 ### `/admin/review`
 - 목적: 예외 검수와 send-back 판단
 - 핵심 섹션: source / parsed / preview 3면 레이아웃
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold 3면 레이아웃 구현, 실제 approve/send-back mutation은 후속 작업
 
 ### `/admin/exceptions`
 - 목적: human-on-exception 큐 운영

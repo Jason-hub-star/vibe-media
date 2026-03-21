@@ -304,6 +304,12 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.review-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -327,7 +333,8 @@ p {
   .admin-layout,
   .panel-grid,
   .summary-grid,
-  .admin-grid {
+  .admin-grid,
+  .review-grid {
     grid-template-columns: 1fr;
   }
 

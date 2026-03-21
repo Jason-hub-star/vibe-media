@@ -1,4 +1,13 @@
-import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, IngestRun, SourceEntry, VideoJob } from "@vibehub/content-contracts";
+import type {
+  AssetSlot,
+  BriefDetail,
+  DiscoverItem,
+  InboxItem,
+  IngestRun,
+  ReviewItem,
+  SourceEntry,
+  VideoJob
+} from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
 
 export const briefDetails: BriefDetail[] = [
@@ -124,6 +133,25 @@ export const ingestRunEntries: IngestRun[] = [
     finishedAt: "2026-03-22T12:32:00.000Z",
     itemCount: 0,
     errorMessage: "Render pass timed out before CTA links were extracted."
+  }
+];
+
+export const reviewEntries: ReviewItem[] = [
+  {
+    id: "review-openai-agents-sdk",
+    sourceLabel: "OpenAI News",
+    sourceHref: "https://openai.com/news/",
+    sourceExcerpt: "SDK 업데이트 원문과 changelog를 함께 읽고, 한국어 에디토리얼로 가공할 가치가 높은 항목입니다.",
+    parsedSummary: "source, parsed, preview 세 면을 동시에 보고 최종 surface와 톤을 잠그기 위한 review 후보입니다.",
+    keyPoints: [
+      "direct source links 확보",
+      "both surface candidate",
+      "human-on-exception review queue"
+    ],
+    targetSurface: "both",
+    confidence: 0.92,
+    previewTitle: "OpenAI Agents SDK update",
+    previewSummary: "VibeHub Brief와 Radar에 동시에 올라갈 수 있는 preview 초안입니다."
   }
 ];
 

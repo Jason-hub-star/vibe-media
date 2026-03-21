@@ -1,4 +1,13 @@
-import type { AssetSlot, BriefDetail, DiscoverItem, InboxItem, IngestRun, SourceEntry, VideoJob } from "@vibehub/content-contracts";
+import type {
+  AssetSlot,
+  BriefDetail,
+  DiscoverItem,
+  InboxItem,
+  IngestRun,
+  ReviewItem,
+  SourceEntry,
+  VideoJob
+} from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
 
 export const briefDetails: BriefDetail[] = [
@@ -124,6 +133,25 @@ export const ingestRuns: IngestRun[] = [
     finishedAt: "2026-03-22T12:32:00.000Z",
     itemCount: 0,
     errorMessage: "Render pass timed out before CTA links were extracted."
+  }
+];
+
+export const reviewItems: ReviewItem[] = [
+  {
+    id: "review-openai-agents-sdk",
+    sourceLabel: "OpenAI News",
+    sourceHref: "https://openai.com/news/",
+    sourceExcerpt: "SDK 업데이트 원문과 changelog를 묶어 읽고, 한국어 브리프로 내릴 가치가 높은 항목입니다.",
+    parsedSummary: "도구 호출 경계와 운영 추적성이 바뀐 점을 brief와 discover 둘 다에 반영할 수 있게 정리된 상태입니다.",
+    keyPoints: [
+      "source count 3 확보",
+      "target surface both 후보",
+      "critic pass 전 마지막 human check 필요"
+    ],
+    targetSurface: "both",
+    confidence: 0.92,
+    previewTitle: "OpenAI Agents SDK update",
+    previewSummary: "자동화 파이프라인 관점에서 SDK 변화가 왜 중요한지 한국어로 빠르게 읽히는 preview 초안입니다."
   }
 ];
 

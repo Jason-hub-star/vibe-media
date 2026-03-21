@@ -3,6 +3,7 @@ export * from "./features/brief/get-brief-detail";
 export * from "./features/brief/list-briefs";
 export * from "./features/discover/list-discover-items";
 export * from "./features/inbox/list-inbox-items";
+export * from "./features/review/list-review-items";
 export * from "./features/runs/list-runs";
 export * from "./features/sources/list-sources";
 export * from "./features/video-jobs/list-video-jobs";

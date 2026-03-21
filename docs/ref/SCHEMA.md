@@ -19,6 +19,7 @@
 - `BriefDetail`
 - `DiscoverItem`
 - `InboxItem`
+- `ReviewItem`
 - `IngestRun`
 - `VideoJob`
 - `AssetSlot`
