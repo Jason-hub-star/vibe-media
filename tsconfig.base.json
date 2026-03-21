@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": false,
+    "strict": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@vibehub/content-contracts": ["packages/content-contracts/src/index.ts"],
+      "@vibehub/design-tokens": ["packages/design-tokens/src/index.ts"],
+      "@vibehub/ui-patterns": ["packages/ui-patterns/src/index.ts"]
+    }
+  }
+}

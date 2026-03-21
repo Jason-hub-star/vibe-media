@@ -1,0 +1,12 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="1080" rx="48" fill="#171110"/>
+  <rect x="64" y="64" width="1792" height="952" rx="36" fill="#211B19" stroke="#F4EEE2" stroke-opacity="0.12" stroke-width="4"/>
+  <rect x="120" y="120" width="760" height="840" rx="28" fill="#F4EEE2" fill-opacity="0.04"/>
+  <rect x="184" y="208" width="620" height="80" rx="20" fill="#98F0E1" fill-opacity="0.15"/>
+  <rect x="184" y="336" width="520" height="212" rx="32" fill="#F08A24" fill-opacity="0.18"/>
+  <rect x="184" y="604" width="520" height="88" rx="24" fill="#F4EEE2" fill-opacity="0.12"/>
+  <rect x="184" y="724" width="260" height="70" rx="30" fill="#F08A24"/>
+  <rect x="976" y="140" width="760" height="800" rx="36" fill="#F4EEE2" fill-opacity="0.04"/>
+  <path d="M1080 780H1618V318H1080V780Z" stroke="#F4EEE2" stroke-opacity="0.28" stroke-width="6" stroke-dasharray="16 16"/>
+  <text x="1124" y="540" fill="#F4EEE2" fill-opacity="0.7" font-family="monospace" font-size="52">newsletter-hero-placeholder</text>
+</svg>
