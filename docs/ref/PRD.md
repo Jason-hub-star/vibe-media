@@ -50,11 +50,16 @@
   - `docs/ref/SOURCE-TIER-POLICY.md`
   - `docs/ref/ORCHESTRATION-EVALUATION.md`
   - `docs/ref/SOURCE-RESEARCH-METHOD.md`
+  - `docs/ref/INGEST-STACK-DECISION.md`
+  - `docs/ref/SOURCE-CATALOG.md`
   - `docs/ref/LLM-ORCHESTRATION-MAP.md`
+  - `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
+  - `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
 
 ## Current Delivery Status
 - 공개 허브 기본 화면 구현 완료
 - discovery 확장을 위한 `radar` 공개 route와 `admin/discover` 운영 route 추가
-- admin 개요, inbox, runs, review, briefs, discover, video-jobs, sources, assets 화면 구현 완료
+- admin 개요, inbox, runs, review, briefs, discover, publish, exceptions, policies, programs, video-jobs, sources, assets 화면 구현 완료
 - video는 운영 기능으로만 유지되고 public navigation에는 없음
+- `Brief + Discover` non-video 파이프라인은 `npm run pipeline:brief-discover`로 dry-run 실행 가능
 - loading/empty/error 강화는 다음 프론트 고도화 작업 범위

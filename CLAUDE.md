@@ -26,8 +26,9 @@
 21. `docs/ref/STITCH-WORKFLOW.md`
 22. `docs/ref/ROUTE-SPECS.md`
 23. `docs/status/PROJECT-STATUS.md`
-24. `docs/status/DECISION-LOG.md`
-25. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+24. `docs/status/EXECUTION-CHECKLIST.md`
+25. `docs/status/DECISION-LOG.md`
+26. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.
@@ -82,6 +83,7 @@
 - `docs/ref/VIDEO-WORKER-CONTRACT.md`
 - `docs/ref/STITCH-WORKFLOW.md`
 - `docs/ref/ROUTE-SPECS.md`
+- `docs/status/EXECUTION-CHECKLIST.md`
 - `docs/status/PAGE-UPGRADE-BOARD.md`
 - `docs/status/DECISION-LOG.md`
 - `docs/status/ORCHESTRATION-TRIAL-LOG.md`
