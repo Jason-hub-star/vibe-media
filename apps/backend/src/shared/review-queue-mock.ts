@@ -3,6 +3,7 @@ import type { ReviewItem } from "@vibehub/content-contracts";
 export const reviewEntries: ReviewItem[] = [
   {
     id: "review-openai-agents-sdk",
+    sourceItemId: "inbox-openai-agents-sdk",
     sourceLabel: "OpenAI News",
     sourceHref: "https://openai.com/news/",
     sourceExcerpt: "SDK 업데이트 원문과 changelog를 함께 읽고, 한국어 에디토리얼로 가공할 가치가 높은 항목입니다.",
@@ -13,12 +14,14 @@ export const reviewEntries: ReviewItem[] = [
       "human-on-exception review queue"
     ],
     targetSurface: "both",
+    reviewReason: "dual-surface routing needs operator confirmation",
     confidence: 0.92,
     previewTitle: "OpenAI Agents SDK update",
     previewSummary: "VibeHub Brief와 Radar에 동시에 올라갈 수 있는 preview 초안입니다."
   },
   {
     id: "review-karpathy-interview",
+    sourceItemId: "inbox-karpathy-interview",
     sourceLabel: "Transcript Mirror",
     sourceHref: "https://youtu.be/kwSVtQ7dziU",
     sourceExcerpt: "긴 인터뷰 원문에서 직접 인용 범위와 요약 강도를 사람이 마지막으로 잠가야 하는 review 예외 케이스입니다.",
@@ -29,6 +32,7 @@ export const reviewEntries: ReviewItem[] = [
       "exception queue item"
     ],
     targetSurface: "brief",
+    reviewReason: "quote boundary review needed",
     confidence: 0.78,
     previewTitle: "Karpathy on the loopy era of AI",
     previewSummary: "에이전트 운영을 중심으로 인터뷰 인사이트를 재구성한 preview 초안입니다."

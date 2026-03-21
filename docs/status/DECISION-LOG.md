@@ -17,23 +17,34 @@
 - 결정:
   - `vibehub-media`는 로컬 git repository로 초기화한다.
   - 기본 브랜치는 `main`을 사용한다.
-  - 원격은 `origin = https://github.com/kimjuyoung1127/vibe-media.git`로 둔다.
+  - 원격은 `origin = git@github.com:kimjuyoung1127/vibe-media.git`를 canonical remote로 둔다.
 - 메모:
   - 로컬 초기화와 첫 커밋은 완료했다.
-  - 원격 push는 GitHub 인증이 준비된 세션에서 다시 시도해야 한다.
+  - 현재 SSH-authenticated 환경에서 push도 확인했다.
+
+### 2026-03-22 — Ingest Stack v1
+- 상태: resolved
+- 결정:
+  - collector primary: `Crawl4AI`
+  - collector fallback: `Firecrawl`
+  - HTML/article cleanup primary: `Defuddle`
+  - document/PDF primary: `Docling`
+  - PDF fallback: `OpenDataLoader PDF`
+  - utility fallback: `MarkItDown`
+  - `Unstructured`는 v1 primary에서 제외하고 P3 ETL 후보로 남긴다.
+- 기준 문서:
+  - `docs/ref/INGEST-STACK-DECISION.md`
+
+### 2026-03-22 — Source Catalog v1
+- 상태: resolved
+- 결정:
+  - brief source 1차 배치는 공식 AI product/research source 중심으로 묶는다.
+  - discover source 1차 배치는 GitHub/launch/event/contest 축으로 묶는다.
+  - event/contest/grant는 `Devpost`, `Kaggle Competitions`, `AI Engineer World’s Fair`, `MLH`를 기본 source로 둔다.
+- 기준 문서:
+  - `docs/ref/SOURCE-CATALOG.md`
 
 ## Pending
-
-### Source Research
-- 상태: pending
-- 결정 필요:
-  - collector/tool 1차 채택
-  - parser/tool 1차 채택
-  - PDF parser 1차 채택
-  - source catalog 1차 배치
-  - fallback 정책
-- 기준 문서:
-  - `docs/ref/SOURCE-RESEARCH-METHOD.md`
 
 ### Orchestration Final Choice
 - 상태: pending
@@ -57,6 +68,6 @@
   - `telegram-orchestrator` shadow/eval 결과
 
 ## Next Review Order
-1. Source research 결과 수집
-2. orchestration comparison run
-3. stage-level promote / rollback 기준 재검토
+1. orchestration comparison run
+2. stage-level promote / rollback 기준 재검토
+3. source catalog quality review after first live ingest

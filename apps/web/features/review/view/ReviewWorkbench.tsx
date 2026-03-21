@@ -33,7 +33,10 @@ export function ReviewWorkbench({ item }: { item: ReviewItem }) {
         </div>
         <h3>{item.previewTitle}</h3>
         <p className="muted">{item.previewSummary}</p>
-        <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>
+        <div className="stack-tight">
+          <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>
+          <p className="muted">Reason: {item.reviewReason}</p>
+        </div>
       </article>
     </div>
   );

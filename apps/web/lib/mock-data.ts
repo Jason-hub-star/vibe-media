@@ -9,14 +9,14 @@ import type {
   SourceEntry
 } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
-import { reviewItems } from "./review-queue-mock";
+import { deriveExceptionQueueItems, derivePublishQueueItemsFromInbox, deriveReviewItemsFromInbox } from "./pipeline-routing";
+import { reviewItems as reviewTemplates } from "./review-queue-mock";
 import {
   deriveVideoExceptionQueueItems,
   deriveVideoPublishQueueItems,
   videoJobs
 } from "./video-pipeline-mock";
 
-export { reviewItems } from "./review-queue-mock";
 export { videoJobs } from "./video-pipeline-mock";
 
 export const briefDetails: BriefDetail[] = [
@@ -112,6 +112,28 @@ export const inboxItems: InboxItem[] = [
     targetSurface: "discover",
     confidence: 0.88,
     parsedSummary: "행사 페이지에서 일정과 링크를 뽑아냈고, discover용 액션 링크 후보까지 생성된 상태입니다."
+  },
+  {
+    id: "inbox-archive-research-note",
+    sourceName: "Anthropic Research",
+    sourceTier: "auto-safe",
+    title: "Archived research note",
+    contentType: "doc",
+    stage: "classified",
+    targetSurface: "archive",
+    confidence: 0.9,
+    parsedSummary: "참고 가치만 남기고 현재 surface에는 노출하지 않는 보관 항목입니다."
+  },
+  {
+    id: "inbox-discard-duplicate",
+    sourceName: "GitHub Release Mirror",
+    sourceTier: "auto-safe",
+    title: "Duplicate release mirror",
+    contentType: "repo",
+    stage: "classified",
+    targetSurface: "discard",
+    confidence: 0.97,
+    parsedSummary: "기존 레이더 항목과 dedupe key가 겹쳐 폐기 대상으로 분류된 항목입니다."
   }
 ];
 
@@ -145,59 +167,23 @@ export const ingestRuns: IngestRun[] = [
   }
 ];
 
-const basePublishQueueItems: PublishQueueItem[] = [
-  {
-    id: "publish-openai-agents-sdk",
-    title: "OpenAI Agents SDK update",
-    targetType: "brief",
-    queueStatus: "scheduled",
-    sourceLabel: "OpenAI News",
-    scheduledFor: "2026-03-22T18:30:00.000Z",
-    nextAction: "Keep scheduled slot unless source links or title change."
-  },
-  {
-    id: "publish-ai-worlds-fair",
-    title: "AI Engineer World's Fair",
-    targetType: "discover",
-    queueStatus: "scheduled",
-    sourceLabel: "AI Engineer World's Fair",
-    scheduledFor: "2026-03-22T20:00:00.000Z",
-    nextAction: "Recheck outbound event links before queue execution."
-  }
-];
+export const reviewItems = deriveReviewItemsFromInbox(inboxItems, reviewTemplates);
+
+const basePublishQueueItems = derivePublishQueueItemsFromInbox(inboxItems);
 
 export const publishQueueItems: PublishQueueItem[] = [
   ...basePublishQueueItems,
   ...deriveVideoPublishQueueItems(videoJobs)
 ];
 
-const baseExceptionQueueItems: ExceptionQueueItem[] = [
-  {
-    id: "exception-karpathy-brief",
-    title: "Karpathy on the loopy era of AI",
-    targetType: "brief",
-    currentStage: "review",
-    reason: "quote boundary review needed",
-    confidence: 0.78,
-    sourceLabel: "Transcript Mirror",
-    nextAction: "Trim direct quotes and lock the final tone before publish."
-  },
-  {
-    id: "exception-worlds-fair-discover",
-    title: "AI Engineer World's Fair",
-    targetType: "discover",
-    currentStage: "failed",
-    reason: "render pass timed out before CTA extraction",
-    confidence: 0.66,
-    sourceLabel: "AI Engineer World's Fair",
-    nextAction: "Retry browser render and verify outbound links."
-  }
-];
+const baseExceptionQueueItems = deriveExceptionQueueItems(
+  inboxItems,
+  reviewTemplates,
+  ingestRuns,
+  deriveVideoExceptionQueueItems(videoJobs)
+);
 
-export const exceptionQueueItems: ExceptionQueueItem[] = [
-  ...baseExceptionQueueItems,
-  ...deriveVideoExceptionQueueItems(videoJobs)
-];
+export const exceptionQueueItems: ExceptionQueueItem[] = baseExceptionQueueItems;
 
 export const discoverItems: DiscoverItem[] = [
   {

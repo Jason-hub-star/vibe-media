@@ -232,7 +232,8 @@ p {
 .status-published,
 .status-ready,
 .status-approved,
-.status-discover {
+.status-discover,
+.status-publish {
   background: rgba(152, 240, 225, 0.18);
   color: var(--color-mint);
 }

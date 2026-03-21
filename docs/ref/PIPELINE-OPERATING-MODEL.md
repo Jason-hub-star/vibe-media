@@ -14,6 +14,9 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 ## Step Definitions
 ### 1) 수집
 - source를 기준으로 새 항목을 가져온다.
+- v1 source catalog와 collector/parser 채택은 아래 문서를 source of truth로 둔다.
+  - `docs/ref/INGEST-STACK-DECISION.md`
+  - `docs/ref/SOURCE-CATALOG.md`
 - source tier:
   - `auto-safe`
   - `render-required`

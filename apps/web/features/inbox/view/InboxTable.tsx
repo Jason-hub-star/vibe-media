@@ -1,6 +1,7 @@
 import type { InboxItem } from "@vibehub/content-contracts";
 
 import { presentInboxConfidence } from "../presenter/present-inbox-confidence";
+import { presentInboxNextQueue } from "../presenter/present-inbox-next-queue";
 
 export function InboxTable({ items }: { items: InboxItem[] }) {
   return (
@@ -12,6 +13,7 @@ export function InboxTable({ items }: { items: InboxItem[] }) {
             <th>Source</th>
             <th>Stage</th>
             <th>Surface</th>
+            <th>Next queue</th>
             <th>Confidence</th>
           </tr>
         </thead>
@@ -29,7 +31,14 @@ export function InboxTable({ items }: { items: InboxItem[] }) {
               <td>
                 <span className={`status status-${item.stage}`}>{item.stage}</span>
               </td>
-              <td>{item.targetSurface}</td>
+              <td>
+                <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>
+              </td>
+              <td>
+                <span className={`status status-${presentInboxNextQueue(item).replace(" ", "-")}`}>
+                  {presentInboxNextQueue(item)}
+                </span>
+              </td>
               <td>{presentInboxConfidence(item.confidence)}</td>
             </tr>
           ))}
