@@ -23,9 +23,13 @@
 
 ## Pipeline Notes
 - `sources`는 수집 원천을 관리한다.
+  - core fields: `name`, `kind`, `base_url`, `source_tier`, `enabled`
 - `ingest_runs`는 개별 실행 단위를 기록한다.
+  - core fields: `source_id`, `run_status`, `started_at`, `finished_at`, `error_message`
 - `ingested_items`는 source에서 들어온 개별 결과를 저장한다.
+  - core fields: `source_id`, `run_id`, `title`, `url`, `content_type`, `dedupe_key`
 - `item_classifications`는 `brief | discover | both | archive | discard` 판정을 가진다.
+  - core fields: `item_id`, `category`, `importance_score`, `novelty_score`, `target_surface`
 - `brief_posts`와 `discover_items`는 공개 surface로 올라간 편집 결과다.
 - `item_classifications`에는 아래 개념이 필요하다.
   - `target_surface`

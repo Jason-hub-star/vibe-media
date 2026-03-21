@@ -10,6 +10,7 @@
 - admin workflow shell: done
 - discovery/radar shell: done
 - pipeline operating model docs: done
+- ingest core SQL draft: done
 - operating docs set: done
 - shared contracts: done
 - token system: done
@@ -30,6 +31,7 @@
 - page-level loading/empty/error states need explicit implementation pass
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
 - ingest / inbox / classification / publish queue admin routes are documented but not implemented
+- ingest core SQL draft is added, but Supabase apply/verification is still pending
 - source/tool/orchestration final decision remains pending and is now tracked in `docs/status/DECISION-LOG.md`
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment

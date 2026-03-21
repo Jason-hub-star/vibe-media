@@ -15,7 +15,7 @@
 - [x] source/tool/orchestration research pending 상태를 decision log로 분리
 
 ## P1 — Pipeline Core
-- [ ] `sources` / `ingest_runs` / `ingested_items` / `item_classifications` SQL 초안 작성
+- [x] `sources` / `ingest_runs` / `ingested_items` / `item_classifications` SQL 초안 작성
 - [ ] `/admin/inbox` 스캐폴드 구현
 - [ ] `/admin/runs` 스캐폴드 구현
 - [ ] `/admin/review` 스캐폴드 구현
