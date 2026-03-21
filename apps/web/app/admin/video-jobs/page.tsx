@@ -9,7 +9,7 @@ export default function AdminVideoJobsPage() {
 
   return (
     <AdminShell
-      subtitle="Video is treated as an internal automation pipeline, not a public content section."
+      subtitle="Video is treated as an internal automation pipeline, with auto-analysis first, CapCut finishing second, and parent review as the last gate."
       title="Video Jobs"
     >
       <PlaceholderArt
@@ -18,7 +18,7 @@ export default function AdminVideoJobsPage() {
       />
       {jobs.length === 0 ? (
         <EmptyState
-          body="Gameplay and recap jobs will appear here after collection and draft creation."
+          body="Gameplay and recap jobs will appear here after capture, auto analysis, CapCut finishing, and parent review prep."
           title="No video jobs"
         />
       ) : (

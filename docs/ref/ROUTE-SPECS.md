@@ -60,7 +60,7 @@
 ### `/admin/publish`
 - 목적: 승인 후 배포 대기와 예약 상태 확인
 - 핵심 섹션: publish queue
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold table 구현, brief / discover / video queue를 한 화면에서 보여줌
 
 ### `/admin/review`
 - 목적: 예외 검수와 send-back 판단
@@ -70,22 +70,22 @@
 ### `/admin/exceptions`
 - 목적: human-on-exception 큐 운영
 - 핵심 섹션: exception reason, confidence, retry or hold action
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold table 구현, brief / discover / video 예외를 한 화면에서 보여줌
 
 ### `/admin/policies`
 - 목적: review policy, source tier, publish policy 확인
 - 핵심 섹션: policy summary cards and rule table
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold summary cards 구현, review / source tier / publish rule을 한 화면에서 참조
 
 ### `/admin/programs`
 - 목적: program-style rule files 관리
 - 핵심 섹션: brief/discover/publish/source policy references
-- 현재 상태: 미구현, pipeline 후속 작업
+- 현재 상태: scaffold reference cards 구현, program-style markdown 파일 위치와 역할을 보여줌
 
 ### `/admin/video-jobs`
 - 목적: 비디오 자동화 상태 확인
-- 핵심 섹션: placeholder banner, job board
-- 현재 상태: internal status board only
+- 핵심 섹션: placeholder banner, job board, CapCut handoff notes, parent review gate
+- 현재 상태: scaffold board가 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영
 
 ### `/admin/sources`
 - 목적: source registry 확인

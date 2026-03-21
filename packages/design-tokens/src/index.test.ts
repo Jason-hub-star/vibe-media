@@ -4,8 +4,8 @@ import { assetSlots, colorTokens, stateTokens } from "./index";
 
 describe("design tokens", () => {
   it("keeps status colors aligned to the shared palette", () => {
-    expect(stateTokens.review).toBe(colorTokens.orange);
-    expect(stateTokens.ready).toBe(colorTokens.mint);
+    expect(stateTokens.parent_review).toBe(colorTokens.yellow);
+    expect(stateTokens.upload_ready).toBe(colorTokens.mint);
   });
 
   it("defines placeholder slots with explicit formats and sizes", () => {

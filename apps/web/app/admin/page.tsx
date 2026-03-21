@@ -20,6 +20,22 @@ export default function AdminPage() {
           <p>Collection and parsing history with retry checkpoints</p>
         </article>
         <article className="panel stack-tight">
+          <p className="eyebrow">Publish</p>
+          <p>Scheduled briefs, discovery items, and private video uploads in one queue</p>
+        </article>
+        <article className="panel stack-tight">
+          <p className="eyebrow">Exceptions</p>
+          <p>Low-confidence, blocked, and policy-sensitive items waiting for intervention</p>
+        </article>
+        <article className="panel stack-tight">
+          <p className="eyebrow">Policies</p>
+          <p>Review, source tier, and publish rules that define operator behavior</p>
+        </article>
+        <article className="panel stack-tight">
+          <p className="eyebrow">Programs</p>
+          <p>Program-style rule files that sit above code and shape pipeline behavior</p>
+        </article>
+        <article className="panel stack-tight">
           <p className="eyebrow">Video jobs</p>
           <p>Gameplay and recap automation checkpoints</p>
         </article>

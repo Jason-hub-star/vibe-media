@@ -32,6 +32,10 @@ test("admin shell exposes inbox, runs, and review pages", async ({ page }) => {
   await expect(page.getByRole("link", { name: /inbox/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /^runs$/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /^review$/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^publish$/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^exceptions$/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^policies$/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^programs$/i })).toBeVisible();
 });
 
 test("admin inbox and runs tables are visible", async ({ page }) => {
@@ -52,4 +56,33 @@ test("admin review shows multiple queue items", async ({ page }) => {
   await expect(page.getByText(/queue item 1/i)).toBeVisible();
   await expect(page.getByText(/queue item 2/i)).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: /karpathy on the loopy era of ai/i })).toBeVisible();
+});
+
+test("admin publish queue shows mixed release surfaces", async ({ page }) => {
+  await page.goto("/admin/publish");
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: /publish queue/i })).toBeVisible();
+  await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByText(/uploaded_private/i)).toBeVisible();
+  await expect(page.getByRole("cell", { name: /ai engineer world's fair ai engineer world's fair/i })).toBeVisible();
+});
+
+test("admin exceptions queue shows blocked and low-confidence items", async ({ page }) => {
+  await page.goto("/admin/exceptions");
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: /^exceptions$/i })).toBeVisible();
+  await expect(page.getByRole("table")).toBeVisible();
+  await expect(page.getByText(/quote boundary review needed/i)).toBeVisible();
+  await expect(page.getByText(/privacy-sensitive voice chat/i)).toBeVisible();
+});
+
+test("admin policies and programs expose operator references", async ({ page }) => {
+  await page.goto("/admin/policies");
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: /^policies$/i })).toBeVisible();
+  await expect(page.getByText(/review-policy\.md/i)).toBeVisible();
+
+  await page.goto("/admin/programs");
+  await expect(page.getByRole("heading", { name: /^programs$/i })).toBeVisible();
+  await expect(page.getByText(/brief\.program\.md/i)).toBeVisible();
 });

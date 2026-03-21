@@ -13,6 +13,20 @@ export function VideoJobBoard({ jobs }: { jobs: VideoJob[] }) {
           </div>
           <h3>{job.title}</h3>
           <p className="muted">{presentVideoJobCopy(job)}</p>
+          <dl className="stack-tight video-job-meta">
+            <div className="row-between">
+              <dt className="eyebrow">Assets</dt>
+              <dd className={`status status-${job.assetLinkState}`}>{job.assetLinkState}</dd>
+            </div>
+            <div className="row-between">
+              <dt className="eyebrow">Transcript</dt>
+              <dd className={`status status-${job.transcriptState}`}>{job.transcriptState}</dd>
+            </div>
+            <div className="row-between">
+              <dt className="eyebrow">Next action</dt>
+              <dd>{job.nextAction}</dd>
+            </div>
+          </dl>
         </article>
       ))}
     </div>

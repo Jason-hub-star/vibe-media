@@ -19,12 +19,15 @@
 - [x] `/admin/inbox` 스캐폴드 구현
 - [x] `/admin/runs` 스캐폴드 구현
 - [x] `/admin/review` 스캐폴드 구현
-- [ ] `/admin/publish` 스캐폴드 구현
-- [ ] `/admin/exceptions` 스캐폴드 구현
-- [ ] `/admin/policies` 스캐폴드 구현
-- [ ] `/admin/programs` 스캐폴드 구현
+- [x] `/admin/publish` 스캐폴드 구현
+- [x] `/admin/exceptions` 스캐폴드 구현
+- [x] `/admin/policies` 스캐폴드 구현
+- [x] `/admin/programs` 스캐폴드 구현
+- [x] `video_jobs` 상태 모델을 `auto analysis -> CapCut -> parent review -> private upload` 흐름으로 확장
 - [ ] `target_surface = brief | discover | both | archive | discard` 흐름을 UI와 데이터에 연결
 - [ ] `human-on-exception` 큐 조건을 실제 상태값으로 반영
+- [ ] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
+- [ ] `video_jobs`를 publish queue / exceptions와 연결
 
 ## P1 — LLM / Orchestration
 - [ ] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
@@ -48,6 +51,7 @@
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
+- [ ] `admin/video-jobs`를 CapCut handoff와 parent review 체크리스트 기준으로 고도화
 
 ## P2 — Discover / Brief Surface
 - [ ] `radar` 카테고리 필터 설계
@@ -68,13 +72,15 @@
 - [x] discovery/radar 기본 구조
 - [x] 운영 문서 세트
 - [x] LLM 병행 오케스트레이션 문서
+- [x] video pipeline SSOT + `video_jobs` 상태 모델
 - [ ] 파이프라인 실제 구현
 - [ ] Supabase SQL 실제 구현
 - [ ] admin 파이프라인 화면 실제 구현
 - [ ] source/tool/orchestration 최종 채택
 
 ## Recommended Next Sequence
-1. `P0`를 먼저 닫는다.
-2. 그 다음 `P1 Pipeline Core`와 `P1 LLM / Orchestration`을 같이 진행한다.
-3. 파이프라인 골격이 열린 뒤 `P2 Frontend / UX`를 한다.
-4. 마지막에 `P3 Hardening`으로 들어간다.
+1. `/admin/publish`와 `/admin/exceptions`를 먼저 연다.
+2. 그 다음 `video_jobs`를 publish queue / exceptions와 연결한다.
+3. 병행해서 `P1 LLM / Orchestration`과 source research를 진행한다.
+4. 파이프라인 골격이 더 열리면 `P2 Frontend / UX`를 한다.
+5. 마지막에 `P3 Hardening`으로 들어간다.

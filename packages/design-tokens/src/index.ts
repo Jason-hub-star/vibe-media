@@ -35,11 +35,12 @@ export const spacingTokens = {
 } as const;
 
 export const stateTokens = {
-  collected: colorTokens.sky,
-  drafted: colorTokens.yellow,
-  asset_pending: colorTokens.rose,
-  review: colorTokens.orange,
-  ready: colorTokens.mint
+  analysis_running: colorTokens.sky,
+  capcut_pending: colorTokens.yellow,
+  parent_review: colorTokens.yellow,
+  capcut_done: colorTokens.mint,
+  upload_ready: colorTokens.mint,
+  blocked: colorTokens.rose
 } as const;
 
 export const assetSlots: DesignAssetSlot[] = [

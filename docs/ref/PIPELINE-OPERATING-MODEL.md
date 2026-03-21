@@ -50,6 +50,7 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
   - 구조화된 중간 데이터
   - 실제 공개 미리보기
 - 사람 검수는 `REVIEW-POLICY.md`의 예외 조건에만 들어간다.
+- 예외: 미성년자 영상은 `parent review` 단계를 항상 거친다.
 
 ### 5) 배포
 - 검수 승인 후 private upload, scheduled publish, 즉시 publish 같은 정책을 적용한다.
@@ -70,6 +71,7 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - `Classification`
 - `Brief Review`
 - `Discover Registry`
+- `Video Jobs`
 - `Publish Queue`
 - `Failures`
 - `Exceptions`

@@ -14,6 +14,11 @@
 - admin inbox scaffold: done
 - admin runs scaffold: done
 - admin review scaffold: done
+- admin publish scaffold: done
+- admin exceptions scaffold: done
+- admin policies scaffold: done
+- admin programs scaffold: done
+- video pipeline scaffold refresh: done
 - operating docs set: done
 - shared contracts: done
 - token system: done
@@ -33,9 +38,11 @@
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
 - page-level loading/empty/error states need explicit implementation pass
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
-- `admin/inbox`, `admin/runs`, `admin/review`는 scaffold 구현 완료, 나머지 publish / exceptions / policies / programs routes는 아직 미구현
+- `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
+- `admin/video-jobs`는 이제 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영하는 scaffold 상태다
 - ingest core SQL draft is added, but Supabase apply/verification is still pending
+- video job schema 확장 마이그레이션은 추가됐지만 Supabase apply/verification은 아직 pending
 - source/tool/orchestration final decision remains pending and is now tracked in `docs/status/DECISION-LOG.md`
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
-- remote push to `origin` still requires GitHub 인증이 가능한 세션
+- remote push to `origin` is working in the current SSH-authenticated environment

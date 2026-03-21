@@ -2,8 +2,10 @@ import type {
   AssetSlot,
   BriefDetail,
   DiscoverItem,
+  ExceptionQueueItem,
   InboxItem,
   IngestRun,
+  PublishQueueItem,
   ReviewItem,
   SourceEntry,
   VideoJob
@@ -176,17 +178,109 @@ export const videoJobs: VideoJob[] = [
     id: "video-job-1",
     title: "Minecraft survival session",
     kind: "gameplay",
-    status: "drafted",
+    status: "capcut_pending",
     assetLinkState: "partial",
-    sourceSession: "minecraft-session-0319"
+    sourceSession: "minecraft-session-0319",
+    transcriptState: "draft",
+    highlightCount: 4,
+    riskySegmentCount: 2,
+    nextAction: "Finish subtitles and punch-in timing in CapCut."
   },
   {
     id: "video-job-2",
     title: "Roblox obstacle run recap",
     kind: "recap",
-    status: "review",
+    status: "parent_review",
     assetLinkState: "complete",
-    sourceSession: "roblox-session-0320"
+    sourceSession: "roblox-session-0320",
+    transcriptState: "approved",
+    highlightCount: 3,
+    riskySegmentCount: 1,
+    nextAction: "Run the parent checklist, then move to private upload."
+  },
+  {
+    id: "video-job-3",
+    title: "Mario Kart highlight clip",
+    kind: "clip",
+    status: "analysis_running",
+    assetLinkState: "missing",
+    sourceSession: "mariokart-session-0321",
+    transcriptState: "missing",
+    highlightCount: 0,
+    riskySegmentCount: 0,
+    nextAction: "Generate subtitles and highlight candidates from the raw capture."
+  }
+];
+
+export const publishQueueEntries: PublishQueueItem[] = [
+  {
+    id: "publish-openai-agents-sdk",
+    title: "OpenAI Agents SDK update",
+    targetType: "brief",
+    queueStatus: "scheduled",
+    sourceLabel: "OpenAI News",
+    scheduledFor: "2026-03-22T18:30:00.000Z",
+    nextAction: "Keep the evening schedule unless the source set changes."
+  },
+  {
+    id: "publish-ai-worlds-fair",
+    title: "AI Engineer World's Fair",
+    targetType: "discover",
+    queueStatus: "scheduled",
+    sourceLabel: "AI Engineer World's Fair",
+    scheduledFor: "2026-03-22T20:00:00.000Z",
+    nextAction: "Recheck CTA links before the queue window opens."
+  },
+  {
+    id: "publish-roblox-recap",
+    title: "Roblox obstacle run recap",
+    targetType: "video",
+    queueStatus: "uploaded_private",
+    sourceLabel: "roblox-session-0320",
+    scheduledFor: null,
+    nextAction: "Private upload is complete. Wait for parent release approval."
+  },
+  {
+    id: "publish-minecraft-session",
+    title: "Minecraft survival session",
+    targetType: "video",
+    queueStatus: "upload_ready",
+    sourceLabel: "minecraft-session-0319",
+    scheduledFor: null,
+    nextAction: "Move this edit from CapCut completion into private upload."
+  }
+];
+
+export const exceptionQueueEntries: ExceptionQueueItem[] = [
+  {
+    id: "exception-karpathy-brief",
+    title: "Karpathy on the loopy era of AI",
+    targetType: "brief",
+    currentStage: "review",
+    reason: "quote boundary review needed",
+    confidence: 0.78,
+    sourceLabel: "Transcript Mirror",
+    nextAction: "Trim direct quotes and lock the final tone before publish."
+  },
+  {
+    id: "exception-worlds-fair-discover",
+    title: "AI Engineer World's Fair",
+    targetType: "discover",
+    currentStage: "failed",
+    reason: "render pass timed out before CTA extraction",
+    confidence: 0.66,
+    sourceLabel: "AI Engineer World's Fair",
+    nextAction: "Retry browser render and verify outbound links."
+  },
+  {
+    id: "exception-minecraft-video",
+    title: "Minecraft survival session",
+    targetType: "video",
+    currentStage: "blocked",
+    reason: "parent review flagged privacy-sensitive voice chat",
+    confidence: 0.9,
+    sourceLabel: "minecraft-session-0319",
+    nextAction: "Mute the flagged segment in CapCut before re-entering publish."
   }
 ];
 

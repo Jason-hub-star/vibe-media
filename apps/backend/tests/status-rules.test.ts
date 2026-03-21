@@ -9,7 +9,7 @@ describe("admin status transition rules", () => {
   });
 
   it("allows only the planned video job transitions", () => {
-    expect(canMoveVideoJobStatus("drafted", "review")).toBe(true);
-    expect(canMoveVideoJobStatus("review", "collected")).toBe(false);
+    expect(canMoveVideoJobStatus("capcut_done", "parent_review")).toBe(true);
+    expect(canMoveVideoJobStatus("parent_review", "analysis_running")).toBe(false);
   });
 });
