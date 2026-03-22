@@ -3,7 +3,7 @@
 ## Public
 ### `/`
 - 목적: 브랜드 허브, 최근 브리프 진입점, 자산 전략 소개
-- 핵심 섹션: hero, selected briefs, showcase lane teaser, custom assets
+- 핵심 섹션: hero, selected briefs, showcase lane teaser, custom assets, discovery surface
 - 상태 강화 예정: brief empty state
 
 ### `/brief`

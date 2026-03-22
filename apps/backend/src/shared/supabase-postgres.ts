@@ -42,7 +42,8 @@ export function readMigrationSql() {
     "supabase/migrations/20260322193000_add_editorial_surface_tables.sql",
     "supabase/migrations/20260322213000_expand_editorial_lifecycle_and_retry.sql",
     "supabase/migrations/20260322214000_expand_video_jobs_storage_metadata.sql",
-    "supabase/migrations/20260322215000_enable_rls_for_media_tables.sql"
+    "supabase/migrations/20260322215000_enable_rls_for_media_tables.sql",
+    "supabase/migrations/20260323000000_add_showcase_sidecar_lane.sql"
   ];
 
   return files.map((relativePath) => ({

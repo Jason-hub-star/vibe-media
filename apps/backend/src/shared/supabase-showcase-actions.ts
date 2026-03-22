@@ -55,9 +55,14 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
   }
 
   const extraLinks = normalizeLinks(input.primaryLink, input.links);
+  const connection = await sql.reserve();
+  let transactionStarted = false;
 
   try {
-    const rows = await sql<Array<{ id: string }>>`
+    await connection`begin`;
+    transactionStarted = true;
+
+    const rows = await connection<Array<{ id: string }>>`
       insert into public.showcase_entries (
         id,
         slug,
@@ -134,13 +139,13 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
       throw new Error("Failed to save showcase entry.");
     }
 
-    await sql`
+    await connection`
       delete from public.showcase_links
       where showcase_entry_id = ${entryId}::uuid
     `;
 
     for (const [index, link] of extraLinks.entries()) {
-      await sql`
+      await connection`
         insert into public.showcase_links (
           showcase_entry_id,
           link_kind,
@@ -158,8 +163,16 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
       `;
     }
 
+    await connection`commit`;
+
     return { id: entryId, slug };
+  } catch (error) {
+    if (transactionStarted) {
+      await connection`rollback`;
+    }
+    throw error;
   } finally {
+    connection.release();
     await sql.end();
   }
 }

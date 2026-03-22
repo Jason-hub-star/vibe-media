@@ -116,7 +116,7 @@
 - [x] Telegram pipeline report module
 - [x] daily pipeline automation script + cron
 - [x] Source 확장 전략 문서 (`docs/ref/SOURCE-EXPANSION-STRATEGY.md`)
-- [x] `/self-review` 커스텀 명령어
+- [ ] `/self-review` 커스텀 명령어
 - [x] source/tool 최종 채택
 - [x] orchestration 최종 채택
 

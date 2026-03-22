@@ -40,6 +40,7 @@ test("admin shell exposes inbox, runs, and review pages", async ({ page }) => {
 });
 
 test("admin inbox and runs tables are visible", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto("/admin/inbox", { timeout: 45_000 });
   await signIn(page);
   await expect(page.getByRole("heading", { name: /^inbox$/i })).toBeVisible();

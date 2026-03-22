@@ -8,7 +8,17 @@ import { saveShowcaseEntryAction } from "../action/save-showcase-entry";
 
 function toDateTimeInputValue(value: string | null) {
   if (!value) return "";
-  return value.slice(0, 16);
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
 }
 
 function toBodyValue(value: string[]) {
@@ -46,6 +56,7 @@ export function ShowcaseEditorForm({
       </div>
 
       <input name="id" type="hidden" defaultValue={entry?.id ?? ""} />
+      <input name="timezoneOffsetMinutes" type="hidden" value={String(new Date().getTimezoneOffset())} />
 
       <div className="admin-form-grid">
         <label className="stack-tight">

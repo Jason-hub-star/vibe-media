@@ -23,13 +23,34 @@ function parseBoolean(formData: FormData, key: string) {
   return formData.get(key) === "on";
 }
 
-function parseDateTimeValue(value: string) {
+function parseTimezoneOffset(value: string) {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid timezone offset for ${value}`);
+  }
+  return parsed;
+}
+
+function parseDateTimeValue(value: string, timezoneOffsetMinutes: number) {
   if (!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!match) {
     throw new Error(`Invalid date value for ${value}`);
   }
-  return parsed.toISOString();
+
+  const [, year, month, day, hour, minute] = match;
+  const utcTime =
+    Date.UTC(
+      Number.parseInt(year, 10),
+      Number.parseInt(month, 10) - 1,
+      Number.parseInt(day, 10),
+      Number.parseInt(hour, 10),
+      Number.parseInt(minute, 10)
+    ) +
+    timezoneOffsetMinutes * 60 * 1000;
+
+  return new Date(utcTime).toISOString();
 }
 
 function parseStringList(value: string, separator: RegExp | string) {
@@ -64,6 +85,7 @@ export async function saveShowcaseEntryAction(
     const summary = toText(formData.get("summary"));
     const primaryLinkLabel = toText(formData.get("primaryLinkLabel"));
     const primaryLinkHref = toText(formData.get("primaryLinkHref"));
+    const timezoneOffsetMinutes = parseTimezoneOffset(toText(formData.get("timezoneOffsetMinutes")) || "0");
 
     if (!title || !summary || !primaryLinkLabel || !primaryLinkHref) {
       throw new Error("Title, summary, and primary link are required.");
@@ -89,8 +111,8 @@ export async function saveShowcaseEntryAction(
         | "approved"
         | "changes_requested"
         | "rejected",
-      scheduledAt: parseDateTimeValue(toText(formData.get("scheduledAt"))),
-      publishedAt: parseDateTimeValue(toText(formData.get("publishedAt"))),
+      scheduledAt: parseDateTimeValue(toText(formData.get("scheduledAt")), timezoneOffsetMinutes),
+      publishedAt: parseDateTimeValue(toText(formData.get("publishedAt")), timezoneOffsetMinutes),
       origin: (toText(formData.get("origin")) || "editorial") as "editorial" | "imported" | "user_submission",
       createdBy: toText(formData.get("createdBy")) || null,
       submittedBy: toText(formData.get("submittedBy")) || null,

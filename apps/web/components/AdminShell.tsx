@@ -3,9 +3,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 
-import { getAdminSession, setAdminSession } from "@/lib/admin-session";
+import { getAdminSession, setAdminSession, subscribeAdminSession } from "@/lib/admin-session";
 
 /* ── Top-level link (no group) ── */
 const overviewLink = { href: "/admin", label: "Overview", exact: true } as const;
@@ -98,7 +98,11 @@ export function AdminShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const [session, setSession] = useState<string>(() => getAdminSession());
+  const session = useSyncExternalStore(
+    subscribeAdminSession,
+    getAdminSession,
+    () => null,
+  );
   const [draft, setDraft] = useState("operator");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<string[]>(readCollapsed);
@@ -123,6 +127,10 @@ export function AdminShell({
   }
 
   if (!session) {
+    if (session === null) {
+      return <div className="shell admin-login" />;
+    }
+
     return (
       <div className="shell admin-login">
         <div className="panel stack-tight">
@@ -137,7 +145,6 @@ export function AdminShell({
             onSubmit={(event) => {
               event.preventDefault();
               setAdminSession(draft);
-              setSession(draft);
             }}
           >
             <label className="stack-tight">

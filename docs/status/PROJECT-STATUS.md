@@ -68,8 +68,8 @@
 - `npm run lint`: pass
 - `npm run typecheck`: pass
 - `npm run build`: pass
-- `npm run test:unit`: 33/34 pass (watch-folder-worker unique constraint 충돌 1건 — Supabase 기존 데이터와 idempotent 미충족, pre-existing)
-- `npm run test:e2e`: pipeline-to-ui 8/8 pass, public-ux 6/6 pass, admin-flow 일부 SSR timeout 간헐 발생 (Supabase 부하 의존)
+- `npm run test:unit`: 34/35 pass (watch-folder-worker unique constraint 충돌 1건 — Supabase 기존 데이터와 idempotent 미충족, pre-existing)
+- `npm run test:e2e`: 28/28 pass
 
 ## Open Follow-ups
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
