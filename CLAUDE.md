@@ -30,6 +30,7 @@
 25. `docs/status/EXECUTION-CHECKLIST.md`
 26. `docs/status/DECISION-LOG.md`
 27. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+28. `docs/status/PAGE-UPGRADE-BOARD.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.

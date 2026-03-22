@@ -302,3 +302,4 @@ cd /Users/family/jason/vibehub-media/telegram-orchestrator
 | 5 | 로그 파일 미생성 | `npm run pipeline:daily` 단독 실행 시 로그 파일 없음. `tee` 포함 명령 필요 |
 | 6 | Telegram plain text | `telegram-report.ts`는 plain text 전송. MarkdownV2/HTML 특수문자 이스케이프 불필요 |
 | 7 | 봇 토큰 공유 가능 | vibehub-media와 telegram-orchestrator가 동일 봇 토큰 사용 가능. 다른 봇 운영 시 각각 별도 토큰 필요 |
+| 8 | esbuild 플랫폼 불일치 | macOS에서 설치한 node_modules를 Linux 환경(Claude 앱)에서 실행 시 `@esbuild/linux-arm64` 없음 에러 발생. `npm install`을 한 번 실행하면 해결. 이후 재발 없음 |
