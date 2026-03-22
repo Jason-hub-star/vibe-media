@@ -10,66 +10,79 @@ import { listRuns } from "@/features/runs/use-case/list-runs";
 import { listSources } from "@/features/sources/use-case/list-sources";
 import { listVideoJobs } from "@/features/video-jobs/use-case/list-video-jobs";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const [inboxItems, briefs, runs, publishQueue, exceptionQueue, sources, discoverItems, reviewItems, videoJobs, assetSlots] = await Promise.all([
+    listInboxItems(),
+    listBriefs(),
+    listRuns(),
+    listPublishQueue(),
+    listExceptionQueue(),
+    listSources(),
+    listDiscoverItems(),
+    listReviewItems(),
+    listVideoJobs(),
+    listAssetSlots()
+  ]);
+
   const summaryCards = [
     {
       id: "inbox",
       eyebrow: "Inbox",
-      count: listInboxItems().length,
+      count: inboxItems.length,
       body: "Newly collected items waiting for surface routing"
     },
     {
       id: "briefs",
       eyebrow: "Briefs",
-      count: listBriefs().length,
+      count: briefs.length,
       body: "Review and scheduling queue"
     },
     {
       id: "runs",
       eyebrow: "Runs",
-      count: listRuns().length,
+      count: runs.length,
       body: "Collection and parsing history with retry checkpoints"
     },
     {
       id: "publish",
       eyebrow: "Publish",
-      count: listPublishQueue().length,
+      count: publishQueue.length,
       body: "Scheduled briefs, discovery items, and private video uploads in one queue"
     },
     {
       id: "exceptions",
       eyebrow: "Exceptions",
-      count: listExceptionQueue().length,
+      count: exceptionQueue.length,
       body: "Low-confidence, blocked, and policy-sensitive items waiting for intervention"
     },
     {
       id: "video-jobs",
       eyebrow: "Video jobs",
-      count: listVideoJobs().length,
+      count: videoJobs.length,
       body: "Gameplay and recap automation checkpoints"
     },
     {
       id: "sources",
       eyebrow: "Sources",
-      count: listSources().length,
+      count: sources.length,
       body: "Tracked feeds and trust layer"
     },
     {
       id: "discover",
       eyebrow: "Discover",
-      count: listDiscoverItems().length,
+      count: discoverItems.length,
       body: "Curated open source, skills, sites, events, and contest registry"
     },
     {
       id: "assets",
       eyebrow: "Assets",
-      count: listAssetSlots().length,
+      count: assetSlots.length,
       body: "Placeholder slots and replacement specs"
     },
     {
       id: "review",
       eyebrow: "Review",
-      count: listReviewItems().length,
+      count: reviewItems.length,
       body: "Exception-only review candidates still waiting for operator judgment"
     }
   ];

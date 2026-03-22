@@ -24,6 +24,23 @@
 - ingest stack decision: done
 - source catalog v1: done
 - brief/discover dry-run worker: done
+- auto-safe live source fetch worker: done
+- local ingest spine snapshot worker: done
+- Supabase remote sync scripts: done
+- Supabase editorial draft sync: done
+- Supabase brief/discover read path: done
+- Supabase review/publish/exceptions read path realignment: done
+- Supabase RLS + lifecycle/retry/video metadata migration: done
+- Supabase legacy public cleanup backup + worker: done
+- watch folder worker (`fs.watch` + polling fallback): done
+- review decision / publish transition action handlers: done
+- classifier shadow trial scaffold: done
+- brief draft shadow trial scaffold: done
+- brief draft shadow trial: done
+- discover draft shadow trial scaffold: done
+- discover draft shadow trial: done
+- critic shadow trial scaffold: done
+- critic shadow trial: done
 - orchestration trial runbook: done
 - telegram-orchestrator contract: done
 - orchestration trial log template: done
@@ -32,7 +49,12 @@
 - token system: done
 - test harness: done
 - route-level design docs: in progress
-- frontend state hardening: pending
+- frontend CSS split (M1): done
+- frontend 3-state components (M2): done
+- frontend loading/error routes (M3): done
+- frontend typo/spacing/hierarchy (M4): done
+- frontend admin sidebar (M5): done
+- frontend state hardening: done
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
@@ -44,7 +66,7 @@
 
 ## Open Follow-ups
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
-- page-level loading/empty/error states need explicit implementation pass
+- page-level loading/empty/error states: implemented at route-group level ((public) + admin)
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
 - `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
 - `admin/video-jobs`는 이제 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영하는 scaffold 상태다
@@ -52,10 +74,30 @@
 - `docs/ref/VIDEO-WORKER-CONTRACT.md`가 watch folder -> auto analysis -> CapCut handoff -> parent review 계약을 정의한다
 - inbox의 `target_surface`는 이제 `review/publish/archive/discard` 다음 큐로 실제 파생되고, human exception 규칙은 review/exceptions에 반영된다
 - `npm run pipeline:brief-discover`로 non-video 파이프라인의 최소 dry-run을 실제로 돌릴 수 있다
-- ingest core SQL draft is added, but Supabase apply/verification is still pending
-- video job schema 확장 마이그레이션은 추가됐지만 Supabase apply/verification은 아직 pending
-- source/tool decision is fixed for v1; orchestration final choice remains pending and is tracked in `docs/status/DECISION-LOG.md`
-- stage-level shadow rules, integration contract, and log format are now fixed; actual trial execution is still pending
+- `npm run pipeline:live-fetch`로 `OpenAI News`, `Google AI Blog`, `GitHub Releases`를 실제로 fetch해서 기존 분류 입력 형태로 내릴 수 있다
+- `npm run pipeline:live-ingest`로 live fetch 결과를 로컬 snapshot의 `sources / ingest_runs / ingested_items / item_classifications` 구조로 저장할 수 있다
+- `npm run pipeline:supabase-migrate`, `npm run pipeline:supabase-sync`를 실제 Supabase에 실행했고 ingest/editorial spine이 새 lifecycle 스키마 기준으로 동기화됐다
+- `npm run pipeline:supabase-cleanup`이 legacy public 테이블/트리거/함수 백업을 생성했고, cleanup commit 후 allowlist 외 public legacy table이 제거됐다
+- Supabase sync는 schema-qualified upsert와 stable UUID mapping을 사용해 로컬 snapshot id를 원격 UUID 스키마에 맞춰 저장한다
+- Supabase editorial sync는 ingest 결과를 `brief_posts / discover_items / discover_actions / admin_reviews`로도 확장 저장한다
+- editorial lifecycle는 `review_status / scheduled_at / published_at`를 포함하고, retry/failure history는 `ingest_run_attempts / video_job_attempts`에 기록된다
+- backend `sources / runs / inbox / review / publish / exceptions` 조회는 이제 `SUPABASE_DB_URL`이 있으면 Supabase projection을 우선 읽고, 없거나 실패하면 live snapshot -> mock 순서로 fallback한다
+- review는 `admin_reviews`, publish는 editorial lifecycle + `video_jobs`, exceptions는 retryable attempt + blocked video row를 기준으로 읽는다
+- backend에는 `review:decision`과 `publish:action` CLI entrypoint가 추가돼 approve / changes requested / reject / schedule / publish transition을 바로 실행할 수 있다
+- backend `briefs / brief detail / discover registry` 조회도 이제 Supabase-first read path를 사용하고, 실제 확인 결과 `briefs 9 / discover 4`를 반환한다
+- video job schema는 raw metadata fields까지 Supabase에 적용됐고, 원본 blob은 DB 대신 local/NAS 보관 정책으로 고정했다
+- `OpenAI API Changelog`, `Anthropic Research`는 live source registry에 올려뒀지만 stable endpoint 확인 전까지 disabled 상태다
+- web도 같은 backend use case를 통해 Supabase-first read path를 소비한다
+- public `brief`, `brief/[slug]`, `radar`와 admin `briefs`, `discover`도 이제 Supabase editorial drafts를 읽는다
+- source/tool decision is fixed for v1; orchestration default mode is now fixed to `hybrid`
+- `classifier` shadow trial now has an official 40-sample Sonnet rerun logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- future Claude-side orchestrator executions are now pinned to `claude-sonnet-4-6`, and the Claude runner smoke test returned `SONNET_OK`
+- `brief draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- `discover draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- `critic` shadow trial now has an official 25-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- `telegram-orchestrator` activation boundary is now stage-scoped, so runtime `chat/router/search/memory` can stay local while stage pointers move independently
+- `telegram-orchestrator` stage pointer 4개가 모두 `claude-sonnet-4-6`로 활성화됐고 runtime `chat/router/search/memory`는 `mistral-small3.1`로 유지된다
+- 최종 orchestration 기본값은 `hybrid`로 채택됐다
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - remote push to `origin` is working in the current SSH-authenticated environment

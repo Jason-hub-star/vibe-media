@@ -1,0 +1,31 @@
+@media (max-width: 900px) {
+  .hero-grid,
+  .admin-layout,
+  .panel-grid,
+  .summary-grid,
+  .admin-grid,
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .source-row {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .source-row-meta {
+    justify-items: start;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .admin-sidebar .sidebar-nav {
+    display: none;
+  }
+
+  .admin-sidebar.sidebar-open .sidebar-nav {
+    display: flex;
+  }
+}

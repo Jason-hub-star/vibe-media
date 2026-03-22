@@ -2,12 +2,13 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { getAdminSession, setAdminSession } from "@/lib/admin-session";
 
 const adminLinks = [
-  { href: "/admin", label: "Overview" },
+  { href: "/admin", label: "Overview", exact: true },
   { href: "/admin/inbox", label: "Inbox" },
   { href: "/admin/briefs", label: "Brief review" },
   { href: "/admin/review", label: "Review" },
@@ -20,7 +21,7 @@ const adminLinks = [
   { href: "/admin/video-jobs", label: "Video jobs" },
   { href: "/admin/sources", label: "Sources" },
   { href: "/admin/assets", label: "Assets" }
-];
+] as const;
 
 export function AdminShell({
   title,
@@ -31,8 +32,15 @@ export function AdminShell({
   subtitle: string;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
   const [session, setSession] = useState(() => getAdminSession());
   const [draft, setDraft] = useState("operator");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  function isActive(item: (typeof adminLinks)[number]) {
+    if ("exact" in item && item.exact) return pathname === item.href;
+    return pathname.startsWith(item.href);
+  }
 
   if (!session) {
     return (
@@ -72,11 +80,26 @@ export function AdminShell({
 
   return (
     <div className="shell admin-layout">
-      <aside className="panel admin-sidebar">
-        <p className="eyebrow">Admin tools</p>
-        <nav className="admin-links">
+      <aside className={`panel admin-sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
+        <div className="row-between">
+          <p className="eyebrow">Admin tools</p>
+          <button
+            aria-label="Toggle sidebar"
+            className="sidebar-toggle"
+            onClick={() => setSidebarOpen((v) => !v)}
+            type="button"
+          >
+            {sidebarOpen ? "✕" : "☰"}
+          </button>
+        </div>
+        <nav className="sidebar-nav">
           {adminLinks.map((item) => (
-            <Link href={item.href} key={item.href}>
+            <Link
+              className={isActive(item) ? "sidebar-link active" : "sidebar-link"}
+              href={item.href}
+              key={item.href}
+              onClick={() => setSidebarOpen(false)}
+            >
               {item.label}
             </Link>
           ))}

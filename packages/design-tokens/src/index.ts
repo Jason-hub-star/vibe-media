@@ -34,6 +34,14 @@ export const spacingTokens = {
   radius: "20px"
 } as const;
 
+export const typeScale = {
+  h1: "clamp(1.6rem, 3.2vw, 2.4rem)",
+  h2: "clamp(1.1rem, 2vw, 1.5rem)",
+  h3: "clamp(0.9rem, 1.4vw, 1.1rem)",
+  small: "0.85rem",
+  caption: "0.76rem"
+} as const;
+
 export const stateTokens = {
   analysis_running: colorTokens.sky,
   capcut_pending: colorTokens.yellow,
@@ -96,5 +104,10 @@ export const rootCssVariables = `
     --space-section: ${spacingTokens.section};
     --space-gutter: ${spacingTokens.gutter};
     --radius-panel: ${spacingTokens.radius};
+    --type-h1: ${typeScale.h1};
+    --type-h2: ${typeScale.h2};
+    --type-h3: ${typeScale.h3};
+    --type-small: ${typeScale.small};
+    --type-caption: ${typeScale.caption};
   }
 `;
