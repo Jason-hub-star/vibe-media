@@ -1,6 +1,11 @@
 import { runLiveSourceFetch } from "../shared/live-source-fetch";
+import { materializeLiveIngestSnapshot, writeLiveIngestSnapshot } from "../shared/live-ingest-snapshot";
 
 const report = await runLiveSourceFetch();
+
+// Save snapshot so downstream workers (ingest, sync) can read without re-fetching
+const snapshot = materializeLiveIngestSnapshot(report);
+writeLiveIngestSnapshot(snapshot);
 
 console.log("VibeHub live source fetch");
 console.log(`performed at: ${report.performedAt}`);
