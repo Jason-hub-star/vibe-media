@@ -5,6 +5,7 @@ import { canMoveBriefStatus, canMoveVideoJobStatus } from "../src/shared/status-
 describe("admin status transition rules", () => {
   it("allows only the planned brief transitions", () => {
     expect(canMoveBriefStatus("draft", "review")).toBe(true);
+    expect(canMoveBriefStatus("draft", "scheduled")).toBe(true);
     expect(canMoveBriefStatus("draft", "published")).toBe(false);
   });
 

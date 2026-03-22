@@ -1,5 +1,10 @@
-import { publishQueueEntries } from "../../shared/mock-data";
+import { readLiveIngestSnapshot } from "../../shared/live-ingest-snapshot";
+import { readSupabaseProjectionBundle } from "../../shared/supabase-read-projections";
 
-export function listPublishQueue() {
-  return publishQueueEntries;
+export async function listPublishQueue() {
+  return (
+    (await readSupabaseProjectionBundle())?.publishQueueItems ??
+    readLiveIngestSnapshot()?.projections.publishQueueItems ??
+    []
+  );
 }

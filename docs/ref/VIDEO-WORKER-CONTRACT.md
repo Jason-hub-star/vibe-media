@@ -7,6 +7,8 @@
 ## Trigger
 - 새 원본 파일이 watch folder에 들어오면 `video_jobs`에 새 row를 만든다.
 - 최초 상태는 `raw_received`다.
+- 원본 파일 자체는 DB에 올리지 않는다.
+  - `video_jobs`에는 `raw_file_path`, `raw_file_size_bytes`, `raw_sha256`, `storage_tier` 같은 metadata만 저장한다.
 
 ## Required Steps
 1. `watch-folder intake`
@@ -54,5 +56,6 @@
 
 ## Implementation Boundary
 - 워커는 자동 분석과 상태 전이까지 담당한다.
+- 구현 기본은 `fs.watch`, fallback은 `fs.watchFile` + polling이다.
 - `CapCut`은 사람 편집자가 맡는다.
 - 최종 공개 승인과 타이밍은 부모 검수와 publish 정책이 맡는다.

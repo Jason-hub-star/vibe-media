@@ -13,6 +13,7 @@
     "test:e2e": "playwright test ../../apps/web/tests/e2e"
   },
   "dependencies": {
+    "@vibehub/backend": "0.1.0",
     "@vibehub/content-contracts": "0.1.0",
     "@vibehub/design-tokens": "0.1.0",
     "@vibehub/ui-patterns": "0.1.0",

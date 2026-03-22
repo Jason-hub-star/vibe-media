@@ -57,6 +57,12 @@
   gap: 1rem;
 }
 
+.admin-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .admin-grid {
   display: grid;
   gap: 1rem;
@@ -85,4 +91,89 @@
   color: var(--color-mint);
   font-size: var(--type-small);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.admin-table td {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* ── Sidebar group drawer ── */
+
+.sidebar-group {
+  margin-top: 0.35rem;
+}
+
+.sidebar-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--color-cream);
+  font-size: var(--type-small);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.sidebar-group-header:hover {
+  background: rgba(244, 238, 226, 0.06);
+}
+
+.sidebar-group-chevron {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+.sidebar-group-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-left: 0.5rem;
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 200ms ease, opacity 200ms ease;
+  opacity: 1;
+}
+
+.sidebar-group.collapsed .sidebar-group-links {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Queue Overview section ── */
+
+.admin-queue-overview {
+  margin-top: 1.5rem;
+}
+
+.admin-queue-overview .section-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin-bottom: 0.75rem;
+}
+
+.showcase-editor {
+  gap: 1rem;
+}
+
+.showcase-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: rgba(244, 238, 226, 0.82);
+  font-size: var(--type-small);
+}
+
+.showcase-toggle input {
+  accent-color: var(--color-orange);
 }

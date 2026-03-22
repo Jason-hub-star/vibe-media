@@ -1,5 +1,5 @@
-import { briefDetails } from "@/lib/mock-data";
+import { getBriefDetail as getBriefDetailBackend } from "@vibehub/backend";
 
-export function getBriefDetail(slug: string) {
-  return briefDetails.find((item) => item.slug === slug) ?? null;
+export async function getBriefDetail(slug: string) {
+  return getBriefDetailBackend(slug);
 }

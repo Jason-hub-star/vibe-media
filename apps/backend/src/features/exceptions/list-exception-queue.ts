@@ -1,5 +1,10 @@
-import { exceptionQueueEntries } from "../../shared/mock-data";
+import { readLiveIngestSnapshot } from "../../shared/live-ingest-snapshot";
+import { readSupabaseProjectionBundle } from "../../shared/supabase-read-projections";
 
-export function listExceptionQueue() {
-  return exceptionQueueEntries;
+export async function listExceptionQueue() {
+  return (
+    (await readSupabaseProjectionBundle())?.exceptionQueueItems ??
+    readLiveIngestSnapshot()?.projections.exceptionQueueItems ??
+    []
+  );
 }

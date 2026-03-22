@@ -1,5 +1,5 @@
 import { listReviewItems as listReviewItemsFromApi } from "../api/list-review-items";
 
-export function listReviewItems() {
+export async function listReviewItems() {
   return listReviewItemsFromApi();
 }

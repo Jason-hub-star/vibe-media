@@ -3,15 +3,32 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "pipeline:brief-discover": "tsx src/workers/run-brief-discover-cycle.ts"
+    "pipeline:brief-discover": "tsx src/workers/run-brief-discover-cycle.ts",
+    "pipeline:live-ingest": "tsx src/workers/run-live-ingest-spine.ts",
+    "pipeline:live-fetch": "tsx src/workers/run-live-source-fetch.ts",
+    "pipeline:supabase-cleanup": "tsx src/workers/run-supabase-cleanup.ts",
+    "pipeline:supabase-migrate": "tsx src/workers/run-supabase-migrations.ts",
+    "pipeline:supabase-sync": "tsx src/workers/run-supabase-live-ingest.ts",
+    "pipeline:daily": "tsx src/workers/run-daily-pipeline.ts",
+    "pipeline:watch-folder": "tsx src/workers/run-watch-folder-worker.ts",
+    "review:decision": "tsx src/workers/run-review-decision.ts",
+    "publish:action": "tsx src/workers/run-publish-action.ts",
+    "trial:classifier": "tsx src/workers/run-classifier-shadow-trial.ts",
+    "trial:brief-draft": "tsx src/workers/run-brief-draft-shadow-trial.ts",
+    "trial:discover-draft": "tsx src/workers/run-discover-draft-shadow-trial.ts",
+    "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",
-    "@vibehub/design-tokens": "0.1.0"
+    "@vibehub/design-tokens": "0.1.0",
+    "postgres": "^3.4.8"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

@@ -4,10 +4,17 @@ import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 import { DiscoverCard } from "@/features/discover/view/DiscoverCard";
+import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
+import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
+import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
-export default function RadarPage() {
-  const items = listDiscoverItems();
+export default async function RadarPage() {
+  const items = await listDiscoverItems();
+  const showcaseEntries = await listShowcaseEntries();
   const featured = items.filter((item) => item.highlighted);
+  const showcasePicks = showcaseEntries.filter(
+    (entry) => entry.featuredRadar && isPublishedShowcaseEntry(entry)
+  );
 
   return (
     <PageFrame>
@@ -21,6 +28,25 @@ export default function RadarPage() {
         </div>
         <PlaceholderArt alt="Radar hero placeholder" src="/placeholders/radar-hero-placeholder.svg" />
       </section>
+
+      <SectionBlock
+        eyebrow="Showcase picks"
+        sectionId="showcase-picks"
+        title="Curated vibe coding work in a sidecar lane, not mixed into the auto pipeline"
+      >
+        {showcasePicks.length === 0 ? (
+          <EmptyState
+            body="Manual showcase curation will surface here without changing the discovery automation spine."
+            title="No showcase picks yet"
+          />
+        ) : (
+          <div className="showcase-grid">
+            {showcasePicks.map((entry) => (
+              <ShowcaseCard entry={entry} key={entry.id} />
+            ))}
+          </div>
+        )}
+      </SectionBlock>
 
       <SectionBlock eyebrow="Featured picks" title="Fast paths into things worth opening, downloading, or tracking">
         {featured.length === 0 ? (

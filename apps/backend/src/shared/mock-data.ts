@@ -6,6 +6,7 @@ import type {
   InboxItem,
   IngestRun,
   PublishQueueItem,
+  ShowcaseEntry,
   SourceEntry
 } from "@vibehub/content-contracts";
 import { assetSlots } from "@vibehub/design-tokens";
@@ -269,6 +270,79 @@ export const discoverEntries: DiscoverItem[] = [
     actions: [
       { kind: "visit", label: "Guides", href: "https://modelcontextprotocol.io/" }
     ]
+  }
+];
+
+export const showcaseEntries: ShowcaseEntry[] = [
+  {
+    id: "showcase-editorial-sidecar-lane",
+    slug: "editorial-sidecar-lane",
+    title: "Editorial Sidecar Lane",
+    summary: "자동 뉴스 파이프라인을 건드리지 않고 전시 경험만 옆 레인으로 얹는 운영형 쇼케이스입니다.",
+    body: [
+      "이 전시는 brief/discover 자동화 본선을 유지한 채, 수동 큐레이션만 담는 별도 showcase 레인을 실험합니다.",
+      "핵심은 홈 티저와 Radar 전시 묶음이 브랜드 감각을 더하되 파이프라인 의미를 흐리지 않는지 검증하는 것입니다."
+    ],
+    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    tags: ["showcase", "operations", "editorial"],
+    primaryLink: {
+      kind: "demo",
+      label: "Read overview",
+      href: "/radar#showcase-picks"
+    },
+    links: [
+      {
+        kind: "brief",
+        label: "Related brief",
+        href: "/brief/gemini-stitch-sdk-workflow"
+      }
+    ],
+    reviewStatus: "approved",
+    scheduledAt: null,
+    publishedAt: "2026-03-22T09:00:00.000Z",
+    origin: "editorial",
+    createdBy: "operator",
+    submittedBy: null,
+    authorLabel: "VibeHub Curation",
+    sourceDiscoverItemId: "discover-stitch-sdk",
+    featuredHome: true,
+    featuredRadar: true,
+    displayOrder: 1
+  },
+  {
+    id: "showcase-radar-booth-pattern",
+    slug: "radar-booth-pattern",
+    title: "Radar Booth Pattern",
+    summary: "외부 링크 큐레이션을 부스처럼 배치해 바이브코딩 작품을 자연스럽게 둘러보게 만드는 카드 패턴입니다.",
+    body: [
+      "카드는 대표 비주얼, 짧은 설명, 빠른 CTA만 남기고, 커뮤니티 기능은 과감히 제거했습니다.",
+      "이 패턴은 나중에 로그인 기반 사용자 제출이 들어와도 같은 레이아웃 위에서 author 메타데이터만 optional하게 추가할 수 있습니다."
+    ],
+    coverAsset: "/sprites/orbit-grid.svg",
+    tags: ["showcase", "radar", "ui"],
+    primaryLink: {
+      kind: "demo",
+      label: "Open radar picks",
+      href: "/radar#showcase-picks"
+    },
+    links: [
+      {
+        kind: "docs",
+        label: "Design notes",
+        href: "https://github.com/google-labs-code/stitch-sdk"
+      }
+    ],
+    reviewStatus: "approved",
+    scheduledAt: null,
+    publishedAt: "2026-03-22T09:30:00.000Z",
+    origin: "editorial",
+    createdBy: "operator",
+    submittedBy: null,
+    authorLabel: "VibeHub Lab",
+    sourceDiscoverItemId: "discover-openai-api",
+    featuredHome: true,
+    featuredRadar: true,
+    displayOrder: 2
   }
 ];
 

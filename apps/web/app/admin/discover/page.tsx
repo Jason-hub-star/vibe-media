@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 import { DiscoverRegistryTable } from "@/features/discover/view/DiscoverRegistryTable";
 
-export default function AdminDiscoverPage() {
-  const items = listDiscoverItems();
+export default async function AdminDiscoverPage() {
+  const items = await listDiscoverItems();
 
   return (
     <AdminShell

@@ -10,6 +10,19 @@
   "scripts": {
     "dev:web": "npm run dev -w @vibehub/web",
     "pipeline:brief-discover": "npm run pipeline:brief-discover -w @vibehub/backend",
+    "pipeline:daily": "npm run pipeline:daily -w @vibehub/backend",
+    "pipeline:live-ingest": "npm run pipeline:live-ingest -w @vibehub/backend",
+    "pipeline:live-fetch": "npm run pipeline:live-fetch -w @vibehub/backend",
+    "pipeline:supabase-cleanup": "npm run pipeline:supabase-cleanup -w @vibehub/backend",
+    "pipeline:supabase-migrate": "npm run pipeline:supabase-migrate -w @vibehub/backend",
+    "pipeline:supabase-sync": "npm run pipeline:supabase-sync -w @vibehub/backend",
+    "pipeline:watch-folder": "npm run pipeline:watch-folder -w @vibehub/backend",
+    "review:decision": "npm run review:decision -w @vibehub/backend",
+    "publish:action": "npm run publish:action -w @vibehub/backend",
+    "trial:classifier": "npm run trial:classifier -w @vibehub/backend",
+    "trial:brief-draft": "npm run trial:brief-draft -w @vibehub/backend",
+    "trial:discover-draft": "npm run trial:discover-draft -w @vibehub/backend",
+    "trial:critic": "npm run trial:critic -w @vibehub/backend",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -23,5 +36,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.10.1"
   }
 }

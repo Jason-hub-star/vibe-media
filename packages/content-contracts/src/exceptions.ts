@@ -14,4 +14,5 @@ export interface ExceptionQueueItem {
   confidence: number;
   sourceLabel: string;
   nextAction: string;
+  retryable?: boolean;
 }

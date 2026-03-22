@@ -6,5 +6,6 @@ export * from "./inbox";
 export * from "./publish";
 export * from "./review";
 export * from "./runs";
+export * from "./showcase";
 export * from "./sources";
 export * from "./video-jobs";

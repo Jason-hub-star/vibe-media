@@ -1,5 +1,10 @@
-import { reviewEntries } from "../../shared/mock-data";
+import { readLiveIngestSnapshot } from "../../shared/live-ingest-snapshot";
+import { readSupabaseProjectionBundle } from "../../shared/supabase-read-projections";
 
-export function listReviewItems() {
-  return reviewEntries;
+export async function listReviewItems() {
+  return (
+    (await readSupabaseProjectionBundle())?.reviewItems ??
+    readLiveIngestSnapshot()?.projections.reviewItems ??
+    []
+  );
 }

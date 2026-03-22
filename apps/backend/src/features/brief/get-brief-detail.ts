@@ -1,5 +1,5 @@
-import { briefDetails } from "../../shared/mock-data";
+import { getSupabaseBriefDetail } from "../../shared/supabase-editorial-read";
 
-export function getBriefDetail(slug: string) {
-  return briefDetails.find((item) => item.slug === slug) ?? null;
+export async function getBriefDetail(slug: string) {
+  return (await getSupabaseBriefDetail(slug)) ?? null;
 }

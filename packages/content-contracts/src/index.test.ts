@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { BriefListItem, DiscoverItem, ExceptionQueueItem, PublishQueueItem, VideoJob } from "./index";
+import type {
+  BriefListItem,
+  DiscoverItem,
+  ExceptionQueueItem,
+  PublishQueueItem,
+  ShowcaseEntry,
+  VideoJob
+} from "./index";
 
 describe("shared contract shapes", () => {
   it("accepts a valid brief list item", () => {
@@ -64,6 +71,43 @@ describe("shared contract shapes", () => {
     };
 
     expect(item.queueStatus).toBe("uploaded_private");
+  });
+
+  it("accepts a valid showcase entry", () => {
+    const item: ShowcaseEntry = {
+      id: "showcase-1",
+      slug: "multi-agent-editorial-console",
+      title: "Multi-agent editorial console",
+      summary: "운영 파이프라인을 해치지 않고 전시 레인을 붙이는 관리형 프론트엔드 실험입니다.",
+      body: ["첫 공개는 홈 티저와 Radar 전시 묶음부터 시작합니다."],
+      coverAsset: "/placeholders/source-strip-placeholder.svg",
+      tags: ["showcase", "agents", "editorial"],
+      primaryLink: {
+        kind: "demo",
+        label: "Open demo",
+        href: "https://example.com/demo"
+      },
+      links: [
+        {
+          kind: "github",
+          label: "GitHub",
+          href: "https://github.com/example/repo"
+        }
+      ],
+      reviewStatus: "approved",
+      scheduledAt: null,
+      publishedAt: "2026-03-22T09:00:00.000Z",
+      origin: "editorial",
+      createdBy: "operator",
+      submittedBy: null,
+      authorLabel: "VibeHub Curation",
+      sourceDiscoverItemId: null,
+      featuredHome: true,
+      featuredRadar: true,
+      displayOrder: 1
+    };
+
+    expect(item.origin).toBe("editorial");
   });
 
   it("accepts a valid exception queue item", () => {

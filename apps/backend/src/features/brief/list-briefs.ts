@@ -1,5 +1,7 @@
-import { briefDetails } from "../../shared/mock-data";
+import { listSupabaseBriefs } from "../../shared/supabase-editorial-read";
 
-export function listBriefs() {
-  return briefDetails.map(({ body, sourceLinks, ...item }) => item);
+export async function listBriefs() {
+  const remote = await listSupabaseBriefs();
+
+  return remote?.map(({ body, sourceLinks, ...item }) => item) ?? [];
 }

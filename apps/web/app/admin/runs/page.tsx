@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { listRuns } from "@/features/runs/use-case/list-runs";
 import { RunTable } from "@/features/runs/view/RunTable";
 
-export default function AdminRunsPage() {
-  const runs = listRuns();
+export default async function AdminRunsPage() {
+  const runs = await listRuns();
 
   return (
     <AdminShell

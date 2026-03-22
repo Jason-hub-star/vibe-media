@@ -1,5 +1,5 @@
-import { exceptionQueueItems } from "@/lib/mock-data";
+import { listExceptionQueue as listExceptionQueueBackend } from "@vibehub/backend";
 
-export function listExceptionQueue() {
-  return exceptionQueueItems;
+export async function listExceptionQueue() {
+  return listExceptionQueueBackend();
 }

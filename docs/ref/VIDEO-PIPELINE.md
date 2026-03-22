@@ -3,6 +3,10 @@
 ## Goal
 - 게임 녹화 원본을 내부 `video_jobs` 파이프라인으로 흘려 보내고, 자동 초벌 편집 뒤 `CapCut` 후보정을 거쳐 부모 검수 후 `private upload`까지 밀어 올린다.
 - 이 흐름은 공개 비디오 피드가 아니라 운영자 전용 내부 워크플로다.
+- 원본 비디오는 Supabase DB에 저장하지 않는다.
+  - raw video: local disk 또는 NAS
+  - DB: metadata only
+  - remote storage: proxy / preview / transcript / final export
 
 ## Core Flow
 1. `raw capture`
@@ -55,6 +59,10 @@
 - `status`
 - `asset_link_state`
 - `transcript_state`
+- `raw_file_path`
+- `raw_file_size_bytes`
+- `raw_sha256`
+- `storage_tier`
 - `highlight_count`
 - `risky_segment_count`
 - `exception_reason`

@@ -1,5 +1,5 @@
 import { listRuns as listRunsFromApi } from "../api/list-runs";
 
-export function listRuns() {
+export async function listRuns() {
   return listRunsFromApi();
 }

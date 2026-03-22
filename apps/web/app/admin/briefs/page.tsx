@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { AdminBriefTable } from "@/features/admin-briefs/view/AdminBriefTable";
 import { listBriefs } from "@/features/admin-briefs/use-case/list-briefs";
 
-export default function AdminBriefsPage() {
-  const briefs = listBriefs();
+export default async function AdminBriefsPage() {
+  const briefs = await listBriefs();
 
   return (
     <AdminShell

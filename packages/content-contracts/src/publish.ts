@@ -1,4 +1,10 @@
-export type PublishQueueStatus = "scheduled" | "upload_ready" | "uploaded_private" | "policy_hold";
+export type PublishQueueStatus =
+  | "approved"
+  | "scheduled"
+  | "published"
+  | "upload_ready"
+  | "uploaded_private"
+  | "policy_hold";
 export type PublishTargetType = "brief" | "discover" | "video";
 
 export interface PublishQueueItem {

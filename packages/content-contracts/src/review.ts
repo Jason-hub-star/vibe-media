@@ -1,5 +1,7 @@
 import type { InboxTargetSurface } from "./inbox";
 
+export type ReviewStatus = "pending" | "approved" | "changes_requested" | "rejected";
+
 export interface ReviewItem {
   id: string;
   sourceItemId: string;
@@ -13,4 +15,5 @@ export interface ReviewItem {
   confidence: number;
   previewTitle: string;
   previewSummary: string;
+  reviewStatus?: ReviewStatus;
 }

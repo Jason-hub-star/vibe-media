@@ -1,6 +1,7 @@
 import type { PublishQueueItem } from "@vibehub/content-contracts";
 
 import { presentPublishWindow } from "../presenter/present-publish-window";
+import { PublishActionCell } from "./PublishActionCell";
 
 export function PublishQueueTable({ items }: { items: PublishQueueItem[] }) {
   return (
@@ -13,6 +14,7 @@ export function PublishQueueTable({ items }: { items: PublishQueueItem[] }) {
             <th>Queue state</th>
             <th>Window</th>
             <th>Next action</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +32,13 @@ export function PublishQueueTable({ items }: { items: PublishQueueItem[] }) {
               </td>
               <td>{presentPublishWindow(item.scheduledFor)}</td>
               <td>{item.nextAction}</td>
+              <td>
+                <PublishActionCell
+                  itemId={item.id}
+                  targetType={item.targetType}
+                  queueStatus={item.queueStatus}
+                />
+              </td>
             </tr>
           ))}
         </tbody>

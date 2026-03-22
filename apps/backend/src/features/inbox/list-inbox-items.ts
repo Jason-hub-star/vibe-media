@@ -1,5 +1,10 @@
-import { inboxEntries } from "../../shared/mock-data";
+import { readLiveIngestSnapshot } from "../../shared/live-ingest-snapshot";
+import { readSupabaseProjectionBundle } from "../../shared/supabase-read-projections";
 
-export function listInboxItems() {
-  return inboxEntries;
+export async function listInboxItems() {
+  return (
+    (await readSupabaseProjectionBundle())?.inboxItems ??
+    readLiveIngestSnapshot()?.projections.inboxItems ??
+    []
+  );
 }

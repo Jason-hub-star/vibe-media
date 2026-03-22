@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { listReviewItems } from "@/features/review/use-case/list-review-items";
 import { ReviewWorkbench } from "@/features/review/view/ReviewWorkbench";
 
-export default function AdminReviewPage() {
-  const items = listReviewItems();
+export default async function AdminReviewPage() {
+  const items = await listReviewItems();
 
   return (
     <AdminShell
@@ -22,7 +22,7 @@ export default function AdminReviewPage() {
             <section className="stack-tight" key={item.id}>
               <div className="row-between">
                 <div className="stack-tight">
-                  <p className="eyebrow">Queue item {index + 1}</p>
+                  <p className="eyebrow">{item.sourceLabel ?? `#${index + 1}`}</p>
                   <h2>{item.previewTitle}</h2>
                 </div>
                 <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>

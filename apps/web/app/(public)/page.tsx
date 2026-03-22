@@ -6,18 +6,25 @@ import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { BriefCard } from "@/features/brief/view/BriefCard";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
+import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
+import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
+import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
-export default function HomePage() {
-  const briefs = listBriefs();
+export default async function HomePage() {
+  const briefs = await listBriefs();
+  const showcaseEntries = await listShowcaseEntries();
+  const homeShowcase = showcaseEntries.filter(
+    (entry) => entry.featuredHome && isPublishedShowcaseEntry(entry)
+  );
 
   return (
     <PageFrame>
       <section className="shell hero-grid">
         <div className="stack-tight">
-          <p className="eyebrow">AI brief hub</p>
-          <h1>Operator-first AI publishing hub for VibeHub.</h1>
+          <p className="eyebrow">AI Brief Hub</p>
+          <h1>AI 뉴스를 빠르게, 한국어 브리프로.</h1>
           <p className="muted">
-            최신 AI 소스를 한국어 브리프로 정리하고, 운영 툴은 별도 admin cockpit에서 관리합니다.
+            글로벌 AI 소스를 매일 정리해 핵심만 전달합니다.
           </p>
           <div className="button-row">
             <Link className="button-primary" href="/brief">
@@ -32,20 +39,20 @@ export default function HomePage() {
           </div>
           <div className="panel-grid">
             <article className="panel stack-tight">
-              <p className="eyebrow">Structure</p>
-              <p>Expedition-style shell refined for editorial clarity.</p>
+              <p className="eyebrow">매일 업데이트</p>
+              <p>글로벌 AI 뉴스를 매일 선별해 한국어 브리프로 발행합니다.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">Assets</p>
-              <p>Every image slot starts as a named placeholder for later replacement.</p>
+              <p className="eyebrow">출처 투명 공개</p>
+              <p>모든 브리프에 원문 링크와 출처를 함께 제공합니다.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">Admin</p>
-              <p>Video jobs live behind admin, not in the public navigation.</p>
+              <p className="eyebrow">오픈소스·이벤트 발견</p>
+              <p>새로운 도구, 이벤트, 오픈소스 프로젝트를 Radar에서 탐색하세요.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">Radar</p>
-              <p>Open source, skills, events, and tool launches can expand into a public discovery layer.</p>
+              <p className="eyebrow">빠른 액션 링크</p>
+              <p>GitHub, 공식 문서, 다운로드로 바로 이동할 수 있습니다.</p>
             </article>
           </div>
         </div>
@@ -58,6 +65,34 @@ export default function HomePage() {
             <BriefCard brief={brief} key={brief.slug} />
           ))}
         </div>
+      </SectionBlock>
+
+      <SectionBlock eyebrow="Showcase lane" title="Vibe coding work that sits beside the brief engine">
+        {homeShowcase.length === 0 ? (
+          <article className="panel stack-tight">
+            <p className="eyebrow">Sidecar lane</p>
+            <p className="muted">
+              Showcase picks will appear here after the first manual curation pass.
+            </p>
+          </article>
+        ) : (
+          <div className="showcase-grid">
+            {homeShowcase.slice(0, 2).map((entry) => (
+              <ShowcaseCard entry={entry} key={entry.id} />
+            ))}
+          </div>
+        )}
+        <article className="panel stack-tight">
+          <p className="eyebrow">Why it fits</p>
+          <p className="muted">
+            작품 전시는 자동 뉴스 파이프라인이 아니라 별도 sidecar lane으로 운영해, briefs와 radar의 본선 의미를 흐리지 않습니다.
+          </p>
+          <div className="button-row">
+            <Link className="button-secondary" href="/radar#showcase-picks">
+              View showcase picks
+            </Link>
+          </div>
+        </article>
       </SectionBlock>
 
       <SectionBlock eyebrow="Custom assets" title="Brand-led visuals, not generic AI website gloss">

@@ -1,5 +1,5 @@
 import { listDiscoverItems as listDiscoverItemsApi } from "../api/list-discover-items";
 
-export function listDiscoverItems() {
+export async function listDiscoverItems() {
   return listDiscoverItemsApi();
 }

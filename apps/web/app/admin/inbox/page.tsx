@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { InboxTable } from "@/features/inbox/view/InboxTable";
 import { listInboxItems } from "@/features/inbox/use-case/list-inbox-items";
 
-export default function AdminInboxPage() {
-  const items = listInboxItems();
+export default async function AdminInboxPage() {
+  const items = await listInboxItems();
 
   return (
     <AdminShell

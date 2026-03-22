@@ -1,5 +1,5 @@
-import { inboxItems } from "@/lib/mock-data";
+import { listInboxItems as listInboxItemsBackend } from "@vibehub/backend";
 
-export function listInboxItems() {
-  return inboxItems;
+export async function listInboxItems() {
+  return listInboxItemsBackend();
 }

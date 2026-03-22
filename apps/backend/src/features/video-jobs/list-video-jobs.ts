@@ -1,5 +1,5 @@
-import { videoJobs } from "../../shared/mock-data";
+import { listSupabaseVideoJobs } from "../../shared/supabase-video-jobs";
 
-export function listVideoJobs() {
-  return videoJobs;
+export async function listVideoJobs() {
+  return (await listSupabaseVideoJobs()) ?? [];
 }

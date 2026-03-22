@@ -25,7 +25,8 @@ export const colorTokens = {
 
 export const typographyTokens = {
   display: "var(--font-display)",
-  body: "var(--font-body)"
+  body: "var(--font-body)",
+  mono: "ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', Menlo, monospace"
 } as const;
 
 export const spacingTokens = {
@@ -109,5 +110,6 @@ export const rootCssVariables = `
     --type-h3: ${typeScale.h3};
     --type-small: ${typeScale.small};
     --type-caption: ${typeScale.caption};
+    --font-mono: ${typographyTokens.mono};
   }
 `;

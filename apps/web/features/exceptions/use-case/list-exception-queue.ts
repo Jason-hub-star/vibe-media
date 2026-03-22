@@ -1,5 +1,5 @@
 import { listExceptionQueue as listExceptionQueueFromApi } from "../api/list-exception-queue";
 
-export function listExceptionQueue() {
+export async function listExceptionQueue() {
   return listExceptionQueueFromApi();
 }

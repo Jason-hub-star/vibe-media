@@ -1,5 +1,5 @@
-import { discoverItems } from "@/lib/mock-data";
+import { listDiscoverItems as listDiscoverItemsBackend } from "@vibehub/backend";
 
-export function listDiscoverItems() {
-  return discoverItems;
+export async function listDiscoverItems() {
+  return listDiscoverItemsBackend();
 }

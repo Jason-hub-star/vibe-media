@@ -29,6 +29,19 @@
 - [x] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
 - [x] `video_jobs`를 publish queue / exceptions와 연결
 - [x] `Brief + Discover` dry-run worker를 실제 실행 가능한 스크립트로 추가
+- [x] `auto-safe` live source fetch worker 추가
+- [x] live fetch 결과를 로컬 ingest spine snapshot에 저장
+- [x] Supabase remote migrate/sync 스크립트 준비
+- [x] brief/discover editorial draft 테이블 스키마 추가
+- [x] ingest 결과를 brief/discover/admin review 원격 테이블로 확장 저장
+- [x] editorial lifecycle 컬럼과 retry/failure attempt 테이블 추가
+- [x] media public tables RLS enable
+- [x] legacy public table SQL backup + cleanup worker 추가
+- [x] `admin_reviews` / editorial lifecycle / blocked video 기준 Supabase read projection 전환
+- [x] `watch folder` 워커 실제 구현 (`fs.watch` + `fs.watchFile` fallback)
+- [x] review decision / publish transition backend action handler 추가
+- [x] pipeline → UI end-to-end 검증 (pipeline-to-ui.spec.ts 8 tests)
+- [x] Supabase query timeout 보호 (connect_timeout + Promise.race 15s)
 
 ## P1 — LLM / Orchestration
 - [x] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
@@ -37,9 +50,17 @@
 - [x] `discover draft` shadow 비교 규칙 문서화
 - [x] `critic` shadow 비교 규칙 문서화
 - [x] `telegram-orchestrator`와 VibeHub 연동 계약 정리
+- [x] `telegram-orchestrator` activation 경계를 role/stage로 분리
 - [x] 로컬/Claude/hybrid 실험 로그 포맷 정의
-- [ ] 첫 stage shadow trial 실행
-- [ ] first promote / keep-active decision 기록
+- [x] `classifier` fixture-backed shadow trial 실행기 추가
+- [x] `brief draft` fixture-backed shadow trial 실행기 추가
+- [x] `discover draft` fixture-backed shadow trial 실행기 추가
+- [x] `critic` fixture-backed shadow trial 실행기 추가
+- [x] 첫 stage shadow trial 실행
+- [x] first promote / keep-active decision 기록
+- [x] classifier stage pointer activate
+- [x] `brief draft` / `discover draft` / `critic` stage pointer activate
+- [x] orchestration 기본값을 `hybrid`로 확정
 
 ## P1 — Source Research
 - [x] 수집기 후보 조사
@@ -49,8 +70,11 @@
 - [x] fallback 정책 확정
 
 ## P2 — Frontend / UX
-- [ ] page-level loading/empty/error 상태 강화
+- [x] public UX 내부 용어 제거 + 사용자 언어 전환 (hero/패널/status/footer/newsletter)
+- [x] showcase sidecar lane foundation (`/` teaser + `/radar` picks + `/admin/showcase`)
+- [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, 개별 page-level은 미완)
 - [ ] `brief` / `radar` / `sources` 위계와 간격 품질 패스
+- [x] review / publish mutation 버튼 (Server Actions)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
@@ -64,6 +88,7 @@
 
 ## P3 — Hardening
 - [ ] admin 실제 인증/권한 모델 설계
+- [ ] showcase submission/auth flow 설계
 - [ ] observability / failure alert 설계
 - [ ] retry / rollback / blocked 승격 정책 구체화
 - [ ] publish policy와 YouTube 메타데이터 규칙 정교화
@@ -77,16 +102,28 @@
 - [x] LLM 병행 오케스트레이션 문서
 - [x] video pipeline SSOT + `video_jobs` 상태 모델
 - [x] video worker contract + queue routing
-- [ ] 파이프라인 실제 구현
+- [x] 파이프라인 실제 구현
+- [x] live fetch 결과를 Supabase ingest spine에 저장
+- [x] backend/admin read path를 Supabase-first fallback 구조로 연결
+- [x] brief/discover read path를 Supabase-first 구조로 연결
 - [x] `Brief + Discover` dry-run 실행기
-- [ ] Supabase SQL 실제 구현
-- [ ] admin 파이프라인 화면 실제 구현
+- [x] Supabase SQL 실제 구현
+- [x] admin 파이프라인 화면 실제 구현
+- [x] admin sidebar 서랍 그룹화 (Pipeline / Editorial / Registry / Reference)
+- [x] Pipeline Monitor를 `/admin` 메인 페이지로 승격 (`/admin/pipeline` redirect)
+- [x] 노드 클릭 상세 패널, 실행 결과 요약, 실행 이력 (localStorage)
+- [x] Source reliability 자기개선 패널
+- [x] Telegram pipeline report module
+- [x] daily pipeline automation script + cron
+- [x] Source 확장 전략 문서 (`docs/ref/SOURCE-EXPANSION-STRATEGY.md`)
+- [x] `/self-review` 커스텀 명령어
 - [x] source/tool 최종 채택
-- [ ] orchestration 최종 채택
+- [x] orchestration 최종 채택
 
 ## Recommended Next Sequence
-1. `P1 LLM / Orchestration` 실험표와 비교 로그를 먼저 진행한다.
-2. `watch folder` 워커를 실제 파일 감지 파이프라인으로 구현한다.
-3. 파이프라인 골격이 더 열리면 `P2 Frontend / UX`를 진행한다.
-4. Claude가 public/admin 프론트 품질 고도화를 진행한다.
-5. 마지막에 `P3 Hardening`으로 들어간다.
+1. ~~review / publish mutation과 schedule/publish action handler를 닫는다.~~ done
+2. **루트 env 기반 Supabase 연결 end-to-end 검증 유지** — mutation 버튼과 read path 모두 Supabase 연결이 필요하다. 새 머신에서 env 파일이 없으면 read는 local snapshot → mock fallback, mutation은 실행 불가.
+3. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
+4. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
+5. observability / rollback / storage cleanup routine을 운영 문서와 함께 닫는다.
+6. 프론트엔드 polish와 empty/loading/error 강화는 별도 트랙으로 진행한다.

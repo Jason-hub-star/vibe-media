@@ -1,5 +1,5 @@
 import { listInboxItems as listInboxItemsFromApi } from "../api/list-inbox-items";
 
-export function listInboxItems() {
+export async function listInboxItems() {
   return listInboxItemsFromApi();
 }

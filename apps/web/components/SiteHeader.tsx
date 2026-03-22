@@ -6,8 +6,7 @@ const navItems = [
   { href: "/brief", label: "Brief" },
   { href: "/radar", label: "Radar" },
   { href: "/sources", label: "Sources" },
-  { href: "/newsletter", label: "Newsletter" },
-  { href: "/admin", label: "Admin" }
+  { href: "/newsletter", label: "Newsletter" }
 ];
 
 export function SiteHeader() {

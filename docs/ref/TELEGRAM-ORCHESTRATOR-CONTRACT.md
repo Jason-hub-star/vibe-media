@@ -14,8 +14,8 @@
 - eval / shadow / activate / rollback command
   - `/model-eval <model>`
   - `/model-shadow <model>`
-  - `/model-activate <model>`
-  - `/model-rollback <role>`
+  - `/model-activate <model> [targets]`
+  - `/model-rollback [targets]`
 - drift guard
   - p95 latency
   - remote delegation rate
@@ -96,7 +96,7 @@
 4. stage별 shadow 시작
 5. `docs/status/ORCHESTRATION-TRIAL-LOG.md`에 결과 기록
 6. promote 조건 충족 시 `/model-activate <model>`
-7. drift guard 위반 시 `/model-rollback <role>`
+7. drift guard 위반 시 `/model-rollback [targets]`
 
 ## Guardrails
 - eval pass 전 shadow 금지
@@ -116,7 +116,19 @@
   - `rollback_trigger`
 
 ## Default Mode
-- 현재 기본 후보는 `hybrid`
+- 최종 운영 기본값은 `hybrid`
 - 기본 active:
-  - `router/search/memory`: local
-  - `classifier/brief/discover/critic`: conservative active + shadow comparison
+  - `chat/router/search/memory`: `mistral-small3.1`
+  - `classifier`: `claude-sonnet-4-6`
+  - `brief draft`: `claude-sonnet-4-6`
+  - `discover draft`: `claude-sonnet-4-6`
+  - `critic`: `claude-sonnet-4-6`
+
+## Activation Boundary
+- `router/search/memory`는 role activation 대상으로 유지한다.
+- `classifier`, `brief draft`, `discover draft`, `critic`는 stage pointer activation 대상으로 분리한다.
+- stage pointer activation은 runtime chat/search/memory active를 바꾸지 않는다.
+- automatic rollback monitor는 runtime role activation에서만 켠다.
+- 현재 상태:
+  - runtime role active는 `mistral-small3.1`
+  - stage pointer 4개는 모두 `claude-sonnet-4-6`

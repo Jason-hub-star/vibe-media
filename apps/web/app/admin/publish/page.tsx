@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { listPublishQueue } from "@/features/publish/use-case/list-publish-queue";
 import { PublishQueueTable } from "@/features/publish/view/PublishQueueTable";
 
-export default function AdminPublishPage() {
-  const items = listPublishQueue();
+export default async function AdminPublishPage() {
+  const items = await listPublishQueue();
 
   return (
     <AdminShell

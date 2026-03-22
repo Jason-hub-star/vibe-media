@@ -1,5 +1,5 @@
-import { ingestRuns } from "@/lib/mock-data";
+import { listRuns as listRunsBackend } from "@vibehub/backend";
 
-export function listRuns() {
-  return ingestRuns;
+export async function listRuns() {
+  return listRunsBackend();
 }

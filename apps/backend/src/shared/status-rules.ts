@@ -1,7 +1,7 @@
 import type { BriefStatus, VideoJobStatus } from "@vibehub/content-contracts";
 
 const briefTransitions: Record<BriefStatus, BriefStatus[]> = {
-  draft: ["review"],
+  draft: ["review", "scheduled"],
   review: ["scheduled", "draft"],
   scheduled: ["published", "review"],
   published: []

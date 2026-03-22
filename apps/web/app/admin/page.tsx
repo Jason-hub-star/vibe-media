@@ -9,6 +9,7 @@ import { listReviewItems } from "@/features/review/use-case/list-review-items";
 import { listRuns } from "@/features/runs/use-case/list-runs";
 import { listSources } from "@/features/sources/use-case/list-sources";
 import { listVideoJobs } from "@/features/video-jobs/use-case/list-video-jobs";
+import { PipelineMonitorClient } from "./pipeline/PipelineMonitorClient";
 
 export default async function AdminPage() {
   const [inboxItems, briefs, runs, publishQueue, exceptionQueue, sources, discoverItems, reviewItems, videoJobs, assetSlots] = await Promise.all([
@@ -89,20 +90,25 @@ export default async function AdminPage() {
 
   return (
     <AdminShell
-      subtitle="Review briefs, track video jobs, and prepare assets from one operator shell."
+      subtitle="Pipeline status and queue overview for the VibeHub editorial pipeline."
       title="VibeHub Admin"
     >
-      <div className="summary-grid">
-        {summaryCards.map((card) => (
-          <article className="panel stack-tight" key={card.id}>
-            <div className="row-between">
-              <p className="eyebrow">{card.eyebrow}</p>
-              <strong>{card.count}</strong>
-            </div>
-            <p>{card.body}</p>
-          </article>
-        ))}
-      </div>
+      <PipelineMonitorClient />
+
+      <section className="admin-queue-overview">
+        <h2 className="section-heading">Queue Overview</h2>
+        <div className="summary-grid">
+          {summaryCards.map((card) => (
+            <article className="panel stack-tight" key={card.id}>
+              <div className="row-between">
+                <p className="eyebrow">{card.eyebrow}</p>
+                <strong>{card.count}</strong>
+              </div>
+              <p>{card.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
     </AdminShell>
   );
 }

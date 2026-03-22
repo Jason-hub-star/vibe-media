@@ -55,14 +55,21 @@
 - frontend typo/spacing/hierarchy (M4): done
 - frontend admin sidebar (M5): done
 - frontend state hardening: done
+- admin review/publish mutation buttons (Server Actions): done
+- showcase sidecar lane foundation: done
+- public UX 내부 용어 제거 + 사용자 언어 전환: done
+- pipeline → UI end-to-end 검증: done
+- Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done
+- pipeline-to-ui E2E test suite (8 tests): done
+- `/pipeline-check` skill: done
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
 - `npm run lint`: pass
 - `npm run typecheck`: pass
 - `npm run build`: pass
-- `npm run test:unit`: last known pass
-- `npm run test:e2e`: last known pass
+- `npm run test:unit`: 33/34 pass (watch-folder-worker unique constraint 충돌 1건 — Supabase 기존 데이터와 idempotent 미충족, pre-existing)
+- `npm run test:e2e`: pipeline-to-ui 8/8 pass, public-ux 6/6 pass, admin-flow 일부 SSR timeout 간헐 발생 (Supabase 부하 의존)
 
 ## Open Follow-ups
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
@@ -84,6 +91,8 @@
 - backend `sources / runs / inbox / review / publish / exceptions` 조회는 이제 `SUPABASE_DB_URL`이 있으면 Supabase projection을 우선 읽고, 없거나 실패하면 live snapshot -> mock 순서로 fallback한다
 - review는 `admin_reviews`, publish는 editorial lifecycle + `video_jobs`, exceptions는 retryable attempt + blocked video row를 기준으로 읽는다
 - backend에는 `review:decision`과 `publish:action` CLI entrypoint가 추가돼 approve / changes requested / reject / schedule / publish transition을 바로 실행할 수 있다
+- admin UI에서도 review approve/changes_requested/reject, publish schedule/publish를 Server Action 버튼으로 직접 실행할 수 있다
+- exceptions는 "Send to review" backend가 아직 없으므로 기존 `nextAction` 텍스트 표시만 유지한다
 - backend `briefs / brief detail / discover registry` 조회도 이제 Supabase-first read path를 사용하고, 실제 확인 결과 `briefs 9 / discover 4`를 반환한다
 - video job schema는 raw metadata fields까지 Supabase에 적용됐고, 원본 blob은 DB 대신 local/NAS 보관 정책으로 고정했다
 - `OpenAI API Changelog`, `Anthropic Research`는 live source registry에 올려뒀지만 stable endpoint 확인 전까지 disabled 상태다
@@ -98,6 +107,21 @@
 - `telegram-orchestrator` activation boundary is now stage-scoped, so runtime `chat/router/search/memory` can stay local while stage pointers move independently
 - `telegram-orchestrator` stage pointer 4개가 모두 `claude-sonnet-4-6`로 활성화됐고 runtime `chat/router/search/memory`는 `mistral-small3.1`로 유지된다
 - 최종 orchestration 기본값은 `hybrid`로 채택됐다
+- admin pipeline UX overhaul (2026-03-22): done
+  - sidebar drawer를 Pipeline / Editorial / Registry / Reference 4개 그룹으로 재편
+  - Pipeline Monitor canvas를 `/admin` 메인 페이지로 승격 (`/admin/pipeline`은 redirect)
+  - node click detail panel, results summary, run history, source reliability panel 추가
+  - source expansion strategy 문서 생성
+  - Telegram pipeline report module 추가
+  - daily pipeline automation script + cron 설정
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
+- showcase는 홈 티저 + `/radar` 섹션 + `/admin/showcase`까지 구현됐고, ingest/classification/sync 본선과는 분리된 sidecar lane으로 유지된다
+- showcase의 로그인 기반 사용자 submission은 아직 미구현이며, 현재는 editorial-only manual curation으로 운영된다
 - remote push to `origin` is working in the current SSH-authenticated environment
+- 현재 workspace는 루트 env 파일에서 `SUPABASE_DB_URL`을 읽도록 연결돼 있다. 새 머신에서 env 파일이 없으면 read path는 local snapshot → mock fallback으로 동작하고, review/publish mutation은 Supabase 연결 없이 실행 불가하다.
+- `.env.local`에 `SUPABASE_ANON_KEY`와 `SUPABASE_SERVICE_ROLE_KEY`가 변수명과 함께 저장됨 (현재 backend 미사용, 향후 SSR auth 전환용)
+- `.env.example`에 anon key / service role key placeholder가 추가됨
+- Supabase read path에 `connect_timeout: 10s`, `idle_timeout: 20s`, `Promise.race` 15s 안전장치가 적용됐다
+- `pipeline-to-ui.spec.ts`로 파이프라인 데이터가 public/admin UI까지 전달되는지 E2E 자동 검증 가능
+- `/pipeline-check` 스킬로 fetch → ingest → sync → E2E 검증을 한번에 실행 가능

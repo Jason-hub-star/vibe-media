@@ -1,5 +1,5 @@
-import { reviewItems } from "@/lib/mock-data";
+import { listReviewItems as listReviewItemsBackend } from "@vibehub/backend";
 
-export function listReviewItems() {
-  return reviewItems;
+export async function listReviewItems() {
+  return listReviewItemsBackend();
 }

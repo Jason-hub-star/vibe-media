@@ -11,7 +11,7 @@ export default async function BriefDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const brief = getBriefDetail(slug);
+  const brief = await getBriefDetail(slug);
 
   if (!brief) {
     notFound();
@@ -19,7 +19,7 @@ export default async function BriefDetailPage({
 
   return (
     <PageFrame>
-      <SectionBlock eyebrow={brief.status} title={brief.title}>
+      <SectionBlock eyebrow={brief.publishedAt?.slice(0, 10) ?? "브리프"} title={brief.title}>
         <article className="panel stack-tight">
           <p className="muted">{brief.summary}</p>
           {brief.body.map((paragraph) => (

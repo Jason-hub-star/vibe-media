@@ -8,6 +8,7 @@
 ## Why Parallel Operation Is Allowed
 - 현재 `telegram-orchestrator`에는 아래 안전장치가 이미 구현되어 있다.
   - 역할별 active 포인터: `chat / router / search / memory`
+  - stage pointer: `classifier / brief-draft / discover-draft / critic`
   - `/model-eval`
   - `/model-shadow`
   - `/model-activate`

@@ -1,0 +1,772 @@
+{
+  "generatedAt": "2026-03-22T12:53:45.667Z",
+  "tables": {
+    "sources": [
+      {
+        "id": "source-616388d9c125",
+        "name": "OpenAI News",
+        "kind": "rss",
+        "base_url": "https://openai.com/news/",
+        "source_tier": "auto-safe",
+        "enabled": true,
+        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_failure_at": null,
+        "failure_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "source-ac035067e139",
+        "name": "Google AI Blog",
+        "kind": "rss",
+        "base_url": "https://blog.google/innovation-and-ai/technology/ai/",
+        "source_tier": "auto-safe",
+        "enabled": true,
+        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_failure_at": null,
+        "failure_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "source-df17efc53a21",
+        "name": "GitHub Releases",
+        "kind": "github-releases",
+        "base_url": "https://github.com/openai/openai-node/releases",
+        "source_tier": "auto-safe",
+        "enabled": true,
+        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_failure_at": null,
+        "failure_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "source-3a2941a186e8",
+        "name": "OpenAI API Changelog",
+        "kind": "rss",
+        "base_url": "https://platform.openai.com/docs/changelog",
+        "source_tier": "auto-safe",
+        "enabled": false,
+        "last_success_at": null,
+        "last_failure_at": null,
+        "failure_reason": "stable RSS/API endpoint not wired yet",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "source-62eed9aaa9d2",
+        "name": "Anthropic Research",
+        "kind": "rss",
+        "base_url": "https://www.anthropic.com/research",
+        "source_tier": "auto-safe",
+        "enabled": false,
+        "last_success_at": null,
+        "last_failure_at": null,
+        "failure_reason": "public RSS endpoint returned 404 during live fetch verification",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      }
+    ],
+    "ingest_runs": [
+      {
+        "id": "run-9a34da57f680",
+        "source_id": "source-616388d9c125",
+        "run_status": "drafted",
+        "started_at": "2026-03-22T12:53:45.667Z",
+        "finished_at": "2026-03-22T12:53:45.667Z",
+        "error_message": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "run-6fd96318081c",
+        "source_id": "source-ac035067e139",
+        "run_status": "drafted",
+        "started_at": "2026-03-22T12:53:45.667Z",
+        "finished_at": "2026-03-22T12:53:45.667Z",
+        "error_message": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "run-4da9971bf8c2",
+        "source_id": "source-df17efc53a21",
+        "run_status": "review",
+        "started_at": "2026-03-22T12:53:45.667Z",
+        "finished_at": "2026-03-22T12:53:45.667Z",
+        "error_message": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      }
+    ],
+    "ingested_items": [
+      {
+        "id": "live-openai-news-rss-fd3208099b",
+        "source_id": "source-616388d9c125",
+        "run_id": "run-9a34da57f680",
+        "title": "How we monitor internal coding agents for misalignment",
+        "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Thu, 19 Mar 2026 10:00:00 GMT",
+          "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+          "sourceId": "openai-news-rss"
+        },
+        "parsed_content": {
+          "summary": "How OpenAI uses chain-of-thought monitoring to study misalignment in internal coding agents—analyzing real-world deployments to detect risks and strengthen AI safety safeguards.",
+          "tags": [
+            "launch",
+            "release",
+            "ecosystem"
+          ]
+        },
+        "dedupe_key": "fd3208099b40794a1e134aa1aee1271a25df42be",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-openai-news-rss-625785a3d5",
+        "source_id": "source-616388d9c125",
+        "run_id": "run-9a34da57f680",
+        "title": "OpenAI to acquire Astral",
+        "url": "https://openai.com/index/openai-to-acquire-astral",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Thu, 19 Mar 2026 00:00:00 GMT",
+          "url": "https://openai.com/index/openai-to-acquire-astral",
+          "sourceId": "openai-news-rss"
+        },
+        "parsed_content": {
+          "summary": "Accelerates Codex growth to power the next generation of Python developer tools",
+          "tags": [
+            "launch",
+            "release",
+            "ecosystem"
+          ]
+        },
+        "dedupe_key": "625785a3d5f593f27a364382256cc02407505ebf",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-openai-news-rss-c3d41e5007",
+        "source_id": "source-616388d9c125",
+        "run_id": "run-9a34da57f680",
+        "title": "Introducing GPT-5.4 mini and nano",
+        "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Tue, 17 Mar 2026 10:00:00 GMT",
+          "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
+          "sourceId": "openai-news-rss"
+        },
+        "parsed_content": {
+          "summary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
+          "tags": [
+            "launch",
+            "release",
+            "ecosystem",
+            "api"
+          ]
+        },
+        "dedupe_key": "c3d41e50070e87e408db8a88959e76936a4fa87b",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-google-ai-blog-rss-fa8ab9434e",
+        "source_id": "source-ac035067e139",
+        "run_id": "run-6fd96318081c",
+        "title": "Bringing the power of Personal Intelligence to more people",
+        "url": "https://blog.google/products-and-platforms/products/search/personal-intelligence-expansion/",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Tue, 17 Mar 2026 16:00:00 +0000",
+          "url": "https://blog.google/products-and-platforms/products/search/personal-intelligence-expansion/",
+          "sourceId": "google-ai-blog-rss"
+        },
+        "parsed_content": {
+          "summary": "We're expanding Personal Intelligence across AI Mode in Search, the Gemini app and Gemini in Chrome.",
+          "tags": [
+            "analysis",
+            "research"
+          ]
+        },
+        "dedupe_key": "fa8ab9434e6026bbc7937295e6ec6fc1617a3d50",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-google-ai-blog-rss-0d93ef9037",
+        "source_id": "source-ac035067e139",
+        "run_id": "run-6fd96318081c",
+        "title": "Our latest investment in open source security for the AI era",
+        "url": "https://blog.google/innovation-and-ai/technology/safety-security/ai-powered-open-source-security/",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Tue, 17 Mar 2026 16:00:00 +0000",
+          "url": "https://blog.google/innovation-and-ai/technology/safety-security/ai-powered-open-source-security/",
+          "sourceId": "google-ai-blog-rss"
+        },
+        "parsed_content": {
+          "summary": "Google is making new investments, building new tools and developing code security to improve open source security.",
+          "tags": [
+            "analysis",
+            "research"
+          ]
+        },
+        "dedupe_key": "0d93ef9037ae092a67e3e864634d5a3fbbe946e3",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-google-ai-blog-rss-dbf82fe6e6",
+        "source_id": "source-ac035067e139",
+        "run_id": "run-6fd96318081c",
+        "title": "How AI is helping improve heart health in rural Australia",
+        "url": "https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Thu, 12 Mar 2026 15:00:00 +0000",
+          "url": "https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/",
+          "sourceId": "google-ai-blog-rss"
+        },
+        "parsed_content": {
+          "summary": "A new Google AI initiative aims to improve heart health outcomes for people living in remote Australian communities.",
+          "tags": [
+            "analysis",
+            "research"
+          ]
+        },
+        "dedupe_key": "dbf82fe6e6487afbc99053ffa0947cdafb2e2c2f",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-github-releases-openai-node-15f01c0445",
+        "source_id": "source-df17efc53a21",
+        "run_id": "run-4da9971bf8c2",
+        "title": "v6.32.0",
+        "url": "https://github.com/openai/openai-node/releases/tag/v6.32.0",
+        "content_type": "repo",
+        "raw_content": {
+          "publishedAt": "2026-03-17T17:53:01Z",
+          "url": "https://github.com/openai/openai-node/releases/tag/v6.32.0",
+          "sourceId": "github-releases-openai-node"
+        },
+        "parsed_content": {
+          "summary": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (...",
+          "tags": [
+            "repo",
+            "release",
+            "api"
+          ]
+        },
+        "dedupe_key": "15f01c0445bc6c747d0e51364ffcad4b720fd1d2",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-github-releases-openai-node-76b1f95215",
+        "source_id": "source-df17efc53a21",
+        "run_id": "run-4da9971bf8c2",
+        "title": "v6.31.0",
+        "url": "https://github.com/openai/openai-node/releases/tag/v6.31.0",
+        "content_type": "repo",
+        "raw_content": {
+          "publishedAt": "2026-03-16T22:12:31Z",
+          "url": "https://github.com/openai/openai-node/releases/tag/v6.31.0",
+          "sourceId": "github-releases-openai-node"
+        },
+        "parsed_content": {
+          "summary": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp...",
+          "tags": [
+            "repo",
+            "release",
+            "api"
+          ]
+        },
+        "dedupe_key": "76b1f95215a3c4ae7b82b977d2babfbc2df40a27",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "live-github-releases-openai-node-dba46003c8",
+        "source_id": "source-df17efc53a21",
+        "run_id": "run-4da9971bf8c2",
+        "title": "v6.30.1",
+        "url": "https://github.com/openai/openai-node/releases/tag/v6.30.1",
+        "content_type": "repo",
+        "raw_content": {
+          "publishedAt": "2026-03-16T21:16:51Z",
+          "url": "https://github.com/openai/openai-node/releases/tag/v6.30.1",
+          "sourceId": "github-releases-openai-node"
+        },
+        "parsed_content": {
+          "summary": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]...",
+          "tags": [
+            "repo",
+            "release",
+            "api"
+          ]
+        },
+        "dedupe_key": "dba46003c87cebe54b7a0dd26dfdff54a0613eaf",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      }
+    ],
+    "item_classifications": [
+      {
+        "id": "classification-b68aed12ddd3",
+        "item_id": "live-openai-news-rss-fd3208099b",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for How we monitor internal coding agents for misalignment",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-69769e3805c1",
+        "item_id": "live-openai-news-rss-625785a3d5",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for OpenAI to acquire Astral",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-f2d5c47f906a",
+        "item_id": "live-openai-news-rss-c3d41e5007",
+        "category": "api",
+        "importance_score": 92,
+        "novelty_score": 72,
+        "target_surface": "both",
+        "reason": "dual-surface routing needs operator confirmation",
+        "duplicate_of": null,
+        "confidence": 0.92,
+        "policy_flags": [],
+        "exception_reason": "dual-surface routing needs operator confirmation",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-e672cab43078",
+        "item_id": "live-google-ai-blog-rss-fa8ab9434e",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for Bringing the power of Personal Intelligence to more people",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-a7fdbf3610ee",
+        "item_id": "live-google-ai-blog-rss-0d93ef9037",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for Our latest investment in open source security for the AI era",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-7bed1021f9d7",
+        "item_id": "live-google-ai-blog-rss-dbf82fe6e6",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for How AI is helping improve heart health in rural Australia",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-18420467136c",
+        "item_id": "live-github-releases-openai-node-15f01c0445",
+        "category": "repo",
+        "importance_score": 92,
+        "novelty_score": 78,
+        "target_surface": "both",
+        "reason": "dual-surface routing needs operator confirmation",
+        "duplicate_of": null,
+        "confidence": 0.92,
+        "policy_flags": [],
+        "exception_reason": "dual-surface routing needs operator confirmation",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-5b6f42a123b9",
+        "item_id": "live-github-releases-openai-node-76b1f95215",
+        "category": "repo",
+        "importance_score": 92,
+        "novelty_score": 78,
+        "target_surface": "both",
+        "reason": "dual-surface routing needs operator confirmation",
+        "duplicate_of": null,
+        "confidence": 0.92,
+        "policy_flags": [],
+        "exception_reason": "dual-surface routing needs operator confirmation",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      },
+      {
+        "id": "classification-4d9901b0b3d7",
+        "item_id": "live-github-releases-openai-node-dba46003c8",
+        "category": "repo",
+        "importance_score": 92,
+        "novelty_score": 78,
+        "target_surface": "both",
+        "reason": "dual-surface routing needs operator confirmation",
+        "duplicate_of": null,
+        "confidence": 0.92,
+        "policy_flags": [],
+        "exception_reason": "dual-surface routing needs operator confirmation",
+        "created_at": "2026-03-22T12:53:45.667Z"
+      }
+    ]
+  },
+  "projections": {
+    "sourceEntries": [
+      {
+        "id": "source-entry-616388d9c125",
+        "label": "OpenAI News",
+        "category": "company",
+        "href": "https://openai.com/news/",
+        "freshness": "weekly"
+      },
+      {
+        "id": "source-entry-ac035067e139",
+        "label": "Google AI Blog",
+        "category": "company",
+        "href": "https://blog.google/innovation-and-ai/technology/ai/",
+        "freshness": "weekly"
+      },
+      {
+        "id": "source-entry-df17efc53a21",
+        "label": "GitHub Releases",
+        "category": "release",
+        "href": "https://github.com/openai/openai-node/releases",
+        "freshness": "daily"
+      },
+      {
+        "id": "source-entry-3a2941a186e8",
+        "label": "OpenAI API Changelog",
+        "category": "company",
+        "href": "https://platform.openai.com/docs/changelog",
+        "freshness": "weekly"
+      },
+      {
+        "id": "source-entry-62eed9aaa9d2",
+        "label": "Anthropic Research",
+        "category": "research",
+        "href": "https://www.anthropic.com/research",
+        "freshness": "weekly"
+      }
+    ],
+    "ingestRuns": [
+      {
+        "id": "run-view-9a34da57f680",
+        "sourceName": "OpenAI News",
+        "runStatus": "drafted",
+        "startedAt": "2026-03-22T12:53:45.667Z",
+        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "itemCount": 3,
+        "errorMessage": null
+      },
+      {
+        "id": "run-view-6fd96318081c",
+        "sourceName": "Google AI Blog",
+        "runStatus": "drafted",
+        "startedAt": "2026-03-22T12:53:45.667Z",
+        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "itemCount": 3,
+        "errorMessage": null
+      },
+      {
+        "id": "run-view-4da9971bf8c2",
+        "sourceName": "GitHub Releases",
+        "runStatus": "review",
+        "startedAt": "2026-03-22T12:53:45.667Z",
+        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "itemCount": 3,
+        "errorMessage": null
+      }
+    ],
+    "inboxItems": [
+      {
+        "id": "live-openai-news-rss-fd3208099b",
+        "sourceName": "OpenAI News",
+        "sourceTier": "auto-safe",
+        "title": "How we monitor internal coding agents for misalignment",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "How OpenAI uses chain-of-thought monitoring to study misalignment in internal coding agents—analyzing real-world deployments to detect risks and strengthen AI safety safeguards."
+      },
+      {
+        "id": "live-openai-news-rss-625785a3d5",
+        "sourceName": "OpenAI News",
+        "sourceTier": "auto-safe",
+        "title": "OpenAI to acquire Astral",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "Accelerates Codex growth to power the next generation of Python developer tools"
+      },
+      {
+        "id": "live-openai-news-rss-c3d41e5007",
+        "sourceName": "OpenAI News",
+        "sourceTier": "auto-safe",
+        "title": "Introducing GPT-5.4 mini and nano",
+        "contentType": "article",
+        "stage": "classified",
+        "targetSurface": "both",
+        "confidence": 0.92,
+        "parsedSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads."
+      },
+      {
+        "id": "live-google-ai-blog-rss-fa8ab9434e",
+        "sourceName": "Google AI Blog",
+        "sourceTier": "auto-safe",
+        "title": "Bringing the power of Personal Intelligence to more people",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "We're expanding Personal Intelligence across AI Mode in Search, the Gemini app and Gemini in Chrome."
+      },
+      {
+        "id": "live-google-ai-blog-rss-0d93ef9037",
+        "sourceName": "Google AI Blog",
+        "sourceTier": "auto-safe",
+        "title": "Our latest investment in open source security for the AI era",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "Google is making new investments, building new tools and developing code security to improve open source security."
+      },
+      {
+        "id": "live-google-ai-blog-rss-dbf82fe6e6",
+        "sourceName": "Google AI Blog",
+        "sourceTier": "auto-safe",
+        "title": "How AI is helping improve heart health in rural Australia",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "A new Google AI initiative aims to improve heart health outcomes for people living in remote Australian communities."
+      },
+      {
+        "id": "live-github-releases-openai-node-15f01c0445",
+        "sourceName": "GitHub Releases",
+        "sourceTier": "auto-safe",
+        "title": "v6.32.0",
+        "contentType": "repo",
+        "stage": "classified",
+        "targetSurface": "both",
+        "confidence": 0.92,
+        "parsedSummary": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (..."
+      },
+      {
+        "id": "live-github-releases-openai-node-76b1f95215",
+        "sourceName": "GitHub Releases",
+        "sourceTier": "auto-safe",
+        "title": "v6.31.0",
+        "contentType": "repo",
+        "stage": "classified",
+        "targetSurface": "both",
+        "confidence": 0.92,
+        "parsedSummary": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp..."
+      },
+      {
+        "id": "live-github-releases-openai-node-dba46003c8",
+        "sourceName": "GitHub Releases",
+        "sourceTier": "auto-safe",
+        "title": "v6.30.1",
+        "contentType": "repo",
+        "stage": "classified",
+        "targetSurface": "both",
+        "confidence": 0.92,
+        "parsedSummary": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]..."
+      }
+    ],
+    "reviewItems": [
+      {
+        "id": "review-live-openai-news-rss-c3d41e5007",
+        "sourceItemId": "live-openai-news-rss-c3d41e5007",
+        "sourceLabel": "OpenAI News",
+        "sourceHref": "https://example.com/live-openai-news-rss-c3d41e5007",
+        "sourceExcerpt": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
+        "parsedSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
+        "keyPoints": [
+          "target surface both",
+          "next queue review",
+          "source tier auto-safe"
+        ],
+        "targetSurface": "brief",
+        "reviewReason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "previewTitle": "Introducing GPT-5.4 mini and nano",
+        "previewSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads."
+      },
+      {
+        "id": "review-live-github-releases-openai-node-15f01c0445",
+        "sourceItemId": "live-github-releases-openai-node-15f01c0445",
+        "sourceLabel": "GitHub Releases",
+        "sourceHref": "https://example.com/live-github-releases-openai-node-15f01c0445",
+        "sourceExcerpt": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (...",
+        "parsedSummary": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (...",
+        "keyPoints": [
+          "target surface both",
+          "next queue review",
+          "source tier auto-safe"
+        ],
+        "targetSurface": "brief",
+        "reviewReason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "previewTitle": "v6.32.0",
+        "previewSummary": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (..."
+      },
+      {
+        "id": "review-live-github-releases-openai-node-76b1f95215",
+        "sourceItemId": "live-github-releases-openai-node-76b1f95215",
+        "sourceLabel": "GitHub Releases",
+        "sourceHref": "https://example.com/live-github-releases-openai-node-76b1f95215",
+        "sourceExcerpt": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp...",
+        "parsedSummary": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp...",
+        "keyPoints": [
+          "target surface both",
+          "next queue review",
+          "source tier auto-safe"
+        ],
+        "targetSurface": "brief",
+        "reviewReason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "previewTitle": "v6.31.0",
+        "previewSummary": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp..."
+      },
+      {
+        "id": "review-live-github-releases-openai-node-dba46003c8",
+        "sourceItemId": "live-github-releases-openai-node-dba46003c8",
+        "sourceLabel": "GitHub Releases",
+        "sourceHref": "https://example.com/live-github-releases-openai-node-dba46003c8",
+        "sourceExcerpt": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]...",
+        "parsedSummary": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]...",
+        "keyPoints": [
+          "target surface both",
+          "next queue review",
+          "source tier auto-safe"
+        ],
+        "targetSurface": "brief",
+        "reviewReason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "previewTitle": "v6.30.1",
+        "previewSummary": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]..."
+      }
+    ],
+    "publishQueueItems": [
+      {
+        "id": "publish-live-openai-news-rss-fd3208099b",
+        "title": "How we monitor internal coding agents for misalignment",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "OpenAI News",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      },
+      {
+        "id": "publish-live-openai-news-rss-625785a3d5",
+        "title": "OpenAI to acquire Astral",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "OpenAI News",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      },
+      {
+        "id": "publish-live-google-ai-blog-rss-fa8ab9434e",
+        "title": "Bringing the power of Personal Intelligence to more people",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "Google AI Blog",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      },
+      {
+        "id": "publish-live-google-ai-blog-rss-0d93ef9037",
+        "title": "Our latest investment in open source security for the AI era",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "Google AI Blog",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      },
+      {
+        "id": "publish-live-google-ai-blog-rss-dbf82fe6e6",
+        "title": "How AI is helping improve heart health in rural Australia",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "Google AI Blog",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      }
+    ],
+    "exceptionQueueItems": [
+      {
+        "id": "exception-live-openai-news-rss-c3d41e5007",
+        "title": "Introducing GPT-5.4 mini and nano",
+        "targetType": "brief",
+        "currentStage": "classified",
+        "reason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "sourceLabel": "OpenAI News",
+        "nextAction": "Confirm the final target surface before queueing this item."
+      },
+      {
+        "id": "exception-live-github-releases-openai-node-15f01c0445",
+        "title": "v6.32.0",
+        "targetType": "brief",
+        "currentStage": "classified",
+        "reason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "sourceLabel": "GitHub Releases",
+        "nextAction": "Confirm the final target surface before queueing this item."
+      },
+      {
+        "id": "exception-live-github-releases-openai-node-76b1f95215",
+        "title": "v6.31.0",
+        "targetType": "brief",
+        "currentStage": "classified",
+        "reason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "sourceLabel": "GitHub Releases",
+        "nextAction": "Confirm the final target surface before queueing this item."
+      },
+      {
+        "id": "exception-live-github-releases-openai-node-dba46003c8",
+        "title": "v6.30.1",
+        "targetType": "brief",
+        "currentStage": "classified",
+        "reason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "sourceLabel": "GitHub Releases",
+        "nextAction": "Confirm the final target surface before queueing this item."
+      }
+    ]
+  }
+}

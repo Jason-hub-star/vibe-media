@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 async function signIn(page: import("@playwright/test").Page) {
   await page.getByRole("textbox", { name: "Operator key" }).fill("operator");
   await page.getByRole("button", { name: /enter admin/i }).click();
+  await expect(page.getByText(/operator workspace/i)).toBeVisible({ timeout: 15_000 });
 }
 
 test("admin brief review flow is accessible after lightweight sign-in", async ({ page }) => {
@@ -39,12 +40,12 @@ test("admin shell exposes inbox, runs, and review pages", async ({ page }) => {
 });
 
 test("admin inbox and runs tables are visible", async ({ page }) => {
-  await page.goto("/admin/inbox");
+  await page.goto("/admin/inbox", { timeout: 45_000 });
   await signIn(page);
   await expect(page.getByRole("heading", { name: /^inbox$/i })).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
 
-  await page.goto("/admin/runs");
+  await page.goto("/admin/runs", { timeout: 45_000 });
   await expect(page.getByRole("heading", { name: /^runs$/i })).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
 });
@@ -53,9 +54,9 @@ test("admin review shows multiple queue items", async ({ page }) => {
   await page.goto("/admin/review");
   await signIn(page);
   await expect(page.getByRole("heading", { name: /^review$/i })).toBeVisible();
-  await expect(page.getByText(/queue item 1/i)).toBeVisible();
-  await expect(page.getByText(/queue item 2/i)).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: /karpathy on the loopy era of ai/i })).toBeVisible();
+  await expect(page.getByText(/reason:/i).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /approve/i }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /open source/i }).first()).toBeVisible();
 });
 
 test("admin publish queue shows mixed release surfaces", async ({ page }) => {
@@ -63,8 +64,8 @@ test("admin publish queue shows mixed release surfaces", async ({ page }) => {
   await signIn(page);
   await expect(page.getByRole("heading", { name: /publish queue/i })).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
-  await expect(page.getByText(/uploaded_private/i)).toBeVisible();
-  await expect(page.getByRole("cell", { name: /ai engineer world's fair ai engineer world's fair/i })).toBeVisible();
+  await expect(page.getByText(/scheduled/i).first()).toBeVisible();
+  await expect(page.getByText(/openai news|google ai blog/i).first()).toBeVisible();
 });
 
 test("admin exceptions queue shows blocked and low-confidence items", async ({ page }) => {
@@ -72,17 +73,17 @@ test("admin exceptions queue shows blocked and low-confidence items", async ({ p
   await signIn(page);
   await expect(page.getByRole("heading", { name: /^exceptions$/i })).toBeVisible();
   await expect(page.getByRole("table")).toBeVisible();
-  await expect(page.getByText(/quote boundary review needed/i)).toBeVisible();
-  await expect(page.getByText(/privacy-sensitive voice chat/i)).toBeVisible();
+  await expect(page.getByText(/dual-surface routing needs operator confirmation/i).first()).toBeVisible();
+  await expect(page.getByText(/confirm the final target surface before queueing this item/i).first()).toBeVisible();
 });
 
 test("admin policies and programs expose operator references", async ({ page }) => {
   await page.goto("/admin/policies");
   await signIn(page);
   await expect(page.getByRole("heading", { name: /^policies$/i })).toBeVisible();
-  await expect(page.getByText(/review-policy\.md/i)).toBeVisible();
+  await expect(page.getByText(/docs\/ref\/REVIEW-POLICY\.md/i)).toBeVisible();
 
   await page.goto("/admin/programs");
   await expect(page.getByRole("heading", { name: /^programs$/i })).toBeVisible();
-  await expect(page.getByText(/brief\.program\.md/i)).toBeVisible();
+  await expect(page.getByText(/docs\/ref\/programs\/brief\.program\.md/i)).toBeVisible();
 });

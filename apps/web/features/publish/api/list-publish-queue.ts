@@ -1,5 +1,5 @@
-import { publishQueueItems } from "@/lib/mock-data";
+import { listPublishQueue as listPublishQueueBackend } from "@vibehub/backend";
 
-export function listPublishQueue() {
-  return publishQueueItems;
+export async function listPublishQueue() {
+  return listPublishQueueBackend();
 }

@@ -1,5 +1,5 @@
-import { sourceEntries } from "@/lib/mock-data";
+import { listSources as listSourcesBackend } from "@vibehub/backend";
 
-export function listSources() {
-  return sourceEntries;
+export async function listSources() {
+  return listSourcesBackend();
 }

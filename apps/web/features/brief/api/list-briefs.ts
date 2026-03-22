@@ -1,5 +1,5 @@
-import { briefDetails } from "@/lib/mock-data";
+import { listBriefs as listBriefsBackend } from "@vibehub/backend";
 
-export function listBriefs() {
-  return briefDetails.map(({ body, sourceLinks, ...item }) => item);
+export async function listBriefs() {
+  return listBriefsBackend();
 }

@@ -4,16 +4,16 @@ import { SectionBlock } from "@/components/SectionBlock";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { BriefCard } from "@/features/brief/view/BriefCard";
 
-export default function BriefPage() {
-  const briefs = listBriefs();
+export default async function BriefPage() {
+  const briefs = await listBriefs();
 
   return (
     <PageFrame>
-      <SectionBlock eyebrow="Archive" title="AI briefs prepared for review or publication">
+      <SectionBlock eyebrow="브리프" title="AI 뉴스 한국어 브리프 아카이브">
         {briefs.length === 0 ? (
           <EmptyState
-            body="Brief cards will appear here once the drafting pipeline has something worth reviewing."
-            title="No briefs yet"
+            body="새로운 브리프가 발행되면 여기에 표시됩니다."
+            title="아직 발행된 브리프가 없습니다"
           />
         ) : (
           <div className="panel-grid">

@@ -24,7 +24,7 @@ export function NewsletterForm() {
           aria-label="Email"
           className="input"
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="operator@vibehub.tech"
+          placeholder="you@example.com"
           type="email"
           value={email}
         />

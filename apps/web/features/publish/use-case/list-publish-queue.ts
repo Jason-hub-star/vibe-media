@@ -1,5 +1,5 @@
 import { listPublishQueue as listPublishQueueFromApi } from "../api/list-publish-queue";
 
-export function listPublishQueue() {
+export async function listPublishQueue() {
   return listPublishQueueFromApi();
 }

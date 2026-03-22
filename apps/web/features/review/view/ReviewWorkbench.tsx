@@ -3,9 +3,11 @@ import Link from "next/link";
 import type { ReviewItem } from "@vibehub/content-contracts";
 
 import { presentReviewConfidence } from "../presenter/present-review-confidence";
+import { ReviewActionBar } from "./ReviewActionBar";
 
 export function ReviewWorkbench({ item }: { item: ReviewItem }) {
   return (
+    <div className="stack-tight">
     <div className="review-grid">
       <article className="panel stack-tight">
         <p className="eyebrow">Source</p>
@@ -38,6 +40,8 @@ export function ReviewWorkbench({ item }: { item: ReviewItem }) {
           <p className="muted">Reason: {item.reviewReason}</p>
         </div>
       </article>
+    </div>
+    <ReviewActionBar reviewId={item.id} currentStatus={item.reviewStatus} />
     </div>
   );
 }

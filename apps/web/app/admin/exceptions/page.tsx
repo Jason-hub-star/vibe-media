@@ -3,8 +3,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { listExceptionQueue } from "@/features/exceptions/use-case/list-exception-queue";
 import { ExceptionQueueTable } from "@/features/exceptions/view/ExceptionQueueTable";
 
-export default function AdminExceptionsPage() {
-  const items = listExceptionQueue();
+export default async function AdminExceptionsPage() {
+  const items = await listExceptionQueue();
 
   return (
     <AdminShell

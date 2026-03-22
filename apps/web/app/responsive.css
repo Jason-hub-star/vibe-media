@@ -1,8 +1,11 @@
 @media (max-width: 900px) {
   .hero-grid,
   .admin-layout,
+  .admin-form-grid,
   .panel-grid,
+  .showcase-card,
   .summary-grid,
+  .showcase-grid,
   .admin-grid,
   .review-grid {
     grid-template-columns: 1fr;

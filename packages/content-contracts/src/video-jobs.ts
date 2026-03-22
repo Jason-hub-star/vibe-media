@@ -14,6 +14,7 @@ export type VideoJobStatus =
 
 export type VideoJobKind = "gameplay" | "recap" | "clip";
 export type TranscriptState = "missing" | "draft" | "approved";
+export type VideoStorageTier = "local" | "nas" | "archive";
 
 export interface VideoJob {
   id: string;
@@ -27,4 +28,14 @@ export interface VideoJob {
   riskySegmentCount: number;
   exceptionReason: string | null;
   nextAction: string;
+  rawFilePath?: string | null;
+  rawFileSizeBytes?: number | null;
+  rawSha256?: string | null;
+  durationMs?: number | null;
+  storageTier?: VideoStorageTier | null;
+  proxyAssetPath?: string | null;
+  previewAssetPath?: string | null;
+  privateUploadId?: string | null;
+  parentReviewStatus?: string | null;
+  blockedReason?: string | null;
 }

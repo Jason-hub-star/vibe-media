@@ -2,13 +2,18 @@ import Link from "next/link";
 
 import type { BriefListItem } from "@vibehub/content-contracts";
 
-import { briefStatusCopy } from "../presenter/present-brief-status";
+import { briefStatusPublicCopy } from "../presenter/present-brief-status";
 
 export function BriefCard({ brief }: { brief: BriefListItem }) {
+  const label =
+    brief.status === "published" && brief.publishedAt
+      ? brief.publishedAt.slice(0, 10)
+      : briefStatusPublicCopy[brief.status];
+
   return (
     <article className="panel stack-tight">
       <div className="row-between">
-        <span className={`status status-${brief.status}`}>{briefStatusCopy[brief.status]}</span>
+        <span className={`status status-${brief.status}`}>{label}</span>
         <span className="eyebrow">{brief.sourceCount} sources</span>
       </div>
       <h3>{brief.title}</h3>

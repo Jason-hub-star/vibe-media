@@ -12,12 +12,15 @@
 - pipeline reference: `docs/ref/PIPELINE-OPERATING-MODEL.md`
 - source -> ingest run -> ingested item -> classification -> brief/discover -> review -> publish
 - admin은 pipeline 중간 상태를 읽고 수정하는 control surface다.
-- public은 pipeline 최종 산출물만 소비한다.
+- public은 v1에서 pipeline 최종 산출물뿐 아니라 Supabase editorial draft spine도 읽는다.
+  - `/brief`, `/brief/[slug]`, `/radar`는 현재 Supabase-first editorial read를 사용한다.
 - 역할 분리형 에이전트 팀은 `docs/ref/AGENT-OPERATING-MODEL.md`를 따른다.
 - orchestration 최종 방식은 `docs/ref/ORCHESTRATION-EVALUATION.md` 실험 후 결정한다.
 - source/tool 최종 채택은 `docs/ref/SOURCE-RESEARCH-METHOD.md` 결과를 따른다.
 - LLM 역할 매핑은 `docs/ref/LLM-ORCHESTRATION-MAP.md`를 따른다.
-- 현재 기본 후보는 하이브리드이며, `router/search/memory`는 로컬 우선으로 둔다.
+- 현재 운영 기본값은 하이브리드다.
+  - `chat/router/search/memory`: `mistral-small3.1`
+  - `classifier`, `brief draft`, `discover draft`, `critic`: `claude-sonnet-4-6`
 
 ## Discovery Extension Surface
 - public discovery lives at `/radar`
@@ -26,6 +29,24 @@
 - future category filters should extend contracts and presenters before splitting routes
 - discovery items must keep direct actions such as `visit`, `download`, `docs`, `github`, or `apply`
 - discovery taxonomy source: `docs/ref/DISCOVERY-TAXONOMY.md`
+
+## Showcase Sidecar Lane
+- showcase는 자동 ingest/editorial spine과 분리된 수동 큐레이션 레인이다.
+- public exposure:
+  - `/` home teaser
+  - `/radar` showcase picks section
+- admin exposure:
+  - `/admin/showcase`
+- shared use case basename:
+  - `list-showcase-entries.ts`
+- `showcase_entries` / `showcase_links`는 `brief_posts` / `discover_items`와 다른 저장 레인을 사용한다.
+- `supabase-editorial-sync`와 ingest sync는 showcase row를 생성하지 않는다.
+- 향후 로그인 기반 submission도 이 lane에만 붙이고, `target_surface` 자동 분류 모델은 유지한다.
+
+## Supabase Read Protection
+- `createSupabaseSql()`에 `connect_timeout: 10`, `idle_timeout: 20` 설정
+- `readSupabaseProjectionBundle`, `readSupabaseSourceEntries`에 `Promise.race` 15s timeout 적용
+- timeout 시 `null` 반환 → fallback chain (snapshot → mock) 동작
 
 ## Naming Policy
 - domain basename must match across frontend API, backend service, and shared contracts
