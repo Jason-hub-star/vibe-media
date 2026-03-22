@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T12:53:45.667Z",
+  "generatedAt": "2026-03-22T22:05:44.923Z",
   "tables": {
     "sources": [
       {
@@ -9,10 +9,10 @@
         "base_url": "https://openai.com/news/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_success_at": "2026-03-22T22:05:44.923Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "source-ac035067e139",
@@ -21,10 +21,10 @@
         "base_url": "https://blog.google/innovation-and-ai/technology/ai/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_success_at": "2026-03-22T22:05:44.923Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "source-df17efc53a21",
@@ -33,10 +33,10 @@
         "base_url": "https://github.com/openai/openai-node/releases",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T12:53:45.667Z",
+        "last_success_at": "2026-03-22T22:05:44.923Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "source-3a2941a186e8",
@@ -48,7 +48,7 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "stable RSS/API endpoint not wired yet",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "source-62eed9aaa9d2",
@@ -60,43 +60,43 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "public RSS endpoint returned 404 during live fetch verification",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       }
     ],
     "ingest_runs": [
       {
-        "id": "run-9a34da57f680",
+        "id": "run-6c655f63a215",
         "source_id": "source-616388d9c125",
         "run_status": "drafted",
-        "started_at": "2026-03-22T12:53:45.667Z",
-        "finished_at": "2026-03-22T12:53:45.667Z",
+        "started_at": "2026-03-22T22:05:44.923Z",
+        "finished_at": "2026-03-22T22:05:44.923Z",
         "error_message": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
-        "id": "run-6fd96318081c",
+        "id": "run-f3e5fcbb5a8d",
         "source_id": "source-ac035067e139",
         "run_status": "drafted",
-        "started_at": "2026-03-22T12:53:45.667Z",
-        "finished_at": "2026-03-22T12:53:45.667Z",
+        "started_at": "2026-03-22T22:05:44.923Z",
+        "finished_at": "2026-03-22T22:05:44.923Z",
         "error_message": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
-        "id": "run-4da9971bf8c2",
+        "id": "run-d1877b43b9d5",
         "source_id": "source-df17efc53a21",
         "run_status": "review",
-        "started_at": "2026-03-22T12:53:45.667Z",
-        "finished_at": "2026-03-22T12:53:45.667Z",
+        "started_at": "2026-03-22T22:05:44.923Z",
+        "finished_at": "2026-03-22T22:05:44.923Z",
         "error_message": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       }
     ],
     "ingested_items": [
       {
         "id": "live-openai-news-rss-fd3208099b",
         "source_id": "source-616388d9c125",
-        "run_id": "run-9a34da57f680",
+        "run_id": "run-6c655f63a215",
         "title": "How we monitor internal coding agents for misalignment",
         "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
         "content_type": "article",
@@ -115,12 +115,12 @@
         },
         "dedupe_key": "fd3208099b40794a1e134aa1aee1271a25df42be",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-openai-news-rss-625785a3d5",
         "source_id": "source-616388d9c125",
-        "run_id": "run-9a34da57f680",
+        "run_id": "run-6c655f63a215",
         "title": "OpenAI to acquire Astral",
         "url": "https://openai.com/index/openai-to-acquire-astral",
         "content_type": "article",
@@ -139,12 +139,12 @@
         },
         "dedupe_key": "625785a3d5f593f27a364382256cc02407505ebf",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-openai-news-rss-c3d41e5007",
         "source_id": "source-616388d9c125",
-        "run_id": "run-9a34da57f680",
+        "run_id": "run-6c655f63a215",
         "title": "Introducing GPT-5.4 mini and nano",
         "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
         "content_type": "article",
@@ -164,12 +164,12 @@
         },
         "dedupe_key": "c3d41e50070e87e408db8a88959e76936a4fa87b",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-google-ai-blog-rss-fa8ab9434e",
         "source_id": "source-ac035067e139",
-        "run_id": "run-6fd96318081c",
+        "run_id": "run-f3e5fcbb5a8d",
         "title": "Bringing the power of Personal Intelligence to more people",
         "url": "https://blog.google/products-and-platforms/products/search/personal-intelligence-expansion/",
         "content_type": "article",
@@ -187,12 +187,12 @@
         },
         "dedupe_key": "fa8ab9434e6026bbc7937295e6ec6fc1617a3d50",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-google-ai-blog-rss-0d93ef9037",
         "source_id": "source-ac035067e139",
-        "run_id": "run-6fd96318081c",
+        "run_id": "run-f3e5fcbb5a8d",
         "title": "Our latest investment in open source security for the AI era",
         "url": "https://blog.google/innovation-and-ai/technology/safety-security/ai-powered-open-source-security/",
         "content_type": "article",
@@ -210,12 +210,12 @@
         },
         "dedupe_key": "0d93ef9037ae092a67e3e864634d5a3fbbe946e3",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-google-ai-blog-rss-dbf82fe6e6",
         "source_id": "source-ac035067e139",
-        "run_id": "run-6fd96318081c",
+        "run_id": "run-f3e5fcbb5a8d",
         "title": "How AI is helping improve heart health in rural Australia",
         "url": "https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/",
         "content_type": "article",
@@ -233,12 +233,12 @@
         },
         "dedupe_key": "dbf82fe6e6487afbc99053ffa0947cdafb2e2c2f",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-github-releases-openai-node-15f01c0445",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-4da9971bf8c2",
+        "run_id": "run-d1877b43b9d5",
         "title": "v6.32.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.32.0",
         "content_type": "repo",
@@ -257,12 +257,12 @@
         },
         "dedupe_key": "15f01c0445bc6c747d0e51364ffcad4b720fd1d2",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-github-releases-openai-node-76b1f95215",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-4da9971bf8c2",
+        "run_id": "run-d1877b43b9d5",
         "title": "v6.31.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.31.0",
         "content_type": "repo",
@@ -281,12 +281,12 @@
         },
         "dedupe_key": "76b1f95215a3c4ae7b82b977d2babfbc2df40a27",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "live-github-releases-openai-node-dba46003c8",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-4da9971bf8c2",
+        "run_id": "run-d1877b43b9d5",
         "title": "v6.30.1",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.30.1",
         "content_type": "repo",
@@ -305,7 +305,7 @@
         },
         "dedupe_key": "dba46003c87cebe54b7a0dd26dfdff54a0613eaf",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       }
     ],
     "item_classifications": [
@@ -321,7 +321,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-69769e3805c1",
@@ -335,7 +335,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-f2d5c47f906a",
@@ -349,7 +349,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-e672cab43078",
@@ -363,7 +363,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-a7fdbf3610ee",
@@ -377,7 +377,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-7bed1021f9d7",
@@ -391,7 +391,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-18420467136c",
@@ -405,7 +405,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-5b6f42a123b9",
@@ -419,7 +419,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       },
       {
         "id": "classification-4d9901b0b3d7",
@@ -433,7 +433,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T12:53:45.667Z"
+        "created_at": "2026-03-22T22:05:44.923Z"
       }
     ]
   },
@@ -477,29 +477,29 @@
     ],
     "ingestRuns": [
       {
-        "id": "run-view-9a34da57f680",
+        "id": "run-view-6c655f63a215",
         "sourceName": "OpenAI News",
         "runStatus": "drafted",
-        "startedAt": "2026-03-22T12:53:45.667Z",
-        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "startedAt": "2026-03-22T22:05:44.923Z",
+        "finishedAt": "2026-03-22T22:05:44.923Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-6fd96318081c",
+        "id": "run-view-f3e5fcbb5a8d",
         "sourceName": "Google AI Blog",
         "runStatus": "drafted",
-        "startedAt": "2026-03-22T12:53:45.667Z",
-        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "startedAt": "2026-03-22T22:05:44.923Z",
+        "finishedAt": "2026-03-22T22:05:44.923Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-4da9971bf8c2",
+        "id": "run-view-d1877b43b9d5",
         "sourceName": "GitHub Releases",
         "runStatus": "review",
-        "startedAt": "2026-03-22T12:53:45.667Z",
-        "finishedAt": "2026-03-22T12:53:45.667Z",
+        "startedAt": "2026-03-22T22:05:44.923Z",
+        "finishedAt": "2026-03-22T22:05:44.923Z",
         "itemCount": 3,
         "errorMessage": null
       }
