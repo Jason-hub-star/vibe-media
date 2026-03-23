@@ -1,5 +1,5 @@
 import { listAssetSlots as listAssetSlotsApi } from "../api/list-asset-slots";
 
-export function listAssetSlots() {
+export async function listAssetSlots() {
   return listAssetSlotsApi();
 }

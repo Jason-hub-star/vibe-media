@@ -12,7 +12,8 @@ export default defineConfig({
     video: "off"
   },
   webServer: {
-    command: "npm run dev -w @vibehub/web",
+    command: "npm run dev",
+    cwd: "apps/web",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: true
   },

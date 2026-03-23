@@ -4,12 +4,13 @@
 - 2026-03-22
 
 ## Decision Summary
-- v1 웹 수집 primary는 `Crawl4AI`로 둔다.
-- `Firecrawl`은 hosted fallback 또는 특정 source에서만 쓰는 secondary collector로 둔다.
-- HTML/article cleanup primary는 `Defuddle`로 둔다.
-- document/PDF primary는 `Docling`으로 둔다.
-- PDF fallback은 `OpenDataLoader PDF`로 둔다.
-- utility fallback은 `MarkItDown`으로 둔다.
+- 현재 구현된 collector는 RSS/API + GitHub Releases fetch다.
+- `Crawl4AI`는 render-required source 확장 시의 목표 primary stack으로 둔다.
+- `Firecrawl`은 hosted fallback 또는 특정 source에서만 쓰는 secondary collector 후보로 둔다.
+- HTML/article cleanup는 Phase 1에서 `Defuddle`를 실제 연결한다.
+- document/PDF primary는 `Docling`을 목표 stack으로 두되, 실제 PDF/doc source 도입 전까지는 gated 상태로 둔다.
+- PDF fallback은 `OpenDataLoader PDF`를 목표 fallback으로 두되, 실제 PDF/doc source 도입 전까지는 gated 상태로 둔다.
+- utility fallback은 `MarkItDown` 후보로 남긴다.
 - `Unstructured`는 v1 primary stack에 넣지 않고, P3 ETL 후보로만 남긴다.
 
 ## Why This Stack
@@ -26,14 +27,17 @@
 ### HTML Cleanup Primary: `Defuddle`
 - article/body cleanup에 집중돼 있어 brief/discover 초안 입력으로 바로 쓰기 좋다.
 - crawler 자체를 대체하지 않고 parser 후처리기로 붙이기 좋다.
+- Phase 1에서는 RSS article URL 후속 fetch 결과를 markdown으로 정규화하는 범위까지만 실제 적용한다.
 
 ### Document/PDF Primary: `Docling`
 - PDF 외에 DOCX, PPTX, HTML 등 다형식 대응이 가능하다.
 - VibeHub의 `contest`, `event`, `report`, `grant` 축을 하나의 parser 계열로 묶기 좋다.
+- 현재 repo에는 PDF/doc source가 없어 아직 실제 연결하지 않는다.
 
 ### PDF Fallback: `OpenDataLoader PDF`
 - PDF 구조 추출과 bbox/read-order 성격이 강해 일부 문서형 source에서 비교 가치가 있다.
 - v1 primary로 바로 고정하기보다 `Docling` 실패 또는 품질 이슈 시 fallback으로 둔다.
+- 현재 repo에는 PDF/doc source가 없어 아직 실제 연결하지 않는다.
 
 ### Utility Fallback: `MarkItDown`
 - 가볍고 빠른 file-to-markdown fallback으로 유용하다.
@@ -71,14 +75,15 @@
 
 ## Parser Positioning
 ### HTML / Article
-1. `Crawl4AI` 또는 `Firecrawl`로 fetch
-2. `Defuddle`로 본문 cleanup
-3. local LLM 또는 Claude로 classify/draft
+1. 현재 구현은 RSS/API 또는 GitHub Releases fetch
+2. article RSS source만 Phase 1에서 `Defuddle`로 본문 cleanup
+3. 이후 local LLM 또는 Claude로 classify/draft
 
 ### PDF / Document
-1. `Docling` primary
-2. 실패 또는 품질 저하 시 `OpenDataLoader PDF`
-3. 가벼운 markdown conversion 필요 시 `MarkItDown`
+1. source 도입 전까지 planned only
+2. source 도입 시 `Docling` primary
+3. 실패 또는 품질 저하 시 `OpenDataLoader PDF`
+4. 가벼운 markdown conversion 필요 시 `MarkItDown`
 
 ## Non-Goals
 - v1에서 모든 source를 하나의 universal parser로 밀어붙이지 않는다.

@@ -68,6 +68,8 @@
 - [x] source catalog 1차 배치 선정
 - [x] source tier 분류표 작성
 - [x] fallback 정책 확정
+- [x] Phase 1 `Defuddle` article enrichment 연결
+- [x] fixture-backed `trial:all` 운영 요약 추가
 
 ## P2 — Frontend / UX
 - [x] public UX 내부 용어 제거 + 사용자 언어 전환 (hero/패널/status/footer/newsletter)
@@ -116,14 +118,16 @@
 - [x] Telegram pipeline report module
 - [x] daily pipeline automation script + cron
 - [x] Source 확장 전략 문서 (`docs/ref/SOURCE-EXPANSION-STRATEGY.md`)
+- [x] article RSS source의 `contentMarkdown / parserName / parseStatus` 저장
+- [x] `trial:all` baseline suite (`classifier / brief draft / discover draft / critic`)
 - [ ] `/self-review` 커스텀 명령어
 - [x] source/tool 최종 채택
 - [x] orchestration 최종 채택
 
 ## Recommended Next Sequence
 1. ~~review / publish mutation과 schedule/publish action handler를 닫는다.~~ done
-2. **루트 env 기반 Supabase 연결 end-to-end 검증 유지** — mutation 버튼과 read path 모두 Supabase 연결이 필요하다. 새 머신에서 env 파일이 없으면 read는 local snapshot → mock fallback, mutation은 실행 불가.
-3. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
-4. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
-5. observability / rollback / storage cleanup routine을 운영 문서와 함께 닫는다.
-6. 프론트엔드 polish와 empty/loading/error 강화는 별도 트랙으로 진행한다.
+2. **루트 env 기반 Supabase 연결 end-to-end 검증 유지** — 현재 머신에서는 `.env`/`.env.local`이 없어 `pipeline:daily`가 sync 단계에서 `SUPABASE_DB_URL is required`로 중단된다.
+3. `Defuddle`로 저장된 `contentMarkdown`을 classifier/draft 품질 규칙에 더 직접 반영할지 결정한다.
+4. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
+5. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
+6. observability / rollback / storage cleanup routine을 운영 문서와 함께 닫는다.

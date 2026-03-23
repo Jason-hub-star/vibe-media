@@ -1,0 +1,13 @@
+<svg width="1920" height="820" viewBox="0 0 1920 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="820" rx="48" fill="#181211"/>
+  <rect x="48" y="48" width="1824" height="724" rx="32" fill="#241D1B" stroke="#F4EEE2" stroke-opacity="0.1" stroke-width="4"/>
+  <rect x="120" y="114" width="320" height="66" rx="18" fill="#98F0E1" fill-opacity="0.18"/>
+  <rect x="120" y="214" width="520" height="120" rx="24" fill="#F08A24" fill-opacity="0.18"/>
+  <rect x="120" y="380" width="240" height="54" rx="18" fill="#F7D64A" fill-opacity="0.18"/>
+  <rect x="120" y="458" width="780" height="180" rx="28" fill="#F4EEE2" fill-opacity="0.05"/>
+  <rect x="1020" y="134" width="740" height="520" rx="28" fill="#F4EEE2" fill-opacity="0.04"/>
+  <circle cx="1390" cy="390" r="156" fill="#8EA8FF" fill-opacity="0.14"/>
+  <path d="M1234 390H1546" stroke="#F08A24" stroke-width="6"/>
+  <path d="M1390 234V546" stroke="#F08A24" stroke-width="6"/>
+  <text x="1088" y="690" fill="#F4EEE2" fill-opacity="0.7" font-family="monospace" font-size="44">admin-video-banner-placeholder</text>
+</svg>

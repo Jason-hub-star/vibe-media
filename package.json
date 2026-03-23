@@ -22,6 +22,7 @@
     "trial:classifier": "npm run trial:classifier -w @vibehub/backend",
     "trial:brief-draft": "npm run trial:brief-draft -w @vibehub/backend",
     "trial:discover-draft": "npm run trial:discover-draft -w @vibehub/backend",
+    "trial:all": "npm run trial:all -w @vibehub/backend",
     "trial:critic": "npm run trial:critic -w @vibehub/backend",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

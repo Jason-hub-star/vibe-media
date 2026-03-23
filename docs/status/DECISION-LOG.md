@@ -37,12 +37,13 @@
 ### 2026-03-22 — Ingest Stack v1
 - 상태: resolved
 - 결정:
-  - collector primary: `Crawl4AI`
-  - collector fallback: `Firecrawl`
-  - HTML/article cleanup primary: `Defuddle`
-  - document/PDF primary: `Docling`
-  - PDF fallback: `OpenDataLoader PDF`
-  - utility fallback: `MarkItDown`
+  - 현재 구현 collector는 RSS/API + GitHub Releases fetch를 유지한다.
+  - collector 목표 primary: `Crawl4AI`
+  - collector fallback 후보: `Firecrawl`
+  - HTML/article cleanup Phase 1 실제 도입: `Defuddle`
+  - document/PDF 목표 primary: `Docling`
+  - PDF 목표 fallback: `OpenDataLoader PDF`
+  - utility fallback 후보: `MarkItDown`
   - `Unstructured`는 v1 primary에서 제외하고 P3 ETL 후보로 남긴다.
 - 기준 문서:
   - `docs/ref/INGEST-STACK-DECISION.md`

@@ -4,8 +4,8 @@ import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { VideoJobBoard } from "@/features/video-jobs/view/VideoJobBoard";
 import { listVideoJobs } from "@/features/video-jobs/use-case/list-video-jobs";
 
-export default function AdminVideoJobsPage() {
-  const jobs = listVideoJobs();
+export default async function AdminVideoJobsPage() {
+  const jobs = await listVideoJobs();
 
   return (
     <AdminShell
@@ -18,7 +18,7 @@ export default function AdminVideoJobsPage() {
       />
       {jobs.length === 0 ? (
         <EmptyState
-          body="Gameplay and recap jobs will appear here after capture, auto analysis, CapCut finishing, and parent review prep."
+          body="Video job rows will appear here after capture, auto analysis, CapCut finishing, and parent review prep."
           title="No video jobs"
         />
       ) : (

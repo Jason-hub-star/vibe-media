@@ -23,11 +23,14 @@
     "trial:classifier": "tsx src/workers/run-classifier-shadow-trial.ts",
     "trial:brief-draft": "tsx src/workers/run-brief-draft-shadow-trial.ts",
     "trial:discover-draft": "tsx src/workers/run-discover-draft-shadow-trial.ts",
+    "trial:all": "tsx src/workers/run-all-shadow-trials.ts",
     "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",
     "@vibehub/design-tokens": "0.1.0",
+    "defuddle": "^0.14.0",
+    "linkedom": "^0.18.12",
     "postgres": "^3.4.8"
   },
   "devDependencies": {

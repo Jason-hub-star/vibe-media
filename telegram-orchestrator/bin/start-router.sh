@@ -10,4 +10,10 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
   set +a
 fi
 
+if [[ -f "${ROOT_DIR}/.env.local" ]]; then
+  set -a
+  source "${ROOT_DIR}/.env.local"
+  set +a
+fi
+
 exec node "${ROOT_DIR}/router/telegram-bot.mjs"

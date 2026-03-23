@@ -1,5 +1,5 @@
-import { videoJobs } from "@/lib/mock-data";
+import { listVideoJobs as listVideoJobsBackend } from "@vibehub/backend";
 
-export function listVideoJobs() {
-  return videoJobs;
+export async function listVideoJobs() {
+  return listVideoJobsBackend();
 }

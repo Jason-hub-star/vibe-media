@@ -26,6 +26,9 @@ describe("live ingest snapshot", () => {
           url: "https://example.com/openai-agents-sdk",
           publishedAt: "2026-03-22T00:00:00.000Z",
           parsedSummary: "Useful summary",
+          contentMarkdown: "# Useful body",
+          parserName: "defuddle",
+          parseStatus: "content-enriched",
           contentType: "article",
           tags: ["sdk", "release"]
         }
@@ -84,6 +87,11 @@ describe("live ingest snapshot", () => {
     expect(snapshot.tables.item_classifications).toHaveLength(1);
     expect(snapshot.projections.inboxItems[0]?.targetSurface).toBe("both");
     expect(snapshot.tables.item_classifications[0]?.category).toBe("sdk");
+    expect(snapshot.tables.ingested_items[0]?.parsed_content).toMatchObject({
+      contentMarkdown: "# Useful body",
+      parserName: "defuddle",
+      parseStatus: "content-enriched"
+    });
   });
 
   it("marks repeated dedupe keys as duplicate_of archive rows", () => {
@@ -108,6 +116,9 @@ describe("live ingest snapshot", () => {
           url: "https://example.com/openai-agents-sdk",
           publishedAt: "2026-03-22T00:00:00.000Z",
           parsedSummary: "Useful summary",
+          contentMarkdown: "# Useful body",
+          parserName: "defuddle",
+          parseStatus: "content-enriched",
           contentType: "article",
           tags: ["sdk", "release"]
         },
@@ -120,6 +131,9 @@ describe("live ingest snapshot", () => {
           url: "https://example.com/openai-agents-sdk",
           publishedAt: "2026-03-22T00:05:00.000Z",
           parsedSummary: "Useful summary duplicate",
+          contentMarkdown: "# Useful body duplicate",
+          parserName: "defuddle",
+          parseStatus: "content-enriched",
           contentType: "article",
           tags: ["sdk", "release"]
         }

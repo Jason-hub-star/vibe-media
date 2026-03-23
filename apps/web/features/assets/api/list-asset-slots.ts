@@ -1,5 +1,5 @@
-import { assets } from "@/lib/mock-data";
+import { listAssetSlots as listAssetSlotsBackend } from "@vibehub/backend";
 
-export function listAssetSlots() {
-  return assets;
+export async function listAssetSlots() {
+  return listAssetSlotsBackend();
 }

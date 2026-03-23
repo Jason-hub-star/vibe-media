@@ -20,9 +20,17 @@
 
 ## 3. Defuddle 통합 계획
 
-- 현재 `live-source-parse.ts`에 범용 HTML 파싱 보강
-- site-specific extractor 활용 (GitHub issues, Reddit threads, YouTube 등)
-- `npm install defuddle` → `Defuddle(doc, url, { markdown: true })` → contentMarkdown 저장
+- Phase 1 구현 완료:
+  - RSS `article` source에 대해 item URL 후속 fetch 수행
+  - `Defuddle`로 markdown 추출 시도
+  - 결과를 `contentMarkdown`, `parserName`, `parseStatus`로 snapshot `parsed_content`에 저장
+- 현재 범위:
+  - `contentType === article` RSS source만 대상
+  - 실패 시 기존 `parsedSummary` fallback 유지
+  - GitHub releases, disabled source, PDF/doc source는 제외
+- 다음 단계:
+  - classifier/draft 품질 규칙에서 `contentMarkdown` 활용 비중 확대
+  - site-specific extractor 활용 (GitHub issues, Reddit threads, YouTube 등)
 
 ## 4. Autoresearch 패턴 적용
 
@@ -37,5 +45,5 @@ Brief overview of competitive landscape in AI news aggregation space.
 ## 6. 통합 로드맵
 
 Phase 1 (즉시): P1 sources RSS/API
-Phase 2 (1-2주): P2 sources + Defuddle
+Phase 2 (1-2주): P2 sources + `contentMarkdown` 활용 확대 + `trial:all` 후속 운영화
 Phase 3 (중기): 크롤링 sources + autoresearch loop

@@ -22,6 +22,7 @@ export * from "./shared/live-source-fetch";
 export * from "./shared/live-source-registry";
 export * from "./shared/status-rules";
 export * from "./shared/supabase-cleanup";
+export * from "./shared/supabase-asset-slots";
 export * from "./shared/supabase-editorial-read";
 export * from "./shared/supabase-editorial-actions";
 export * from "./shared/supabase-editorial-sync";

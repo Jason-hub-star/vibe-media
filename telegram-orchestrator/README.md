@@ -40,14 +40,18 @@ Local Telegram router for:
 4. Start the router:
 
 ```bash
-cd /Users/family/jason/telegram-orchestrator
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR/telegram-orchestrator"
 ./bin/start-router.sh
 ```
+
+`start-router.sh`는 `.env`를 먼저 로드하고, 있으면 `.env.local`로 override한 뒤 라우터를 실행한다.
 
 To keep the Mac awake while the router runs on charger:
 
 ```bash
-cd /Users/family/jason/telegram-orchestrator
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR/telegram-orchestrator"
 ./bin/start-router-awake.sh
 ```
 
@@ -57,7 +61,7 @@ cd /Users/family/jason/telegram-orchestrator
 - `codex` is already installed and can run with your ChatGPT login
 - The default Codex wrapper uses `read-only` sandbox for safety
 - This router does not require extra npm dependencies
-- Model state is stored in `/Users/family/jason/telegram-orchestrator/state/orchestrator.sqlite`
+- Model state is stored in `telegram-orchestrator/state/orchestrator.sqlite`
 - `/model-eval` runs the fixed eval suite and records baseline drift
 - `/model-shadow` lets a candidate observe live traffic without replacing the active model
 - `/model-activate` can target specific `chat/router/search/memory` roles or VibeHub stage pointers like `classifier`, `brief-draft`, `discover-draft`, `critic`

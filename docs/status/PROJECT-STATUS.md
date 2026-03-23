@@ -62,14 +62,21 @@
 - Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done
 - pipeline-to-ui E2E test suite (8 tests): done
 - `/pipeline-check` skill: done
+- Defuddle article enrichment (Phase 1): done
+- fixture-backed shadow trial suite (`trial:all`): done
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
 - `npm run lint`: pass
 - `npm run typecheck`: pass
-- `npm run build`: pass
-- `npm run test:unit`: 34/35 pass (watch-folder-worker unique constraint 충돌 1건 — Supabase 기존 데이터와 idempotent 미충족, pre-existing)
+- `npm run build`: not rerun in this update pass
+- `npm run test:unit`: 38/38 pass
 - `npm run test:e2e`: 28/28 pass
+- `npm run trial:all`: baseline-pass
+- `npm run pipeline:live-fetch`: pass (`sources attempted 5 / items fetched 9 / pipeline items 9`)
+- `npm run pipeline:live-ingest`: pass (`sources 5 / runs 3 / items 9 / classifications 9`)
+- `npm run pipeline:supabase-sync`: pass (`sources synced 5 / runs synced 3 / items synced 9 / classifications synced 9`)
+- `npm run pipeline:daily`: pass (`27 items / 0 errors / 8.1s`), Telegram report skipped without bot env
 
 ## Open Follow-ups
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
@@ -81,8 +88,9 @@
 - `docs/ref/VIDEO-WORKER-CONTRACT.md`가 watch folder -> auto analysis -> CapCut handoff -> parent review 계약을 정의한다
 - inbox의 `target_surface`는 이제 `review/publish/archive/discard` 다음 큐로 실제 파생되고, human exception 규칙은 review/exceptions에 반영된다
 - `npm run pipeline:brief-discover`로 non-video 파이프라인의 최소 dry-run을 실제로 돌릴 수 있다
-- `npm run pipeline:live-fetch`로 `OpenAI News`, `Google AI Blog`, `GitHub Releases`를 실제로 fetch해서 기존 분류 입력 형태로 내릴 수 있다
+- `npm run pipeline:live-fetch`는 `OpenAI News`, `Google AI Blog`, `GitHub Releases`를 실제로 fetch하고, article RSS source에는 `Defuddle` 기반 markdown enrichment를 시도한다
 - `npm run pipeline:live-ingest`로 live fetch 결과를 로컬 snapshot의 `sources / ingest_runs / ingested_items / item_classifications` 구조로 저장할 수 있다
+- live fetch 결과의 `parsed_content`에는 `summary`, `contentMarkdown`, `parserName`, `parseStatus`, `tags`가 함께 저장된다
 - `npm run pipeline:supabase-migrate`, `npm run pipeline:supabase-sync`를 실제 Supabase에 실행했고 ingest/editorial spine이 새 lifecycle 스키마 기준으로 동기화됐다
 - `npm run pipeline:supabase-cleanup`이 legacy public 테이블/트리거/함수 백업을 생성했고, cleanup commit 후 allowlist 외 public legacy table이 제거됐다
 - Supabase sync는 schema-qualified upsert와 stable UUID mapping을 사용해 로컬 snapshot id를 원격 UUID 스키마에 맞춰 저장한다
@@ -125,3 +133,6 @@
 - Supabase read path에 `connect_timeout: 10s`, `idle_timeout: 20s`, `Promise.race` 15s 안전장치가 적용됐다
 - `pipeline-to-ui.spec.ts`로 파이프라인 데이터가 public/admin UI까지 전달되는지 E2E 자동 검증 가능
 - `/pipeline-check` 스킬로 fetch → ingest → sync → E2E 검증을 한번에 실행 가능
+- `trial:all`은 classifier / brief draft / discover draft / critic 4개 stage를 한 번에 묶는 fixture-backed baseline suite다
+- `trial:all`의 `baseline-pass / baseline-warning / rollback-risk`는 live drift가 아니라 fixture baseline 상태를 의미한다
+- 현재 머신에서는 실제 `SUPABASE_DB_URL` 연결로 `pipeline:supabase-sync`, `pipeline:daily`까지 정상 검증 완료했다

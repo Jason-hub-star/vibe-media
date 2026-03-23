@@ -16,18 +16,24 @@ npm --version
 실패 시 즉시 중단하고 "Node 런타임 없음"을 Telegram으로 보고한다.
 
 ### 1-2. 작업 디렉토리
-프로젝트 루트: `/Users/family/jason/vibehub-media`
+프로젝트 루트는 `git rev-parse --show-toplevel`로 계산한다.
 모든 npm 명령은 이 루트에서 실행한다. (`apps/backend` 내부가 아님)
 
 ### 1-3. 환경변수 확인
 
 > ⚠️ `run-daily-pipeline.ts`는 `dotenv`를 import하지 않는다.
-> `.env`를 **파이프라인 실행 전 쉘에서 직접 로드**해야 한다. (섹션 2-1 참고)
+> `.env`를 먼저 로드하고, 있으면 `.env.local`로 override한 뒤 파이프라인을 실행해야 한다. (섹션 2-1 참고)
+>
+> 참고:
+> - `load-env.ts`가 자동 적용되는 경로: `supabase-postgres.ts`, `run-supabase-cleanup.ts`, `run-watch-folder-worker.ts`
+> - `run-daily-pipeline.ts`는 여기에 포함되지 않으므로 계속 셸 주입이 필요하다.
 
 확인 명령:
 ```bash
-cd /Users/family/jason/vibehub-media
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
 set -a && source .env && set +a 2>/dev/null || true
+[ -f .env.local ] && set -a && source .env.local && set +a
 echo "SUPABASE_DB_URL: ${SUPABASE_DB_URL:+set}"
 echo "TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:+set}"
 echo "TELEGRAM_REPORT_CHAT_ID: ${TELEGRAM_REPORT_CHAT_ID:+set}"
@@ -50,8 +56,10 @@ Telegram 키가 없으면 파이프라인은 실행되지만 보고가 생략되
 
 `.env` 로드 후 실행:
 ```bash
-cd /Users/family/jason/vibehub-media
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
 set -a && source .env && set +a
+[ -f .env.local ] && set -a && source .env.local && set +a
 mkdir -p logs
 npm run pipeline:daily 2>&1 | tee "logs/pipeline-$(date +%Y%m%d-%H%M%S).log"
 echo "EXIT:${PIPESTATUS[0]}"
@@ -72,8 +80,10 @@ echo "EXIT:${PIPESTATUS[0]}"
 
 ### 2-2. 개별 실행 (pipeline:daily 실패 시 폴백)
 ```bash
-cd /Users/family/jason/vibehub-media
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
 set -a && source .env && set +a
+[ -f .env.local ] && set -a && source .env.local && set +a
 npm run pipeline:live-fetch 2>&1
 npm run pipeline:live-ingest 2>&1
 npm run pipeline:supabase-sync 2>&1
@@ -105,7 +115,8 @@ trial:critic             — 품질 평가 shadow trial
 
 ### 3-1. 로그 확인
 ```bash
-ls -lt /Users/family/jason/vibehub-media/logs/pipeline-*.log | head -1
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+ls -lt "$ROOT_DIR"/logs/pipeline-*.log | head -1
 ```
 최신 로그 파일을 읽어 각 단계의 처리 건수와 소요시간을 확인한다.
 
@@ -165,13 +176,25 @@ ls -lt /Users/family/jason/vibehub-media/logs/pipeline-*.log | head -1
 분류/초안은 포함되지 않으며, 필요 시 파이프라인 완료 후 별도로 실행:
 
 ```bash
-cd /Users/family/jason/vibehub-media
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
 set -a && source .env && set +a
+[ -f .env.local ] && set -a && source .env.local && set +a
 
 npm run trial:classifier 2>&1
 npm run trial:brief-draft 2>&1
 npm run trial:discover-draft 2>&1
 npm run trial:critic 2>&1
+
+또는 통합 요약:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env && set +a
+[ -f .env.local ] && set -a && source .env.local && set +a
+npm run trial:all 2>&1
+```
 ```
 
 이 단계들은 shadow trial 모드이며, `docs/ref/ORCHESTRATION-EVALUATION.md` 기준을 충족하면 daily pipeline에 통합된다.
@@ -181,7 +204,7 @@ npm run trial:critic 2>&1
 ## 6. Telegram Orchestrator 연동
 
 ### 6-1. 개요
-`/Users/family/jason/vibehub-media/telegram-orchestrator`에 별도 Telegram 봇 라우터가 있다.
+`telegram-orchestrator` 디렉토리에 별도 Telegram 봇 라우터가 있다.
 이 라우터는 메시지를 받아 local(Ollama) / Claude / Codex로 라우팅하며, 모델 상태를 SQLite로 관리한다.
 
 ### 6-2. 파이프라인과의 관계
@@ -195,7 +218,8 @@ npm run trial:critic 2>&1
 
 ### 6-3. 라우터 실행
 ```bash
-cd /Users/family/jason/vibehub-media/telegram-orchestrator
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR/telegram-orchestrator"
 ./bin/start-router.sh           # 일반 실행 (.env 자동 로드)
 ./bin/start-router-awake.sh     # Mac 슬립 방지 + 실행
 ```

@@ -4,10 +4,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Load env vars (run-daily-pipeline.ts has no dotenv import)
+if [ -f .env ]; then
+  set -a && source .env && set +a
+fi
 if [ -f .env.local ]; then
   set -a && source .env.local && set +a
-elif [ -f .env ]; then
-  set -a && source .env && set +a
 fi
 
 mkdir -p logs
