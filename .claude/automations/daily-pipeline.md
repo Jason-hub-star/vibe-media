@@ -21,19 +21,15 @@ npm --version
 
 ### 1-3. 환경변수 확인
 
-> ⚠️ `run-daily-pipeline.ts`는 `dotenv`를 import하지 않는다.
-> `.env`를 먼저 로드하고, 있으면 `.env.local`로 override한 뒤 파이프라인을 실행해야 한다. (섹션 2-1 참고)
->
-> 참고:
-> - `load-env.ts`가 자동 적용되는 경로: `supabase-postgres.ts`, `run-supabase-cleanup.ts`, `run-watch-folder-worker.ts`
-> - `run-daily-pipeline.ts`는 여기에 포함되지 않으므로 계속 셸 주입이 필요하다.
+> ℹ️ `run-daily-pipeline.ts`는 `dotenv`를 import하지 않는다.
+> `scripts/daily-pipeline.sh`가 `.env.local` → `.env` 순으로 자동 source하므로, 쉘 스크립트 경유 실행 시에는 별도 처리 불필요하다.
+> `npm run pipeline:daily`를 직접 실행할 경우에는 수동 source가 여전히 필요하다. (섹션 2-1 참고)
 
 확인 명령:
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
-set -a && source .env && set +a 2>/dev/null || true
-[ -f .env.local ] && set -a && source .env.local && set +a
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
 echo "SUPABASE_DB_URL: ${SUPABASE_DB_URL:+set}"
 echo "TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:+set}"
 echo "TELEGRAM_REPORT_CHAT_ID: ${TELEGRAM_REPORT_CHAT_ID:+set}"
@@ -54,26 +50,34 @@ Telegram 키가 없으면 파이프라인은 실행되지만 보고가 생략되
 
 ### 2-1. 통합 실행 (기본)
 
-`.env` 로드 후 실행:
+**권장: 쉘 스크립트 경유** (`.env.local` 자동 로드 + 로그 tee 포함):
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
-set -a && source .env && set +a
-[ -f .env.local ] && set -a && source .env.local && set +a
+./scripts/daily-pipeline.sh
+```
+
+**직접 실행 시** (수동 env 로드 필요):
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
 mkdir -p logs
 npm run pipeline:daily 2>&1 | tee "logs/pipeline-$(date +%Y%m%d-%H%M%S).log"
 echo "EXIT:${PIPESTATUS[0]}"
 ```
 
-이 명령은 `apps/backend/src/workers/run-daily-pipeline.ts`를 실행하며 3단계를 순차 수행한다:
+이 명령은 `apps/backend/src/workers/run-daily-pipeline.ts`를 실행하며 4단계를 순차 수행한다:
 
-| 순서 | 단계 | npm script | 워커 파일 | stdout 파싱 패턴 | timeout |
-|---|---|---|---|---|---|
-| 1 | Source Fetch | `pipeline:live-fetch` | `run-live-source-fetch.ts` | `items fetched: N` | 120초 |
-| 2 | Ingest | `pipeline:live-ingest` | `run-live-ingest-spine.ts` | `items stored: N` | 120초 |
-| 3 | Supabase Sync | `pipeline:supabase-sync` | `run-supabase-live-ingest.ts` | `items synced: N` | 120초 |
+| 순서 | 단계 | npm script | 워커 파일 | 동작 | stdout 파싱 패턴 | timeout |
+|---|---|---|---|---|---|---|
+| 1 | Source Fetch | `pipeline:live-fetch` | `run-live-source-fetch.ts` | 소스 수집 후 `materializeLiveIngestSnapshot()` + `writeLiveIngestSnapshot()`으로 스냅샷 저장 | `items fetched: N` | 120초 |
+| 2 | Ingest | `pipeline:live-ingest` | `run-live-ingest-spine.ts` | `readLiveIngestSnapshot()`으로 스냅샷 먼저 읽음. 없을 때만 `runLiveSourceFetch()` fallback | `items stored: N` | 120초 |
+| 3 | Supabase Sync | `pipeline:supabase-sync` | `run-supabase-live-ingest.ts` | 로컬 ingest 결과를 Supabase에 동기화 | `items synced: N` | 120초 |
+| 4 | Obsidian Export | `pipeline:obsidian-export` | `run-obsidian-discover-export.ts` | `discover_items`를 Obsidian vault `Radar/*` 노트로 저장하고 Telegram export summary 전송 | `items exported: N` | 120초 |
 
 동작 방식:
+- fetch → 스냅샷 저장 → ingest(스냅샷 읽기) → sync → obsidian export 순으로 결합된 흐름
 - 에러 발생 시 즉시 중단, 나머지 단계는 `idle`로 마킹
 - 완료 후 `sendPipelineReport()`로 Telegram 자동 전송 (plain text 포맷, parse_mode 미설정)
 - exit code: 0(성공) / 1(에러)
@@ -82,19 +86,20 @@ echo "EXIT:${PIPESTATUS[0]}"
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
-set -a && source .env && set +a
-[ -f .env.local ] && set -a && source .env.local && set +a
-npm run pipeline:live-fetch 2>&1
-npm run pipeline:live-ingest 2>&1
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+npm run pipeline:live-fetch 2>&1   # 수집 + 스냅샷 저장
+npm run pipeline:live-ingest 2>&1  # 스냅샷 읽기 → ingest (스냅샷 없으면 자동 re-fetch)
 npm run pipeline:supabase-sync 2>&1
+npm run pipeline:obsidian-export 2>&1
 ```
 
 ### 2-3. 전체 npm scripts 참고
 ```
-pipeline:daily           — fetch→ingest→sync 통합 + Telegram 보고
+pipeline:daily           — fetch→ingest→sync→obsidian export 통합 + Telegram 보고
 pipeline:live-fetch      — Source Fetch만
 pipeline:live-ingest     — Ingest만
 pipeline:supabase-sync   — Supabase Sync만
+pipeline:obsidian-export — Discover를 Obsidian vault에 저장하고 Telegram export summary 전송
 pipeline:supabase-cleanup — 오래된 레코드 정리 (SUPABASE_CLEANUP_COMMIT=1 필요)
 pipeline:supabase-migrate — DB 마이그레이션
 pipeline:brief-discover  — Brief+Discover 사이클

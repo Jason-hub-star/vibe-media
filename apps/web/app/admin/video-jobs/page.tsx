@@ -1,7 +1,7 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
 import { PlaceholderArt } from "@/components/PlaceholderArt";
-import { VideoJobBoard } from "@/features/video-jobs/view/VideoJobBoard";
+import { VideoJobCardGrid } from "@/features/video-jobs/view/VideoJobCardGrid";
 import { listVideoJobs } from "@/features/video-jobs/use-case/list-video-jobs";
 
 export default async function AdminVideoJobsPage() {
@@ -9,8 +9,8 @@ export default async function AdminVideoJobsPage() {
 
   return (
     <AdminShell
-      subtitle="Video is treated as an internal automation pipeline, with auto-analysis first, CapCut finishing second, and parent review as the last gate."
-      title="Video Jobs"
+      subtitle="자동 분석 → CapCut → 보호자 검수 → 비공개 업로드 흐름을 관리합니다"
+      title="비디오 작업"
     >
       <PlaceholderArt
         alt="Admin video banner placeholder"
@@ -22,7 +22,7 @@ export default async function AdminVideoJobsPage() {
           title="No video jobs"
         />
       ) : (
-        <VideoJobBoard jobs={jobs} />
+        <VideoJobCardGrid items={jobs} />
       )}
     </AdminShell>
   );

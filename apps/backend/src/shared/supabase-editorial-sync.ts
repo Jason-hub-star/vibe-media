@@ -58,6 +58,30 @@ interface AdminReviewRow {
   reviewed_at: string | null;
 }
 
+interface ExistingBriefLifecycleRow {
+  source_item_id: string;
+  status: BriefPostRow["status"];
+  review_status: BriefPostRow["review_status"];
+  scheduled_at: string | null;
+  published_at: string | null;
+  last_editor_note: string | null;
+}
+
+interface ExistingDiscoverLifecycleRow {
+  source_item_id: string;
+  status: DiscoverItemRow["status"];
+  review_status: DiscoverItemRow["review_status"];
+  scheduled_at: string | null;
+  published_at: string | null;
+}
+
+interface ExistingAdminReviewRow {
+  id: string;
+  review_status: AdminReviewRow["review_status"];
+  notes: string;
+  reviewed_at: string | null;
+}
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -83,6 +107,67 @@ function needsReview(classification: SnapshotItemClassificationRow) {
       classification.confidence < 0.85 ||
       classification.duplicate_of
   );
+}
+
+export function hasLockedEditorialLifecycle(params: {
+  reviewStatus: BriefPostRow["review_status"] | DiscoverItemRow["review_status"];
+  scheduledAt: string | null;
+  publishedAt: string | null;
+}) {
+  return params.reviewStatus !== "pending" || Boolean(params.scheduledAt) || Boolean(params.publishedAt);
+}
+
+export function preserveBriefLifecycle(row: BriefPostRow, existing?: ExistingBriefLifecycleRow | null): BriefPostRow {
+  if (!existing || !hasLockedEditorialLifecycle({
+    reviewStatus: existing.review_status,
+    scheduledAt: existing.scheduled_at,
+    publishedAt: existing.published_at
+  })) {
+    return row;
+  }
+
+  return {
+    ...row,
+    status: existing.status,
+    review_status: existing.review_status,
+    scheduled_at: existing.scheduled_at,
+    published_at: existing.published_at,
+    last_editor_note: existing.last_editor_note ?? row.last_editor_note
+  };
+}
+
+export function preserveDiscoverLifecycle(
+  row: DiscoverItemRow,
+  existing?: ExistingDiscoverLifecycleRow | null
+): DiscoverItemRow {
+  if (!existing || !hasLockedEditorialLifecycle({
+    reviewStatus: existing.review_status,
+    scheduledAt: existing.scheduled_at,
+    publishedAt: existing.published_at
+  })) {
+    return row;
+  }
+
+  return {
+    ...row,
+    status: existing.status,
+    review_status: existing.review_status,
+    scheduled_at: existing.scheduled_at,
+    published_at: existing.published_at
+  };
+}
+
+export function preserveAdminReviewResolution(row: AdminReviewRow, existing?: ExistingAdminReviewRow | null): AdminReviewRow {
+  if (!existing || (existing.review_status === "pending" && !existing.reviewed_at)) {
+    return row;
+  }
+
+  return {
+    ...row,
+    review_status: existing.review_status,
+    notes: existing.notes,
+    reviewed_at: existing.reviewed_at
+  };
 }
 
 function shouldSkipEditorial(classification: SnapshotItemClassificationRow) {
@@ -286,7 +371,21 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
   const editorial = buildEditorialRows(snapshot);
 
   try {
-    for (const row of editorial.briefPosts) {
+    for (const originalRow of editorial.briefPosts) {
+      const existingRows = await sql<ExistingBriefLifecycleRow[]>`
+        select
+          source_item_id,
+          status,
+          review_status,
+          scheduled_at,
+          published_at,
+          last_editor_note
+        from public.brief_posts
+        where source_item_id = ${originalRow.source_item_id}::uuid
+        limit 1
+      `;
+      const row = preserveBriefLifecycle(originalRow, existingRows[0] ?? null);
+
       await sql`
         insert into public.brief_posts (
           id,
@@ -332,7 +431,20 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
       `;
     }
 
-    for (const row of editorial.discoverItems) {
+    for (const originalRow of editorial.discoverItems) {
+      const existingRows = await sql<ExistingDiscoverLifecycleRow[]>`
+        select
+          source_item_id,
+          status,
+          review_status,
+          scheduled_at,
+          published_at
+        from public.discover_items
+        where source_item_id = ${originalRow.source_item_id}::uuid
+        limit 1
+      `;
+      const row = preserveDiscoverLifecycle(originalRow, existingRows[0] ?? null);
+
       await sql`
         insert into public.discover_items (
           id,
@@ -411,7 +523,19 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
       `;
     }
 
-    for (const row of editorial.adminReviews) {
+    for (const originalRow of editorial.adminReviews) {
+      const existingRows = await sql<ExistingAdminReviewRow[]>`
+        select
+          id,
+          review_status,
+          notes,
+          reviewed_at
+        from public.admin_reviews
+        where id = ${originalRow.id}::uuid
+        limit 1
+      `;
+      const row = preserveAdminReviewResolution(originalRow, existingRows[0] ?? null);
+
       await sql`
         insert into public.admin_reviews (
           id,

@@ -19,7 +19,7 @@ export default async function BriefDetailPage({
 
   return (
     <PageFrame>
-      <SectionBlock eyebrow={brief.publishedAt?.slice(0, 10) ?? "브리프"} title={brief.title}>
+      <SectionBlock eyebrow={brief.publishedAt?.slice(0, 10) ?? "Brief"} title={brief.title}>
         <article className="panel stack-tight">
           <p className="muted">{brief.summary}</p>
           {brief.body.map((paragraph) => (

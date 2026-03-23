@@ -19,3 +19,8 @@ export interface IngestRun {
   itemCount: number;
   errorMessage: string | null;
 }
+
+export interface IngestRunDetail extends IngestRun {
+  stageLog: Array<{ stage: string; status: string; timestamp: string }>;
+  itemBreakdown: Array<{ title: string; surface: string }>;
+}

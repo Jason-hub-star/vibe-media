@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import type { LiveIngestSnapshot } from "../src/shared/live-ingest-snapshot";
-import { buildEditorialRows } from "../src/shared/supabase-editorial-sync";
+import {
+  buildEditorialRows,
+  hasLockedEditorialLifecycle,
+  preserveAdminReviewResolution,
+  preserveBriefLifecycle,
+  preserveDiscoverLifecycle
+} from "../src/shared/supabase-editorial-sync";
 
 describe("supabase editorial sync", () => {
   it("builds brief and discover drafts from classified ingest rows", () => {
@@ -147,5 +153,107 @@ describe("supabase editorial sync", () => {
     expect(editorial.briefPosts).toHaveLength(0);
     expect(editorial.discoverItems).toHaveLength(0);
     expect(editorial.adminReviews).toHaveLength(0);
+  });
+
+  it("preserves manual brief lifecycle once an operator has touched it", () => {
+    const merged = preserveBriefLifecycle(
+      {
+        id: "brief-1",
+        source_item_id: "source-item-1",
+        slug: "fresh-brief",
+        title: "Fresh title",
+        summary: "Fresh summary",
+        body: ["Fresh body"],
+        status: "draft",
+        review_status: "pending",
+        scheduled_at: null,
+        published_at: null,
+        last_editor_note: "auto note",
+        source_links: [{ label: "OpenAI News", href: "https://example.com" }],
+        source_count: 1
+      },
+      {
+        source_item_id: "source-item-1",
+        status: "scheduled",
+        review_status: "approved",
+        scheduled_at: "2026-03-23T09:00:00.000Z",
+        published_at: null,
+        last_editor_note: "keep operator note"
+      }
+    );
+
+    expect(merged.status).toBe("scheduled");
+    expect(merged.review_status).toBe("approved");
+    expect(merged.scheduled_at).toBe("2026-03-23T09:00:00.000Z");
+    expect(merged.last_editor_note).toBe("keep operator note");
+  });
+
+  it("preserves manual discover lifecycle once it has moved beyond pending", () => {
+    const merged = preserveDiscoverLifecycle(
+      {
+        id: "discover-1",
+        source_item_id: "source-item-1",
+        slug: "fresh-discover",
+        title: "Fresh title",
+        category: "sdk",
+        summary: "Fresh summary",
+        status: "featured",
+        review_status: "pending",
+        scheduled_at: null,
+        published_at: null,
+        tags: ["sdk"],
+        highlighted: true
+      },
+      {
+        source_item_id: "source-item-1",
+        status: "tracked",
+        review_status: "changes_requested",
+        scheduled_at: null,
+        published_at: null
+      }
+    );
+
+    expect(merged.status).toBe("tracked");
+    expect(merged.review_status).toBe("changes_requested");
+  });
+
+  it("keeps resolved admin review rows closed", () => {
+    const merged = preserveAdminReviewResolution(
+      {
+        id: "review-1",
+        target_type: "brief",
+        target_id: "brief-1",
+        review_status: "pending",
+        notes: "auto wants review",
+        reviewed_at: null
+      },
+      {
+        id: "review-1",
+        review_status: "approved",
+        notes: "operator approved",
+        reviewed_at: "2026-03-23T10:00:00.000Z"
+      }
+    );
+
+    expect(merged.review_status).toBe("approved");
+    expect(merged.notes).toBe("operator approved");
+    expect(merged.reviewed_at).toBe("2026-03-23T10:00:00.000Z");
+  });
+
+  it("treats scheduled or published rows as locked lifecycle state", () => {
+    expect(
+      hasLockedEditorialLifecycle({
+        reviewStatus: "pending",
+        scheduledAt: "2026-03-23T09:00:00.000Z",
+        publishedAt: null
+      })
+    ).toBe(true);
+    expect(
+      hasLockedEditorialLifecycle({
+        reviewStatus: "pending",
+        scheduledAt: null,
+        publishedAt: null
+      })
+    ).toBe(false);
   });
 });

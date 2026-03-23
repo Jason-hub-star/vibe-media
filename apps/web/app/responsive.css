@@ -7,7 +7,9 @@
   .summary-grid,
   .showcase-grid,
   .admin-grid,
-  .review-grid {
+  .review-grid,
+  .admin-card-grid,
+  .admin-readiness-grid {
     grid-template-columns: 1fr;
   }
 

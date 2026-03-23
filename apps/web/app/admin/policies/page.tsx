@@ -7,8 +7,8 @@ export default async function AdminPoliciesPage() {
 
   return (
     <AdminShell
-      subtitle="Review, source tier, and publish rules stay visible here so operator decisions are made against the current policy set."
-      title="Policies"
+      subtitle="검수, 소스 등급, 발행 규칙을 현행 정책과 대조합니다"
+      title="정책 참조"
     >
       <PolicySummaryGrid cards={cards} />
     </AdminShell>

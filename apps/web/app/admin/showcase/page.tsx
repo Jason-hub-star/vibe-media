@@ -1,17 +1,24 @@
 import { AdminShell } from "@/components/AdminShell";
-import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
+import { EmptyState } from "@/components/EmptyState";
 import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
-import { ShowcaseRegistryBoard } from "@/features/showcase/view/ShowcaseRegistryBoard";
+import { ShowcaseCardGrid } from "@/features/showcase/view/ShowcaseCardGrid";
 
 export default async function AdminShowcasePage() {
-  const [showcaseEntries, discoverItems] = await Promise.all([listShowcaseEntries(), listDiscoverItems()]);
+  const showcaseEntries = await listShowcaseEntries();
 
   return (
     <AdminShell
-      subtitle="Operate the manual showcase sidecar lane without changing the brief/discover automation spine."
-      title="Showcase Lane"
+      subtitle="수동 큐레이션 사이드카 레인을 운영합니다"
+      title="쇼케이스"
     >
-      <ShowcaseRegistryBoard discoverItems={discoverItems} entries={showcaseEntries} />
+      {showcaseEntries.length === 0 ? (
+        <EmptyState
+          body="Curated showcase entries will appear here once they are registered."
+          title="No showcase entries"
+        />
+      ) : (
+        <ShowcaseCardGrid items={showcaseEntries} />
+      )}
     </AdminShell>
   );
 }

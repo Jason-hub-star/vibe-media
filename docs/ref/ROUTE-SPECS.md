@@ -33,9 +33,10 @@
 
 ## Admin
 ### `/admin`
-- 목적: 운영자 메인 대시보드
-- 핵심 섹션: Pipeline Monitor (canvas + node detail panel + results summary + run history + source reliability) 상단, Queue Overview 하단
-- 사이드바 그룹: Pipeline, Editorial, Registry, Reference (4개 섹션)
+- 목적: 운영자 메인 대시보드 (운영 콕핏)
+- 핵심 섹션: 최근 완료 항목 → 배포 준비 현황 → 대기열 현황 → 자동화 이력 → Pipeline Monitor
+- 사이드바 그룹: 파이프라인 / 에디토리얼 / 레지스트리 / 참조 (한국어)
+- 대기열 카드 클릭 시 각 목록 페이지로 이동
 - 현재 인증 성격: 로컬 스캐폴드 게이트, production auth 아님
 
 ### `/admin/pipeline`
@@ -44,13 +45,23 @@
 
 ### `/admin/briefs`
 - 목적: 브리프 검수
-- 핵심 섹션: status table
-- 현재 상태: empty state 분기 구현. review mutation은 `/admin/review`에서 처리
+- 핵심 섹션: 카드 그리드 (상태 뱃지, 소스 수, 발행일)
+- 현재 상태: 카드 UI + empty state 분기 구현. review mutation은 `/admin/review`에서 처리
+
+### `/admin/briefs/[slug]`
+- 목적: 브리프 상세 보기
+- 핵심 섹션: 본문, 출처 링크, 발행 위치 안내
+- 현재 상태: AdminDetailLayout + BriefDetailContent 구현
 
 ### `/admin/discover`
 - 목적: 디스커버리 레지스트리 운영
-- 핵심 섹션: registry table
-- 현재 상태: scaffold table + outbound actions
+- 핵심 섹션: 카드 그리드 (카테고리, 상태, 태그)
+- 현재 상태: 카드 UI + outbound actions
+
+### `/admin/discover/[id]`
+- 목적: 디스커버리 항목 상세
+- 핵심 섹션: 설명, 액션 링크, 관련 브리프
+- 현재 상태: AdminDetailLayout + DiscoverDetailContent 구현
 
 ### `/admin/showcase`
 - 목적: 수동 큐레이션 showcase lane 운영
@@ -59,30 +70,55 @@
 
 ### `/admin/inbox`
 - 목적: 새로 수집된 item 확인
-- 핵심 섹션: source / parsed content / classification candidate
-- 현재 상태: scaffold table 구현, 실제 classification mutation은 후속 작업
+- 핵심 섹션: 카드 그리드 (소스, 단계, surface, 신뢰도)
+- 현재 상태: 카드 UI 구현, 실제 classification mutation은 후속 작업
+
+### `/admin/inbox/[id]`
+- 목적: 수신 항목 상세
+- 핵심 섹션: 수집 정보, 파싱 요약, 분류 로그
+- 현재 상태: AdminDetailLayout + InboxDetailContent 구현
 
 ### `/admin/runs`
 - 목적: 수집/가공/초안 실행 이력 확인
-- 핵심 섹션: run status table, retry actions
-- 현재 상태: scaffold table 구현, 실제 retry mutation은 후속 작업
+- 핵심 섹션: 카드 그리드 (상태, 아이템 수, 소요 시간)
+- 현재 상태: 카드 UI 구현, 실제 retry mutation은 후속 작업
+
+### `/admin/runs/[id]`
+- 목적: 실행 상세
+- 핵심 섹션: 단계별 로그, 항목 분류 결과
+- 현재 상태: AdminDetailLayout + RunDetailContent 구현
 
 ### `/admin/publish`
 - 목적: 승인 후 배포 대기와 예약 상태 확인
-- 핵심 섹션: publish queue + action cell
-- 현재 상태: Supabase editorial lifecycle + `video_jobs` queue를 함께 읽고, brief/discover 항목에 schedule/publish Server Action 버튼 구현 (video는 버튼 미표시)
+- 핵심 섹션: 카드 그리드 (대상 타입, 큐 상태, 예약일, 다음 액션)
+- 현재 상태: 카드 UI + schedule/publish Server Action 버튼 구현
 - 전제: mutation은 `SUPABASE_DB_URL` 환경변수 필요
+
+### `/admin/publish/[id]`
+- 목적: 발행 항목 상세
+- 핵심 섹션: 발행 URL, 배포 대상, 다음 액션
+- 현재 상태: AdminDetailLayout + PublishDetailContent 구현
 
 ### `/admin/review`
 - 목적: 예외 검수와 send-back 판단
-- 핵심 섹션: source / parsed / preview 3면 레이아웃 + action bar
-- 현재 상태: `admin_reviews` 실저장 row를 우선 읽는 3면 레이아웃 + approve/changes_requested/reject Server Action 버튼 구현
+- 핵심 섹션: 카드 그리드 (검수 상태, surface, 신뢰도)
+- 현재 상태: 카드 UI + approve/changes_requested/reject Server Action 버튼 구현
 - 전제: mutation은 `SUPABASE_DB_URL` 환경변수 필요
+
+### `/admin/review/[id]`
+- 목적: 검수 항목 상세
+- 핵심 섹션: 출처, 파싱 결과, 미리보기, 수정 사유 (ModificationReason)
+- 현재 상태: AdminDetailLayout + ReviewDetailContent 구현
 
 ### `/admin/exceptions`
 - 목적: human-on-exception 큐 운영
-- 핵심 섹션: exception reason, confidence, retry or hold action
-- 현재 상태: retryable ingest failure + blocked video 상태를 한 화면에서 읽는 read/view 중심 화면
+- 핵심 섹션: 카드 그리드 (사유, 신뢰도, 대상 타입)
+- 현재 상태: 카드 UI + read/view 중심 화면
+
+### `/admin/exceptions/[id]`
+- 목적: 예외 항목 상세
+- 핵심 섹션: 수정 사유 (ModificationReason), 정책 위반 사항
+- 현재 상태: AdminDetailLayout + ExceptionDetailContent 구현
 
 ### `/admin/policies`
 - 목적: review policy, source tier, publish policy 확인
@@ -96,18 +132,38 @@
 
 ### `/admin/video-jobs`
 - 목적: 비디오 자동화 상태 확인
-- 핵심 섹션: placeholder banner, job board, CapCut handoff notes, parent review gate
-- 현재 상태: scaffold board가 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영
+- 핵심 섹션: 카드 그리드 (상태, 종류, 하이라이트, 다음 액션)
+- 현재 상태: 카드 UI + placeholder banner
+
+### `/admin/video-jobs/[id]`
+- 목적: 비디오 작업 상세
+- 핵심 섹션: 처리 로그, 에셋/자막 상태, 위험 세그먼트
+- 현재 상태: AdminDetailLayout + VideoJobDetailContent 구현
 
 ### `/admin/sources`
 - 목적: source registry 확인
-- 핵심 섹션: source rows (ul/li 구조, enabled sources만 표시)
-- 현재 상태: Supabase-first read, fallback은 snapshot → mock. source name, category, freshness, visit link 표시
+- 핵심 섹션: 카드 그리드 (카테고리, 주기, 방문 링크)
+- 현재 상태: 카드 UI + Supabase-first read
+
+### `/admin/sources/[id]`
+- 목적: 소스 상세
+- 핵심 섹션: 실행 이력, 신뢰도, URL
+- 현재 상태: AdminDetailLayout + SourceDetailContent 구현
 
 ### `/admin/assets`
 - 목적: asset slot 확인
-- 핵심 섹션: slot cards
-- 현재 상태: empty state 분기 구현
+- 핵심 섹션: 카드 그리드 (타입, 사양)
+- 현재 상태: 카드 UI + empty state 분기 구현
+
+### `/admin/assets/[id]`
+- 목적: 에셋 슬롯 상세
+- 핵심 섹션: 사양, 사용처
+- 현재 상태: AdminDetailLayout + AssetDetailContent 구현
+
+### `/admin/showcase/[id]`
+- 목적: 쇼케이스 항목 상세
+- 핵심 섹션: 요약, 본문, 태그, 발행 상태
+- 현재 상태: AdminDetailLayout + ShowcaseDetailContent 구현
 
 ## API Routes
 

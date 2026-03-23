@@ -6,11 +6,14 @@ import { usePathname } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
 
 import { getAdminSession, setAdminSession, subscribeAdminSession } from "@/lib/admin-session";
+import {
+  ADMIN_OVERVIEW,
+  ADMIN_SIDEBAR_EYEBROW,
+  ADMIN_SESSION_NOTE,
+  ADMIN_SIDEBAR_GROUPS,
+} from "@/lib/admin-labels";
 
-/* ── Top-level link (no group) ── */
-const overviewLink = { href: "/admin", label: "Overview", exact: true } as const;
-
-/* ── Grouped sidebar links ── */
+/* ── Sidebar types ── */
 interface SidebarLink {
   href: string;
   label: string;
@@ -22,42 +25,8 @@ interface SidebarGroup {
   links: readonly SidebarLink[];
 }
 
-const sidebarGroups: readonly SidebarGroup[] = [
-  {
-    name: "Pipeline",
-    links: [
-      { href: "/admin/pipeline", label: "Pipeline" },
-      { href: "/admin/inbox", label: "Inbox" },
-      { href: "/admin/runs", label: "Runs" },
-      { href: "/admin/sources", label: "Sources" },
-    ],
-  },
-  {
-    name: "Editorial",
-    links: [
-      { href: "/admin/briefs", label: "Briefs" },
-      { href: "/admin/review", label: "Review" },
-      { href: "/admin/publish", label: "Publish" },
-      { href: "/admin/exceptions", label: "Exceptions" },
-    ],
-  },
-  {
-    name: "Registry",
-    links: [
-      { href: "/admin/discover", label: "Discover" },
-      { href: "/admin/showcase", label: "Showcase" },
-      { href: "/admin/video-jobs", label: "Video jobs" },
-      { href: "/admin/assets", label: "Assets" },
-    ],
-  },
-  {
-    name: "Reference",
-    links: [
-      { href: "/admin/policies", label: "Policies" },
-      { href: "/admin/programs", label: "Programs" },
-    ],
-  },
-] as const;
+const overviewLink = ADMIN_OVERVIEW;
+const sidebarGroups: readonly SidebarGroup[] = ADMIN_SIDEBAR_GROUPS;
 
 const STORAGE_KEY = "admin-sidebar-collapsed";
 
@@ -169,7 +138,7 @@ export function AdminShell({
     <div className="shell admin-layout">
       <aside className={`panel admin-sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="row-between">
-          <p className="eyebrow">Admin tools</p>
+          <p className="eyebrow">{ADMIN_SIDEBAR_EYEBROW}</p>
           <button
             aria-label="Toggle sidebar"
             className="sidebar-toggle"
@@ -227,7 +196,7 @@ export function AdminShell({
       </aside>
       <div className="admin-content">
         <div className="stack-tight">
-          <p className="eyebrow">Operator workspace · local session</p>
+          <p className="eyebrow">{ADMIN_SESSION_NOTE}</p>
           <h1>{title}</h1>
           <p className="muted">{subtitle}</p>
         </div>

@@ -39,3 +39,7 @@ export interface VideoJob {
   parentReviewStatus?: string | null;
   blockedReason?: string | null;
 }
+
+export interface VideoJobDetail extends VideoJob {
+  processingLog: Array<{ step: string; status: string; timestamp: string }>;
+}

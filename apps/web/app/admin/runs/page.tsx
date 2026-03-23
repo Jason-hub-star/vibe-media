@@ -1,15 +1,15 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
 import { listRuns } from "@/features/runs/use-case/list-runs";
-import { RunTable } from "@/features/runs/view/RunTable";
+import { RunCardGrid } from "@/features/runs/view/RunCardGrid";
 
 export default async function AdminRunsPage() {
   const runs = await listRuns();
 
   return (
     <AdminShell
-      subtitle="Collection, parsing, classification, and failure history stay visible here before retry policy is automated."
-      title="Runs"
+      subtitle="수집, 파싱, 분류, 실패 이력을 추적합니다"
+      title="실행 이력"
     >
       {runs.length === 0 ? (
         <EmptyState
@@ -17,7 +17,7 @@ export default async function AdminRunsPage() {
           title="No runs yet"
         />
       ) : (
-        <RunTable runs={runs} />
+        <RunCardGrid items={runs} />
       )}
     </AdminShell>
   );

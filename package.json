@@ -16,6 +16,7 @@
     "pipeline:supabase-cleanup": "npm run pipeline:supabase-cleanup -w @vibehub/backend",
     "pipeline:supabase-migrate": "npm run pipeline:supabase-migrate -w @vibehub/backend",
     "pipeline:supabase-sync": "npm run pipeline:supabase-sync -w @vibehub/backend",
+    "pipeline:obsidian-export": "npm run pipeline:obsidian-export -w @vibehub/backend",
     "pipeline:watch-folder": "npm run pipeline:watch-folder -w @vibehub/backend",
     "review:decision": "npm run review:decision -w @vibehub/backend",
     "publish:action": "npm run publish:action -w @vibehub/backend",

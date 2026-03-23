@@ -43,3 +43,8 @@ export interface DiscoverItem {
   actions: DiscoverAction[];
   highlighted: boolean;
 }
+
+export interface DiscoverItemDetail extends DiscoverItem {
+  fullDescription: string;
+  relatedBriefSlugs: string[];
+}

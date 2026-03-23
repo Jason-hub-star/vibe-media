@@ -1,6 +1,6 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
-import { AdminBriefTable } from "@/features/admin-briefs/view/AdminBriefTable";
+import { BriefCardGrid } from "@/features/admin-briefs/view/BriefCardGrid";
 import { listBriefs } from "@/features/admin-briefs/use-case/list-briefs";
 
 export default async function AdminBriefsPage() {
@@ -8,8 +8,8 @@ export default async function AdminBriefsPage() {
 
   return (
     <AdminShell
-      subtitle="Draft, review, schedule, and publish states stay visible for every brief."
-      title="Brief Review"
+      subtitle="초안, 검수, 예약, 발행 상태를 한눈에 확인합니다"
+      title="브리프 검수"
     >
       {briefs.length === 0 ? (
         <EmptyState
@@ -17,7 +17,7 @@ export default async function AdminBriefsPage() {
           title="No briefs in review"
         />
       ) : (
-        <AdminBriefTable briefs={briefs} />
+        <BriefCardGrid items={briefs} />
       )}
     </AdminShell>
   );

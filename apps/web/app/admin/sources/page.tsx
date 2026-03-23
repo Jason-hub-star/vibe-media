@@ -1,20 +1,24 @@
 import { AdminShell } from "@/components/AdminShell";
-import { SourceRow } from "@/features/sources/view/SourceRow";
+import { EmptyState } from "@/components/EmptyState";
 import { listSources } from "@/features/sources/use-case/list-sources";
+import { SourceCardGrid } from "@/features/sources/view/SourceCardGrid";
 
 export default async function AdminSourcesPage() {
   const sources = await listSources();
 
   return (
     <AdminShell
-      subtitle="Manage tracked feeds and verify the trust boundary before drafting."
-      title="Source Registry"
+      subtitle="등록된 피드를 관리하고 신뢰 경계를 확인합니다"
+      title="소스 관리"
     >
-      <ul className="panel stack-tight">
-        {sources.map((source) => (
-          <SourceRow key={source.id} source={source} />
-        ))}
-      </ul>
+      {sources.length === 0 ? (
+        <EmptyState
+          body="Registered feeds and their trust boundaries will appear here."
+          title="No sources"
+        />
+      ) : (
+        <SourceCardGrid items={sources} />
+      )}
     </AdminShell>
   );
 }

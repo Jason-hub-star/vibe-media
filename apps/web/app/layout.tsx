@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body className={`${display.variable} ${body.variable}`}>
         <style>{rootCssVariables}</style>
         {children}

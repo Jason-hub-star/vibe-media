@@ -9,11 +9,11 @@ export default async function BriefPage() {
 
   return (
     <PageFrame>
-      <SectionBlock eyebrow="브리프" title="AI 뉴스 한국어 브리프 아카이브">
+      <SectionBlock eyebrow="Briefs" title="AI news brief archive">
         {briefs.length === 0 ? (
           <EmptyState
-            body="새로운 브리프가 발행되면 여기에 표시됩니다."
-            title="아직 발행된 브리프가 없습니다"
+            body="Published briefs will appear here once available."
+            title="No briefs published yet"
           />
         ) : (
           <div className="panel-grid">

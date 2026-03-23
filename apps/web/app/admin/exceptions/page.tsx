@@ -1,15 +1,15 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
 import { listExceptionQueue } from "@/features/exceptions/use-case/list-exception-queue";
-import { ExceptionQueueTable } from "@/features/exceptions/view/ExceptionQueueTable";
+import { ExceptionCardGrid } from "@/features/exceptions/view/ExceptionCardGrid";
 
 export default async function AdminExceptionsPage() {
   const items = await listExceptionQueue();
 
   return (
     <AdminShell
-      subtitle="Only the cases that fail confidence, policy, render, or privacy checks should land here."
-      title="Exceptions"
+      subtitle="신뢰도, 정책, 렌더링, 개인정보 검사를 통과하지 못한 항목입니다"
+      title="예외 처리"
     >
       {items.length === 0 ? (
         <EmptyState
@@ -17,7 +17,7 @@ export default async function AdminExceptionsPage() {
           title="No exceptions"
         />
       ) : (
-        <ExceptionQueueTable items={items} />
+        <ExceptionCardGrid items={items} />
       )}
     </AdminShell>
   );

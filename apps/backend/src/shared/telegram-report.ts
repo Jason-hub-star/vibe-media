@@ -18,6 +18,19 @@ export interface PipelineReport {
   totalDurationMs: number;
   totalItems: number;
   errorCount: number;
+  highlights?: string[];
+}
+
+export interface DiscoverExportReport {
+  vaultRoot: string;
+  savedCount: number;
+  createdCount: number;
+  updatedCount: number;
+  skippedCount: number;
+  failedCount: number;
+  folderCounts: Array<{ folderName: string; count: number }>;
+  savedPaths: string[];
+  results: Array<{ title: string; status: "created" | "updated" | "skipped" | "failed"; reason?: string }>;
 }
 
 const STATUS_EMOJI: Record<string, string> = {
@@ -53,8 +66,55 @@ export function buildReportText(report: PipelineReport): string {
     }
   }
 
+  if (report.highlights && report.highlights.length > 0) {
+    lines.push("━━━━━━━━━━━━━━━━━━");
+    lines.push("핵심 알림");
+
+    for (const highlight of report.highlights) {
+      lines.push(`- ${highlight}`);
+    }
+  }
+
   lines.push("━━━━━━━━━━━━━━━━━━");
   lines.push(`총 ${report.totalItems}건 처리 · ${formatDuration(report.totalDurationMs)} 소요`);
+
+  return lines.join("\n");
+}
+
+export function buildDiscoverExportReportText(report: DiscoverExportReport) {
+  const lines = ["📚 VibeHub Discover Export", "━━━━━━━━━━━━━━━━━━"];
+
+  lines.push(`저장 ${report.savedCount}개 · 생성 ${report.createdCount} · 갱신 ${report.updatedCount}`);
+  lines.push(`건너뜀 ${report.skippedCount}개 · 실패 ${report.failedCount}개`);
+  lines.push(`저장 루트: ${report.vaultRoot}`);
+
+  if (report.folderCounts.length > 0) {
+    lines.push("━━━━━━━━━━━━━━━━━━");
+    lines.push("폴더별 저장");
+
+    for (const folder of report.folderCounts) {
+      lines.push(`- ${folder.folderName}: ${folder.count}`);
+    }
+  }
+
+  if (report.savedPaths.length > 0) {
+    lines.push("━━━━━━━━━━━━━━━━━━");
+    lines.push("저장 경로");
+
+    for (const savedPath of report.savedPaths) {
+      lines.push(`- ${savedPath}`);
+    }
+  }
+
+  const failedResults = report.results.filter((result) => result.status === "failed").slice(0, 3);
+  if (failedResults.length > 0) {
+    lines.push("━━━━━━━━━━━━━━━━━━");
+    lines.push("실패 요약");
+
+    for (const result of failedResults) {
+      lines.push(`- ${result.title}: ${result.reason ?? "unknown error"}`);
+    }
+  }
 
   return lines.join("\n");
 }
@@ -91,5 +151,18 @@ export async function sendPipelineReport(report: PipelineReport): Promise<void> 
   }
 
   const text = buildReportText(report);
+  await sendTelegramMessage(chatId, text, botToken);
+}
+
+export async function sendDiscoverExportReport(report: DiscoverExportReport): Promise<void> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_REPORT_CHAT_ID;
+
+  if (!botToken || !chatId) {
+    console.warn("[telegram-report] TELEGRAM_BOT_TOKEN or TELEGRAM_REPORT_CHAT_ID not set, skipping discover export report");
+    return;
+  }
+
+  const text = buildDiscoverExportReportText(report);
   await sendTelegramMessage(chatId, text, botToken);
 }

@@ -1,9 +1,9 @@
 type DiscoverStatus = "featured" | "watching" | "tracked";
 
 const LABELS: Record<DiscoverStatus, string> = {
-  featured: "추천",
-  watching: "주목 중",
-  tracked: "수집 중"
+  featured: "Featured",
+  watching: "Watching",
+  tracked: "Tracked"
 };
 
 const STYLE: Record<DiscoverStatus, string> = {

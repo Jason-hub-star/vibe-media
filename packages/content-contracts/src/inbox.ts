@@ -15,3 +15,8 @@ export interface InboxItem {
   confidence: number;
   parsedSummary: string;
 }
+
+export interface InboxItemDetail extends InboxItem {
+  rawContent: string;
+  classificationLog: string[];
+}

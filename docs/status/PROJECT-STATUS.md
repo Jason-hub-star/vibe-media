@@ -122,10 +122,22 @@
   - source expansion strategy 문서 생성
   - Telegram pipeline report module 추가
   - daily pipeline automation script + cron 설정
+- admin overhaul (2026-03-23): done
+  - 사이드바·페이지 제목 전체 한국어 전환 (admin-labels.ts 중앙 사전)
+  - 11개 목록 페이지 테이블 → 카드 그리드 UI 전환
+  - 11개 기능별 [id]/[slug] 디테일 페이지 + AdminDetailLayout + AdminBreadcrumb
+  - ModificationReason 컴포넌트 (예외/검수 수정 사유 표시)
+  - 대시보드 4섹션 운영 콕핏 (최근 완료, 배포 준비 현황, 대기열 현황, 자동화 이력)
+  - 대기열 카드에 각 목록 페이지 링크 연결
+  - 발행 항목에 공개 사이트 배포 위치 안내 (brief → /brief/{slug}, discover → /radar)
+  - 계약 확장: 10개 Detail 타입 추가 (InboxItemDetail, ReviewItemDetail 등)
+  - 백엔드: 10개 get-*-detail 엔드포인트 추가
+  - ROUTE-SPECS.md에 신규 [id] 라우트 전부 반영
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - showcase는 홈 티저 + `/radar` 섹션 + `/admin/showcase`까지 구현됐고, ingest/classification/sync 본선과는 분리된 sidecar lane으로 유지된다
 - showcase의 로그인 기반 사용자 submission은 아직 미구현이며, 현재는 editorial-only manual curation으로 운영된다
+- discover sidecar export가 추가되어 `supabase sync` 직후 `open_source` / `skill` / `plugin` 중심 항목을 Obsidian vault의 `Radar/*` 노트로 upsert하고, Telegram에 저장 개수와 경로를 별도 보고한다
 - remote push to `origin` is working in the current SSH-authenticated environment
 - 현재 workspace는 루트 env 파일에서 `SUPABASE_DB_URL`을 읽도록 연결돼 있다. 새 머신에서 env 파일이 없으면 read path는 local snapshot → mock fallback으로 동작하고, review/publish mutation은 Supabase 연결 없이 실행 불가하다.
 - `.env.local`에 `SUPABASE_ANON_KEY`와 `SUPABASE_SERVICE_ROLE_KEY`가 변수명과 함께 저장됨 (현재 backend 미사용, 향후 SSR auth 전환용)

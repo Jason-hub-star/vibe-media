@@ -1,6 +1,6 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
-import { InboxTable } from "@/features/inbox/view/InboxTable";
+import { InboxCardGrid } from "@/features/inbox/view/InboxCardGrid";
 import { listInboxItems } from "@/features/inbox/use-case/list-inbox-items";
 
 export default async function AdminInboxPage() {
@@ -8,8 +8,8 @@ export default async function AdminInboxPage() {
 
   return (
     <AdminShell
-      subtitle="Newly collected items land here before they move into review, discover, or publish queues."
-      title="Inbox"
+      subtitle="새로 수집된 항목이 검수·발행·디스커버리 큐로 이동하기 전 대기합니다"
+      title="수신함"
     >
       {items.length === 0 ? (
         <EmptyState
@@ -17,7 +17,7 @@ export default async function AdminInboxPage() {
           title="Inbox is empty"
         />
       ) : (
-        <InboxTable items={items} />
+        <InboxCardGrid items={items} />
       )}
     </AdminShell>
   );

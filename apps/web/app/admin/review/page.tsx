@@ -1,15 +1,15 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
 import { listReviewItems } from "@/features/review/use-case/list-review-items";
-import { ReviewWorkbench } from "@/features/review/view/ReviewWorkbench";
+import { ReviewCardGrid } from "@/features/review/view/ReviewCardGrid";
 
 export default async function AdminReviewPage() {
   const items = await listReviewItems();
 
   return (
     <AdminShell
-      subtitle="Human review only appears on exceptions, so each candidate must show source, parsed context, and preview at once."
-      title="Review"
+      subtitle="예외 항목만 사람이 검수합니다 — 출처, 파싱 결과, 미리보기를 함께 봅니다"
+      title="검수 워크벤치"
     >
       {items.length === 0 ? (
         <EmptyState
@@ -17,20 +17,7 @@ export default async function AdminReviewPage() {
           title="No review items"
         />
       ) : (
-        <div className="stack-tight">
-          {items.map((item, index) => (
-            <section className="stack-tight" key={item.id}>
-              <div className="row-between">
-                <div className="stack-tight">
-                  <p className="eyebrow">{item.sourceLabel ?? `#${index + 1}`}</p>
-                  <h2>{item.previewTitle}</h2>
-                </div>
-                <span className={`status status-${item.targetSurface}`}>{item.targetSurface}</span>
-              </div>
-              <ReviewWorkbench item={item} />
-            </section>
-          ))}
-        </div>
+        <ReviewCardGrid items={items} />
       )}
     </AdminShell>
   );

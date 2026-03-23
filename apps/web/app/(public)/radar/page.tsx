@@ -23,7 +23,7 @@ export default async function RadarPage() {
           <p className="eyebrow">Radar</p>
           <h1>One place to spot tools, skills, events, and launches worth acting on.</h1>
           <p className="muted">
-            오픈소스, 플러그인, 행사, 공모전, 뜨는 웹사이트를 빠르게 보고 바로 이동할 수 있는 발견 허브입니다.
+            A discovery hub for open-source projects, plugins, events, contests, and trending sites — browse and jump straight in.
           </p>
         </div>
         <PlaceholderArt alt="Radar hero placeholder" src="/placeholders/radar-hero-placeholder.svg" />

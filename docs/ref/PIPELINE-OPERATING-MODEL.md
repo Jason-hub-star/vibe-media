@@ -67,6 +67,16 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - `archive`: 보관만 하고 노출하지 않음
 - `discard`: 중복, 저가치, 정책 보류
 
+## Sidecar Lanes
+- `showcase`와 Obsidian export는 `brief/discover` 자동 분류 본선과 분리된 sidecar lane이다.
+- sidecar lane은 본선 산출물을 읽어 추가 노출 또는 외부 저장만 수행한다.
+- 현재 discover sidecar export는 `supabase sync` 직후 실행된다.
+  - 입력: `discover_items` + `discover_actions`
+  - 출력: Obsidian vault markdown note + Telegram export summary
+- export 기본 범위는 `open_source`, `skill`, `plugin`이며, `harness`는 독립 category가 아니라 tag로 유지한다.
+- GitHub release 성격 항목은 `GitHub Releases`, repo 성격 항목은 `Repositories` 폴더로 저장한다.
+- sidecar failure는 본선 ingest/sync 데이터 의미를 바꾸지 않으며, 실패 내역은 별도 보고에서 다룬다.
+
 ## Admin Modules
 - `Sources`
 - `Runs`

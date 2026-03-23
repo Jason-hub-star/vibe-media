@@ -16,6 +16,7 @@
     "pipeline:supabase-cleanup": "tsx src/workers/run-supabase-cleanup.ts",
     "pipeline:supabase-migrate": "tsx src/workers/run-supabase-migrations.ts",
     "pipeline:supabase-sync": "tsx src/workers/run-supabase-live-ingest.ts",
+    "pipeline:obsidian-export": "tsx src/workers/run-obsidian-discover-export.ts",
     "pipeline:daily": "tsx src/workers/run-daily-pipeline.ts",
     "pipeline:watch-folder": "tsx src/workers/run-watch-folder-worker.ts",
     "review:decision": "tsx src/workers/run-review-decision.ts",

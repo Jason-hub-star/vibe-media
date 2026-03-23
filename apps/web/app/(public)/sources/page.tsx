@@ -9,7 +9,7 @@ export default async function SourcesPage() {
 
   return (
     <PageFrame>
-      <SectionBlock eyebrow="출처" title="브리프 작성에 활용하는 공식 소스 목록">
+      <SectionBlock eyebrow="Sources" title="Official feeds and channels we use to write briefs">
         {sources.length === 0 ? (
           <EmptyState
             body="Tracked feeds and release channels will appear here after source registration."

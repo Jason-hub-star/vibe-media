@@ -29,6 +29,12 @@
 - future category filters should extend contracts and presenters before splitting routes
 - discovery items must keep direct actions such as `visit`, `download`, `docs`, `github`, or `apply`
 - discovery taxonomy source: `docs/ref/DISCOVERY-TAXONOMY.md`
+- discover export sidecar:
+  - use case basename: `export-discover-to-obsidian.ts`
+  - worker: `run-obsidian-discover-export.ts`
+  - default sink: Obsidian vault markdown files under `Radar/*`
+  - report sink: Telegram export summary with saved paths
+  - boundary: reads `discover_items` / `discover_actions`, never mutates ingest or classification state
 
 ## Showcase Sidecar Lane
 - showcase는 자동 ingest/editorial spine과 분리된 수동 큐레이션 레인이다.
@@ -42,6 +48,14 @@
 - `showcase_entries` / `showcase_links`는 `brief_posts` / `discover_items`와 다른 저장 레인을 사용한다.
 - `supabase-editorial-sync`와 ingest sync는 showcase row를 생성하지 않는다.
 - 향후 로그인 기반 submission도 이 lane에만 붙이고, `target_surface` 자동 분류 모델은 유지한다.
+
+## Daily Pipeline Runtime
+- 현재 `pipeline:daily`는 순차 배치 실행기이며 아래 순서를 따른다.
+  1. `pipeline:live-fetch`
+  2. `pipeline:live-ingest`
+  3. `pipeline:supabase-sync`
+  4. `pipeline:obsidian-export`
+- Telegram은 pipeline stage report와 discover export summary를 별도 메시지로 보낸다.
 
 ## Supabase Read Protection
 - `createSupabaseSql()`에 `connect_timeout: 10`, `idle_timeout: 20` 설정

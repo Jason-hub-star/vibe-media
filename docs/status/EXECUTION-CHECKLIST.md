@@ -117,6 +117,7 @@
 - [x] Source reliability 자기개선 패널
 - [x] Telegram pipeline report module
 - [x] daily pipeline automation script + cron
+- [x] discover -> Obsidian sidecar export + Telegram 저장 경로 보고
 - [x] Source 확장 전략 문서 (`docs/ref/SOURCE-EXPANSION-STRATEGY.md`)
 - [x] article RSS source의 `contentMarkdown / parserName / parseStatus` 저장
 - [x] `trial:all` baseline suite (`classifier / brief draft / discover draft / critic`)

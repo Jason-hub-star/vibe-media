@@ -6,7 +6,7 @@ test.describe.configure({ timeout: 60_000 });
 async function signIn(page: import("@playwright/test").Page) {
   await page.getByRole("textbox", { name: "Operator key" }).fill("operator");
   await page.getByRole("button", { name: /enter admin/i }).click();
-  await expect(page.getByText(/operator workspace/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("운영자 워크스페이스")).toBeVisible({ timeout: 15_000 });
 }
 
 // --- M2: Pipeline data appears on public pages ---
@@ -47,29 +47,28 @@ test("public / renders the showcase lane section", async ({ page }) => {
 test("admin /admin/inbox has at least one inbox item", async ({ page }) => {
   await page.goto("/admin/inbox", { timeout: 45_000 });
   await signIn(page);
-  await expect(page.getByRole("table")).toBeVisible({ timeout: 15_000 });
-  const rows = page.locator("tbody tr");
-  const count = await rows.count();
+  await expect(page.locator(".admin-card-grid")).toBeVisible({ timeout: 15_000 });
+  const cards = page.locator(".admin-card");
+  const count = await cards.count();
   expect(count).toBeGreaterThanOrEqual(1);
 });
 
 test("admin /admin/sources shows source entries", async ({ page }) => {
   await page.goto("/admin/sources", { timeout: 45_000 });
   await signIn(page);
-  await expect(page.getByRole("heading", { name: /source registry/i })).toBeVisible({ timeout: 15_000 });
-  // Sources page uses <ul><li> with <strong> for source name
-  const items = page.locator("ul li");
-  await expect(items.first()).toBeVisible({ timeout: 15_000 });
-  const count = await items.count();
+  await expect(page.getByRole("heading", { name: "소스 관리" })).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator(".admin-card-grid")).toBeVisible({ timeout: 15_000 });
+  const cards = page.locator(".admin-card");
+  const count = await cards.count();
   expect(count).toBeGreaterThanOrEqual(1);
 });
 
 test("admin /admin/runs shows at least one ingest run", async ({ page }) => {
   await page.goto("/admin/runs", { timeout: 45_000 });
   await signIn(page);
-  await expect(page.getByRole("table")).toBeVisible({ timeout: 15_000 });
-  const rows = page.locator("tbody tr");
-  const count = await rows.count();
+  await expect(page.locator(".admin-card-grid")).toBeVisible({ timeout: 15_000 });
+  const cards = page.locator(".admin-card");
+  const count = await cards.count();
   expect(count).toBeGreaterThanOrEqual(1);
 });
 
@@ -92,14 +91,13 @@ test("public /brief shows more than mock-only data (Supabase path)", async ({ pa
 test("admin /admin/review shows review queue items", async ({ page }) => {
   await page.goto("/admin/review", { timeout: 45_000 });
   await signIn(page);
-  await expect(page.getByRole("heading", { name: /^review$/i })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "검수 워크벤치" })).toBeVisible({ timeout: 15_000 });
   const body = await page.textContent("body");
   expect(body!.length).toBeGreaterThan(100);
 });
 
-test("admin /admin/showcase renders the sidecar lane editor", async ({ page }) => {
+test("admin /admin/showcase renders card grid", async ({ page }) => {
   await page.goto("/admin/showcase", { timeout: 45_000 });
   await signIn(page);
-  await expect(page.getByText(/create showcase entry/i)).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByRole("button", { name: /create entry/i })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "쇼케이스" })).toBeVisible({ timeout: 15_000 });
 });

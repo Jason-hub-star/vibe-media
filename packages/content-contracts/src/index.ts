@@ -1,4 +1,5 @@
 export * from "./assets";
+export * from "./dashboard";
 export * from "./brief";
 export * from "./discover";
 export * from "./exceptions";

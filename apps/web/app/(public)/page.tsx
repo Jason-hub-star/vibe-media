@@ -22,9 +22,9 @@ export default async function HomePage() {
       <section className="shell hero-grid">
         <div className="stack-tight">
           <p className="eyebrow">AI Brief Hub</p>
-          <h1>AI 뉴스를 빠르게, 한국어 브리프로.</h1>
+          <h1>AI news, distilled into daily briefs.</h1>
           <p className="muted">
-            글로벌 AI 소스를 매일 정리해 핵심만 전달합니다.
+            We curate global AI sources every day and deliver only what matters.
           </p>
           <div className="button-row">
             <Link className="button-primary" href="/brief">
@@ -39,20 +39,20 @@ export default async function HomePage() {
           </div>
           <div className="panel-grid">
             <article className="panel stack-tight">
-              <p className="eyebrow">매일 업데이트</p>
-              <p>글로벌 AI 뉴스를 매일 선별해 한국어 브리프로 발행합니다.</p>
+              <p className="eyebrow">Daily updates</p>
+              <p>We handpick global AI news and publish concise briefs every day.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">출처 투명 공개</p>
-              <p>모든 브리프에 원문 링크와 출처를 함께 제공합니다.</p>
+              <p className="eyebrow">Transparent sources</p>
+              <p>Every brief includes original links and source attribution.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">오픈소스·이벤트 발견</p>
-              <p>새로운 도구, 이벤트, 오픈소스 프로젝트를 Radar에서 탐색하세요.</p>
+              <p className="eyebrow">Discover tools &amp; events</p>
+              <p>Explore new tools, events, and open-source projects on Radar.</p>
             </article>
             <article className="panel stack-tight">
-              <p className="eyebrow">빠른 액션 링크</p>
-              <p>GitHub, 공식 문서, 다운로드로 바로 이동할 수 있습니다.</p>
+              <p className="eyebrow">Quick action links</p>
+              <p>Jump straight to GitHub, official docs, or downloads.</p>
             </article>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default async function HomePage() {
         <article className="panel stack-tight">
           <p className="eyebrow">Why it fits</p>
           <p className="muted">
-            작품 전시는 자동 뉴스 파이프라인이 아니라 별도 sidecar lane으로 운영해, briefs와 radar의 본선 의미를 흐리지 않습니다.
+            Showcase runs as a separate sidecar lane — it never mixes with the automated brief and radar pipelines.
           </p>
           <div className="button-row">
             <Link className="button-secondary" href="/radar#showcase-picks">

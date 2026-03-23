@@ -13,3 +13,7 @@ export interface AssetSlot {
   path: string;
   spec: AssetReplacementSpec;
 }
+
+export interface AssetSlotDetail extends AssetSlot {
+  usages: Array<{ route: string; component: string }>;
+}

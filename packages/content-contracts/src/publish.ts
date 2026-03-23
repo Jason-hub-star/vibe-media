@@ -16,3 +16,8 @@ export interface PublishQueueItem {
   scheduledFor: string | null;
   nextAction: string;
 }
+
+export interface PublishItemDetail extends PublishQueueItem {
+  publishedUrl: string | null;
+  deploymentTarget: string;
+}

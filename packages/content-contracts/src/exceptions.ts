@@ -16,3 +16,8 @@ export interface ExceptionQueueItem {
   nextAction: string;
   retryable?: boolean;
 }
+
+export interface ExceptionDetail extends ExceptionQueueItem {
+  modificationReasons: Array<{ type: string; description: string; severity: "warning" | "error" }>;
+  policyViolations: string[];
+}
