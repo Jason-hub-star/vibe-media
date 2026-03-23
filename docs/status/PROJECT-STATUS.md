@@ -133,6 +133,10 @@
   - 계약 확장: 10개 Detail 타입 추가 (InboxItemDetail, ReviewItemDetail 등)
   - 백엔드: 10개 get-*-detail 엔드포인트 추가
   - ROUTE-SPECS.md에 신규 [id] 라우트 전부 반영
+- public site English main transition (2026-03-24): done
+  - `lang="en"` 설정, 홈/brief/radar/sources/footer 전체 영어 전환
+  - Discover status 라벨 (공개 radar용) 영어 전환 (Featured/Watching/Tracked)
+  - 어드민 라벨은 한국어 유지
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - showcase는 홈 티저 + `/radar` 섹션 + `/admin/showcase`까지 구현됐고, ingest/classification/sync 본선과는 분리된 sidecar lane으로 유지된다
