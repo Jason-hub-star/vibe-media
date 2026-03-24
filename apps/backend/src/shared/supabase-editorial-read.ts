@@ -11,6 +11,7 @@ interface BriefRow {
   published_at: string | null;
   source_links: Array<{ label: string; href: string }>;
   source_count: number;
+  cover_image_url: string | null;
 }
 
 interface DiscoverRow {
@@ -55,7 +56,8 @@ async function fetchEditorialData() {
           status,
           published_at,
           source_links,
-          source_count
+          source_count,
+          cover_image_url
         from public.brief_posts
         order by published_at desc nulls last, slug asc
       `,
@@ -100,7 +102,8 @@ async function fetchEditorialData() {
         publishedAt: row.published_at,
         sourceCount: row.source_count,
         body: Array.isArray(row.body) ? row.body : [],
-        sourceLinks: Array.isArray(row.source_links) ? row.source_links : []
+        sourceLinks: Array.isArray(row.source_links) ? row.source_links : [],
+        coverImage: row.cover_image_url ?? undefined
       })),
       discover: discoverRows.map((row) => ({
         ...row,

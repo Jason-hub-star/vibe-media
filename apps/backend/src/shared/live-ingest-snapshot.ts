@@ -215,7 +215,8 @@ export function materializeLiveIngestSnapshot(
       contentMarkdown: item.contentMarkdown ?? null,
       parserName: item.parserName,
       parseStatus: item.parseStatus,
-      tags: item.tags
+      tags: item.tags,
+      imageUrl: item.imageUrl ?? null
     },
     dedupe_key: createHash("sha1").update(item.url.toLowerCase()).digest("hex"),
     ingest_status: "parsed" as const,

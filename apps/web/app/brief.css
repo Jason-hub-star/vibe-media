@@ -1,3 +1,19 @@
+/* ── Brief cover image ── */
+
+.brief-cover {
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  max-height: 360px;
+}
+
+.brief-cover-img {
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: cover;
+  display: block;
+}
+
 /* ── Brief archive grid ── */
 .brief-grid {
   display: grid;

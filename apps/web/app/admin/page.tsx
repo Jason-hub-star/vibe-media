@@ -48,16 +48,14 @@ export default async function AdminPage() {
   ]);
 
   const summaryCards = [
-    { id: "inbox", href: "/admin/inbox", label: "수신함", count: inboxItems.length, body: "분류 대기 중인 새 수집 항목" },
+    { id: "collection", href: "/admin/collection", label: "수집 현황", count: inboxItems.length + runs.length, body: "수신함과 실행 이력" },
     { id: "briefs", href: "/admin/briefs", label: "브리프", count: briefs.length, body: "검수 및 예약 대기열" },
-    { id: "runs", href: "/admin/runs", label: "실행 이력", count: runs.length, body: "수집·파싱·분류 실행 기록" },
+    { id: "pending", href: "/admin/pending", label: "검토 대기", count: reviewItems.length + exceptionQueue.length, body: "검수 대기와 예외 처리" },
     { id: "publish", href: "/admin/publish", label: "발행", count: publishQueue.length, body: "발행 큐에 있는 항목" },
-    { id: "exceptions", href: "/admin/exceptions", label: "예외 처리", count: exceptionQueue.length, body: "운영자 개입이 필요한 항목" },
     { id: "video-jobs", href: "/admin/video-jobs", label: "비디오 작업", count: videoJobs.length, body: "영상 자동화 체크포인트" },
     { id: "sources", href: "/admin/sources", label: "소스", count: sources.length, body: "등록된 피드와 신뢰 레이어" },
     { id: "discover", href: "/admin/discover", label: "디스커버리", count: discoverItems.length, body: "큐레이션 레지스트리 항목" },
     { id: "assets", href: "/admin/assets", label: "에셋", count: assetSlots.length, body: "이미지 슬롯과 교체 사양" },
-    { id: "review", href: "/admin/review", label: "검수", count: reviewItems.length, body: "운영자 판단 대기 중인 예외 항목" },
   ];
 
   return (
@@ -76,12 +74,12 @@ export default async function AdminPage() {
         <h2 className="section-heading">대기열 현황</h2>
         <div className="summary-grid">
           {summaryCards.map((card) => (
-            <Link className="panel stack-tight" href={card.href} key={card.id}>
+            <Link className="panel summary-card" href={card.href} key={card.id}>
               <div className="row-between">
                 <p className="eyebrow">{card.label}</p>
-                <strong>{card.count}</strong>
+                <strong className="summary-count">{card.count}</strong>
               </div>
-              <p>{card.body}</p>
+              <p className="summary-body">{card.body}</p>
             </Link>
           ))}
         </div>

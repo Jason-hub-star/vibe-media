@@ -17,11 +17,11 @@ export default async function ExceptionDetailPage({
   return (
     <AdminShell title={item.title} subtitle="상세 보기">
       <AdminDetailLayout
-        backHref="/admin/exceptions"
-        backLabel="예외 처리 목록"
+        backHref="/admin/pending?tab=exceptions"
+        backLabel="검토 대기"
         breadcrumbs={[
           { label: "대시보드", href: "/admin" },
-          { label: "예외 처리", href: "/admin/exceptions" },
+          { label: "검토 대기", href: "/admin/pending?tab=exceptions" },
           { label: item.title },
         ]}
         title={item.title}

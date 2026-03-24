@@ -34,6 +34,7 @@
 - Supabase legacy public cleanup backup + worker: done
 - watch folder worker (`fs.watch` + polling fallback): done
 - review decision / publish transition action handlers: done
+- exception retry action (retryable run/video → re-queue): done
 - classifier shadow trial scaffold: done
 - brief draft shadow trial scaffold: done
 - brief draft shadow trial: done
@@ -58,6 +59,12 @@
 - admin review/publish mutation buttons (Server Actions): done
 - showcase sidecar lane foundation: done
 - public UX 내부 용어 제거 + 사용자 언어 전환: done
+- admin 사이드바 탭 통합 (15→12개): done — 정책+프로그램→운영 규칙, 수신함+실행 이력→수집 현황, 검수+예외 처리→검토 대기
+- admin 탭 데이터 정리: done — 발행 탭 미승인 항목 제거, 수신함 drafted 제외, 브리프 상태 필터, 검수 요청 버튼
+- admin 카드 가독성 개선: done — 제목 h3/700, 메타 grid 정렬, dd 볼드, 대시보드 카운트 대형화, overflow 수정
+- 사이드바 파이프라인 흐름순 정렬: done — 소스→파이프라인→수집 현황→브리프→디스커버리→검토 대기→발행
+- brief cover image 지원: done — RSS enclosure/media:content/img 자동 추출 → brief_posts.cover_image_url → 공개 디테일 렌더링
+- 레퍼런스 브리프 작성: done — 3단락+섹션헤딩+소스3개+커버이미지 구조의 기준 브리프 DB 등록
 - pipeline → UI end-to-end 검증: done
 - Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done
 - pipeline-to-ui E2E test suite (8 tests): done
@@ -108,7 +115,8 @@
 - review는 `admin_reviews`, publish는 editorial lifecycle + `video_jobs`, exceptions는 retryable attempt + blocked video row를 기준으로 읽는다
 - backend에는 `review:decision`과 `publish:action` CLI entrypoint가 추가돼 approve / changes requested / reject / schedule / publish transition을 바로 실행할 수 있다
 - admin UI에서도 review approve/changes_requested/reject, publish schedule/publish를 Server Action 버튼으로 직접 실행할 수 있다
-- exceptions는 "Send to review" backend가 아직 없으므로 기존 `nextAction` 텍스트 표시만 유지한다
+- exceptions에 "재시도" 버튼이 추가됐다: `retryable === true`인 항목에 대해 run attempt는 `pending`으로, video job은 `capcut_pending`으로 되돌린다
+- exceptions "Send to review" backend는 아직 없으므로 기존 `nextAction` 텍스트 표시만 유지한다
 - backend `briefs / brief detail / discover registry` 조회도 이제 Supabase-first read path를 사용하고, 실제 확인 결과 `briefs 9 / discover 4`를 반환한다
 - video job schema는 raw metadata fields까지 Supabase에 적용됐고, 원본 blob은 DB 대신 local/NAS 보관 정책으로 고정했다
 - `OpenAI API Changelog`, `Anthropic Research`는 live source registry에 올려뒀지만 stable endpoint 확인 전까지 disabled 상태다

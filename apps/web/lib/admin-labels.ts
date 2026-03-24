@@ -21,25 +21,23 @@ export const ADMIN_SIDEBAR_GROUPS = [
   {
     name: "파이프라인",
     links: [
-      { href: "/admin/pipeline", label: "파이프라인" },
-      { href: "/admin/inbox", label: "수신함" },
-      { href: "/admin/runs", label: "실행 이력" },
       { href: "/admin/sources", label: "소스" },
+      { href: "/admin/pipeline", label: "파이프라인" },
+      { href: "/admin/collection", label: "수집 현황" },
     ],
   },
   {
     name: "에디토리얼",
     links: [
       { href: "/admin/briefs", label: "브리프" },
-      { href: "/admin/review", label: "검수" },
+      { href: "/admin/discover", label: "디스커버리" },
+      { href: "/admin/pending", label: "검토 대기" },
       { href: "/admin/publish", label: "발행" },
-      { href: "/admin/exceptions", label: "예외 처리" },
     ],
   },
   {
     name: "레지스트리",
     links: [
-      { href: "/admin/discover", label: "디스커버리" },
       { href: "/admin/showcase", label: "쇼케이스" },
       { href: "/admin/video-jobs", label: "비디오 작업" },
       { href: "/admin/assets", label: "에셋" },
@@ -48,8 +46,7 @@ export const ADMIN_SIDEBAR_GROUPS = [
   {
     name: "참조",
     links: [
-      { href: "/admin/policies", label: "정책" },
-      { href: "/admin/programs", label: "프로그램" },
+      { href: "/admin/rules", label: "운영 규칙" },
     ],
   },
 ] as const;
@@ -59,13 +56,9 @@ export const ADMIN_PAGE_LABELS: Record<string, AdminPageLabel> = {
     title: "VibeHub 운영실",
     subtitle: "파이프라인 상태와 대기열 현황을 한눈에 확인합니다",
   },
-  "/admin/inbox": {
-    title: "수신함",
-    subtitle: "새로 수집된 항목이 검수·발행·디스커버리 큐로 이동하기 전 대기합니다",
-  },
-  "/admin/runs": {
-    title: "실행 이력",
-    subtitle: "수집, 파싱, 분류, 실패 이력을 추적합니다",
+  "/admin/collection": {
+    title: "수집 현황",
+    subtitle: "수신함과 실행 이력을 한곳에서 확인합니다",
   },
   "/admin/sources": {
     title: "소스 관리",
@@ -75,17 +68,13 @@ export const ADMIN_PAGE_LABELS: Record<string, AdminPageLabel> = {
     title: "브리프 검수",
     subtitle: "초안, 검수, 예약, 발행 상태를 한눈에 확인합니다",
   },
-  "/admin/review": {
-    title: "검수 워크벤치",
-    subtitle: "예외 항목만 사람이 검수합니다 — 출처, 파싱 결과, 미리보기를 함께 봅니다",
+  "/admin/pending": {
+    title: "검토 대기",
+    subtitle: "검수 대기 항목과 예외 처리를 한곳에서 확인합니다",
   },
   "/admin/publish": {
     title: "발행 대기열",
     subtitle: "브리프, 디스커버리, 비디오가 하나의 발행 큐에서 만납니다",
-  },
-  "/admin/exceptions": {
-    title: "예외 처리",
-    subtitle: "신뢰도, 정책, 렌더링, 개인정보 검사를 통과하지 못한 항목입니다",
   },
   "/admin/discover": {
     title: "디스커버리 레지스트리",
@@ -103,13 +92,9 @@ export const ADMIN_PAGE_LABELS: Record<string, AdminPageLabel> = {
     title: "에셋 슬롯",
     subtitle: "이미지 슬롯의 이름, 타입, 사양을 관리합니다",
   },
-  "/admin/policies": {
-    title: "정책 참조",
-    subtitle: "검수, 소스 등급, 발행 규칙을 현행 정책과 대조합니다",
-  },
-  "/admin/programs": {
-    title: "프로그램 참조",
-    subtitle: "파이프라인 동작을 정의하는 프로그램 규칙 파일입니다",
+  "/admin/rules": {
+    title: "운영 규칙",
+    subtitle: "검수·소스 등급·발행 규칙과 프로그램 규칙을 한곳에서 참조합니다",
   },
   "/admin/pipeline": {
     title: "파이프라인",

@@ -28,10 +28,10 @@ export interface PipelineRunResult {
 
 export const STAGE_ADMIN_ROUTES: Record<string, string> = {
   fetch: "/admin/sources",
-  ingest: "/admin/inbox",
-  classify: "/admin/inbox",
-  sync: "/admin/runs",
-  review: "/admin/review",
+  ingest: "/admin/collection",
+  classify: "/admin/collection",
+  sync: "/admin/collection?tab=runs",
+  review: "/admin/pending",
   publish: "/admin/publish",
 };
 

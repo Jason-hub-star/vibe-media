@@ -23,6 +23,7 @@ interface BriefPostRow {
   last_editor_note: string | null;
   source_links: Array<{ label: string; href: string }>;
   source_count: number;
+  cover_image_url: string | null;
 }
 
 interface DiscoverItemRow {
@@ -98,6 +99,11 @@ function getTags(item: SnapshotIngestedItemRow) {
   const tags = item.parsed_content.tags;
   if (!Array.isArray(tags)) return [];
   return tags.filter((tag): tag is string => typeof tag === "string");
+}
+
+function getImageUrl(item: SnapshotIngestedItemRow): string | null {
+  const url = item.parsed_content.imageUrl;
+  return typeof url === "string" && url.startsWith("http") ? url : null;
 }
 
 function needsReview(classification: SnapshotItemClassificationRow) {
@@ -297,7 +303,8 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
             href: item.url
           }
         ],
-        source_count: 1
+        source_count: 1,
+        cover_image_url: getImageUrl(item)
       };
 
       briefPosts.push(row);
@@ -400,7 +407,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           published_at,
           last_editor_note,
           source_links,
-          source_count
+          source_count,
+          cover_image_url
         ) values (
           ${row.id}::uuid,
           ${row.source_item_id}::uuid,
@@ -414,7 +422,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           ${row.published_at}::timestamptz,
           ${row.last_editor_note},
           ${toJsonParam(sql, row.source_links)},
-          ${row.source_count}
+          ${row.source_count},
+          ${row.cover_image_url}
         )
         on conflict (source_item_id) do update set
           slug = excluded.slug,
@@ -427,7 +436,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           published_at = excluded.published_at,
           last_editor_note = excluded.last_editor_note,
           source_links = excluded.source_links,
-          source_count = excluded.source_count
+          source_count = excluded.source_count,
+          cover_image_url = excluded.cover_image_url
       `;
     }
 

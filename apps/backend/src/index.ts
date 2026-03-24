@@ -1,6 +1,7 @@
 export * from "./features/assets/get-asset-detail";
 export * from "./features/assets/list-asset-slots";
 export * from "./features/brief/get-adjacent-briefs";
+export * from "./features/briefs/send-to-review";
 export * from "./features/brief/get-brief-detail";
 export * from "./features/brief/list-briefs";
 export * from "./features/discover/export-discover-to-obsidian";
@@ -8,6 +9,7 @@ export * from "./features/discover/get-discover-item-detail";
 export * from "./features/discover/list-discover-items";
 export * from "./features/exceptions/get-exception-detail";
 export * from "./features/exceptions/list-exception-queue";
+export * from "./features/exceptions/retry-exception";
 export * from "./features/inbox/get-inbox-item-detail";
 export * from "./features/inbox/list-inbox-items";
 export * from "./features/publish/get-publish-item-detail";

@@ -82,7 +82,7 @@ export function PipelineResultsSummary({
       {/* ── Related page links ── */}
       {inboxCount > 0 && (
         <div className="pipeline-related-links">
-          <Link href={STAGE_ADMIN_ROUTES.ingest ?? "/admin/inbox"}>
+          <Link href={STAGE_ADMIN_ROUTES.ingest ?? "/admin/collection"}>
             Inbox에 {inboxCount}건 신규 &rarr; 보러 가기
           </Link>
         </div>

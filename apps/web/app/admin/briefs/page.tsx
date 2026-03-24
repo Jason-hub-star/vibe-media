@@ -1,6 +1,6 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
-import { BriefCardGrid } from "@/features/admin-briefs/view/BriefCardGrid";
+import { FilteredBriefGrid } from "@/features/admin-briefs/view/FilteredBriefGrid";
 import { listBriefs } from "@/features/admin-briefs/use-case/list-briefs";
 
 export default async function AdminBriefsPage() {
@@ -17,7 +17,7 @@ export default async function AdminBriefsPage() {
           title="No briefs in review"
         />
       ) : (
-        <BriefCardGrid items={briefs} />
+        <FilteredBriefGrid items={briefs} />
       )}
     </AdminShell>
   );

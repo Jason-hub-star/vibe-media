@@ -35,7 +35,7 @@
 ### `/admin`
 - 목적: 운영자 메인 대시보드 (운영 콕핏)
 - 핵심 섹션: 최근 완료 항목 → 배포 준비 현황 → 대기열 현황 → 자동화 이력 → Pipeline Monitor
-- 사이드바 그룹: 파이프라인 / 에디토리얼 / 레지스트리 / 참조 (한국어)
+- 사이드바 그룹: 파이프라인(소스→파이프라인→수집 현황) / 에디토리얼(브리프→디스커버리→검토 대기→발행) / 레지스트리(쇼케이스·비디오 작업·에셋) / 참조(운영 규칙) — 총 12개, 파이프라인 흐름순 배치
 - 대기열 카드 클릭 시 각 목록 페이지로 이동
 - 현재 인증 성격: 로컬 스캐폴드 게이트, production auth 아님
 
@@ -68,20 +68,21 @@
 - 핵심 섹션: 신규 전시 등록, discovery reference 연결, featured home/radar 제어, 게시 상태 관리
 - 현재 상태: sidecar lane editor form + existing entry editor cards
 
-### `/admin/inbox`
-- 목적: 새로 수집된 item 확인
-- 핵심 섹션: 카드 그리드 (소스, 단계, surface, 신뢰도)
-- 현재 상태: 카드 UI 구현, 실제 classification mutation은 후속 작업
+### `/admin/collection`
+- 목적: 수신함 + 실행 이력 통합 ("수집 현황")
+- 핵심 섹션: 탭 전환 (수신함 / 실행 이력), 각 탭은 기존 InboxCardGrid / RunCardGrid 재사용
+- 현재 상태: AdminTabSwitcher 기반 ?tab= URL 파라미터 전환 구현
+
+### `/admin/inbox`  *(legacy — redirect)*
+- 현재 상태: `/admin/collection`으로 redirect
 
 ### `/admin/inbox/[id]`
 - 목적: 수신 항목 상세
 - 핵심 섹션: 수집 정보, 파싱 요약, 분류 로그
 - 현재 상태: AdminDetailLayout + InboxDetailContent 구현
 
-### `/admin/runs`
-- 목적: 수집/가공/초안 실행 이력 확인
-- 핵심 섹션: 카드 그리드 (상태, 아이템 수, 소요 시간)
-- 현재 상태: 카드 UI 구현, 실제 retry mutation은 후속 작업
+### `/admin/runs`  *(legacy — redirect)*
+- 현재 상태: `/admin/collection?tab=runs`로 redirect
 
 ### `/admin/runs/[id]`
 - 목적: 실행 상세
@@ -99,36 +100,37 @@
 - 핵심 섹션: 발행 URL, 배포 대상, 다음 액션
 - 현재 상태: AdminDetailLayout + PublishDetailContent 구현
 
-### `/admin/review`
-- 목적: 예외 검수와 send-back 판단
-- 핵심 섹션: 카드 그리드 (검수 상태, surface, 신뢰도)
-- 현재 상태: 카드 UI + approve/changes_requested/reject Server Action 버튼 구현
-- 전제: mutation은 `SUPABASE_DB_URL` 환경변수 필요
+### `/admin/pending`
+- 목적: 검수 + 예외 처리 통합 ("검토 대기")
+- 핵심 섹션: 탭 전환 (검수 / 예외), 검수 탭에는 approve/changes_requested/reject 액션 포함
+- 현재 상태: PendingTabs 기반 ?tab= URL 파라미터 전환 구현
+
+### `/admin/review`  *(legacy — redirect)*
+- 현재 상태: `/admin/pending`으로 redirect
 
 ### `/admin/review/[id]`
 - 목적: 검수 항목 상세
 - 핵심 섹션: 출처, 파싱 결과, 미리보기, 수정 사유 (ModificationReason)
 - 현재 상태: AdminDetailLayout + ReviewDetailContent 구현
 
-### `/admin/exceptions`
-- 목적: human-on-exception 큐 운영
-- 핵심 섹션: 카드 그리드 (사유, 신뢰도, 대상 타입)
-- 현재 상태: 카드 UI + read/view 중심 화면
+### `/admin/exceptions`  *(legacy — redirect)*
+- 현재 상태: `/admin/pending?tab=exceptions`로 redirect
 
 ### `/admin/exceptions/[id]`
 - 목적: 예외 항목 상세
 - 핵심 섹션: 수정 사유 (ModificationReason), 정책 위반 사항
 - 현재 상태: AdminDetailLayout + ExceptionDetailContent 구현
 
-### `/admin/policies`
-- 목적: review policy, source tier, publish policy 확인
-- 핵심 섹션: policy summary cards and rule table
-- 현재 상태: 실제 `docs/ref/*.md`를 읽어 review / source tier / publish rule을 한 화면에서 참조
+### `/admin/rules`
+- 목적: 정책 + 프로그램 통합 ("운영 규칙")
+- 핵심 섹션: "정책" 섹션 (PolicySummaryGrid) + "프로그램" 섹션 (ProgramReferenceGrid)
+- 현재 상태: 읽기 전용 2-섹션 레이아웃 구현
 
-### `/admin/programs`
-- 목적: program-style rule files 관리
-- 핵심 섹션: brief/discover/publish/source policy references
-- 현재 상태: 실제 program-style markdown 참조 정보를 읽어 파일 위치와 역할을 보여줌
+### `/admin/policies`  *(legacy — redirect)*
+- 현재 상태: `/admin/rules`로 redirect
+
+### `/admin/programs`  *(legacy — redirect)*
+- 현재 상태: `/admin/rules`로 redirect
 
 ### `/admin/video-jobs`
 - 목적: 비디오 자동화 상태 확인

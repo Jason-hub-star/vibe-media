@@ -17,6 +17,8 @@ export interface BriefListItem {
   whyItMatters?: string;
   /** Editorial: topic tag for filtering (requires DB column) */
   topic?: string;
+  /** Cover image URL from source og:image or enclosure */
+  coverImage?: string;
 }
 
 export interface BriefDetail extends BriefListItem {

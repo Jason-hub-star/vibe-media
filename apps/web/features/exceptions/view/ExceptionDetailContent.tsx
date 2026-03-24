@@ -1,5 +1,7 @@
 import type { ExceptionQueueItem } from "@vibehub/content-contracts";
 
+import { RetryExceptionButton } from "./RetryExceptionButton";
+
 function ModificationReason({ reason }: { reason: string }) {
   return (
     <section className="panel stack-tight">
@@ -43,6 +45,12 @@ export function ExceptionDetailContent({ item }: { item: ExceptionQueueItem }) {
       </section>
 
       <ModificationReason reason={item.reason} />
+
+      {item.retryable && (
+        <section className="panel stack-tight">
+          <RetryExceptionButton exceptionId={item.id} />
+        </section>
+      )}
     </div>
   );
 }

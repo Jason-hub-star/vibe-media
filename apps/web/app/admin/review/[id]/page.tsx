@@ -17,11 +17,11 @@ export default async function ReviewDetailPage({
   return (
     <AdminShell title={item.previewTitle} subtitle="상세 보기">
       <AdminDetailLayout
-        backHref="/admin/review"
-        backLabel="검수 목록"
+        backHref="/admin/pending"
+        backLabel="검토 대기"
         breadcrumbs={[
           { label: "대시보드", href: "/admin" },
-          { label: "검수", href: "/admin/review" },
+          { label: "검토 대기", href: "/admin/pending" },
           { label: item.previewTitle },
         ]}
         title={item.previewTitle}

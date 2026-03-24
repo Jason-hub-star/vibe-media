@@ -5,10 +5,17 @@ import type { BriefDetail } from "@vibehub/content-contracts";
 import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
 
 import { BriefQualityChecklist } from "./BriefQualityChecklist";
+import { SendToReviewButton } from "./SendToReviewButton";
 
 export function BriefDetailContent({ brief }: { brief: BriefDetail }) {
   return (
     <>
+      {brief.status === "draft" && (
+        <div className="panel stack-tight">
+          <SendToReviewButton briefSlug={brief.slug} />
+        </div>
+      )}
+
       <div className="panel stack-tight">
         <p className="eyebrow">본문</p>
         <BriefBodySections body={brief.body} />

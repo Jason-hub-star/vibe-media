@@ -327,6 +327,7 @@ async function fetchProjectionBundleFromSupabase() {
         from public.ingested_items as items
         join public.sources as sources on sources.id = items.source_id
         left join public.item_classifications as classifications on classifications.item_id = items.id
+        where items.ingest_status != 'drafted'
         order by items.created_at desc
       `,
       sql<SupabaseReviewRow[]>`
@@ -378,7 +379,7 @@ async function fetchProjectionBundleFromSupabase() {
         from public.brief_posts as briefs
         left join public.ingested_items as items on items.id = briefs.source_item_id
         left join public.sources as sources on sources.id = items.source_id
-        where briefs.review_status in ('approved', 'pending', 'changes_requested')
+        where briefs.review_status = 'approved'
            or briefs.scheduled_at is not null
            or briefs.published_at is not null
         union all
@@ -393,7 +394,7 @@ async function fetchProjectionBundleFromSupabase() {
         from public.discover_items as discover
         left join public.ingested_items as items on items.id = discover.source_item_id
         left join public.sources as sources on sources.id = items.source_id
-        where discover.review_status in ('approved', 'pending', 'changes_requested')
+        where discover.review_status = 'approved'
            or discover.scheduled_at is not null
            or discover.published_at is not null
       `,

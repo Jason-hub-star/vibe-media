@@ -17,11 +17,11 @@ export default async function RunDetailPage({
   return (
     <AdminShell title={item.sourceName} subtitle="상세 보기">
       <AdminDetailLayout
-        backHref="/admin/runs"
-        backLabel="실행 이력 목록"
+        backHref="/admin/collection?tab=runs"
+        backLabel="수집 현황"
         breadcrumbs={[
           { label: "대시보드", href: "/admin" },
-          { label: "실행 이력", href: "/admin/runs" },
+          { label: "수집 현황", href: "/admin/collection?tab=runs" },
           { label: item.sourceName },
         ]}
         title={item.sourceName}

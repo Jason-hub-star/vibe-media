@@ -74,6 +74,7 @@
 ## P2 — Frontend / UX
 - [x] public UX 내부 용어 제거 + 사용자 언어 전환 (hero/패널/status/footer/newsletter)
 - [x] showcase sidecar lane foundation (`/` teaser + `/radar` picks + `/admin/showcase`)
+- [x] admin 사이드바 탭 통합 15→12개 (`/admin/rules`, `/admin/collection`, `/admin/pending` 신규; 기존 6개 route redirect)
 - [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, brief loading.tsx 추가, 나머지 page-level은 미완)
 - [x] 디자인 토큰 통일 (RGB 채널, purple, radius/type-scale 확장, CSS hardcode 141건 제거)
 - [x] 모바일 반응성 강화 (누락 브레이크포인트, 터치 타겟 44px, 햄버거 메뉴, 테이블 스크롤, 파이프라인 패널)
@@ -84,6 +85,13 @@
 - [x] admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching)
 - [x] Supabase connection pool deadlock fix (max:1→10, timeout 15s→8s) + timestamp string parse
 - [x] review / publish mutation 버튼 (Server Actions)
+- [x] exception retry action (retryable run/video 재시도 버튼)
+- [x] admin 카드 가독성 개선 (제목 크기/굵기, 메타 grid, overflow 수정, 대시보드 카운트)
+- [x] admin 사이드바 탭 통합 15→12개 + 파이프라인 흐름순 정렬
+- [x] admin 탭 데이터 분리 (발행 필터, 수신함 필터, 브리프 상태 필터)
+- [x] brief 검수 요청 + 예외 재시도 승격 액션
+- [x] brief cover image 파이프라인 (RSS → DB → 프론트)
+- [x] 레퍼런스 브리프 등록 (Quality Check 6/6 기준)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화

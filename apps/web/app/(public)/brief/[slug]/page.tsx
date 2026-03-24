@@ -39,6 +39,17 @@ export default async function BriefDetailPage({
           sourceCount={brief.sourceCount}
         />
 
+        {brief.coverImage && (
+          <div className="brief-cover">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={brief.coverImage}
+              alt=""
+              className="brief-cover-img"
+            />
+          </div>
+        )}
+
         <article className="brief-detail-article panel stack-tight">
           <p className="muted">{brief.summary}</p>
           <BriefBodySections body={brief.body} />

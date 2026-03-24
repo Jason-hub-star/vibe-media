@@ -18,7 +18,7 @@ export async function applyReviewDecisionAction(
       decision: input.decision,
       note: input.note || null,
     });
-    revalidatePath("/admin/review");
+    revalidatePath("/admin/pending");
     revalidatePath("/admin/publish");
     return { ok: true };
   } catch (err) {

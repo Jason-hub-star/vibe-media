@@ -17,11 +17,11 @@ export default async function InboxDetailPage({
   return (
     <AdminShell title={item.title} subtitle="상세 보기">
       <AdminDetailLayout
-        backHref="/admin/inbox"
-        backLabel="수신함 목록"
+        backHref="/admin/collection"
+        backLabel="수집 현황"
         breadcrumbs={[
           { label: "대시보드", href: "/admin" },
-          { label: "수신함", href: "/admin/inbox" },
+          { label: "수집 현황", href: "/admin/collection" },
           { label: item.title },
         ]}
         title={item.title}

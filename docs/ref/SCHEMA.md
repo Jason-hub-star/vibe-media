@@ -47,6 +47,7 @@
   - core fields: `item_id`, `category`, `importance_score`, `novelty_score`, `target_surface`
 - `brief_posts`와 `discover_items`는 공개 surface와 admin review/publish control surface가 함께 보는 editorial spine이다.
   - lifecycle fields: `review_status`, `scheduled_at`, `published_at`
+  - media fields: `cover_image_url` (OG image or RSS enclosure URL, nullable)
 - `admin_reviews`는 review queue spine이다.
 - `ingest_run_attempts`와 `video_job_attempts`는 retry / failure history를 기록한다.
 - `video_jobs`는 공개 surface가 아니라 내부 `watch folder -> auto analysis -> CapCut -> parent review -> private upload` 흐름을 관리한다.

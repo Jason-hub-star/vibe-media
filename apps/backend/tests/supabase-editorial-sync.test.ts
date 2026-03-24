@@ -170,7 +170,8 @@ describe("supabase editorial sync", () => {
         published_at: null,
         last_editor_note: "auto note",
         source_links: [{ label: "OpenAI News", href: "https://example.com" }],
-        source_count: 1
+        source_count: 1,
+        cover_image_url: null
       },
       {
         source_item_id: "source-item-1",

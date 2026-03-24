@@ -4,6 +4,47 @@
 
 ## Resolved
 
+### 2026-03-24 — Brief Cover Image Pipeline + Reference Brief
+- 상태: resolved
+- 결정:
+  - `brief_posts`에 `cover_image_url` nullable text 컬럼 추가
+  - RSS 파서에서 `<enclosure>`, `<media:content>`, `<media:thumbnail>`, `<img>` 순서로 이미지 추출
+  - 이미지는 URL만 저장 (파일 다운로드 없음), 원본 서버에서 직접 로드
+  - 공개 디테일 페이지에 메타바 아래/본문 위에 cover 이미지 표시 (없으면 영역 숨김)
+  - 레퍼런스 브리프 1개 작성 — 3단락+섹션헤딩+소스3개 구조로 Quality Check 6/6 기준 확립
+- 근거: 기존 브리프가 RSS 요약 1줄 복사에 불과. 자동화 프롬프트 설계 전 "좋은 브리프" 기준이 필요
+
+### 2026-03-24 — Admin Card Readability + Sidebar Reorder
+- 상태: resolved
+- 결정:
+  - 카드 제목 `--type-body`→`--type-h3`, fontWeight 600→700
+  - 메타 레이아웃 flex→grid, dd에 fontWeight 600 추가
+  - 대시보드 카운트 `--type-h2` + orange 강조
+  - 카드 overflow 방지: `overflow: hidden`, badges `flex-wrap`, title `word-break`
+  - 사이드바 순서를 파이프라인 흐름순으로 정렬 (소스→파이프라인→수집→브리프→디스커버리→검토→발행)
+- 근거: 카드 텍스트 가독성 부족 + 사이드바 순서가 실제 워크플로우와 불일치
+
+### 2026-03-24 — Admin Tab Data Separation + Promotion Actions
+- 상태: resolved
+- 결정:
+  - 발행 탭 SQL에서 `pending`/`changes_requested` 제거 → 승인된 항목만 표시
+  - 수신함에서 `ingest_status = 'drafted'` 항목 제외 → 이미 진행된 항목 안 보임
+  - 브리프 탭에 상태 필터 칩 추가 (전체/초안/검수 중/예약/발행됨)
+  - draft 브리프 → review 전환 서버 액션 + "검수 요청" 버튼 추가
+  - retryable 예외 → 재시도 서버 액션 + "재시도" 버튼 추가
+- 근거: 같은 항목이 여러 탭에 동시 노출돼 운영자 혼란. 각 탭이 자기 단계 데이터만 보여야 함
+
+### 2026-03-24 — Admin Sidebar Tab Consolidation (15 → 12)
+- 상태: resolved
+- 결정:
+  - 정책 + 프로그램 → `/admin/rules` "운영 규칙" (읽기 전용 섹션 2개)
+  - 수신함 + 실행 이력 → `/admin/collection` "수집 현황" (클라이언트 탭 전환)
+  - 검수 + 예외 처리 → `/admin/pending` "검토 대기" (클라이언트 탭 전환)
+  - 기존 6개 route(`/admin/policies`, `/admin/programs`, `/admin/inbox`, `/admin/runs`, `/admin/review`, `/admin/exceptions`)는 redirect 유지
+  - 디테일 페이지(`/admin/inbox/[id]` 등)는 기존 URL 유지, back link만 통합 페이지로 변경
+  - 공용 `AdminTabSwitcher` 컴포넌트로 URL `?tab=` 파라미터 기반 탭 상태 관리
+- 근거: 15개 사이드바 탭이 네비게이션을 복잡하게 만듦. 유사 역할의 3쌍을 합쳐 12개로 축소하면 인지 부하 감소
+
 ### 2026-03-24 — Supabase Connection Pool Deadlock + Timestamp Parsing Fix
 - 상태: resolved
 - 결정:

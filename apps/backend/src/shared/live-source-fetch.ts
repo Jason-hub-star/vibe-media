@@ -27,6 +27,7 @@ export interface LiveFetchedItem {
   parseStatus: LiveItemParseStatus;
   contentType: IngestSourceFixture["contentType"];
   tags: string[];
+  imageUrl?: string;
 }
 
 export interface LiveSourceFetchStatus {
@@ -228,7 +229,8 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         parserName,
         parseStatus,
         contentType: source.contentType,
-        tags: inferTags(source, item.title, item.summary)
+        tags: inferTags(source, item.title, item.summary),
+        imageUrl: item.imageUrl ?? undefined
       });
     }
 
