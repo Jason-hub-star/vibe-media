@@ -34,6 +34,18 @@ interface VideoLifecycleRow {
   status: VideoJobStatus;
 }
 
+export function assertBriefCanApprove(status: BriefLifecycleRow["status"]) {
+  if (status !== "review") {
+    throw new Error(`Brief must be in review before approve (received ${status})`);
+  }
+}
+
+export function assertBriefCanSchedule(status: BriefLifecycleRow["status"]) {
+  if (status !== "review") {
+    throw new Error(`Brief must be in review before schedule (received ${status})`);
+  }
+}
+
 export function resolveReviewStatus(decision: ReviewDecision): ReviewStatus {
   if (decision === "approve") return "approved";
   if (decision === "changes_requested") return "changes_requested";
@@ -82,6 +94,9 @@ export async function applySupabaseReviewDecision(args: {
       `;
       const brief = briefRows[0];
       if (!brief) throw new Error(`Brief row not found for review ${args.reviewId}`);
+      if (args.decision === "approve") {
+        assertBriefCanApprove(brief.status);
+      }
 
       const nextBriefStatus =
         args.decision === "changes_requested" && canMoveBriefStatus(brief.status, "draft")
@@ -202,6 +217,7 @@ export async function applySupabasePublishAction(args: {
       }
 
       if (args.action === "schedule") {
+        assertBriefCanSchedule(row.status);
         if (!canMoveBriefStatus(row.status, "scheduled")) {
           throw new Error(`Brief ${args.targetId} cannot move from ${row.status} to scheduled`);
         }

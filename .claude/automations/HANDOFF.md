@@ -1,114 +1,114 @@
-# Daily Editorial Review — 인수인계 문서
+# Daily Editorial Review — Handoff
 
-## 이 자동화가 하는 일
+이 문서는 [HANDOFF-TEMPLATE.md](./HANDOFF-TEMPLATE.md)를 채운 실제 운영판이다.
 
-매일 `daily-pipeline` 이후 실행되며, **draft 상태 브리프를 자동으로 가공**합니다.
+## 1. Summary
 
-현재 파이프라인이 RSS에서 수집한 브리프는 **요약 1줄 + 소스 1개**뿐입니다.
-이 자동화가 그걸 **3단락 이상 본문 + 소스 2개 이상 + 커버 이미지**가 있는 읽을 만한 브리프로 만듭니다.
+- automation: `daily-editorial-review.md`
+- owner: editorial pipeline operator
+- purpose: `draft` 브리프를 읽을 만한 레퍼런스 수준으로 가공하고 `review` 큐로 올린다.
+- trigger: `daily-pipeline` 이후 하루 1회
+- success condition: 대상 브리프가 quality gate를 통과해 `draft -> review`, `review_status -> pending`으로 전환된다.
 
-## 실행 순서
+## 2. Current Reality
 
-```
-1. daily-pipeline.md      (fetch → ingest → sync)
-2. daily-editorial-review.md   ← 이것
-3. daily-drift-guard.md   (회귀 탐지)
-```
+- current behavior: `status = 'draft'`이고 `body`가 1단락 이하인 브리프만 자동 가공한다.
+- verified inputs: 현재 ingest/editorial sync가 만드는 초안은 대체로 `요약 1줄 + source 1개` 형태다.
+- verified outputs: 통과한 브리프는 `title/summary/body/source_links/source_count/cover_image_url`가 갱신되고 `review` 큐로 이동한다.
+- hard stop conditions: 원문 접근 실패, source 2개 미만, 본문 3단락 미만, 내부 용어 포함 시 기록 없이 skip 한다.
 
-## 가공 프로세스
+## 3. Run Order
 
-```
-[draft 브리프 조회]
-  → body 1단락 이하인 것만 대상 (최대 5개/회)
-
-[각 브리프마다]
-  → 원문 페이지 WebFetch
-  → 관련 기사 WebSearch
-  → OG 이미지 추출
-  → 본문 3단락 + 섹션 헤딩 작성
-  → 소스 2개 이상 확보
-  → Quality Check 6/6 통과 확인
-  → DB 업데이트 (status: draft → review)
-  → admin_reviews 레코드 생성
+```text
+before this: daily-pipeline
+this automation: daily-editorial-review
+after this: daily-drift-guard -> daily-auto-publish
 ```
 
-## 레퍼런스 브리프 (기준)
+## 4. Selection Rule
 
-DB slug: `openai-gpt-5-4-mini-nano-launch`
+- target rows: `status = 'draft'` and `jsonb_array_length(body) <= 1`
+- exclusion rule: 이미 `review/scheduled/published`인 브리프는 건드리지 않는다.
+- max items per run: 5
 
-이 브리프가 "좋은 브리프"의 기준입니다. 구조:
+Example query:
 
-```
-title:   [주체] [동사] [대상] — [부가설명]         (15-70자)
-summary: [누가] [무엇을] [왜] 1-2문장              (50-200자)
-body:
-  [리드 단락]
-  ## Why it matters
-  [영향 분석]
-  ## [기술/세부 헤딩]
-  [기술 설명]
-  ## [맥락 헤딩]
-  [맥락 분석]
-sources: 원문 + 보도/문서 (최소 2개)
-cover_image_url: OG 이미지 URL (nullable)
+```sql
+SELECT id, slug, title, summary, body, source_links, cover_image_url
+FROM public.brief_posts
+WHERE status = 'draft'
+  AND jsonb_array_length(body) <= 1
+ORDER BY slug ASC
 ```
 
-## Quality Check 통과 조건 (6항목)
+## 5. Processing Steps
 
-| 항목 | 통과 |
-|------|------|
-| Title | 15-70자 |
-| Summary | 50-200자 |
-| Body paragraphs | ≥3 (헤딩 제외) |
-| Source count | ≥2 |
-| Source URLs | 전부 HTTPS |
-| Internal terms | pipeline/ingest/draft/classify/orchestrat 없음 |
+```text
+[draft brief query]
+  -> source_links[0] 기준 원문 수집
+  -> 관련 기사/문서 보강
+  -> og:image 또는 대체 커버 이미지 확보
+  -> title/summary/body/source_links 재작성
+  -> quality gate 6/6 확인
+  -> brief_posts update
+  -> admin_reviews upsert
+```
 
-**6/6 통과해야만 DB에 기록.** 하나라도 실패하면 건너뛴다.
+## 6. Write Behavior
 
-## 안전장치
+- tables touched: `public.brief_posts`, `public.admin_reviews`
+- fields updated:
+  `title`, `summary`, `body`, `source_links`, `source_count`, `cover_image_url`, `status`, `review_status`
+- status transitions: `draft -> review`
+- side effects: review queue에 새 brief review row가 생긴다.
 
-- `WHERE status = 'draft'` — 이미 review/published인 건 절대 안 건드림
-- `AND jsonb_array_length(body) <= 1` — 이미 가공된 건 재가공 안 함
-- 원문 접근 실패 시 그 브리프는 건너뜀 (추측으로 채우지 않음)
-- 한 번에 최대 5개만 처리
+## 7. Quality / Safety Gates
 
-## DB 컬럼 참고
+| Gate | Pass rule | Fail behavior |
+|------|-----------|---------------|
+| Title length | 15-70자 | skip |
+| Summary length | 50-200자 | skip |
+| Body paragraphs | 헤딩 제외 3단락 이상 | skip |
+| Source count | 2개 이상 | skip |
+| Source URLs | 전부 HTTPS | skip |
+| Internal terms | `pipeline`, `ingest`, `draft`, `classify`, `orchestrat` 미포함 | skip |
 
-`brief_posts` 테이블:
-- `title`, `summary`: text
-- `body`: jsonb (string 배열, `## ` 접두사 = 섹션 헤딩)
-- `source_links`: jsonb (배열, `{label, href}`)
-- `source_count`: integer
-- `cover_image_url`: text (nullable, OG 이미지 URL)
-- `status`: draft → review → scheduled → published
-- `review_status`: pending → approved/changes_requested/rejected
+## 8. Failure Semantics
 
-## 드라이런 결과 (2026-03-24)
+- what gets retried automatically: `draft` 상태로 남아 있는 얕은 브리프는 다음 실행 때 다시 잡힌다.
+- what gets recovered automatically: auto-publish quality gate 실패 브리프는 `draft + pending`으로 자동 복귀하고 다음 editorial review 대상이 된다.
+- what gets skipped repeatedly: 같은 `draft` 브리프라도 source/body 품질을 못 올리면 다음 실행 때 또 skip 될 수 있다.
+- what needs operator attention: 반복 품질 실패나 source provenance 문제가 남는 브리프는 사람이 prompt/source 전략을 보강해야 한다.
 
-"Creating with Sora Safely" 브리프를 가공:
-- 원문: RSS 요약 1줄 + OpenAI News 소스 1개
-- 가공 후: 4단락 + 3섹션 헤딩 + 소스 3개 + Quality 6/6
-- slug: `openai-sora-2-safety-stack`
-- status: draft → review 자동 전환 확인
+## 9. Manual Boundaries
 
-## 관련 파일
+| Step | Auto or manual | Notes |
+|------|----------------|-------|
+| `draft -> review` | auto | editorial review가 수행 |
+| `review -> approved` | manual | 어드민 승인 필요 |
+| `approved + review -> scheduled` | auto | auto-publish 워커가 quality check 후 수행 |
+| `approved + scheduled -> published` | auto | `scheduled_at <= NOW()`일 때 auto-publish 수행 |
+| quality fail 복구 | auto | auto-publish가 `draft + pending`으로 되돌리고 note를 남김 |
+| `draft + approved` 무결성 복구 | semi-auto | `publish:repair-state`가 정리, 반복 발생 시 write path 점검 필요 |
 
-| 파일 | 역할 |
+## 10. Validation
+
+- runtime check: `daily-editorial-review.md`의 selector와 write rule이 실제 상태 머신과 맞는지 확인
+- DB check: `brief_posts.status/review_status/body/source_count/cover_image_url` 변경 확인
+- operator check: 어드민 `검토 대기`에서 새 브리프가 보이는지 확인
+
+## 11. Related Files
+
+| File | Role |
 |------|------|
 | `.claude/automations/daily-editorial-review.md` | 자동화 프롬프트 |
-| `apps/backend/src/shared/supabase-editorial-sync.ts` | editorial 동기화 |
-| `apps/backend/src/shared/supabase-editorial-read.ts` | editorial 읽기 |
-| `apps/backend/src/features/briefs/send-to-review.ts` | 검수 전송 액션 |
-| `apps/web/features/admin-briefs/view/BriefDetailContent.tsx` | 어드민 상세 (Quality Check 포함) |
-| `packages/content-contracts/src/brief.ts` | BriefListItem/BriefDetail 타입 |
+| `.claude/automations/daily-auto-publish.md` | 후속 자동 발행 단계 |
+| `apps/backend/src/shared/supabase-auto-publish.ts` | auto-publish 실제 구현 |
+| `apps/backend/src/shared/supabase-editorial-sync.ts` | ingest -> editorial write path |
+| `apps/backend/src/shared/supabase-editorial-read.ts` | editorial read path |
+| `apps/backend/src/features/briefs/send-to-review.ts` | 수동 review 전송 액션 |
+| `apps/web/features/admin-briefs/view/BriefDetailContent.tsx` | 어드민 상세 UI |
 
-## 아직 자동화되지 않은 단계
+## 12. Change Log
 
-| 단계 | 상태 | 비고 |
-|------|------|------|
-| review → approved | **수동** | 어드민에서 승인 버튼 클릭 필요 |
-| approved → scheduled | **수동** | 어드민에서 예약 버튼 필요 |
-| scheduled → published | **수동** | 자동 발행 워커 미구현 |
-
-이 단계들은 critic 자동 검증과 auto-publish 워커로 확장 가능하지만, 현재는 사람이 최종 판단합니다.
+- 2026-03-25: handoff를 템플릿 기반 형식으로 재작성하고, auto-publish recovery 및 integrity repair 규칙까지 반영했다.

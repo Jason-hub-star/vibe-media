@@ -9,6 +9,13 @@ import "./load-env";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../../../..");
+const SUPABASE_QUERY_RETRY_LIMIT = 2;
+const SUPABASE_QUERY_RETRY_DELAY_MS = [150, 350];
+
+type SqlClient = ReturnType<typeof postgres>;
+type SqlCallable = SqlClient & {
+  end: (options?: { timeout?: number }) => Promise<void>;
+};
 
 export function getSupabaseDbUrl() {
   const value = process.env.SUPABASE_DB_URL?.trim() || "";
@@ -24,13 +31,14 @@ export function getSupabaseDbUrl() {
   return value;
 }
 
-export function createSupabaseSql() {
+function createRawSupabaseSql(): SqlClient {
   return postgres(getSupabaseDbUrl(), {
     prepare: false,
     max: 10,
     ssl: "require",
     connect_timeout: 10,
     idle_timeout: 20,
+    backoff: (attemptNum: number) => Math.min((attemptNum + 1) * 100, 500),
     types: {
       // Return timestamps as ISO strings instead of Date objects.
       // OID 1114 = timestamp, 1184 = timestamptz
@@ -42,6 +50,102 @@ export function createSupabaseSql() {
       },
     },
   });
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableSupabaseError(error: unknown) {
+  if (!(error instanceof Error)) return false;
+
+  const message = `${error.message} ${String((error as { routine?: string }).routine ?? "")}`.toLowerCase();
+  const code = String((error as { code?: string }).code ?? "");
+
+  if (message.includes("circuit breaker open")) return true;
+  if (message.includes("too many authentication errors")) return true;
+  if (message.includes("prepared statement")) return true;
+
+  return [
+    "08000",
+    "08001",
+    "08003",
+    "08006",
+    "57P01",
+    "57P02",
+    "57P03",
+    "53300",
+    "42P05",
+    "XX000",
+  ].includes(code);
+}
+
+async function withSqlRetry<T>(
+  initialClient: SqlClient,
+  setClient: (sql: SqlClient) => void,
+  run: (sql: SqlClient) => Promise<T>
+) {
+  let lastError: unknown;
+  let sql = initialClient;
+
+  for (let attempt = 0; attempt <= SUPABASE_QUERY_RETRY_LIMIT; attempt += 1) {
+    try {
+      return await run(sql);
+    } catch (error) {
+      lastError = error;
+      if (attempt === SUPABASE_QUERY_RETRY_LIMIT || !isRetryableSupabaseError(error)) {
+        await sql.end({ timeout: 0 }).catch(() => {});
+        throw error;
+      }
+
+      await sql.end({ timeout: 0 }).catch(() => {});
+      await sleep(SUPABASE_QUERY_RETRY_DELAY_MS[Math.min(attempt, SUPABASE_QUERY_RETRY_DELAY_MS.length - 1)]);
+      sql = createRawSupabaseSql();
+      setClient(sql);
+    }
+  }
+
+  throw lastError;
+}
+
+function createRetryingSupabaseSql(client: SqlClient): SqlCallable {
+  let activeClient = client;
+
+  const proxy = new Proxy(client as SqlCallable, {
+    apply(_target, thisArg, args) {
+      return withSqlRetry(activeClient, (sql) => {
+        activeClient = sql;
+      }, async (sql) => {
+        return Reflect.apply(sql as never, thisArg, args as never[]);
+      });
+    },
+    get(_target, prop, receiver) {
+      if (prop === "end") {
+        return async (options?: { timeout?: number }) => {
+          const current = activeClient;
+          return current.end(options);
+        };
+      }
+
+      const value = Reflect.get(activeClient as never, prop, receiver);
+      if (typeof value !== "function") {
+        return value;
+      }
+
+      return (...args: never[]) =>
+        withSqlRetry(activeClient, (sql) => {
+          activeClient = sql;
+        }, async (sql) => {
+          return Reflect.apply((sql as never)[prop as never], sql, args);
+        });
+    },
+  });
+
+  return proxy as SqlCallable;
+}
+
+export function createSupabaseSql() {
+  return createRetryingSupabaseSql(createRawSupabaseSql());
 }
 
 export function readMigrationSql() {
@@ -70,3 +174,5 @@ export function readCleanupSql() {
     sql: readFileSync(path.join(repoRoot, relativePath), "utf8")
   };
 }
+
+export { isRetryableSupabaseError };

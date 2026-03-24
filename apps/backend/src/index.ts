@@ -40,6 +40,7 @@ export * from "./shared/supabase-cleanup";
 export * from "./shared/supabase-asset-slots";
 export * from "./shared/supabase-editorial-read";
 export * from "./shared/supabase-editorial-actions";
+export * from "./shared/supabase-editorial-integrity";
 export * from "./shared/supabase-editorial-sync";
 export * from "./shared/supabase-id";
 export * from "./shared/supabase-ingest-sync";

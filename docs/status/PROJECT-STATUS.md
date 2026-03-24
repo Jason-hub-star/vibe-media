@@ -67,6 +67,8 @@
 - 레퍼런스 브리프 작성: done — 3단락+섹션헤딩+소스3개+커버이미지 구조의 기준 브리프 DB 등록
 - pipeline → UI end-to-end 검증: done
 - Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done
+- auto-publish 워커 (`publish:auto`): done — approved 브리프 quality check → scheduled → published 자동 전환
+- editorial automation hardening: done — auto-publish skip recovery, `publish:repair-state`, `automation:check`, Supabase retry/backoff
 - pipeline-to-ui E2E test suite (8 tests): done
 - `/pipeline-check` skill: done
 - Defuddle article enrichment (Phase 1): done
@@ -81,9 +83,10 @@
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
+- `npm run automation:check`: pass
 - `npm run lint`: pass
 - `npm run typecheck`: pass
-- `npm run build`: not rerun in this update pass
+- `npm run build`: pass
 - `npm run test:unit`: 38/38 pass
 - `npm run test:e2e`: 28/28 pass
 - `npm run trial:all`: baseline-pass
@@ -93,7 +96,8 @@
 - `npm run pipeline:daily`: pass (`27 items / 0 errors / 8.1s`), Telegram report skipped without bot env
 
 ## Open Follow-ups
-- `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
+- `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit --incremental false`; keep this as the canonical Next 16 flow on new machines
+- auto-publish quality failure는 이제 `draft + pending`으로 자동 복귀하지만, 반복 실패 브리프의 editorial prompt 보강은 여전히 운영 튜닝 과제다
 - page-level loading/empty/error states: implemented at route-group level ((public) + admin)
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
 - `/admin/pipeline`은 독립 페이지가 아닌 redirect→대시보드 구조. 파이프라인 모니터는 대시보드 하단 PipelineMonitorClient로 임베드됨

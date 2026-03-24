@@ -149,7 +149,34 @@ ON CONFLICT DO NOTHING
 
 ---
 
-## 5. 행동 원칙
+## 5. Telegram 보고
+
+결과 보고 직후 아래 curl로 Telegram에 전송한다.
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+
+# 섹션 4에서 작성한 결과 요약을 TEXT 변수에 담아 전송
+# 예시 (실제 값은 섹션 4 결과로 채울 것):
+# TEXT="[VibeHub] Editorial Review\n- 대상: N건\n- 가공 완료: M건\n- 건너뜀: K건\n- 품질 통과율: M/N"
+
+if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_REPORT_CHAT_ID" ]; then
+  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_REPORT_CHAT_ID}" \
+    --data-urlencode "text=${TEXT}" \
+    > /dev/null
+else
+  echo "Telegram 키 없음 — 보고 생략"
+fi
+```
+
+전송 실패(Telegram API 오류 등)는 무시하고 자동화를 정상 종료한다.
+
+---
+
+## 6. 행동 원칙
 
 - 사실만 작성한다. 원문에 없는 내용을 추측하지 않는다.
 - "## Why it matters"에서 VibeHub 관점이 아니라 **업계/독자 관점**으로 작성한다.

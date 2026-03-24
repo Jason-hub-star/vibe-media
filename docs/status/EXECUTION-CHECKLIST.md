@@ -104,6 +104,8 @@
 - [ ] action link 검증 규칙 정리
 
 ## P3 — Hardening
+- [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`) — approved 브리프 quality check → scheduled → published 자동 전환
+- [x] auto-publish skip recovery + editorial integrity guard (`publish:repair-state`, `automation:check`, Supabase retry/backoff)
 - [ ] admin 실제 인증/권한 모델 설계
 - [ ] showcase submission/auth flow 설계
 - [ ] observability / failure alert 설계

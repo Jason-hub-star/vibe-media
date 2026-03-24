@@ -4,6 +4,28 @@
 
 ## Resolved
 
+### 2026-03-25 — Editorial Automation Hardening
+- 상태: resolved
+- 결정:
+  - 루트 `package.json`에 `publish:auto`, `publish:auto-dry`, `publish:repair-state`, `automation:check` 스크립트를 추가해 automation 문서와 실제 실행 경로를 일치시킨다.
+  - `auto-publish` quality check 실패 브리프는 `draft + pending`으로 되돌리고 `last_editor_note`에 recovery 사유를 남겨 다음 editorial review 사이클로 복귀시킨다.
+  - `approve`와 `schedule` 액션은 `review` 상태 브리프에서만 허용해 `draft + approved` 같은 상태 조합을 write 시점에 막는다.
+  - `publish:repair-state` 워커를 추가해 `draft + approved`, `draft + scheduled_at`, `draft + published_at` 같은 복구 가능한 조합을 nightly repair 대상으로 둔다.
+  - `automation:check` 스크립트를 추가해 `.claude/automations/*.md`의 `npm run ...` 및 로컬 파일 참조 drift를 주기적으로 검사한다.
+  - Supabase Postgres 연결에는 retry/backoff를 추가해 pooler circuit breaker 및 prepared statement 계열 일시 오류를 자동 재시도한다.
+- 근거: auto-publish skip 후 재가공 복귀 경로 부재, 문서-스크립트 drift, 상태 무결성 누수, pooler 일시 오류가 운영 자동화의 가장 작은 반복 장애 지점이었다.
+
+### 2026-03-24 — Auto-Publish Worker
+- 상태: resolved
+- 결정:
+  - `supabase-auto-publish.ts` + `run-auto-publish.ts` 워커 구현
+  - `review_status = 'approved'` + `status != 'published'` 브리프 대상
+  - quality check 6항목 (title/summary/body/source-count/https-url/internal-term) 통과 시에만 전환
+  - `draft|review → scheduled → published` 2단계 전환 (1회 실행에 1단계)
+  - `npm run publish:auto` / `publish:auto-dry` (dry-run) 스크립트 등록
+  - 전환 발생 시 Telegram 보고
+- 근거: review → published 사이 수동 클릭 의존도 제거. AUTO-PUBLISH-RULES.md 조건 기반 구현
+
 ### 2026-03-24 — Brief Cover Image Pipeline + Reference Brief
 - 상태: resolved
 - 결정:

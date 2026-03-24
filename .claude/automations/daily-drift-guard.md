@@ -51,6 +51,12 @@ cd "$ROOT_DIR"
 npm run trial:all
 ```
 
+자동화 문서와 실제 스크립트/파일 참조가 맞는지도 함께 확인한다:
+```bash
+cd "$ROOT_DIR"
+npm run automation:check
+```
+
 해석 규칙:
 - exit 0: baseline-pass
 - exit 1: baseline-warning
@@ -110,6 +116,7 @@ npx playwright test apps/web/tests/e2e/pipeline-to-ui.spec.ts
 - 전체 성공이지만 item count가 급감했다.
 - stdout 포맷이 바뀌어 count 파싱이 0으로 떨어진 흔적이 있다.
 - Telegram 보고만 실패했다.
+- automation 문서가 실제 스크립트 또는 파일 참조와 어긋난다.
 
 ### 실패
 - 단계 중 하나라도 `error`
@@ -137,7 +144,35 @@ npx playwright test apps/web/tests/e2e/pipeline-to-ui.spec.ts
 
 ---
 
-## 5. 행동 원칙
+## 5. Telegram 보고
+
+섹션 4의 보고 형식을 작성한 직후 아래 curl로 전송한다.
+**경고/실패 상태일 때는 반드시 전송한다. 정상일 때도 전송한다.**
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+
+# TEXT에 섹션 4 보고 내용을 담는다
+# 예시:
+# TEXT="[VibeHub] Drift Guard\n- pipeline: success\n- counts: fetched 12 / stored 10 / synced 10\n- tests: pass\n- shadow trials: baseline-pass\n- orchestration drift: none\n- next action: 없음"
+
+if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_REPORT_CHAT_ID" ]; then
+  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_REPORT_CHAT_ID}" \
+    --data-urlencode "text=${TEXT}" \
+    > /dev/null
+else
+  echo "Telegram 키 없음 — 보고 생략"
+fi
+```
+
+전송 실패는 무시하고 자동화를 정상 종료한다.
+
+---
+
+## 6. 행동 원칙
 
 - 사람이 확인해야 하는 예외만 올린다.
 - 증거 없이 source/tool 교체 결론을 내리지 않는다.

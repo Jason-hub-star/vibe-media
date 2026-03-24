@@ -1,33 +1,50 @@
 # Auto Publish Rules
 
 ## Default Goal
-- 기본 자동화 목표는 `scheduled/private publish queue`까지다.
-- 즉시 공개는 기본값이 아니며 별도 운영 판단이 필요하다.
+- 승인된 브리프를 quality gate 뒤에만 `review -> scheduled -> published`로 전환한다.
+- `draft` 브리프는 auto-publish 대상이 아니며 반드시 editorial review를 먼저 거친다.
+- 즉시 공개는 허용하지만, 여전히 quality gate와 상태 가드를 통과해야 한다.
 
 ## Auto Queue Conditions
-- source tier가 허용 범위다
-- critic pass를 통과했다
-- confidence 기준을 충족한다
-- 정책 플래그가 없다
-- duplicate가 아니다
-- action links가 유효하다
-- active 모델은 promote 이후 rollback 기준을 벗어나지 않아야 한다
+- `review_status = approved`
+- `status IN ('review', 'scheduled')`
+- title length `15-70`
+- summary length `50-200`
+- body paragraphs `>= 3` (헤딩 제외)
+- source count `>= 2`
+- source URLs are all `https://`
+- internal terms `pipeline`, `ingest`, `classify`, `orchestrat` absent
 
 ## Default Route
 1. 수집
 2. 가공
-3. 초안
-4. critic
-5. auto-queue 등록
-6. scheduled/private 상태 유지
+3. 초안 (`draft`)
+4. editorial review (`review + pending`)
+5. human approve (`review + approved`)
+6. auto-publish (`scheduled` or `published`)
+
+## Auto Publish Actions
+- `review + approved`는 auto-publish 실행 시 `scheduled`로 전환된다.
+- `scheduled + approved`는 `scheduled_at <= NOW()`일 때 `published`로 전환된다.
+- 한 번에 최대 10개 브리프만 처리한다.
+
+## Quality Failure Recovery
+- quality gate 실패 브리프는 발행을 진행하지 않는다.
+- 실패 브리프는 `draft + pending`으로 자동 복귀한다.
+- recovery 사유는 `last_editor_note`에 남긴다.
+- 다음 `daily-editorial-review` 실행에서 다시 가공 대상이 된다.
+
+## State Integrity Guard
+- `approve`와 `schedule`은 `review` 상태 브리프에서만 허용한다.
+- `draft + approved`, `draft + scheduled_at`, `draft + published_at` 같은 복구 가능한 조합은 `publish:repair-state`로 정리한다.
+- automation 문서와 실제 실행 스크립트 drift는 `automation:check`로 점검한다.
 
 ## Human Escalation Conditions
-- publish metadata 부족
-- policy ambiguity
-- source provenance 부족
-- category와 surface가 충돌
-- uploader failure
+- 원문 접근 실패로 editorial review가 충분한 본문/소스를 만들지 못한 경우
+- quality gate 반복 실패가 누적되는 경우
+- source provenance 또는 policy ambiguity가 남는 경우
+- publish transition은 가능하지만 운영 판단이 필요한 경우
 
 ## Immediate Publish
-- 기본값 아님
-- 별도 실험/정책 문서에서만 허용 가능
+- 기본 우선순위는 `scheduled` 경유다.
+- 다만 현재 구현은 `scheduled_at <= NOW()`면 같은 워커가 즉시 `published`까지 올릴 수 있다.
