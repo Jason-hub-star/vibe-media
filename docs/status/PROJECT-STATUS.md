@@ -71,6 +71,7 @@
 - editorial automation hardening: done — auto-publish skip recovery, `publish:repair-state`, `automation:check`, Supabase retry/backoff
 - pipeline-to-ui E2E test suite (8 tests): done
 - `/pipeline-check` skill: done
+- local `code-review-graph` baseline + `.code-review-graphignore`: done
 - Defuddle article enrichment (Phase 1): done
 - fixture-backed shadow trial suite (`trial:all`): done
 - design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done
@@ -170,6 +171,7 @@
 - Supabase read path에 `connect_timeout: 10s`, `idle_timeout: 20s`, `Promise.race` 15s 안전장치가 적용됐다
 - `pipeline-to-ui.spec.ts`로 파이프라인 데이터가 public/admin UI까지 전달되는지 E2E 자동 검증 가능
 - `/pipeline-check` 스킬로 fetch → ingest → sync → E2E 검증을 한번에 실행 가능
+- 로컬 `code-review-graph`는 별도 Python/uv 환경에서 동작 확인을 마쳤고, 레포 루트 `.code-review-graphignore`로 `apps/web/.next`, `logs`, test/build 산출물 churn을 그래프 범위에서 제외한다
 - `trial:all`은 classifier / brief draft / discover draft / critic 4개 stage를 한 번에 묶는 fixture-backed baseline suite다
 - `trial:all`의 `baseline-pass / baseline-warning / rollback-risk`는 live drift가 아니라 fixture baseline 상태를 의미한다
 - 현재 머신에서는 실제 `SUPABASE_DB_URL` 연결로 `pipeline:supabase-sync`, `pipeline:daily`까지 정상 검증 완료했다

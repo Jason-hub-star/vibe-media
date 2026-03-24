@@ -1,0 +1,11 @@
+# Build outputs and caches create noisy watch updates and low-value graph edges.
+node_modules/**
+apps/web/.next/**
+dist/**
+coverage/**
+playwright-report/**
+test-results/**
+logs/**
+supabase/.temp/**
+.code-review-graph/**
+

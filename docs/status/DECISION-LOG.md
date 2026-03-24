@@ -4,6 +4,14 @@
 
 ## Resolved
 
+### 2026-03-25 — Local `code-review-graph` Ignore Baseline
+- 상태: resolved
+- 결정:
+  - 로컬 `code-review-graph`는 시스템 기본 Python을 바꾸지 않고 별도 Python/uv 환경에서 사용한다.
+  - 레포 루트에 `.code-review-graphignore`를 추가해 `apps/web/.next`, `logs`, `coverage`, `test-results`, `playwright-report`, `supabase/.temp` 같은 generated churn을 그래프와 watch 대상에서 제외한다.
+  - 운영 기본값은 `watch` 상시 구동보다 `status` / `build` / `update` 중심으로 두고, watch noise가 다시 보이면 ignore 규칙을 먼저 조정한다.
+- 근거: 초기 `watch` 검증에서 authored source 외의 generated output churn이 함께 잡혀 로그 가독성과 blast-radius 해석 품질을 떨어뜨렸다. source 중심 그래프를 유지하는 편이 실제 리뷰와 수정 범위 산정에 더 유리했다.
+
 ### 2026-03-25 — Editorial Automation Hardening
 - 상태: resolved
 - 결정:
