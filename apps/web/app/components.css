@@ -5,6 +5,19 @@
   padding: 0.9rem 0;
 }
 
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  color: var(--color-cream);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 .nav-links {
   display: flex;
   flex-wrap: wrap;
@@ -48,7 +61,7 @@
 }
 
 .muted {
-  color: rgba(244, 238, 226, 0.72);
+  color: rgba(var(--color-cream-rgb), 0.72);
 }
 
 .button-primary,
@@ -77,18 +90,18 @@
 }
 
 .panel {
-  border: 1px solid rgba(244, 238, 226, 0.12);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.12);
   border-radius: var(--radius-panel);
   background:
-    linear-gradient(180deg, rgba(244, 238, 226, 0.06), rgba(244, 238, 226, 0.02)),
-    rgba(42, 34, 31, 0.88);
+    linear-gradient(180deg, rgba(var(--color-cream-rgb), 0.06), rgba(var(--color-cream-rgb), 0.02)),
+    rgba(var(--color-ink-soft-rgb), 0.88);
   padding: 1.25rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
   transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .panel:hover {
-  border-color: rgba(244, 238, 226, 0.22);
+  border-color: rgba(var(--color-cream-rgb), 0.22);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
 }
 
@@ -121,7 +134,7 @@
   width: 100%;
   min-height: 140px;
   border-radius: calc(var(--radius-panel) - 6px);
-  border: 1px solid rgba(244, 238, 226, 0.12);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.12);
   background: rgba(255, 255, 255, 0.04);
   background-position: center;
   background-repeat: no-repeat;
@@ -133,7 +146,7 @@
 }
 
 .showcase-author {
-  color: rgba(244, 238, 226, 0.72);
+  color: rgba(var(--color-cream-rgb), 0.72);
   font-size: var(--type-small);
 }
 
@@ -141,7 +154,7 @@
   position: relative;
   overflow: hidden;
   border-radius: calc(var(--radius-panel) + 8px);
-  border: 1px solid rgba(244, 238, 226, 0.15);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.15);
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -164,7 +177,7 @@
   justify-content: space-between;
   gap: 1rem;
   align-items: center;
-  border-bottom: 1px solid rgba(244, 238, 226, 0.08);
+  border-bottom: 1px solid rgba(var(--color-cream-rgb), 0.08);
   padding: 1rem 0;
 }
 
@@ -190,9 +203,9 @@
 
 .input {
   width: 100%;
-  border: 1px solid rgba(244, 238, 226, 0.16);
-  border-radius: 14px;
-  background: rgba(20, 18, 16, 0.72);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.16);
+  border-radius: var(--radius-md);
+  background: rgba(var(--color-ink-rgb), 0.72);
   color: var(--color-cream);
   padding: 0.9rem 1rem;
   font: inherit;
@@ -212,7 +225,7 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 3rem 1.5rem;
-  border: 1px dashed rgba(244, 238, 226, 0.15);
+  border: 1px dashed rgba(var(--color-cream-rgb), 0.15);
   border-radius: var(--radius-panel);
   text-align: center;
 }
@@ -224,12 +237,12 @@
 }
 
 .state-title {
-  font-size: 0.9rem;
+  font-size: var(--type-small);
 }
 
 .state-message {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: var(--type-small);
 }
 
 .state-error {
@@ -261,13 +274,13 @@
   font: inherit;
   font-size: var(--type-small);
   cursor: pointer;
-  background: rgba(244, 63, 94, 0.18);
+  background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
   transition: background 140ms ease;
 }
 
 .button-danger:hover {
-  background: rgba(244, 63, 94, 0.32);
+  background: rgba(var(--color-rose-rgb), 0.32);
 }
 
 .button-ghost {
@@ -283,13 +296,13 @@
 }
 
 .button-ghost:hover {
-  background: rgba(244, 238, 226, 0.08);
+  background: rgba(var(--color-cream-rgb), 0.08);
 }
 
 .note-toggle {
   background: none;
   border: none;
-  color: rgba(244, 238, 226, 0.56);
+  color: rgba(var(--color-cream-rgb), 0.56);
   font: inherit;
   font-size: var(--type-small);
   cursor: pointer;
@@ -299,9 +312,9 @@
 .note-input {
   width: 100%;
   min-height: 3.5rem;
-  border: 1px solid rgba(244, 238, 226, 0.16);
-  border-radius: 10px;
-  background: rgba(20, 18, 16, 0.72);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.16);
+  border-radius: var(--radius-md);
+  background: rgba(var(--color-ink-rgb), 0.72);
   color: var(--color-cream);
   padding: 0.6rem 0.75rem;
   font: inherit;

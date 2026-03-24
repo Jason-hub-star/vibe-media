@@ -40,6 +40,27 @@
 6. 테스트는 필수이며 `lint`, `typecheck`, `build`, 관련 단위 테스트를 우선 실행한다.
 7. 파일이 300줄에 가까워지면 분리 검토, 400줄 전에는 사용자에게 알린다.
 
+## Post-Implementation Doc Sync
+코드 수정이 완료되면 반드시 다음 문서 동기화를 수행한다. 커밋 전에 완료해야 한다.
+
+### 자동 체크리스트
+1. **`docs/status/PROJECT-STATUS.md`** — Active Tracks/Open Follow-ups에 변경 요약 추가
+2. **`docs/status/EXECUTION-CHECKLIST.md`** — 해당 체크 항목 상태 업데이트 (`[ ]` → `[x]`)
+3. **`docs/status/DECISION-LOG.md`** — 설계 결정이 포함된 변경이면 새 항목 추가
+4. **`docs/status/FRONTEND-HANDOFF.md`** — 프론트엔드 토큰/CSS/컴포넌트 변경 시 §2(토큰 표)와 §6(마일스톤) 동기화
+5. **`docs/ref/ROUTE-SPECS.md`** — route 추가/변경 시 동기화
+6. **`docs/ref/SCHEMA.md`** — DB 스키마 변경 시 동기화
+
+### 트리거 조건
+| 변경 유형 | 반드시 업데이트할 문서 |
+|-----------|----------------------|
+| CSS/디자인 토큰 | FRONTEND-HANDOFF, PROJECT-STATUS |
+| 새 route 추가 | ROUTE-SPECS, PROJECT-STATUS, EXECUTION-CHECKLIST |
+| DB 스키마 변경 | SCHEMA, PROJECT-STATUS |
+| 설계 결정 | DECISION-LOG |
+| 기능 구현 완료 | PROJECT-STATUS, EXECUTION-CHECKLIST |
+| 버그 수정 | PROJECT-STATUS (Open Follow-ups에서 제거) |
+
 ## Local Runtime Prerequisites
 - `vibehub-media` 검증에는 Node 런타임이 필요하다.
 - 검증 전 최소 확인 항목:

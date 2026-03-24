@@ -59,28 +59,30 @@ export function VideoJobDetailContent({ job }: { job: VideoJobDetail }) {
           <p className="muted">아직 처리 로그가 없습니다.</p>
         )}
         {job.processingLog.length > 0 && (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>단계</th>
-                <th>상태</th>
-                <th>시간</th>
-              </tr>
-            </thead>
-            <tbody>
-              {job.processingLog.map((entry) => (
-                <tr key={`${entry.step}-${entry.timestamp}`}>
-                  <td>{entry.step}</td>
-                  <td>
-                    <span className={`status status-${entry.status}`}>
-                      {entry.status}
-                    </span>
-                  </td>
-                  <td>{entry.timestamp.slice(0, 16).replace("T", " ")}</td>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>단계</th>
+                  <th>상태</th>
+                  <th>시간</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {job.processingLog.map((entry) => (
+                  <tr key={`${entry.step}-${entry.timestamp}`}>
+                    <td>{entry.step}</td>
+                    <td>
+                      <span className={`status status-${entry.status}`}>
+                        {entry.status}
+                      </span>
+                    </td>
+                    <td>{entry.timestamp.slice(0, 16).replace("T", " ")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>

@@ -5,6 +5,7 @@ const report = await exportDiscoverToObsidian();
 
 console.log("VibeHub Obsidian discover export");
 console.log(`vault root: ${report.vaultRoot}`);
+console.log(`data source: ${report.source}`);
 console.log(`items exported: ${report.savedCount}`);
 console.log(`items created: ${report.createdCount}`);
 console.log(`items updated: ${report.updatedCount}`);

@@ -43,22 +43,24 @@ export function AssetDetailContent({ asset }: { asset: AssetSlotDetail }) {
           <p className="muted">아직 사용처가 등록되지 않았습니다.</p>
         )}
         {asset.usages.length > 0 && (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Route</th>
-                <th>Component</th>
-              </tr>
-            </thead>
-            <tbody>
-              {asset.usages.map((usage) => (
-                <tr key={`${usage.route}-${usage.component}`}>
-                  <td>{usage.route}</td>
-                  <td>{usage.component}</td>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Route</th>
+                  <th>Component</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {asset.usages.map((usage) => (
+                  <tr key={`${usage.route}-${usage.component}`}>
+                    <td>{usage.route}</td>
+                    <td>{usage.component}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>

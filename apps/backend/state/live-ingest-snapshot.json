@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T22:05:44.923Z",
+  "generatedAt": "2026-03-24T10:31:27.657Z",
   "tables": {
     "sources": [
       {
@@ -9,10 +9,10 @@
         "base_url": "https://openai.com/news/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T22:05:44.923Z",
+        "last_success_at": "2026-03-24T10:31:27.657Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "source-ac035067e139",
@@ -21,10 +21,10 @@
         "base_url": "https://blog.google/innovation-and-ai/technology/ai/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T22:05:44.923Z",
+        "last_success_at": "2026-03-24T10:31:27.657Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "source-df17efc53a21",
@@ -33,10 +33,10 @@
         "base_url": "https://github.com/openai/openai-node/releases",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-22T22:05:44.923Z",
+        "last_success_at": "2026-03-24T10:31:27.657Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "source-3a2941a186e8",
@@ -48,7 +48,7 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "stable RSS/API endpoint not wired yet",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "source-62eed9aaa9d2",
@@ -60,43 +60,70 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "public RSS endpoint returned 404 during live fetch verification",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       }
     ],
     "ingest_runs": [
       {
-        "id": "run-6c655f63a215",
+        "id": "run-82d3c6dd4f77",
         "source_id": "source-616388d9c125",
         "run_status": "drafted",
-        "started_at": "2026-03-22T22:05:44.923Z",
-        "finished_at": "2026-03-22T22:05:44.923Z",
+        "started_at": "2026-03-24T10:31:27.657Z",
+        "finished_at": "2026-03-24T10:31:27.657Z",
         "error_message": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
-        "id": "run-f3e5fcbb5a8d",
+        "id": "run-9ec89b8c5468",
         "source_id": "source-ac035067e139",
         "run_status": "drafted",
-        "started_at": "2026-03-22T22:05:44.923Z",
-        "finished_at": "2026-03-22T22:05:44.923Z",
+        "started_at": "2026-03-24T10:31:27.657Z",
+        "finished_at": "2026-03-24T10:31:27.657Z",
         "error_message": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
-        "id": "run-d1877b43b9d5",
+        "id": "run-fa891440b515",
         "source_id": "source-df17efc53a21",
         "run_status": "review",
-        "started_at": "2026-03-22T22:05:44.923Z",
-        "finished_at": "2026-03-22T22:05:44.923Z",
+        "started_at": "2026-03-24T10:31:27.657Z",
+        "finished_at": "2026-03-24T10:31:27.657Z",
         "error_message": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       }
     ],
     "ingested_items": [
       {
+        "id": "live-openai-news-rss-acec20302c",
+        "source_id": "source-616388d9c125",
+        "run_id": "run-82d3c6dd4f77",
+        "title": "Creating with Sora Safely",
+        "url": "https://openai.com/index/creating-with-sora-safely",
+        "content_type": "article",
+        "raw_content": {
+          "publishedAt": "Mon, 23 Mar 2026 00:00:00 GMT",
+          "url": "https://openai.com/index/creating-with-sora-safely",
+          "sourceId": "openai-news-rss"
+        },
+        "parsed_content": {
+          "summary": "To address the novel safety challenges posed by a state-of-the-art video model as well as a new social creation platform, we’ve built Sora 2 and the Sora app with safety at the fo...",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "content-failed",
+          "tags": [
+            "launch",
+            "release",
+            "ecosystem"
+          ]
+        },
+        "dedupe_key": "acec20302c9edaace524b3a7e88f8648d15fe23d",
+        "ingest_status": "parsed",
+        "created_at": "2026-03-24T10:31:27.657Z"
+      },
+      {
         "id": "live-openai-news-rss-fd3208099b",
         "source_id": "source-616388d9c125",
-        "run_id": "run-6c655f63a215",
+        "run_id": "run-82d3c6dd4f77",
         "title": "How we monitor internal coding agents for misalignment",
         "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
         "content_type": "article",
@@ -107,6 +134,9 @@
         },
         "parsed_content": {
           "summary": "How OpenAI uses chain-of-thought monitoring to study misalignment in internal coding agents—analyzing real-world deployments to detect risks and strengthen AI safety safeguards.",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "content-failed",
           "tags": [
             "launch",
             "release",
@@ -115,12 +145,12 @@
         },
         "dedupe_key": "fd3208099b40794a1e134aa1aee1271a25df42be",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-openai-news-rss-625785a3d5",
         "source_id": "source-616388d9c125",
-        "run_id": "run-6c655f63a215",
+        "run_id": "run-82d3c6dd4f77",
         "title": "OpenAI to acquire Astral",
         "url": "https://openai.com/index/openai-to-acquire-astral",
         "content_type": "article",
@@ -131,6 +161,9 @@
         },
         "parsed_content": {
           "summary": "Accelerates Codex growth to power the next generation of Python developer tools",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "content-failed",
           "tags": [
             "launch",
             "release",
@@ -139,37 +172,12 @@
         },
         "dedupe_key": "625785a3d5f593f27a364382256cc02407505ebf",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
-      },
-      {
-        "id": "live-openai-news-rss-c3d41e5007",
-        "source_id": "source-616388d9c125",
-        "run_id": "run-6c655f63a215",
-        "title": "Introducing GPT-5.4 mini and nano",
-        "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
-        "content_type": "article",
-        "raw_content": {
-          "publishedAt": "Tue, 17 Mar 2026 10:00:00 GMT",
-          "url": "https://openai.com/index/introducing-gpt-5-4-mini-and-nano",
-          "sourceId": "openai-news-rss"
-        },
-        "parsed_content": {
-          "summary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
-          "tags": [
-            "launch",
-            "release",
-            "ecosystem",
-            "api"
-          ]
-        },
-        "dedupe_key": "c3d41e50070e87e408db8a88959e76936a4fa87b",
-        "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-google-ai-blog-rss-fa8ab9434e",
         "source_id": "source-ac035067e139",
-        "run_id": "run-f3e5fcbb5a8d",
+        "run_id": "run-9ec89b8c5468",
         "title": "Bringing the power of Personal Intelligence to more people",
         "url": "https://blog.google/products-and-platforms/products/search/personal-intelligence-expansion/",
         "content_type": "article",
@@ -180,6 +188,9 @@
         },
         "parsed_content": {
           "summary": "We're expanding Personal Intelligence across AI Mode in Search, the Gemini app and Gemini in Chrome.",
+          "contentMarkdown": "![Bubble that says \"Personal Intelligence\" with Google G, Google Photos logo, and Gmail logo around it](https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Header_gl7r1il.width-2200.format-webp.webp)\n\nBubble that says \"Personal Intelligence\" with Google G, Google Photos logo, and Gmail logo around it\n\n<audio title=\"Bringing the power of Personal Intelligence to more people\"><source src=\"https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_83885_umbriel_2026_03_17_16_05_48.wav\" type=\"audio/x-wav\"><p>Your browser does not support the audio element.</p></audio>\n\nListen to article\n\n\\[\\[duration\\]\\] minutes\n\nSince introducing [Personal Intelligence](https://ai.google/static/documents/building_personal_intelligence.pdf) earlier this year, people are appreciating the highly tailored help they’re getting in AI Mode in Search and the Gemini app — and they’re asking new types of questions. Now, we’re expanding Personal Intelligence in the U.S. across [AI Mode in Search](https://blog.google/products-and-platforms/products/search/personal-intelligence-ai-mode-search/), the [Gemini app](https://blog.google/innovation-and-ai/products/gemini-app/personal-intelligence/) and [Gemini in Chrome](https://blog.google/products-and-platforms/products/chrome/gemini-3-auto-browse/).\n\nPersonal Intelligence allows you to securely connect the dots across your Google apps — like Gmail, Google Photos and more — to provide responses that are uniquely relevant to you. Whether you’re looking for a specific brand of sneakers you previously purchased, or planning a family getaway based on your hotel confirmations and past travel memories, Personal Intelligence helps you find exactly what you need without having to give all the context.\n\nHere are some great examples of how Personal Intelligence can be helpful across AI Mode, the Gemini app and Gemini in Chrome:\n\n- **Get tailored shopping recommendations:** Looking for the perfect bag to match your new shoes? With Personal Intelligence, you’ll see a range of options that are tailored to your recent purchases as well as your preferred brands and style. The recommendations will even include subtle details — like purses with hardware that go with the new gold shoes.\n- **Troubleshoot without the headache:** Get help resolving your next tech issue — even if you don’t remember what exact product you bought. Just explain the problem and get specific debugging steps like power cycling or factory resets, tailored to the exact device model from your purchase receipts.\n- **Navigate tight schedules with ease:** Have a layover and need to grab a bite to eat? You’ll automatically get ideas that account for the foods you like, your exact arrival and departure gates, how long it will take to walk between them, and how much time you have before your next flight boards.\n- **Create a custom travel itinerary:** Skip the generic “top 10” lists. If you’re looking for hidden gems in Chicago, get recommendations based on your unique interests and past favorites, helping you uncover local eats and neighborhoods tailored specifically to you.\n- **Discover a new hobby:** Find the perfect activity tailored to your interests — even ones you didn't realize, like poetry, knowing you enjoy reading and nature.\n\nPersonal Intelligence is available today in the U.S. for [AI Mode in Search](http://myactivity.google.com/search-services/apps) and it’s starting to roll out in the [Gemini app](https://support.google.com/gemini/answer/16598406?sjid=14988910962863823283-NC) and [Gemini in Chrome](https://support.google.com/gemini/answer/16283624) for free-tier users.\n\nThese connected experiences are available for personal Google accounts and not for Workspace business, enterprise or education users.\n\n## Helpful experiences that put you in control\n\nPersonal Intelligence was designed with transparency, choice and control at its core. You choose if and when you want to connect apps like Gmail and Google Photos, and you can turn those connections on or off at any time.\n\nBuilt with privacy in mind, Gemini and AI Mode don't train directly on your Gmail inbox or Google Photos library. We train on limited info, like specific prompts in Gemini or AI Mode and the model’s responses, to improve functionality over time. Learn more [here](https://support.google.com/websearch/answer/16859283?visit_id=639092841454344516-1158111888&p=lm-pi-faq&rd=1#lm-pi-faq) and [here](https://support.google.com/gemini/answer/16836988?visit_id=639092724123513188-1646295126&p=b_pi_ca&rd=1).\n\nPersonal Intelligence is designed to be helpful on your terms. It combines the power of more relevant insights with transparency, choice, and control. The goal is simple: technology that feels like a natural extension of how you get things done.",
+          "parserName": "defuddle",
+          "parseStatus": "content-enriched",
           "tags": [
             "analysis",
             "research"
@@ -187,12 +198,12 @@
         },
         "dedupe_key": "fa8ab9434e6026bbc7937295e6ec6fc1617a3d50",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-google-ai-blog-rss-0d93ef9037",
         "source_id": "source-ac035067e139",
-        "run_id": "run-f3e5fcbb5a8d",
+        "run_id": "run-9ec89b8c5468",
         "title": "Our latest investment in open source security for the AI era",
         "url": "https://blog.google/innovation-and-ai/technology/safety-security/ai-powered-open-source-security/",
         "content_type": "article",
@@ -203,6 +214,9 @@
         },
         "parsed_content": {
           "summary": "Google is making new investments, building new tools and developing code security to improve open source security.",
+          "contentMarkdown": "![A collage including security icons and photos of hands clasped, a man looking at a computer, and two people pointing at something off camera](https://storage.googleapis.com/gweb-uniblog-publish-prod/images/25367___BRS___Aspen_Security_For.width-2200.format-webp_GOI7G8g.webp)\n\nA collage including security icons and photos of hands clasped, a man looking at a computer, and two people pointing at something off camera\n\n<audio title=\"Our latest investment in open source security for the AI era\"><source src=\"https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_83880_umbriel_2026_03_17_16_01_32.wav\" type=\"audio/x-wav\"><p>Your browser does not support the audio element.</p></audio>\n\nListen to article\n\n\\[\\[duration\\]\\] minutes\n\nBillions of people rely on an Internet built on open source software — which is software anyone can use — but that reliance only works if the software beneath it is secure. That’s why for over 20 years, Google has championed open source by supporting the developers who secure it — fueling initiatives like [Google Summer of Code](https://summerofcode.withgoogle.com/) and [bug-hunting programs](https://bughunters.google.com/) that discover and fix more vulnerabilities.\n\nToday, as a founding member of the [Linux Foundation's Alpha-Omega Project](https://alpha-omega.dev/), we’re [pledging $12.5 million](https://www.linuxfoundation.org/press/linux-foundation-announces-12.5-million-in-grant-funding-from-leading-organizations-to-advance-open-source-security) collectively with Amazon, Anthropic, Microsoft/GitHub and OpenAI to further invest in the stability and security of the open source community. The funding, managed by Alpha-Omega and OpenSSF, will help maintainers stay ahead of a new generation of AI-driven threats, move security beyond vulnerability discovery to actually deploying fixes, and put advanced security tools directly into maintainers’ hands, to turn a flood of AI-generated findings into fast action.\n\nIn addition to its industry-wide commitments, Google is dedicated to helping the open source community to outpace evolving threats and tip the scales in favor of the [defenders](https://blog.google/innovation-and-ai/technology/safety-security/google-ai-cyber-defense-initiative/) by providing advanced AI tools for wider use.\n\nInternally, [Big Sleep](https://projectzero.google/2024/10/from-naptime-to-big-sleep.html) and [CodeMender](https://deepmind.google/blog/introducing-codemender-an-ai-agent-for-code-security/), both AI-powered tools from Google DeepMind, have already shown incredible success in helping us protect our own systems, demonstrating that AI can autonomously find and fix deep, exploitable vulnerabilities in systems as complex as the Chrome browser. We’re also extending research initiatives like [Sec-Gemini](https://secgemini.google/) to open source projects ([interest form](https://docs.google.com/forms/d/e/1FAIpQLSer19zNknZiZybByZTo2SmyMu9vLK_ViOodTU8rAIJy-wkQtQ/viewform?usp=publish-editor)). These breakthroughs show the transformational potential of AI to secure the wider open source ecosystem.\n\nOpen source is the backbone of the modern web, and we’re proud to support the maintainers who secure it to move faster, stay safer and continue building the future.",
+          "parserName": "defuddle",
+          "parseStatus": "content-enriched",
           "tags": [
             "analysis",
             "research"
@@ -210,12 +224,12 @@
         },
         "dedupe_key": "0d93ef9037ae092a67e3e864634d5a3fbbe946e3",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-google-ai-blog-rss-dbf82fe6e6",
         "source_id": "source-ac035067e139",
-        "run_id": "run-f3e5fcbb5a8d",
+        "run_id": "run-9ec89b8c5468",
         "title": "How AI is helping improve heart health in rural Australia",
         "url": "https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/",
         "content_type": "article",
@@ -226,6 +240,9 @@
         },
         "parsed_content": {
           "summary": "A new Google AI initiative aims to improve heart health outcomes for people living in remote Australian communities.",
+          "contentMarkdown": "![A doctor is sitting across a desk from a patient. The doctor is holding a tablet and a pen. Medical charts renderings are in the background.](https://storage.googleapis.com/gweb-uniblog-publish-prod/images/AIHealth_v2_2096x1182_02.width-2200.format-webp.webp)\n\nA doctor is sitting across a desk from a patient. The doctor is holding a tablet and a pen. Medical charts renderings are in the background.\n\n<audio title=\"How AI is helping improve heart health in rural Australia\"><source src=\"https://storage.googleapis.com/gweb-uniblog-publish-prod/media/tts_audio_83548_umbriel_2026_03_12_23_18_48.wav\" type=\"audio/x-wav\"><p>Your browser does not support the audio element.</p></audio>\n\nListen to article\n\n\\[\\[duration\\]\\] minutes\n\nAustralia is home to one of the world’s best healthcare systems, but where you live within the country is still a primary predictor of your health outcomes. In fact, people living in remote Australian communities are [60% more likely](https://ruraldoctorsfoundation.org.au/heart-disease/) to die from heart disease than those living in metropolitan areas. [<sup>1</sup>](https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/#footnote-1)\n\nThat’s why we’re partnering with some of Australia's top health organizations on a new program. By combining Google’s AI with on-the-ground community care, we’re helping change how support is delivered to the people who need it most.\n\n## A partnership for preventative and proactive care\n\nWe’re proud to launch this initiative — a first for the Asia-Pacific region — alongside [Wesfarmers Health](https://www.wesfarmers.com.au/our-businesses/wesfarmers-health) and its [SISU Health](https://www.sisuhealthgroup.com/) business, the [Victor Chang Cardiac Research Institute](https://www.victorchang.edu.au/?gad_source=1&gad_campaignid=1075861874&gbraid=0AAAAADCIdnWsAFpD3oekpHKSCJM4QnXTF&gclid=Cj0KCQiA6sjKBhCSARIsAJvYcpMxQebX9hT1HNAGqYffK7WrSsfkcKOfJ2Nd1sn1TmzKeq9g3RmV1ykaAjHyEALw_wcB) and not-for-profit private health insurer [Latrobe Health Services](https://www.latrobehealth.com.au/cover-selector/?state=VIC&type=single&gad_source=1&gad_campaignid=22018179055&gbraid=0AAAAADKB5fboTA4xsAGQx3dI8b8JVF9rq&gclid=Cj0KCQiA6sjKBhCSARIsAJvYcpMxsDGRI4Trf-mjUX1DBzxp9RCtMPqB9xhKPGXspUQDuOgHHLlhjOgaAt28EALw_wcB).\n\nSupported by a $1 million AUD investment from [Google Australia’s Digital Future Initiative](https://blog.google/company-news/inside-google/around-the-globe/google-asia/australia-digital-future/) (DFI), this collaboration uses Google for Health’s Population Health AI (PHAI). Currently a proof-of-concept available to select partners, PHAI acts as an advanced analytics engine that helps identify hidden health risks within communities. The goal is to equip our partners with insights that could help them shift from treating problems to proactively managing chronic condition risks.\n\n## Seeing the full picture with AI\n\nHealth is influenced by more than just doctor visits; it’s shaped by our environment, proximity to care, access to fresh food, the air we breathe, etc. To capture this complexity, PHAI uses Google [Earth AI's](https://ai.google/earth-ai/) [Population Dynamics Foundation Models](https://research.google/blog/google-earth-ai-unlocking-geospatial-insights-with-foundation-models-and-cross-modal-reasoning/) (PDFM), alongside other [key Google Maps Platform datasets](https://mapsplatform.google.com/maps-products/geospatial-analytics/) like air quality, pollen and places insights that help connect the dots.\n\nBy analyzing diverse, de-identified and aggregated datasets — ranging from clinical records to geographic factors — the model uncovers hidden patterns at a community level while safeguarding individual privacy. This allows health organizations to move beyond a \"one-size-fits-all\" approach, tailoring interventions to the specific needs of a postcode or town.\n\n## Bringing screenings to where they’re needed most\n\nThis technology will lead to real-world action. Supported by the DFI, SISU Health plans to conduct over 50,000 new health screenings in remote areas.\n\nSISU Health will also use PHAI to analyze trends across its unique dataset of de-identified and consented records. Combining this data with the new screenings — all with user consent — will help us better understand local health challenges and propose tailored interventions.\n\n## A future without barriers\n\nOur goal is simple: to promote health wherever people live. By combining Google’s AI capabilities with the deep clinical expertise of our partners, we’re working toward a future where every Australian has access to the personalized care they deserve.",
+          "parserName": "defuddle",
+          "parseStatus": "content-enriched",
           "tags": [
             "analysis",
             "research"
@@ -233,12 +250,12 @@
         },
         "dedupe_key": "dbf82fe6e6487afbc99053ffa0947cdafb2e2c2f",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-github-releases-openai-node-15f01c0445",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-d1877b43b9d5",
+        "run_id": "run-fa891440b515",
         "title": "v6.32.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.32.0",
         "content_type": "repo",
@@ -249,6 +266,9 @@
         },
         "parsed_content": {
           "summary": "## 6.32.0 (2026-03-17) Full Changelog: [v6.31.0...v6.32.0](https://github.com/openai/openai-node/compare/v6.31.0...v6.32.0) ### Features * **api:** 5.4 nano and mini model slugs (...",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "summary-only",
           "tags": [
             "repo",
             "release",
@@ -257,12 +277,12 @@
         },
         "dedupe_key": "15f01c0445bc6c747d0e51364ffcad4b720fd1d2",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-github-releases-openai-node-76b1f95215",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-d1877b43b9d5",
+        "run_id": "run-fa891440b515",
         "title": "v6.31.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.31.0",
         "content_type": "repo",
@@ -273,6 +293,9 @@
         },
         "parsed_content": {
           "summary": "## 6.31.0 (2026-03-16) Full Changelog: [v6.30.1...v6.31.0](https://github.com/openai/openai-node/compare/v6.30.1...v6.31.0) ### Features * **api:** add in/nin filter types to Comp...",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "summary-only",
           "tags": [
             "repo",
             "release",
@@ -281,12 +304,12 @@
         },
         "dedupe_key": "76b1f95215a3c4ae7b82b977d2babfbc2df40a27",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "live-github-releases-openai-node-dba46003c8",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-d1877b43b9d5",
+        "run_id": "run-fa891440b515",
         "title": "v6.30.1",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.30.1",
         "content_type": "repo",
@@ -297,6 +320,9 @@
         },
         "parsed_content": {
           "summary": "## 6.30.1 (2026-03-16) Full Changelog: [v6.30.0...v6.30.1](https://github.com/openai/openai-node/compare/v6.30.0...v6.30.1) ### Chores * **internal:** tweak CI branches ([25f5d74]...",
+          "contentMarkdown": null,
+          "parserName": "rss-summary",
+          "parseStatus": "summary-only",
           "tags": [
             "repo",
             "release",
@@ -305,10 +331,24 @@
         },
         "dedupe_key": "dba46003c87cebe54b7a0dd26dfdff54a0613eaf",
         "ingest_status": "parsed",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       }
     ],
     "item_classifications": [
+      {
+        "id": "classification-e64f411a5701",
+        "item_id": "live-openai-news-rss-acec20302c",
+        "category": "analysis",
+        "importance_score": 95,
+        "novelty_score": 72,
+        "target_surface": "brief",
+        "reason": "live fetch classification for Creating with Sora Safely",
+        "duplicate_of": null,
+        "confidence": 0.95,
+        "policy_flags": [],
+        "exception_reason": null,
+        "created_at": "2026-03-24T10:31:27.657Z"
+      },
       {
         "id": "classification-b68aed12ddd3",
         "item_id": "live-openai-news-rss-fd3208099b",
@@ -321,7 +361,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-69769e3805c1",
@@ -335,21 +375,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
-      },
-      {
-        "id": "classification-f2d5c47f906a",
-        "item_id": "live-openai-news-rss-c3d41e5007",
-        "category": "api",
-        "importance_score": 92,
-        "novelty_score": 72,
-        "target_surface": "both",
-        "reason": "dual-surface routing needs operator confirmation",
-        "duplicate_of": null,
-        "confidence": 0.92,
-        "policy_flags": [],
-        "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-e672cab43078",
@@ -363,7 +389,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-a7fdbf3610ee",
@@ -377,7 +403,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-7bed1021f9d7",
@@ -391,7 +417,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-18420467136c",
@@ -405,7 +431,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-5b6f42a123b9",
@@ -419,7 +445,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       },
       {
         "id": "classification-4d9901b0b3d7",
@@ -433,7 +459,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-22T22:05:44.923Z"
+        "created_at": "2026-03-24T10:31:27.657Z"
       }
     ]
   },
@@ -477,34 +503,45 @@
     ],
     "ingestRuns": [
       {
-        "id": "run-view-6c655f63a215",
+        "id": "run-view-82d3c6dd4f77",
         "sourceName": "OpenAI News",
         "runStatus": "drafted",
-        "startedAt": "2026-03-22T22:05:44.923Z",
-        "finishedAt": "2026-03-22T22:05:44.923Z",
+        "startedAt": "2026-03-24T10:31:27.657Z",
+        "finishedAt": "2026-03-24T10:31:27.657Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-f3e5fcbb5a8d",
+        "id": "run-view-9ec89b8c5468",
         "sourceName": "Google AI Blog",
         "runStatus": "drafted",
-        "startedAt": "2026-03-22T22:05:44.923Z",
-        "finishedAt": "2026-03-22T22:05:44.923Z",
+        "startedAt": "2026-03-24T10:31:27.657Z",
+        "finishedAt": "2026-03-24T10:31:27.657Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-d1877b43b9d5",
+        "id": "run-view-fa891440b515",
         "sourceName": "GitHub Releases",
         "runStatus": "review",
-        "startedAt": "2026-03-22T22:05:44.923Z",
-        "finishedAt": "2026-03-22T22:05:44.923Z",
+        "startedAt": "2026-03-24T10:31:27.657Z",
+        "finishedAt": "2026-03-24T10:31:27.657Z",
         "itemCount": 3,
         "errorMessage": null
       }
     ],
     "inboxItems": [
+      {
+        "id": "live-openai-news-rss-acec20302c",
+        "sourceName": "OpenAI News",
+        "sourceTier": "auto-safe",
+        "title": "Creating with Sora Safely",
+        "contentType": "article",
+        "stage": "drafted",
+        "targetSurface": "brief",
+        "confidence": 0.95,
+        "parsedSummary": "To address the novel safety challenges posed by a state-of-the-art video model as well as a new social creation platform, we’ve built Sora 2 and the Sora app with safety at the fo..."
+      },
       {
         "id": "live-openai-news-rss-fd3208099b",
         "sourceName": "OpenAI News",
@@ -528,17 +565,6 @@
         "parsedSummary": "Accelerates Codex growth to power the next generation of Python developer tools"
       },
       {
-        "id": "live-openai-news-rss-c3d41e5007",
-        "sourceName": "OpenAI News",
-        "sourceTier": "auto-safe",
-        "title": "Introducing GPT-5.4 mini and nano",
-        "contentType": "article",
-        "stage": "classified",
-        "targetSurface": "both",
-        "confidence": 0.92,
-        "parsedSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads."
-      },
-      {
         "id": "live-google-ai-blog-rss-fa8ab9434e",
         "sourceName": "Google AI Blog",
         "sourceTier": "auto-safe",
@@ -547,7 +573,7 @@
         "stage": "drafted",
         "targetSurface": "brief",
         "confidence": 0.95,
-        "parsedSummary": "We're expanding Personal Intelligence across AI Mode in Search, the Gemini app and Gemini in Chrome."
+        "parsedSummary": "We're expanding Personal Intelligence across AI Mode in Search, the Gemini app and Gemini in Chrome. !Bubble that says \"Personal Intelligence\" with Google G, Google Photos logo, and Gmail logo around it Bubble that says \"Personal Intellige..."
       },
       {
         "id": "live-google-ai-blog-rss-0d93ef9037",
@@ -558,7 +584,7 @@
         "stage": "drafted",
         "targetSurface": "brief",
         "confidence": 0.95,
-        "parsedSummary": "Google is making new investments, building new tools and developing code security to improve open source security."
+        "parsedSummary": "Google is making new investments, building new tools and developing code security to improve open source security. !A collage including security icons and photos of hands clasped, a man looking at a computer, and two people pointing at som..."
       },
       {
         "id": "live-google-ai-blog-rss-dbf82fe6e6",
@@ -569,7 +595,7 @@
         "stage": "drafted",
         "targetSurface": "brief",
         "confidence": 0.95,
-        "parsedSummary": "A new Google AI initiative aims to improve heart health outcomes for people living in remote Australian communities."
+        "parsedSummary": "A new Google AI initiative aims to improve heart health outcomes for people living in remote Australian communities. !A doctor is sitting across a desk from a patient. The doctor is holding a tablet and a pen. Medical charts renderings are..."
       },
       {
         "id": "live-github-releases-openai-node-15f01c0445",
@@ -606,24 +632,6 @@
       }
     ],
     "reviewItems": [
-      {
-        "id": "review-live-openai-news-rss-c3d41e5007",
-        "sourceItemId": "live-openai-news-rss-c3d41e5007",
-        "sourceLabel": "OpenAI News",
-        "sourceHref": "https://example.com/live-openai-news-rss-c3d41e5007",
-        "sourceExcerpt": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
-        "parsedSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads.",
-        "keyPoints": [
-          "target surface both",
-          "next queue review",
-          "source tier auto-safe"
-        ],
-        "targetSurface": "brief",
-        "reviewReason": "dual-surface routing needs operator confirmation",
-        "confidence": 0.92,
-        "previewTitle": "Introducing GPT-5.4 mini and nano",
-        "previewSummary": "GPT-5.4 mini and nano are smaller, faster versions of GPT-5.4 optimized for coding, tool use, multimodal reasoning, and high-volume API and sub-agent workloads."
-      },
       {
         "id": "review-live-github-releases-openai-node-15f01c0445",
         "sourceItemId": "live-github-releases-openai-node-15f01c0445",
@@ -681,6 +689,15 @@
     ],
     "publishQueueItems": [
       {
+        "id": "publish-live-openai-news-rss-acec20302c",
+        "title": "Creating with Sora Safely",
+        "targetType": "brief",
+        "queueStatus": "scheduled",
+        "nextAction": "Keep scheduled slot unless source links or title change.",
+        "sourceLabel": "OpenAI News",
+        "scheduledFor": "2026-03-22T18:30:00.000Z"
+      },
+      {
         "id": "publish-live-openai-news-rss-fd3208099b",
         "title": "How we monitor internal coding agents for misalignment",
         "targetType": "brief",
@@ -727,16 +744,6 @@
       }
     ],
     "exceptionQueueItems": [
-      {
-        "id": "exception-live-openai-news-rss-c3d41e5007",
-        "title": "Introducing GPT-5.4 mini and nano",
-        "targetType": "brief",
-        "currentStage": "classified",
-        "reason": "dual-surface routing needs operator confirmation",
-        "confidence": 0.92,
-        "sourceLabel": "OpenAI News",
-        "nextAction": "Confirm the final target surface before queueing this item."
-      },
       {
         "id": "exception-live-github-releases-openai-node-15f01c0445",
         "title": "v6.32.0",

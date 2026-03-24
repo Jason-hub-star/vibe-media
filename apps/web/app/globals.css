@@ -1,6 +1,7 @@
 @import "./discovery.css";
 @import "./status.css";
 @import "./components.css";
+@import "./brief.css";
 @import "./admin.css";
 @import "./pipeline.css";
 @import "./responsive.css";
@@ -16,8 +17,8 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top right, rgba(142, 168, 255, 0.16), transparent 28%),
-    radial-gradient(circle at 20% 10%, rgba(152, 240, 225, 0.1), transparent 24%),
+    radial-gradient(circle at top right, rgba(var(--color-sky-rgb), 0.16), transparent 28%),
+    radial-gradient(circle at 20% 10%, rgba(var(--color-mint-rgb), 0.1), transparent 24%),
     var(--color-ink);
   color: var(--color-cream);
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -84,12 +85,12 @@ code, .mono {
   top: 0;
   z-index: 20;
   backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(244, 238, 226, 0.12);
-  background: rgba(21, 17, 16, 0.82);
+  border-bottom: 1px solid rgba(var(--color-cream-rgb), 0.12);
+  background: rgba(var(--color-ink-rgb), 0.82);
 }
 
 .site-footer {
-  border-top: 1px solid rgba(244, 238, 226, 0.12);
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.12);
   padding: 1rem 0 2rem;
 }
 

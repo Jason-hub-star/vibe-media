@@ -1,5 +1,6 @@
 export * from "./features/assets/get-asset-detail";
 export * from "./features/assets/list-asset-slots";
+export * from "./features/brief/get-adjacent-briefs";
 export * from "./features/brief/get-brief-detail";
 export * from "./features/brief/list-briefs";
 export * from "./features/discover/export-discover-to-obsidian";

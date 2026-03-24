@@ -271,10 +271,11 @@ cd "$ROOT_DIR/telegram-orchestrator"
 | 파일 | 역할 |
 |---|---|
 | `apps/backend/src/workers/run-daily-pipeline.ts` | 일일 통합 워커 (dotenv 없음 — 쉘 주입 필요) |
-| `apps/backend/src/workers/run-live-source-fetch.ts` | Fetch 워커 |
-| `apps/backend/src/workers/run-live-ingest-spine.ts` | Ingest 워커 |
+| `apps/backend/src/workers/run-live-source-fetch.ts` | Fetch 워커 (수집 + 스냅샷 저장) |
+| `apps/backend/src/workers/run-live-ingest-spine.ts` | Ingest 워커 (스냅샷 읽기 우선, 없으면 fallback fetch) |
 | `apps/backend/src/workers/run-supabase-live-ingest.ts` | Sync 워커 |
-| `scripts/daily-pipeline.sh` | 쉘 래퍼 (로그 tee 포함) |
+| `apps/backend/src/workers/run-obsidian-discover-export.ts` | Obsidian Export 워커 (discover_items → vault Radar/* 노트) |
+| `scripts/daily-pipeline.sh` | 쉘 래퍼 (.env/.env.local 자동 로드 + 로그 tee) |
 
 ### 파이프라인 모듈
 | 파일 | 역할 |
@@ -285,7 +286,7 @@ cd "$ROOT_DIR/telegram-orchestrator"
 | `apps/backend/src/shared/live-ingest-snapshot.ts` | 로컬 스냅샷 저장 |
 | `apps/backend/src/shared/supabase-ingest-sync.ts` | Supabase 동기화 |
 | `apps/backend/src/shared/supabase-editorial-sync.ts` | Editorial 동기화 |
-| `apps/backend/src/shared/telegram-report.ts` | Telegram 보고 (plain text, parse_mode 없음) |
+| `apps/backend/src/shared/telegram-report.ts` | Telegram 보고 (plain text, parse_mode 없음, highlights + DiscoverExportReport 지원) |
 
 ### 분류 + 초안
 | 파일 | 역할 |
@@ -324,10 +325,10 @@ cd "$ROOT_DIR/telegram-orchestrator"
 
 | # | 항목 | 내용 |
 |---|---|---|
-| 1 | dotenv 미로드 | `run-daily-pipeline.ts`에 `dotenv` import 없음. 반드시 `set -a && source .env && set +a` 선행 실행 필요 |
+| 1 | dotenv 미로드 | `run-daily-pipeline.ts`에 `dotenv` import 없음. `scripts/daily-pipeline.sh` 경유 시 `.env` → `.env.local` 자동 로드로 해결됨. `npm run pipeline:daily` 직접 실행 시에는 수동 source 필요 |
 | 2 | timeout 120초 고정 | 소스 수 증가 시 fetch 단계 타임아웃 위험. 소스 15개 이상이면 주의 |
-| 3 | itemPattern 파싱 취약 | 워커 stdout 포맷 변경 시 건수가 조용히 0으로 기록됨 |
-| 4 | classify 미포함 | `pipeline:daily`는 fetch→ingest→sync만. 분류/초안은 별도 실행 |
+| 3 | itemPattern 파싱 취약 | 워커 stdout 포맷 변경 시 건수가 조용히 0으로 기록됨. 건수 0 시 `highlights` 섹션에 경고 메시지가 Telegram으로 자동 전송됨 |
+| 4 | classify 미포함 | `pipeline:daily`는 fetch→ingest→sync→obsidian export 4단계. 분류/초안은 별도 실행 |
 | 5 | 로그 파일 미생성 | `npm run pipeline:daily` 단독 실행 시 로그 파일 없음. `tee` 포함 명령 필요 |
 | 6 | Telegram plain text | `telegram-report.ts`는 plain text 전송. MarkdownV2/HTML 특수문자 이스케이프 불필요 |
 | 7 | 봇 토큰 공유 가능 | vibehub-media와 telegram-orchestrator가 동일 봇 토큰 사용 가능. 다른 봇 운영 시 각각 별도 토큰 필요 |

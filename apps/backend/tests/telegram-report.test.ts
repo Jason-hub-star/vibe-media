@@ -27,6 +27,7 @@ describe("telegram report", () => {
   it("includes saved paths and vault root in the discover export report", () => {
     const text = buildDiscoverExportReportText({
       vaultRoot: "/vault",
+      source: "snapshot",
       savedCount: 2,
       createdCount: 1,
       updatedCount: 1,
@@ -37,6 +38,7 @@ describe("telegram report", () => {
         { folderName: "Skills", count: 1 }
       ],
       savedPaths: ["Radar/GitHub Releases/sdk-release.md", "Radar/Skills/skill-guide.md"],
+      indexPaths: ["Radar/_Index.md", "Radar/GitHub Releases/_Index.md"],
       results: [
         { title: "SDK Release", status: "created" },
         { title: "Skill Guide", status: "updated" },
@@ -45,7 +47,9 @@ describe("telegram report", () => {
     });
 
     expect(text).toContain("저장 루트: /vault");
+    expect(text).toContain("읽기 소스: snapshot");
     expect(text).toContain("Radar/GitHub Releases/sdk-release.md");
+    expect(text).toContain("Radar/_Index.md");
     expect(text).toContain("Broken export: disk full");
   });
 });

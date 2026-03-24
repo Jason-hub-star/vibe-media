@@ -1,4 +1,4 @@
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -50,10 +50,11 @@ describe("obsidian discover export", () => {
           actions: [{ kind: "visit", label: "Visit", href: "https://example.com/plugin" }]
         })
       ],
-      { vaultRoot }
+      { vaultRoot, source: "mock" }
     );
 
     expect(report.savedCount).toBe(3);
+    expect(report.source).toBe("mock");
     expect(report.savedPaths).toEqual([
       path.join("Radar", "Open Source", "open-source-tool.md"),
       path.join("Radar", "Plugins", "plugin-kit.md"),
@@ -80,7 +81,7 @@ describe("obsidian discover export", () => {
           tags: ["repo"]
         })
       ],
-      { vaultRoot }
+      { vaultRoot, source: "snapshot" }
     );
 
     expect(report.savedPaths).toContain(path.join("Radar", "GitHub Releases", "sdk-release.md"));
@@ -101,7 +102,7 @@ describe("obsidian discover export", () => {
           actions: [{ kind: "docs", label: "Docs", href: "https://example.com/first" }]
         })
       ],
-      { vaultRoot }
+      { vaultRoot, source: "supabase" }
     );
 
     const report = await exportDiscoverItemsToObsidian(
@@ -115,7 +116,7 @@ describe("obsidian discover export", () => {
           actions: [{ kind: "docs", label: "Docs", href: "https://example.com/updated" }]
         })
       ],
-      { vaultRoot }
+      { vaultRoot, source: "supabase" }
     );
 
     const notePath = path.join(vaultRoot, "Radar", "Skills", "repeat-item.md");
@@ -124,6 +125,91 @@ describe("obsidian discover export", () => {
     expect(report.updatedCount).toBe(1);
     expect(markdown).toContain("Updated summary");
     expect(markdown).toContain("https://example.com/updated");
+  });
+
+  it("preserves manual notes when the same note is exported again", async () => {
+    const vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vibehub-obsidian-"));
+
+    await exportDiscoverItemsToObsidian(
+      [
+        createDiscoverItem({
+          id: "discover-manual",
+          slug: "manual-item",
+          title: "Manual item",
+          summary: "First summary",
+          category: "skill",
+          actions: [{ kind: "docs", label: "Docs", href: "https://example.com/manual" }]
+        })
+      ],
+      { vaultRoot, source: "supabase" }
+    );
+
+    const notePath = path.join(vaultRoot, "Radar", "Skills", "manual-item.md");
+    const originalMarkdown = await readFile(notePath, "utf8");
+    const markdownWithManualNote = originalMarkdown.replace(
+      "## Manual Notes\n-",
+      "## Manual Notes\n- Keep this note"
+    );
+    await writeFile(notePath, markdownWithManualNote, "utf8");
+
+    await exportDiscoverItemsToObsidian(
+      [
+        createDiscoverItem({
+          id: "discover-manual",
+          slug: "manual-item",
+          title: "Manual item",
+          summary: "Updated summary",
+          category: "skill",
+          actions: [{ kind: "docs", label: "Docs", href: "https://example.com/manual-updated" }]
+        })
+      ],
+      { vaultRoot, source: "supabase" }
+    );
+
+    const updatedMarkdown = await readFile(notePath, "utf8");
+    expect(updatedMarkdown).toContain("Updated summary");
+    expect(updatedMarkdown).toContain("Keep this note");
+    expect(updatedMarkdown).toContain("MANUAL-NOTES:START");
+  });
+
+  it("writes richer metadata and folder indexes for exported notes", async () => {
+    const vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vibehub-obsidian-"));
+
+    const report = await exportDiscoverItemsToObsidian(
+      [
+        createDiscoverItem({
+          id: "discover-rich",
+          slug: "rich-item",
+          title: "Rich item",
+          category: "open_source",
+          status: "featured",
+          highlighted: true,
+          tags: ["repo", "release"],
+          actions: [
+            { kind: "github", label: "GitHub", href: "https://github.com/example/rich-item" },
+            { kind: "brief", label: "Brief", href: "/brief/rich-item-brief" }
+          ]
+        })
+      ],
+      { vaultRoot }
+    );
+
+    const notePath = path.join(vaultRoot, "Radar", "GitHub Releases", "rich-item.md");
+    const folderIndexPath = path.join(vaultRoot, "Radar", "GitHub Releases", "_Index.md");
+    const rootIndexPath = path.join(vaultRoot, "Radar", "_Index.md");
+
+    const noteMarkdown = await readFile(notePath, "utf8");
+    const folderIndexMarkdown = await readFile(folderIndexPath, "utf8");
+    const rootIndexMarkdown = await readFile(rootIndexPath, "utf8");
+
+    expect(noteMarkdown).toContain('folder_name: "GitHub Releases"');
+    expect(noteMarkdown).toContain('brief_slug: "rich-item-brief"');
+    expect(noteMarkdown).toContain("## Why It Matters");
+    expect(noteMarkdown).toContain("## Related Brief");
+    expect(folderIndexMarkdown).toContain("[[rich-item]]");
+    expect(rootIndexMarkdown).toContain("[[GitHub Releases/_Index]]");
+    expect(report.indexPaths).toContain(path.join("Radar", "_Index.md"));
+    expect(report.indexPaths).toContain(path.join("Radar", "GitHub Releases", "_Index.md"));
   });
 
   it("keeps a single note when the same vibehub item changes slug", async () => {
@@ -140,6 +226,14 @@ describe("obsidian discover export", () => {
         })
       ],
       { vaultRoot }
+    );
+
+    const firstPath = path.join(vaultRoot, "Radar", "Repositories", "first-slug.md");
+    const originalMarkdown = await readFile(firstPath, "utf8");
+    await writeFile(
+      firstPath,
+      originalMarkdown.replace("## Manual Notes\n-", "## Manual Notes\n- Preserve during move"),
+      "utf8"
     );
 
     const report = await exportDiscoverItemsToObsidian(
@@ -161,6 +255,7 @@ describe("obsidian discover export", () => {
     expect(report.updatedCount).toBe(1);
     expect(movedMarkdown).toContain('vibehub_id: "discover-stable-id"');
     expect(movedMarkdown).toContain('"harness"');
+    expect(movedMarkdown).toContain("Preserve during move");
   });
 
   it("skips non-phase-one categories without failing the export", async () => {

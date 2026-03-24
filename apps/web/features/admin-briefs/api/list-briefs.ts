@@ -1,5 +1,5 @@
-import { listBriefs as listPublicBriefs } from "@/features/brief/api/list-briefs";
+import { listAllBriefs as listAllBriefsBackend } from "@vibehub/backend";
 
 export async function listBriefs() {
-  return listPublicBriefs();
+  return listAllBriefsBackend();
 }

@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Hub" },
@@ -10,6 +13,8 @@ const navItems = [
 ];
 
 export function SiteHeader() {
+  const [navOpen, setNavOpen] = useState(false);
+
   return (
     <header className="site-header">
       <div className="shell row-between">
@@ -20,9 +25,17 @@ export function SiteHeader() {
             <p className="eyebrow">media operations</p>
           </div>
         </Link>
-        <nav className="nav-links" aria-label="Primary">
+        <button
+          aria-label="Toggle navigation"
+          className="nav-toggle"
+          onClick={() => setNavOpen((v) => !v)}
+          type="button"
+        >
+          {navOpen ? "✕" : "☰"}
+        </button>
+        <nav className={`nav-links${navOpen ? " nav-open" : ""}`} aria-label="Primary">
           {navItems.map((item) => (
-            <Link href={item.href} key={item.href}>
+            <Link href={item.href} key={item.href} onClick={() => setNavOpen(false)}>
               {item.label}
             </Link>
           ))}

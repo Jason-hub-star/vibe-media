@@ -1,25 +1,39 @@
+import Link from "next/link";
+
 import { PageFrame } from "@/components/PageFrame";
-import { EmptyState } from "@/components/EmptyState";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { BriefCard } from "@/features/brief/view/BriefCard";
+import { BriefPlaceholderCard } from "@/features/brief/view/BriefPlaceholderCard";
+
+const MIN_VISIBLE_CARDS = 6;
 
 export default async function BriefPage() {
   const briefs = await listBriefs();
+  const placeholderCount = Math.max(0, MIN_VISIBLE_CARDS - briefs.length);
 
   return (
     <PageFrame>
       <SectionBlock eyebrow="Briefs" title="AI news brief archive">
-        {briefs.length === 0 ? (
-          <EmptyState
-            body="Published briefs will appear here once available."
-            title="No briefs published yet"
-          />
-        ) : (
-          <div className="panel-grid">
-            {briefs.map((brief) => (
-              <BriefCard brief={brief} key={brief.slug} />
-            ))}
+        <p className="muted">
+          We curate global AI sources every day and distill them into concise, actionable briefs.
+        </p>
+
+        <div className="brief-grid">
+          {briefs.map((brief, i) => (
+            <BriefCard brief={brief} isLead={i === 0} key={brief.slug} />
+          ))}
+          {Array.from({ length: placeholderCount }, (_, i) => (
+            <BriefPlaceholderCard key={`ph-${i}`} index={i} />
+          ))}
+        </div>
+
+        {briefs.length === 0 && (
+          <div className="brief-cta-banner">
+            <p>Our editorial pipeline is running — the first published briefs will appear here soon.</p>
+            <Link className="button-secondary" href="/radar">
+              Explore Radar while you wait
+            </Link>
           </div>
         )}
       </SectionBlock>

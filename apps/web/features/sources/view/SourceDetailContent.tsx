@@ -44,28 +44,30 @@ export function SourceDetailContent({ source }: { source: SourceDetail }) {
           <p className="muted">아직 실행 이력이 없습니다.</p>
         )}
         {source.runHistory.length > 0 && (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Run ID</th>
-                <th>상태</th>
-                <th>시간</th>
-              </tr>
-            </thead>
-            <tbody>
-              {source.runHistory.map((run) => (
-                <tr key={run.runId}>
-                  <td>{run.runId}</td>
-                  <td>
-                    <span className={`status status-${run.status}`}>
-                      {run.status}
-                    </span>
-                  </td>
-                  <td>{run.timestamp.slice(0, 16).replace("T", " ")}</td>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>상태</th>
+                  <th>시간</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {source.runHistory.map((run) => (
+                  <tr key={run.runId}>
+                    <td>{run.runId}</td>
+                    <td>
+                      <span className={`status status-${run.status}`}>
+                        {run.status}
+                      </span>
+                    </td>
+                    <td>{run.timestamp.slice(0, 16).replace("T", " ")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </>

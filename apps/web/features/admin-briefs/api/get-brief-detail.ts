@@ -1,5 +1,5 @@
-import { getBriefDetail as getBriefDetailBackend } from "@vibehub/backend";
+import { getBriefDetailAdmin } from "@vibehub/backend";
 
 export async function getBriefDetail(slug: string) {
-  return getBriefDetailBackend(slug);
+  return getBriefDetailAdmin(slug);
 }

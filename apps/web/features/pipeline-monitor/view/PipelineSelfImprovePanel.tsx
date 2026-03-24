@@ -40,39 +40,41 @@ export function PipelineSelfImprovePanel({
           런 히스토리가 없어 소스 건강도를 계산할 수 없습니다.
         </p>
       ) : (
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th>Success Rate</th>
-              <th>Avg Items</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr
-                key={entry.id}
-                className={
-                  entry.consecutiveFailures >= 3
-                    ? "pipeline-stale-source"
-                    : undefined
-                }
-              >
-                <td>{entry.id}</td>
-                <td>{formatPercent(entry.successRate)}</td>
-                <td>{entry.avgYield.toFixed(1)}</td>
-                <td>
-                  <span
-                    className={`pipeline-node-badge ${STATUS_BADGE_CLASS[entry.status]}`}
-                  >
-                    {STATUS_LABEL[entry.status]}
-                  </span>
-                </td>
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Success Rate</th>
+                <th>Avg Items</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr
+                  key={entry.id}
+                  className={
+                    entry.consecutiveFailures >= 3
+                      ? "pipeline-stale-source"
+                      : undefined
+                  }
+                >
+                  <td>{entry.id}</td>
+                  <td>{formatPercent(entry.successRate)}</td>
+                  <td>{entry.avgYield.toFixed(1)}</td>
+                  <td>
+                    <span
+                      className={`pipeline-node-badge ${STATUS_BADGE_CLASS[entry.status]}`}
+                    >
+                      {STATUS_LABEL[entry.status]}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <div className="pipeline-coming-soon">

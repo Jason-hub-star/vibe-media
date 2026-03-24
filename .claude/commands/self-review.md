@@ -35,7 +35,11 @@
 - `npm run test` (unit tests)
 - 실패한 테스트가 있으면 pre-existing인지 신규인지 구분
 
-### 8. 코드 품질 스팟체크
+### 8.5. CSS 토큰 준수 점검
+- 변경된 CSS 파일에 대해 `bash tools/token-lint.sh` 실행
+- 위반 0건이면 PASS, 1건 이상이면 목록 출력
+
+### 9. 코드 품질 스팟체크
 - 변경된 파일을 실제로 읽고 다음을 확인:
   - 에러 핸들링 누락 (try/catch 없는 async, unchecked null)
   - 하드코딩된 매직 넘버/스트링
@@ -59,6 +63,7 @@
 | 미사용 코드 | ✅ PASS | |
 | 문서 정합성 | ✅ PASS | |
 | Unit tests | ✅ 33/34 | 1건 pre-existing |
+| CSS 토큰 준수 | ✅/⚠️ | N건 |
 | 코드 품질 | ⚠️ 2건 | 아래 참조 |
 
 ### 발견 사항

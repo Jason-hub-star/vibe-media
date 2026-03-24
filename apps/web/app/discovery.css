@@ -1,15 +1,15 @@
 .status-featured {
-  background: rgba(152, 240, 225, 0.18);
+  background: rgba(var(--color-mint-rgb), 0.18);
   color: var(--color-mint);
 }
 
 .status-tracked {
-  background: rgba(142, 168, 255, 0.18);
+  background: rgba(var(--color-sky-rgb), 0.18);
   color: var(--color-sky);
 }
 
 .status-watching {
-  background: rgba(247, 214, 74, 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.18);
   color: var(--color-yellow);
 }
 
@@ -20,11 +20,11 @@
 }
 
 .tag-chip {
-  border: 1px solid rgba(244, 238, 226, 0.12);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.12);
   border-radius: 999px;
   padding: 0.3rem 0.65rem;
-  color: rgba(244, 238, 226, 0.82);
-  font-size: 0.82rem;
+  color: rgba(var(--color-cream-rgb), 0.82);
+  font-size: var(--type-small);
 }
 
 .data-table {
@@ -34,16 +34,16 @@
 
 .data-table th,
 .data-table td {
-  border-bottom: 1px solid rgba(244, 238, 226, 0.08);
+  border-bottom: 1px solid rgba(var(--color-cream-rgb), 0.08);
   padding: 1rem 0;
   text-align: left;
   vertical-align: top;
 }
 
 .data-table th {
-  color: rgba(244, 238, 226, 0.72);
+  color: rgba(var(--color-cream-rgb), 0.72);
   font-family: var(--font-display), monospace;
-  font-size: 0.76rem;
+  font-size: var(--type-caption);
   text-transform: uppercase;
 }
 

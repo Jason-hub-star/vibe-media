@@ -20,7 +20,21 @@ export const colorTokens = {
   yellow: "#f7d64a",
   rose: "#d96b88",
   sky: "#8ea8ff",
+  purple: "#bc9aff",
   border: "#1e1a18"
+} as const;
+
+/** RGB channel triplets for alpha-variant usage: rgba(var(--color-X-rgb), alpha) */
+export const colorRgbTokens = {
+  ink: "21, 17, 16",
+  inkSoft: "42, 34, 31",
+  cream: "244, 238, 226",
+  orange: "240, 138, 36",
+  mint: "152, 240, 225",
+  yellow: "247, 214, 74",
+  rose: "217, 107, 136",
+  sky: "142, 168, 255",
+  purple: "188, 154, 255"
 } as const;
 
 export const typographyTokens = {
@@ -32,15 +46,19 @@ export const typographyTokens = {
 export const spacingTokens = {
   section: "clamp(3rem, 6vw, 6rem)",
   gutter: "clamp(1rem, 2vw, 1.5rem)",
-  radius: "20px"
+  radius: "20px",
+  radiusMd: "12px",
+  radiusSm: "8px"
 } as const;
 
 export const typeScale = {
   h1: "clamp(1.6rem, 3.2vw, 2.4rem)",
   h2: "clamp(1.1rem, 2vw, 1.5rem)",
   h3: "clamp(0.9rem, 1.4vw, 1.1rem)",
+  body: "0.92rem",
   small: "0.85rem",
-  caption: "0.76rem"
+  caption: "0.76rem",
+  label: "0.65rem"
 } as const;
 
 export const stateTokens = {
@@ -101,15 +119,29 @@ export const rootCssVariables = `
     --color-yellow: ${colorTokens.yellow};
     --color-rose: ${colorTokens.rose};
     --color-sky: ${colorTokens.sky};
+    --color-purple: ${colorTokens.purple};
     --color-border: ${colorTokens.border};
+    --color-ink-rgb: ${colorRgbTokens.ink};
+    --color-ink-soft-rgb: ${colorRgbTokens.inkSoft};
+    --color-cream-rgb: ${colorRgbTokens.cream};
+    --color-orange-rgb: ${colorRgbTokens.orange};
+    --color-mint-rgb: ${colorRgbTokens.mint};
+    --color-yellow-rgb: ${colorRgbTokens.yellow};
+    --color-rose-rgb: ${colorRgbTokens.rose};
+    --color-sky-rgb: ${colorRgbTokens.sky};
+    --color-purple-rgb: ${colorRgbTokens.purple};
     --space-section: ${spacingTokens.section};
     --space-gutter: ${spacingTokens.gutter};
     --radius-panel: ${spacingTokens.radius};
+    --radius-md: ${spacingTokens.radiusMd};
+    --radius-sm: ${spacingTokens.radiusSm};
     --type-h1: ${typeScale.h1};
     --type-h2: ${typeScale.h2};
     --type-h3: ${typeScale.h3};
+    --type-body: ${typeScale.body};
     --type-small: ${typeScale.small};
     --type-caption: ${typeScale.caption};
+    --type-label: ${typeScale.label};
     --font-mono: ${typographyTokens.mono};
   }
 `;

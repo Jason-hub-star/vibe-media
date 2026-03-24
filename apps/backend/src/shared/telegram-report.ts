@@ -23,6 +23,7 @@ export interface PipelineReport {
 
 export interface DiscoverExportReport {
   vaultRoot: string;
+  source: "supabase" | "snapshot" | "mock";
   savedCount: number;
   createdCount: number;
   updatedCount: number;
@@ -30,6 +31,7 @@ export interface DiscoverExportReport {
   failedCount: number;
   folderCounts: Array<{ folderName: string; count: number }>;
   savedPaths: string[];
+  indexPaths?: string[];
   results: Array<{ title: string; status: "created" | "updated" | "skipped" | "failed"; reason?: string }>;
 }
 
@@ -87,6 +89,7 @@ export function buildDiscoverExportReportText(report: DiscoverExportReport) {
   lines.push(`저장 ${report.savedCount}개 · 생성 ${report.createdCount} · 갱신 ${report.updatedCount}`);
   lines.push(`건너뜀 ${report.skippedCount}개 · 실패 ${report.failedCount}개`);
   lines.push(`저장 루트: ${report.vaultRoot}`);
+  lines.push(`읽기 소스: ${report.source}`);
 
   if (report.folderCounts.length > 0) {
     lines.push("━━━━━━━━━━━━━━━━━━");
@@ -103,6 +106,15 @@ export function buildDiscoverExportReportText(report: DiscoverExportReport) {
 
     for (const savedPath of report.savedPaths) {
       lines.push(`- ${savedPath}`);
+    }
+  }
+
+  if (report.indexPaths && report.indexPaths.length > 0) {
+    lines.push("━━━━━━━━━━━━━━━━━━");
+    lines.push("인덱스");
+
+    for (const indexPath of report.indexPaths) {
+      lines.push(`- ${indexPath}`);
     }
   }
 

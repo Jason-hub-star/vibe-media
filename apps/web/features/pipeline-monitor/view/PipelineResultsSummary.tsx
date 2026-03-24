@@ -52,30 +52,32 @@ export function PipelineResultsSummary({
       </div>
 
       {/* ── Stage-by-stage table ── */}
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Stage</th>
-            <th>Duration</th>
-            <th>Items</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stages.map((stage) => (
-            <tr key={stage.id}>
-              <td>{stage.label}</td>
-              <td>{formatDuration(stage.durationMs)}</td>
-              <td>{stage.itemCount ?? "-"}</td>
-              <td>
-                <span className={`pipeline-node-badge pipeline-badge-${stage.status}`}>
-                  {stageStatusLabel(stage.status)}
-                </span>
-              </td>
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Duration</th>
+              <th>Items</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stages.map((stage) => (
+              <tr key={stage.id}>
+                <td>{stage.label}</td>
+                <td>{formatDuration(stage.durationMs)}</td>
+                <td>{stage.itemCount ?? "-"}</td>
+                <td>
+                  <span className={`pipeline-node-badge pipeline-badge-${stage.status}`}>
+                    {stageStatusLabel(stage.status)}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* ── Related page links ── */}
       {inboxCount > 0 && (
@@ -104,38 +106,40 @@ export function PipelineResultsSummary({
       {recentRuns.length > 0 && (
         <>
           <h4 className="pipeline-history-title">Recent Runs</h4>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Items</th>
-                <th>Duration</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentRuns.map((run) => (
-                <tr key={run.timestamp}>
-                  <td>{formatTimestamp(run.timestamp)}</td>
-                  <td>{run.totalItems}</td>
-                  <td>{formatDuration(run.totalDurationMs)}</td>
-                  <td>
-                    <span
-                      className={`pipeline-node-badge ${
-                        run.errorCount > 0
-                          ? "pipeline-badge-error"
-                          : "pipeline-badge-done"
-                      }`}
-                    >
-                      {run.errorCount > 0
-                        ? `${run.errorCount}건 실패`
-                        : "성공"}
-                    </span>
-                  </td>
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Items</th>
+                  <th>Duration</th>
+                  <th>Result</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentRuns.map((run) => (
+                  <tr key={run.timestamp}>
+                    <td>{formatTimestamp(run.timestamp)}</td>
+                    <td>{run.totalItems}</td>
+                    <td>{formatDuration(run.totalDurationMs)}</td>
+                    <td>
+                      <span
+                        className={`pipeline-node-badge ${
+                          run.errorCount > 0
+                            ? "pipeline-badge-error"
+                            : "pipeline-badge-done"
+                        }`}
+                      >
+                        {run.errorCount > 0
+                          ? `${run.errorCount}건 실패`
+                          : "성공"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>

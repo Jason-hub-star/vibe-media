@@ -13,18 +13,18 @@
 .status-parsed,
 .status-classified,
 .status-fetching {
-  background: rgba(142, 168, 255, 0.18);
+  background: rgba(var(--color-sky-rgb), 0.18);
   color: var(--color-sky);
 }
 
 .status-review {
-  background: rgba(240, 138, 36, 0.18);
+  background: rgba(var(--color-orange-rgb), 0.18);
   color: var(--color-orange);
 }
 
 .status-scheduled,
 .status-drafted {
-  background: rgba(247, 214, 74, 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.18);
   color: var(--color-yellow);
 }
 
@@ -33,85 +33,106 @@
 .status-approved,
 .status-discover,
 .status-publish {
-  background: rgba(152, 240, 225, 0.18);
+  background: rgba(var(--color-mint-rgb), 0.18);
   color: var(--color-mint);
 }
 
 .status-asset_pending,
 .status-failed,
 .status-discard {
-  background: rgba(217, 107, 136, 0.18);
+  background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
 }
 
 .status-brief {
-  background: rgba(142, 168, 255, 0.18);
+  background: rgba(var(--color-sky-rgb), 0.18);
   color: var(--color-sky);
 }
 
 .status-video {
-  background: rgba(188, 154, 255, 0.18);
-  color: rgb(220, 209, 255);
+  background: rgba(var(--color-purple-rgb), 0.18);
+  color: var(--color-purple);
 }
 
 .status-both {
-  background: rgba(247, 214, 74, 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.18);
   color: var(--color-yellow);
 }
 
 .status-archive {
-  background: rgba(244, 238, 226, 0.14);
-  color: rgba(244, 238, 226, 0.8);
+  background: rgba(var(--color-cream-rgb), 0.14);
+  color: rgba(var(--color-cream-rgb), 0.8);
 }
 
 .status-policy_hold {
-  background: rgba(217, 107, 136, 0.18);
+  background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
 }
 
 .status-analysis_running,
 .status-capcut_in_progress {
-  background: rgba(142, 168, 255, 0.18);
+  background: rgba(var(--color-sky-rgb), 0.18);
   color: var(--color-sky);
 }
 
 .status-capcut_pending,
 .status-parent_review,
 .status-uploaded_private {
-  background: rgba(247, 214, 74, 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.18);
   color: var(--color-yellow);
 }
 
 .status-raw_received,
 .status-auto_cut_done,
 .status-highlight_candidates_ready {
-  background: rgba(188, 154, 255, 0.18);
-  color: rgb(220, 209, 255);
+  background: rgba(var(--color-purple-rgb), 0.18);
+  color: var(--color-purple);
 }
 
 .status-capcut_done,
 .status-upload_ready {
-  background: rgba(152, 240, 225, 0.18);
+  background: rgba(var(--color-mint-rgb), 0.18);
   color: var(--color-mint);
 }
 
 .status-blocked {
-  background: rgba(217, 107, 136, 0.18);
+  background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
 }
 
 .status-complete,
 .status-approved {
-  background: rgba(152, 240, 225, 0.18);
+  background: rgba(var(--color-mint-rgb), 0.18);
   color: var(--color-mint);
 }
 
 .status-partial {
-  background: rgba(247, 214, 74, 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.18);
   color: var(--color-yellow);
 }
 
 .status-missing {
-  background: rgba(217, 107, 136, 0.18);
+  background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
+}
+
+/* ── Freshness badges ── */
+.freshness-today {
+  background: rgba(var(--color-mint-rgb), 0.18);
+  color: var(--color-mint);
+}
+
+.freshness-recent {
+  background: rgba(var(--color-sky-rgb), 0.18);
+  color: var(--color-sky);
+}
+
+.freshness-week {
+  background: rgba(var(--color-yellow-rgb), 0.18);
+  color: var(--color-yellow);
+}
+
+.freshness-older {
+  background: rgba(var(--color-cream-rgb), 0.1);
+  color: rgba(var(--color-cream-rgb), 0.64);
 }
