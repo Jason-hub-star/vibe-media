@@ -1,9 +1,15 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
+import { getAdjacentBriefs } from "@/features/brief/use-case/get-adjacent-briefs";
 import { getBriefDetail } from "@/features/brief/use-case/get-brief-detail";
+import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
+import { BriefInsight } from "@/features/brief/view/BriefInsight";
+import { BriefMetaBar } from "@/features/brief/view/BriefMetaBar";
+import { BriefNav } from "@/features/brief/view/BriefNav";
+import { BriefSourcePanel } from "@/features/brief/view/BriefSourcePanel";
+import { presentRelativeDate } from "@/features/shared/presenter/present-relative-date";
 
 export default async function BriefDetailPage({
   params
@@ -11,29 +17,36 @@ export default async function BriefDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const brief = await getBriefDetail(slug);
+  const [brief, adjacent] = await Promise.all([
+    getBriefDetail(slug),
+    getAdjacentBriefs(slug)
+  ]);
 
   if (!brief) {
     notFound();
   }
 
+  const eyebrow = brief.publishedAt
+    ? presentRelativeDate(brief.publishedAt)
+    : "Brief";
+
   return (
     <PageFrame>
-      <SectionBlock eyebrow={brief.publishedAt?.slice(0, 10) ?? "Brief"} title={brief.title}>
-        <article className="panel stack-tight">
+      <SectionBlock eyebrow={eyebrow} title={brief.title}>
+        <BriefMetaBar
+          topic={brief.topic}
+          readTimeMinutes={brief.readTimeMinutes}
+          sourceCount={brief.sourceCount}
+        />
+
+        <article className="brief-detail-article panel stack-tight">
           <p className="muted">{brief.summary}</p>
-          {brief.body.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+          <BriefBodySections body={brief.body} />
+          {brief.whyItMatters && <BriefInsight text={brief.whyItMatters} />}
         </article>
-        <article className="panel stack-tight">
-          <p className="eyebrow">Sources</p>
-          {brief.sourceLinks.map((source) => (
-            <Link className="inline-link" href={source.href} key={source.href}>
-              {source.label}
-            </Link>
-          ))}
-        </article>
+
+        <BriefSourcePanel sourceLinks={brief.sourceLinks} />
+        <BriefNav prev={adjacent.prev} next={adjacent.next} />
       </SectionBlock>
     </PageFrame>
   );

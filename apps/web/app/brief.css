@@ -1,0 +1,217 @@
+/* ── Brief archive grid ── */
+.brief-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.brief-grid > :first-child {
+  grid-column: span 2;
+}
+
+.brief-placeholder {
+  opacity: 0.45;
+  border-style: dashed;
+}
+
+.brief-cta-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  border: 1px dashed rgba(var(--color-cream-rgb), 0.16);
+  border-radius: var(--radius-panel);
+}
+
+/* ── Lead card ── */
+.brief-lead {
+  border-left: 3px solid var(--color-orange);
+  padding: 1.6rem;
+}
+
+.brief-lead h3 {
+  font-size: var(--type-h2);
+}
+
+/* ── Source domain chips ── */
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(var(--color-cream-rgb), 0.1);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  color: rgba(var(--color-cream-rgb), 0.64);
+  font-size: var(--type-label);
+}
+
+/* ── Hover preview ── */
+.brief-preview {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  color: rgba(var(--color-cream-rgb), 0.56);
+  font-size: var(--type-small);
+  line-height: 1.5;
+  transition: max-height 240ms ease, opacity 240ms ease;
+}
+
+.panel:hover .brief-preview {
+  max-height: 4em;
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .brief-preview {
+    max-height: 4em;
+    opacity: 1;
+  }
+}
+
+/* ── Detail page: meta bar ── */
+.brief-meta-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.brief-meta-chip {
+  font-size: var(--type-small);
+  color: rgba(var(--color-cream-rgb), 0.64);
+}
+
+/* ── Detail page: article body ── */
+.brief-detail-article {
+  line-height: 1.7;
+}
+
+.brief-section + .brief-section {
+  margin-top: 1.25rem;
+}
+
+.brief-section-heading {
+  font-size: var(--type-small);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--color-cream);
+  border-left: 3px solid var(--color-orange);
+  padding-left: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Detail page: source panel ── */
+.brief-source-panel {
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.08);
+  padding-top: 1rem;
+}
+
+.brief-source-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.brief-source-link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: var(--type-small);
+  color: var(--color-sky);
+  transition: color 160ms ease;
+}
+
+.brief-source-link:hover {
+  color: var(--color-orange);
+}
+
+/* ── "Why it matters" insight ── */
+.brief-insight {
+  border-left: 2px solid var(--color-orange);
+  padding-left: 0.75rem;
+  font-style: italic;
+  color: rgba(var(--color-cream-rgb), 0.72);
+  font-size: var(--type-small);
+}
+
+/* ── Skeleton loading ── */
+.skeleton-line {
+  height: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--color-cream-rgb), 0.08);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton-line:nth-child(2) {
+  width: 75%;
+}
+
+.skeleton-line:nth-child(3) {
+  width: 60%;
+}
+
+.skeleton-block {
+  height: 1.4rem;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--color-cream-rgb), 0.1);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── Prev/Next navigation ── */
+.brief-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.1);
+}
+
+.brief-nav a {
+  color: var(--color-sky);
+  font-size: var(--type-small);
+  transition: color 160ms ease;
+}
+
+.brief-nav a:hover {
+  color: var(--color-orange);
+}
+
+.brief-nav-spacer {
+  flex: 1;
+}
+
+/* ── Filter pills ── */
+.filter-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.filter-pill {
+  border: 1px solid rgba(var(--color-cream-rgb), 0.14);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  color: rgba(var(--color-cream-rgb), 0.72);
+  font: inherit;
+  font-size: var(--type-small);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.filter-pill:hover {
+  background: rgba(var(--color-cream-rgb), 0.06);
+}
+
+.filter-pill--active {
+  background: rgba(var(--color-orange-rgb), 0.18);
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+}

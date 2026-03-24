@@ -2,15 +2,19 @@ import Link from "next/link";
 
 import type { BriefDetail } from "@vibehub/content-contracts";
 
+import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
+
+import { BriefQualityChecklist } from "./BriefQualityChecklist";
+
 export function BriefDetailContent({ brief }: { brief: BriefDetail }) {
   return (
     <>
       <div className="panel stack-tight">
         <p className="eyebrow">본문</p>
-        {brief.body.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
+        <BriefBodySections body={brief.body} />
       </div>
+
+      <BriefQualityChecklist brief={brief} />
 
       <div className="panel stack-tight">
         <p className="eyebrow">소스 링크</p>

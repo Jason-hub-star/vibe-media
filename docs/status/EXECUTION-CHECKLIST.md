@@ -74,8 +74,15 @@
 ## P2 — Frontend / UX
 - [x] public UX 내부 용어 제거 + 사용자 언어 전환 (hero/패널/status/footer/newsletter)
 - [x] showcase sidecar lane foundation (`/` teaser + `/radar` picks + `/admin/showcase`)
-- [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, 개별 page-level은 미완)
-- [ ] `brief` / `radar` / `sources` 위계와 간격 품질 패스
+- [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, brief loading.tsx 추가, 나머지 page-level은 미완)
+- [x] 디자인 토큰 통일 (RGB 채널, purple, radius/type-scale 확장, CSS hardcode 141건 제거)
+- [x] 모바일 반응성 강화 (누락 브레이크포인트, 터치 타겟 44px, 햄버거 메뉴, 테이블 스크롤, 파이프라인 패널)
+- [x] `brief` UI 개선 (freshness badge, lead card, skeleton loading, prev/next nav, source chips, read time, hover preview)
+- [x] brief detail page redesign (MetaBar, section parsing, source panel, insight callout)
+- [x] admin brief quality checklist (title/summary/body/source/URL/internal-term 6항목)
+- [x] review detail brief body preview (previewBody via title lookup)
+- [x] admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching)
+- [x] Supabase connection pool deadlock fix (max:1→10, timeout 15s→8s) + timestamp string parse
 - [x] review / publish mutation 버튼 (Server Actions)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장

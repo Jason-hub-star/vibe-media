@@ -1,4 +1,5 @@
 @media (max-width: 900px) {
+  /* ── Grid collapse ── */
   .hero-grid,
   .admin-layout,
   .admin-form-grid,
@@ -9,8 +10,17 @@
   .admin-grid,
   .review-grid,
   .admin-card-grid,
-  .admin-readiness-grid {
+  .admin-readiness-grid,
+  .admin-detail-meta {
     grid-template-columns: 1fr;
+  }
+
+  .brief-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brief-grid > :first-child {
+    grid-column: 1;
   }
 
   .source-row {
@@ -22,8 +32,20 @@
     justify-items: start;
   }
 
+  /* ── Brief detail mobile ── */
+  .brief-meta-bar {
+    flex-wrap: wrap;
+  }
+
+  .brief-source-panel {
+    width: 100%;
+  }
+
+  /* ── Admin sidebar ── */
   .sidebar-toggle {
     display: block;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .admin-sidebar .sidebar-nav {
@@ -32,5 +54,96 @@
 
   .admin-sidebar.sidebar-open .sidebar-nav {
     display: flex;
+  }
+
+  /* ── Admin table horizontal scroll ── */
+  .admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Admin detail flex stacking ── */
+  .admin-detail-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-detail-actions {
+    flex-wrap: wrap;
+  }
+
+  .admin-card-header {
+    flex-wrap: wrap;
+  }
+
+  /* ── Pipeline detail panel ── */
+  .pipeline-detail-panel {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
+
+  .pipeline-monitor-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* ── Public site nav ── */
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(var(--color-ink-rgb), 0.96);
+    backdrop-filter: blur(18px);
+    padding: 0.5rem 1rem 1rem;
+    border-bottom: 1px solid rgba(var(--color-cream-rgb), 0.12);
+    z-index: 19;
+  }
+
+  .nav-links.nav-open {
+    display: flex;
+  }
+
+  /* ── Footer wrapping ── */
+  .site-footer .row-between {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* ── Touch target minimums ── */
+  .nav-links a,
+  .inline-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+
+  .sidebar-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar-group-header {
+    min-height: 44px;
+  }
+
+  .button-danger,
+  .button-ghost {
+    min-height: 44px;
+  }
+
+  /* ── iOS Safari zoom prevention ── */
+  .input,
+  .note-input {
+    font-size: max(1rem, var(--type-body));
   }
 }

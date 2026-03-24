@@ -31,16 +31,42 @@
 
 ### CSS 토큰 (`:root` via layout.tsx)
 ```
+/* 색상 */
 --color-ink: #151110          --color-ink-soft: #2a221f
 --color-cream: #f4eee2        --color-cream-muted: #e5d9c5
 --color-orange: #f08a24       --color-mint: #98f0e1
 --color-yellow: #f7d64a       --color-rose: #d96b88
---color-sky: #8ea8ff          --color-border: #1e1a18
+--color-sky: #8ea8ff          --color-purple: #bc9aff
+--color-border: #1e1a18
+
+/* RGB 채널 (alpha 사용: rgba(var(--color-X-rgb), 0.12)) */
+--color-ink-rgb: 21, 17, 16         --color-ink-soft-rgb: 42, 34, 31
+--color-cream-rgb: 244, 238, 226    --color-orange-rgb: 240, 138, 36
+--color-mint-rgb: 152, 240, 225     --color-yellow-rgb: 247, 214, 74
+--color-rose-rgb: 217, 107, 136     --color-sky-rgb: 142, 168, 255
+--color-purple-rgb: 188, 154, 255
+
+/* 스페이싱·라디우스 */
 --space-section: clamp(3rem, 6vw, 6rem)
 --space-gutter: clamp(1rem, 2vw, 1.5rem)
---radius-panel: 20px
---font-display: PressStart2P  --font-body: DungGeunMo
+--radius-panel: 20px    --radius-md: 12px    --radius-sm: 8px
+
+/* 타입 스케일 */
+--type-h1: clamp(1.6rem, 3.2vw, 2.4rem)
+--type-h2: clamp(1.1rem, 2vw, 1.5rem)
+--type-h3: clamp(0.9rem, 1.4vw, 1.1rem)
+--type-body: 0.92rem    --type-small: 0.85rem
+--type-caption: 0.76rem --type-label: 0.65rem
+
+/* 폰트 */
+--font-display: SpaceGrotesk   --font-body: NotoSansKR
 ```
+
+### CSS 토큰 사용 규칙
+- 색상 alpha가 필요하면 반드시 `rgba(var(--color-X-rgb), alpha)` 사용 — raw rgba 금지
+- 하드코딩 hex/rgba 대신 CSS 변수 참조
+- radius는 `--radius-panel` / `--radius-md` / `--radius-sm` 중 선택
+- font-size는 `--type-*` 토큰 중 가장 가까운 값 사용
 
 ---
 
@@ -163,10 +189,48 @@ docs/design/
 - 카드·패널 계층감 강화
 - impeccable 수준 디테일
 
+### M7: 디자인 토큰 통일 ✅
+- `colorRgbTokens` 추가 → CSS에서 `rgba(var(--color-X-rgb), alpha)` 패턴 사용 가능
+- `purple` 색상 토큰 추가 (비디오/raw_received 상태용)
+- `--radius-md` (12px), `--radius-sm` (8px) 추가
+- `--type-body` (0.92rem), `--type-label` (0.65rem) 추가
+- CSS 6개 파일에서 raw rgba/hex 141건 → `var()` 참조로 전환
+- `button-danger`, `modification-reasons`의 미등록 색상을 `--color-rose`로 통일
+- `pipeline.css` Tailwind 팔레트 12종 → 프로젝트 토큰으로 전환
+
+### M8: 모바일 반응성 강화 ✅
+- `responsive.css` 37줄→132줄: 누락된 grid collapse, flex-wrap, overflow 규칙 추가
+- `admin-detail-meta` 2컬럼 그리드 모바일 collapse 추가
+- `admin-table-wrap` 수평 스크롤 래퍼 → TSX 7개 파일에 적용
+- `pipeline-detail-panel` width: 100% 모바일 오버라이드
+- SiteHeader 모바일 햄버거 메뉴 (클라이언트 컴포넌트 전환)
+- 터치 타겟 44px 최소 보장 (nav-links, sidebar-link/toggle, button-danger/ghost)
+- iOS Safari 자동 줌 방지 (`font-size: max(1rem, ...)` on inputs)
+- Footer `row-between` flex-wrap 추가
+
 ### M5: Admin 사이드바 개선 ✅
 - 현재 활성 route 하이라이트
 - 카운트 배지 표시
 - 모바일 반응형
+
+### M9: Brief Page UI + CSS Token Lint (2026-03-24) ✅
+- `brief.css` 분리: `components.css`에서 `.brief-grid`, `.brief-placeholder`, `.brief-cta-banner`를 이동
+- 새 클래스: `.brief-lead`, `.source-chip`, `.brief-preview`, `.brief-insight`, `.skeleton-line`, `.skeleton-block`, `.brief-nav`, `.filter-pill-row`, `.filter-pill`, `.filter-pill--active`
+- `status.css`에 `.freshness-today/recent/week/older` 배지 추가
+- 새 shared presenter: `present-relative-date.ts`, `present-freshness.ts`, `present-read-time.ts`
+- 새 컴포넌트: `BriefSkeletonCard.tsx`, `BriefNav.tsx`
+- `tools/token-lint.sh` standalone CSS lint script
+- self-review에 CSS 토큰 준수 점검 단계 통합
+
+### M10: Brief Detail Redesign + Quality Checklist + Review Body (2026-03-24) ✅
+- 새 presenter: `parse-brief-sections.ts` (convention-based `## ` section parsing), `extract-source-domains.ts`
+- 새 컴포넌트: `BriefMetaBar.tsx`, `BriefBodySections.tsx`, `BriefInsight.tsx`, `BriefSourcePanel.tsx`
+- 새 admin presenter: `evaluate-brief-quality.ts` (6-criteria advisory checklist)
+- 새 admin 컴포넌트: `BriefQualityChecklist.tsx`
+- 새 CSS 클래스: `.brief-meta-bar`, `.brief-meta-chip`, `.brief-detail-article`, `.brief-section`, `.brief-section-heading`, `.brief-source-panel`, `.brief-source-list`, `.brief-source-link`
+- 새 admin CSS 클래스: `.quality-checklist`, `.quality-row`, `.quality-icon`, `.quality-criterion`, `.quality-message`, `.quality-pass`, `.quality-warn`, `.quality-fail`
+- review contract: `ReviewItemDetail.previewBody?: string[]` 추가
+- review backend: `previewTitle` → `brief_posts` title lookup으로 body enrichment
 
 ### M6: 문서 동기화 + 최종 검증 ✅
 - `docs/status/PROJECT-STATUS.md` 업데이트

@@ -1,4 +1,6 @@
-import type { ReviewItem } from "@vibehub/content-contracts";
+import type { ReviewItemDetail } from "@vibehub/content-contracts";
+
+import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
 
 function ModificationReason({ reasons }: { reasons: string[] }) {
   return (
@@ -13,7 +15,7 @@ function ModificationReason({ reasons }: { reasons: string[] }) {
   );
 }
 
-export function ReviewDetailContent({ item }: { item: ReviewItem }) {
+export function ReviewDetailContent({ item }: { item: ReviewItemDetail }) {
   return (
     <div className="stack">
       <section className="panel stack-tight">
@@ -76,6 +78,13 @@ export function ReviewDetailContent({ item }: { item: ReviewItem }) {
           </div>
         </dl>
       </section>
+
+      {item.previewBody && item.previewBody.length > 0 && (
+        <section className="panel stack-tight">
+          <h3>Brief 본문 미리보기</h3>
+          <BriefBodySections body={item.previewBody} />
+        </section>
+      )}
 
       {item.reviewStatus === "changes_requested" && (
         <ModificationReason reasons={["변경 요청됨"]} />

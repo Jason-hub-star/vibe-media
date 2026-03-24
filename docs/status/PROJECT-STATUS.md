@@ -64,6 +64,13 @@
 - `/pipeline-check` skill: done
 - Defuddle article enrichment (Phase 1): done
 - fixture-backed shadow trial suite (`trial:all`): done
+- design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done
+- mobile responsiveness hardening (missing breakpoints, touch targets, nav hamburger, table scroll, pipeline panel): done
+- brief detail page redesign (MetaBar, BriefBodySections, BriefInsight, BriefSourcePanel): done
+- admin brief quality checklist (6 criteria, advisory): done
+- review detail brief body preview (previewBody via title lookup): done
+- admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching): done
+- Supabase connection pool deadlock fix (max:1→10) + timestamp Date→string parse fix: done
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
@@ -82,6 +89,7 @@
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit`; keep this as the canonical Next 16 flow on new machines
 - page-level loading/empty/error states: implemented at route-group level ((public) + admin)
 - discovery filters, sort rules, and category drill-down are still scaffold-level only
+- `/admin/pipeline`은 독립 페이지가 아닌 redirect→대시보드 구조. 파이프라인 모니터는 대시보드 하단 PipelineMonitorClient로 임베드됨
 - `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
 - `admin/video-jobs`는 이제 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영하는 scaffold 상태다
 - `video_jobs`는 `upload_ready/uploaded_private -> publish`, `blocked -> exceptions` 규칙까지 mock data와 문서 기준으로 연결된 상태다
@@ -137,6 +145,7 @@
   - `lang="en"` 설정, 홈/brief/radar/sources/footer 전체 영어 전환
   - Discover status 라벨 (공개 radar용) 영어 전환 (Featured/Watching/Tracked)
   - 어드민 라벨은 한국어 유지
+- 디자인 토큰 통일 완료: CSS 6개 파일(globals/components/status/discovery/admin/pipeline)에서 raw rgba/hex 141건을 `var()` 참조로 전환. `colorRgbTokens`, `purple`, `--radius-md/sm`, `--type-body/label` 추가.
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - showcase는 홈 티저 + `/radar` 섹션 + `/admin/showcase`까지 구현됐고, ingest/classification/sync 본선과는 분리된 sidecar lane으로 유지된다
@@ -152,3 +161,18 @@
 - `trial:all`은 classifier / brief draft / discover draft / critic 4개 stage를 한 번에 묶는 fixture-backed baseline suite다
 - `trial:all`의 `baseline-pass / baseline-warning / rollback-risk`는 live drift가 아니라 fixture baseline 상태를 의미한다
 - 현재 머신에서는 실제 `SUPABASE_DB_URL` 연결로 `pipeline:supabase-sync`, `pipeline:daily`까지 정상 검증 완료했다
+- brief page UI improvements (2026-03-24): done
+  - freshness badge + relative date (Today/Yesterday/N days ago) on brief cards
+  - lead card visual differentiation (accent border, larger title, extra padding)
+  - skeleton loading state via Next.js loading.tsx convention
+  - prev/next navigation on brief detail pages
+  - source domain chips derived from sourceLinks
+  - read time estimate derived from body word count
+  - hover expand preview (body first 200 chars, touch fallback)
+  - `brief.css` 분리: components.css에서 brief 전용 스타일 이동 (components.css 356→330줄)
+  - shared presenters: `present-relative-date`, `present-freshness`, `present-read-time`
+  - content-contracts에 `sourceDomains`, `readTimeMinutes`, `bodyPreview`, `whyItMatters`, `topic` optional fields 추가
+- CSS token lint automation (2026-03-24): done
+  - `tools/token-lint.sh` standalone lint script (color/hex/font-size/border-radius 규칙)
+  - `.claude/commands/token-lint.md` Claude Code 스킬
+  - self-review에 CSS 토큰 준수 점검 단계 통합

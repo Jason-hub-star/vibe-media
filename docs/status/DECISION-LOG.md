@@ -4,6 +4,38 @@
 
 ## Resolved
 
+### 2026-03-24 — Supabase Connection Pool Deadlock + Timestamp Parsing Fix
+- 상태: resolved
+- 결정:
+  - `postgres` 라이브러리의 `max: 1` → `max: 10` 변경. Transaction mode pooler(6543)를 사용하므로 안전
+  - timestamp/timestamptz OID에 대해 `parse: (x) => x`로 문자열 반환 설정 추가
+  - projection bundle timeout을 15초 → 8초로 축소
+- 근거:
+  - `max: 1`은 `Promise.all`로 7개 쿼리를 병렬 실행할 때 1개 연결로 순차 실행 시도 → deadlock 발생 → 15초 timeout까지 대기
+  - `postgres` 라이브러리가 `timestamp` 컬럼을 `Date` 객체로 반환 → React JSX에서 `[object Date]` 렌더링 에러
+  - 결과: admin 전체 라우트 15,600ms → 600~900ms (56배 개선), 에러 0건
+
+### 2026-03-24 — AutomationTrail useSyncExternalStore Infinite Loop Fix
+- 상태: resolved
+- 결정: `getSnapshot`이 매 호출마다 새 배열 참조를 반환해 React 무한 re-render 발생. JSON 문자열 비교로 이전 결과를 캐싱하여 실제 변경 시에만 새 참조 반환하도록 수정
+- 근거: React `useSyncExternalStore` 규약상 getSnapshot 반환값이 변경되지 않았으면 동일 참조를 반환해야 함
+
+### 2026-03-24 — Brief Detail Redesign + Quality Checklist + Review Body Preview
+- 상태: resolved
+- 결정:
+  - Brief detail에 convention-based section parsing 도입: `## ` 접두사로 시작하는 body paragraph를 자동 섹션 분리. 현재 파이프라인 데이터엔 heading 없어 flat 렌더링 유지, 파이프라인이 `## ` 접두사 생성 시 자동 활성화
+  - Admin brief detail에 advisory 품질 체크리스트 6항목 추가 (title/summary 길이, body 단락수, source 수/URL 유효성, 내부 용어 노출)
+  - Review detail에서 brief body를 보여주기 위해 `previewTitle`로 `brief_posts` title lookup 방식 채택. 직접 FK 없으므로 title 기반 best-effort 매칭, 실패 시 graceful 생략
+- 근거: review→brief 직접 FK 부재, `whyItMatters`/`topic` DB 컬럼 미존재 제약 하에서 즉시 실행 가능한 개선
+
+### 2026-03-24 — Brief CSS Separation + Token Lint
+- 상태: resolved
+- 결정:
+  - `components.css`가 355줄에 도달하여 brief 전용 CSS를 `brief.css`로 분리
+  - CSS 토큰 준수 검사를 `tools/token-lint.sh`로 자동화하고 self-review에 통합
+  - `whyItMatters`와 `topic` 필드는 DB 마이그레이션 필요 → contract에 optional로 선언만 하고 실제 DB 컬럼 추가는 보류
+- 근거: components.css 300줄 규칙 초과, 경쟁사 분석 기반 UX 개선 필요성
+
 ### 2026-03-22 — Showcase Sidecar Lane Boundary
 - 상태: resolved
 - 결정:
@@ -312,6 +344,39 @@
 - 기준 문서:
   - `docs/status/LOCAL-VS-AGENT-NEWS-PIPELINE-EVAL.md`
   - `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+
+### 2026-03-24 — Mobile Responsiveness Hardening
+- 상태: resolved
+- 결정:
+  - 반응형 값(브레이크포인트, 고정 레이아웃 폭)은 디자인 토큰화하지 않고 `responsive.css` media query로 관리한다.
+  - 모든 터치 타겟은 모바일에서 최소 44px을 보장한다.
+  - `admin-table`은 `admin-table-wrap` 스크롤 래퍼로 수평 오버플로를 방지한다.
+  - SiteHeader는 모바일에서 햄버거 메뉴 + 드롭다운 패턴을 사용한다.
+- 근거:
+  - CSS `@media`는 `var()` 미지원으로 브레이크포인트 토큰화 불가.
+  - `admin-detail-meta`, `admin-table`, `pipeline-detail-panel`이 `responsive.css`에서 누락돼 모바일 레이아웃이 깨졌다.
+  - nav-links, sidebar-link, sidebar-toggle 등의 터치 타겟이 15~30px로 44px 최소 기준 미달이었다.
+- 변경: `responsive.css` 37줄→132줄, `SiteHeader.tsx` 클라이언트 컴포넌트 전환, TSX 7개 테이블 래퍼 추가
+- 기준 문서:
+  - `apps/web/app/responsive.css`
+  - `docs/status/FRONTEND-HANDOFF.md`
+
+### 2026-03-24 — Design Token Unification
+- 상태: resolved
+- 결정:
+  - CSS에서 raw rgba/hex 하드코딩을 전면 제거하고 `var()` 참조로 전환한다.
+  - `colorRgbTokens`를 추가해 `rgba(var(--color-X-rgb), alpha)` 패턴을 지원한다.
+  - `purple` (#bc9aff) 색상 토큰을 추가한다 (비디오/raw_received 상태용).
+  - `--radius-md` (12px), `--radius-sm` (8px), `--type-body` (0.92rem), `--type-label` (0.65rem) 토큰을 추가한다.
+  - `button-danger`와 `modification-reasons`가 사용하던 미등록 색상 `#f43f5e`를 `--color-rose`로 통일한다.
+  - `pipeline.css`의 Tailwind 팔레트 색상 12종을 프로젝트 토큰으로 전환한다.
+- 근거:
+  - CSS 6개 파일에서 raw rgba 28회+(cream), Tailwind hex 12종(pipeline), 미등록 색상 2종이 발견됐다.
+  - 근본 원인은 `rootCssVariables`가 hex만 내보내 alpha 사용 시 raw rgba가 강제된 것이었다.
+  - RGB 채널 변수 추가로 구조적 문제를 해결하고, 총 141건의 하드코딩을 `var()` 참조로 교체했다.
+- 기준 문서:
+  - `packages/design-tokens/src/index.ts`
+  - `docs/status/FRONTEND-HANDOFF.md` §2 (CSS 토큰)
 
 ## Next Review Order
 1. ~~review / publish mutation 모델 확정~~ done — Server Action 버튼 구현 완료

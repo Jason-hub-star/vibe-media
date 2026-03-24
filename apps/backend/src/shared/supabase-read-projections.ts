@@ -477,7 +477,7 @@ export async function readSupabaseProjectionBundle() {
 
   let timerId: ReturnType<typeof setTimeout>;
   const queryTimeout = new Promise<null>((resolve) => {
-    timerId = setTimeout(() => resolve(null), 15_000);
+    timerId = setTimeout(() => resolve(null), 8_000);
   });
 
   inFlightBundle = Promise.race([

@@ -27,10 +27,20 @@ export function getSupabaseDbUrl() {
 export function createSupabaseSql() {
   return postgres(getSupabaseDbUrl(), {
     prepare: false,
-    max: 1,
+    max: 10,
     ssl: "require",
     connect_timeout: 10,
-    idle_timeout: 20
+    idle_timeout: 20,
+    types: {
+      // Return timestamps as ISO strings instead of Date objects.
+      // OID 1114 = timestamp, 1184 = timestamptz
+      date: {
+        to: 1184,
+        from: [1082, 1114, 1184],
+        serialize: (x: string) => x,
+        parse: (x: string) => x,
+      },
+    },
   });
 }
 

@@ -21,4 +21,6 @@ export interface ReviewItem {
 export interface ReviewItemDetail extends ReviewItem {
   auditTrail: Array<{ action: string; timestamp: string; note: string }>;
   modificationReasons: Array<{ type: string; description: string; severity: "warning" | "error" }>;
+  /** Brief body paragraphs, looked up via previewTitle match */
+  previewBody?: string[];
 }
