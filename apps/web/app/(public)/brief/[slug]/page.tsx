@@ -33,31 +33,35 @@ export default async function BriefDetailPage({
   return (
     <PageFrame>
       <SectionBlock eyebrow={eyebrow} title={brief.title}>
-        <BriefMetaBar
-          topic={brief.topic}
-          readTimeMinutes={brief.readTimeMinutes}
-          sourceCount={brief.sourceCount}
-        />
+        <div className="brief-reading-col">
+          <BriefMetaBar
+            topic={brief.topic}
+            readTimeMinutes={brief.readTimeMinutes}
+            sourceCount={brief.sourceCount}
+          />
 
-        {brief.coverImage && (
-          <div className="brief-cover">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={brief.coverImage}
-              alt=""
-              className="brief-cover-img"
-            />
-          </div>
-        )}
+          {brief.coverImage && (
+            <div className="brief-cover">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={brief.coverImage}
+                alt=""
+                className="brief-cover-img"
+              />
+            </div>
+          )}
 
-        <article className="brief-detail-article panel stack-tight">
-          <p className="muted">{brief.summary}</p>
-          <BriefBodySections body={brief.body} />
+          <p className="brief-dek">{brief.summary}</p>
+
           {brief.whyItMatters && <BriefInsight text={brief.whyItMatters} />}
-        </article>
 
-        <BriefSourcePanel sourceLinks={brief.sourceLinks} />
-        <BriefNav prev={adjacent.prev} next={adjacent.next} />
+          <article className="brief-detail-article stack-tight">
+            <BriefBodySections body={brief.body} />
+          </article>
+
+          <BriefSourcePanel sourceLinks={brief.sourceLinks} />
+          <BriefNav prev={adjacent.prev} next={adjacent.next} />
+        </div>
       </SectionBlock>
     </PageFrame>
   );

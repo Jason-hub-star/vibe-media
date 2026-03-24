@@ -1,17 +1,37 @@
+/* ── Brief detail reading column ── */
+
+.brief-reading-col {
+  max-width: 680px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
 /* ── Brief cover image ── */
 
 .brief-cover {
   border-radius: var(--radius-panel);
   overflow: hidden;
-  max-height: 360px;
+  aspect-ratio: 16 / 9;
+  max-height: 320px;
+  background: rgba(var(--color-cream-rgb), 0.04);
 }
 
 .brief-cover-img {
   width: 100%;
-  height: auto;
-  max-height: 360px;
+  height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* ── Brief dek (summary) ── */
+
+.brief-dek {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(var(--color-cream-rgb), 0.76);
+  border-left: 3px solid var(--color-orange);
+  padding-left: 0.85rem;
 }
 
 /* ── Brief archive grid ── */
@@ -94,46 +114,51 @@
 }
 
 .brief-meta-chip {
+  font-size: var(--type-body);
+  color: rgba(var(--color-cream-rgb), 0.56);
+}
+
+.brief-meta-bar .source-chip {
   font-size: var(--type-small);
-  color: rgba(var(--color-cream-rgb), 0.64);
 }
 
 /* ── Detail page: article body ── */
 .brief-detail-article {
-  line-height: 1.7;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(var(--color-cream-rgb), 0.88);
 }
 
 .brief-section + .brief-section {
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
 }
 
 .brief-section-heading {
-  font-size: var(--type-small);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 600;
+  font-size: var(--type-body);
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--color-cream);
   border-left: 3px solid var(--color-orange);
   padding-left: 0.6rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 /* ── Detail page: source panel ── */
 .brief-source-panel {
-  border-top: 1px solid rgba(var(--color-cream-rgb), 0.08);
-  padding-top: 1rem;
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.1);
+  padding-top: 1.25rem;
 }
 
 .brief-source-list {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.5rem;
 }
 
 .brief-source-link {
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
-  font-size: var(--type-small);
+  gap: 0.5rem;
+  font-size: var(--type-body);
   color: var(--color-sky);
   transition: color 160ms ease;
 }
@@ -142,13 +167,31 @@
   color: var(--color-orange);
 }
 
-/* ── "Why it matters" insight ── */
+.brief-source-link::before {
+  content: "→";
+  color: rgba(var(--color-cream-rgb), 0.32);
+  flex-shrink: 0;
+}
+
+/* ── "Why it matters" insight (Axios-style callout) ── */
 .brief-insight {
-  border-left: 2px solid var(--color-orange);
-  padding-left: 0.75rem;
-  font-style: italic;
-  color: rgba(var(--color-cream-rgb), 0.72);
+  border-left: 3px solid var(--color-orange);
+  padding: 0.75rem 1rem;
+  background: rgba(var(--color-orange-rgb), 0.06);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: rgba(var(--color-cream-rgb), 0.84);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.brief-insight-label {
+  display: block;
+  font-weight: 700;
   font-size: var(--type-small);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-orange);
+  margin-bottom: 0.3rem;
 }
 
 /* ── Skeleton loading ── */

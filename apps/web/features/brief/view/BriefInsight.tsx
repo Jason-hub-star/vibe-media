@@ -3,5 +3,10 @@ interface BriefInsightProps {
 }
 
 export function BriefInsight({ text }: BriefInsightProps) {
-  return <p className="brief-insight">{text}</p>;
+  return (
+    <div className="brief-insight">
+      <span className="brief-insight-label">Why it matters</span>
+      <p>{text}</p>
+    </div>
+  );
 }

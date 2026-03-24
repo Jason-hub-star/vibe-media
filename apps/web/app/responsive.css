@@ -33,6 +33,14 @@
   }
 
   /* ── Brief detail mobile ── */
+  .brief-reading-col {
+    max-width: 100%;
+  }
+
+  .brief-cover {
+    max-height: 220px;
+  }
+
   .brief-meta-bar {
     flex-wrap: wrap;
   }

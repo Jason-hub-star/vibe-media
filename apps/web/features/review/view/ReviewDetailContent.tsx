@@ -1,6 +1,7 @@
 import type { ReviewItemDetail } from "@vibehub/content-contracts";
 
 import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
+import { ReviewActionBar } from "./ReviewActionBar";
 
 function ModificationReason({ reasons }: { reasons: string[] }) {
   return (
@@ -89,6 +90,8 @@ export function ReviewDetailContent({ item }: { item: ReviewItemDetail }) {
       {item.reviewStatus === "changes_requested" && (
         <ModificationReason reasons={["변경 요청됨"]} />
       )}
+
+      <ReviewActionBar reviewId={item.id} currentStatus={item.reviewStatus} />
     </div>
   );
 }

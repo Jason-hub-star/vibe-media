@@ -124,7 +124,32 @@ Karpathy `autoresearch`의 핵심 패턴인
 
 ---
 
-## 8. VibeHub용 해석
+## 8. Telegram 보고
+
+**keep 판정일 때만** 전송한다. discard면 전송하지 않는다.
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+
+# RESULT 변수가 "keep"인 경우에만 전송
+# 예시:
+# TEXT="[VibeHub] Autoresearch — KEEP\n가설: Defuddle cleanup 범위 확대\n근거: extraction coverage +8%, 예외 유입 변화 없음\n다음: 1주 운영 후 재측정"
+
+if [ "$RESULT" = "keep" ] && [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_REPORT_CHAT_ID" ]; then
+  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_REPORT_CHAT_ID}" \
+    --data-urlencode "text=${TEXT}" \
+    > /dev/null
+fi
+```
+
+discard면 로그만 남기고 Telegram은 침묵한다.
+
+---
+
+## 9. VibeHub용 해석
 
 - 이 루프의 목적은 "멋진 새 도구 도입"이 아니라 운영 품질의 누적 개선이다.
 - `Defuddle`, `Docling`, `OpenDataLoader PDF`, `Promptfoo`, `Langfuse`, `LiteLLM`는 모두 후보일 뿐이다.
