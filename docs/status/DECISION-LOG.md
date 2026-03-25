@@ -4,6 +4,17 @@
 
 ## Resolved
 
+### 2026-03-25 — media-engine 패키지 추출 (takdizang → vibe-media)
+- 상태: resolved
+- 결정:
+  - takdizang의 도메인 무관 인프라 코드(Kie.ai, Gemini, Sharp, Remotion spawn, Supabase Storage)를 `packages/media-engine`으로 추출.
+  - 이커머스 특화 코드(usage-guard, marketing-script, compose 블록 에디터, Remotion composition UI)는 takdizang에 유지.
+  - 플랫 구조(src/ 단일 폴더, 16개 파일) 채택 — 하위 폴더 + barrel index 오버헤드 제거.
+  - Supabase Storage는 DI 패턴(`createStorageHelper(client)`)으로 양쪽 프로젝트에서 자기 클라이언트 주입 가능.
+  - Gemini 래퍼는 이커머스 프롬프트(CATEGORY_INSTRUCTIONS, PERSUASION_SEQUENCES) 제거, `callGemini(prompt, schema)` 범용 인터페이스.
+  - TTS/Publish는 인터페이스만 스캐폴딩 (types.ts에 통합), 구현체는 향후 apps/backend에서.
+- 근거: vibe-media의 IT 뉴스 brief를 블로그/영상/뉴스레터로 자동 변환하는 엔진 기반이 필요했고, takdizang과 동일 API(Kie.ai, Gemini, Supabase)를 공유하므로 코드 재사용이 합리적. 별도 패키지 분리로 양쪽 독립 진화 가능.
+
 ### 2026-03-25 — Local `code-review-graph` Ignore Baseline
 - 상태: resolved
 - 결정:

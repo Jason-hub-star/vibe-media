@@ -72,7 +72,8 @@
 ## Workspace Roles
 - `apps/web`: Claude 우선 프론트엔드 구현
 - `apps/backend`: Codex 우선 백엔드 골격 및 후속 구현
-- `packages/*`: 프론트/백엔드 공용 계약과 토큰
+- `packages/content-contracts`, `packages/design-tokens`, `packages/ui-patterns`: 프론트/백엔드 공용 계약과 토큰
+- `packages/media-engine`: 도메인 무관 미디어 엔진 (Kie.ai, Gemini, Sharp, Remotion spawn, Supabase Storage)
 - `docs/*`: SSOT와 증빙 문서
 - `tools/stitch`: Stitch 시안 생성 워크플로
 

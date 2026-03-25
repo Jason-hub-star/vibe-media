@@ -81,6 +81,7 @@
 - review detail brief body preview (previewBody via title lookup): done
 - admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching): done
 - Supabase connection pool deadlock fix (max:1→10) + timestamp Date→string parse fix: done
+- media-engine 패키지 (`@vibehub/media-engine`): done — takdizang에서 도메인 무관 인프라 추출 (이미지/텍스트/오디오/영상/스토리지 엔진, 플랫 구조 16개 파일)
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
