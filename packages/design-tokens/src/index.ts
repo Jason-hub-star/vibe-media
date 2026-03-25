@@ -61,6 +61,57 @@ export const typeScale = {
   label: "0.65rem"
 } as const;
 
+// ── Discover Category Visual Tokens ──────────────────────────────────────────
+// 카테고리 색상/아이콘 변경 = 여기 1줄 수정 → 프리젠터가 자동 반영
+// 6색 팔레트를 그룹별로 순환 배정: core=mint, builder=sky, knowledge=purple, opportunity=yellow, asset=orange
+export type CategoryColorToken = "mint" | "sky" | "purple" | "yellow" | "orange" | "rose";
+
+export interface CategoryVisual {
+  color: CategoryColorToken;
+  icon: string;
+}
+
+export const discoverCategoryVisuals: Record<string, CategoryVisual> = {
+  // Core — mint
+  open_source: { color: "mint", icon: "🔧" },
+  skill: { color: "mint", icon: "🎯" },
+  plugin: { color: "mint", icon: "🧩" },
+  os: { color: "mint", icon: "💻" },
+  website: { color: "mint", icon: "🌐" },
+  event: { color: "mint", icon: "🎪" },
+  contest: { color: "mint", icon: "🏆" },
+  news: { color: "mint", icon: "📰" },
+  // Builder — sky
+  model: { color: "sky", icon: "🧠" },
+  api: { color: "sky", icon: "⚡" },
+  sdk: { color: "sky", icon: "📦" },
+  agent: { color: "sky", icon: "🤖" },
+  template: { color: "sky", icon: "📐" },
+  integration: { color: "sky", icon: "🔗" },
+  // Knowledge — purple
+  research: { color: "purple", icon: "🔬" },
+  dataset: { color: "purple", icon: "📊" },
+  benchmark: { color: "purple", icon: "📈" },
+  tutorial: { color: "purple", icon: "📚" },
+  newsletter: { color: "purple", icon: "📮" },
+  repo_list: { color: "purple", icon: "📋" },
+  // Opportunity — yellow
+  job: { color: "yellow", icon: "💼" },
+  grant: { color: "yellow", icon: "💰" },
+  community: { color: "yellow", icon: "👥" },
+  // Asset — orange
+  asset: { color: "orange", icon: "🎨" },
+};
+
+// 카테고리 그룹 라벨 (프론트엔드 섹션 헤더용)
+export const discoverGroupLabels: Record<string, string> = {
+  core: "Tools & Resources",
+  builder: "Builder Stack",
+  knowledge: "Knowledge",
+  opportunity: "Opportunities",
+  asset: "Assets",
+};
+
 export const stateTokens = {
   analysis_running: colorTokens.sky,
   capcut_pending: colorTokens.yellow,

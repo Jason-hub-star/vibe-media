@@ -5,15 +5,27 @@ import type { DiscoverItem } from "@vibehub/content-contracts";
 import { presentDiscoverCategory } from "../presenter/present-discover-category";
 import { presentDiscoverStatus, presentReviewStatus } from "../presenter/present-discover-status";
 
+function isNew(publishedAt: string | null): boolean {
+  if (!publishedAt) return false;
+  const diff = Date.now() - new Date(publishedAt).getTime();
+  return diff < 7 * 24 * 60 * 60 * 1000;
+}
+
 export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; showReviewStatus?: boolean }) {
+  const cat = presentDiscoverCategory(item.category);
   const { label: statusLabel, style: statusStyle } = presentDiscoverStatus(item.status);
   const review = showReviewStatus ? presentReviewStatus(item.reviewStatus) : null;
+  const fresh = isNew(item.publishedAt);
 
   return (
     <article className="panel stack-tight">
       <div className="row-between">
-        <p className="eyebrow">{presentDiscoverCategory(item.category)}</p>
+        <span className={`category-pill category-pill-${cat.color}`}>
+          <span className="category-pill-icon">{cat.icon}</span>
+          {cat.label}
+        </span>
         <div className="status-group">
+          {fresh && <span className="status status-new">New</span>}
           <span className={`status status-${statusStyle}`}>{statusLabel}</span>
           {review && <span className={`status status-${review.style}`}>{review.label}</span>}
         </div>

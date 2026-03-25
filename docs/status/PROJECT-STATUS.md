@@ -85,6 +85,8 @@
 - discover items 공개 발행 게이트: done — `isPublished()` 가드로 approved + published만 `/radar` 노출, 중앙 상수 + editorial-guards 패키지 추가
 - brief quality gate CLI 워커 적용: done — `runBriefQualityCheck` 공유 모듈 분리, `review:decision`/`publish:action` 양쪽에 gate 추가, 부실 브리프 9건 리셋
 - discover 자동 발행 통합: done — `daily-auto-publish.md`에 discover 경량 quality check + auto-publish 섹션 추가
+- Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
+- radar 카테고리 그룹 UI: done — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks

@@ -24,6 +24,15 @@
 - 근거: `Creating with Sora Safely` 등 본문 1단락 + 소스 1개짜리 브리프가 CLI를 통해 quality gate 없이 published 상태로 올라갔음. `auto-publish` 워커에만 quality check가 있고 CLI 경로는 무방비였음.
 - 다음 단계: `daily-auto-publish` 자동화에 discover 자동 발행 단계 추가 완료
 
+### 2026-03-25 — 디자인 SSOT 3레이어 패턴 도입
+- 상태: resolved
+- 결정:
+  - Layer 1 (`content-contracts`): `DISCOVER_CATEGORIES` 배열 — id, label, group
+  - Layer 2 (`design-tokens`): `discoverCategoryVisuals` — color, icon per category + `discoverGroupLabels`
+  - Layer 3 (presenters): Layer 1+2를 자동 합성 — 수동 편집 금지
+  - `/design-sync` 스킬로 3레이어 정합성 검증
+- 근거: 카테고리 라벨이 3곳(타입, 허용목록, 프리젠터), 색상이 CSS에 하드코딩 — 추가 시 4곳 수동 수정 필요. SSOT 도입으로 추가 = 2줄로 축소.
+
 ### 2026-03-25 — Discover 자동 발행을 daily-auto-publish에 통합
 - 상태: resolved
 - 결정:

@@ -101,6 +101,8 @@
 - [x] discover 공개 발행 게이트 (`isPublished` 가드 — approved + published만 `/radar` 노출)
 - [x] brief quality gate CLI 적용 (`review:decision`, `publish:action`에 `runBriefQualityCheck` 추가)
 - [x] discover 자동 발행 (`daily-auto-publish`에 discover 경량 검증 + auto-publish 통합)
+- [x] Category SSOT (`DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일)
+- [x] radar 카테고리 그룹 UI (Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지)
 - [ ] `radar` 카테고리 필터 설계
 - [ ] `tracked / watching / featured` 노출 규칙 정리
 - [ ] `brief`와 `discover` 동시 노출 기준 고정

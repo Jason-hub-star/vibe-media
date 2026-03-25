@@ -4,6 +4,7 @@ import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 import { DiscoverCard } from "@/features/discover/view/DiscoverCard";
+import { presentDiscoverCategory, groupByCategory } from "@/features/discover/presenter/present-discover-category";
 import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
 import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
 import { isPublishedShowcaseEntry } from "@vibehub/backend";
@@ -12,6 +13,8 @@ export default async function RadarPage() {
   const items = await listDiscoverItems();
   const showcaseEntries = await listShowcaseEntries();
   const featured = items.filter((item) => item.highlighted);
+  const rest = items.filter((item) => !item.highlighted);
+  const grouped = groupByCategory(rest);
   const showcasePicks = showcaseEntries.filter(
     (entry) => entry.featuredRadar && isPublishedShowcaseEntry(entry)
   );
@@ -63,20 +66,32 @@ export default async function RadarPage() {
         )}
       </SectionBlock>
 
-      <SectionBlock eyebrow="Discovery index" title="Extensible categories for the next curation wave">
-        {items.length === 0 ? (
+      {grouped.size === 0 ? (
+        <SectionBlock eyebrow="Discovery index" title="Extensible categories for the next curation wave">
           <EmptyState
             body="Tracked resources will show up here after sources and curation rules are connected."
             title="No discovery items yet"
           />
-        ) : (
-          <div className="panel-grid">
-            {items.map((item) => (
-              <DiscoverCard item={item} key={item.id} />
-            ))}
-          </div>
-        )}
-      </SectionBlock>
+        </SectionBlock>
+      ) : (
+        Array.from(grouped.entries()).map(([category, categoryItems]) => {
+          const cat = presentDiscoverCategory(category);
+          return (
+            <SectionBlock
+              key={category}
+              eyebrow={`${cat.icon} ${cat.label}`}
+              sectionId={`category-${category}`}
+              title={`${categoryItems.length} item${categoryItems.length > 1 ? "s" : ""} in ${cat.groupLabel}`}
+            >
+              <div className="panel-grid">
+                {categoryItems.map((item) => (
+                  <DiscoverCard item={item} key={item.id} />
+                ))}
+              </div>
+            </SectionBlock>
+          );
+        })
+      )}
     </PageFrame>
   );
 }

@@ -1,32 +1,45 @@
-import type { DiscoverCategory } from "@vibehub/content-contracts";
+import type { DiscoverCategory, DiscoverCategoryGroup } from "@vibehub/content-contracts";
+import { DISCOVER_CATEGORIES, DISCOVER_CATEGORY_LABELS, DISCOVER_CATEGORY_GROUPS } from "@vibehub/content-contracts";
+import { discoverCategoryVisuals, discoverGroupLabels } from "@vibehub/design-tokens";
+import type { CategoryColorToken } from "@vibehub/design-tokens";
 
-const LABELS: Record<DiscoverCategory, string> = {
-  open_source: "Open source",
-  skill: "Skill",
-  plugin: "Plugin",
-  os: "OS",
-  website: "Website",
-  event: "Event",
-  contest: "Contest",
-  news: "News",
-  model: "Model",
-  api: "API",
-  sdk: "SDK",
-  agent: "Agent",
-  template: "Template",
-  integration: "Integration",
-  research: "Research",
-  dataset: "Dataset",
-  benchmark: "Benchmark",
-  tutorial: "Tutorial",
-  newsletter: "Newsletter",
-  repo_list: "Repo list",
-  job: "Job",
-  grant: "Grant",
-  community: "Community",
-  asset: "Asset"
-};
+export interface CategoryPresentation {
+  label: string;
+  color: CategoryColorToken;
+  icon: string;
+  group: DiscoverCategoryGroup;
+  groupLabel: string;
+}
 
-export function presentDiscoverCategory(category: DiscoverCategory) {
-  return LABELS[category];
+const DEFAULT_VISUAL = { color: "mint" as CategoryColorToken, icon: "📌" };
+
+export function presentDiscoverCategory(category: DiscoverCategory): CategoryPresentation {
+  const visual = discoverCategoryVisuals[category] ?? DEFAULT_VISUAL;
+  const group = DISCOVER_CATEGORY_GROUPS[category];
+  return {
+    label: DISCOVER_CATEGORY_LABELS[category],
+    color: visual.color,
+    icon: visual.icon,
+    group,
+    groupLabel: discoverGroupLabels[group] ?? group,
+  };
+}
+
+/** 카테고리별로 아이템을 그룹핑 — 빈 카테고리는 자동 제외 */
+export function groupByCategory<T extends { category: DiscoverCategory }>(items: T[]) {
+  const grouped = new Map<DiscoverCategory, T[]>();
+  for (const item of items) {
+    const list = grouped.get(item.category) ?? [];
+    list.push(item);
+    grouped.set(item.category, list);
+  }
+  // DISCOVER_CATEGORIES 배열 순서대로 정렬 (SSOT 순서 유지)
+  const ordered = new Map<DiscoverCategory, T[]>();
+  for (const cat of DISCOVER_CATEGORIES) {
+    const list = grouped.get(cat.id);
+    if (list && list.length > 0) {
+      ordered.set(cat.id, list);
+    }
+  }
+  return ordered;
 }

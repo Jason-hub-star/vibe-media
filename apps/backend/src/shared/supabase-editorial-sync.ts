@@ -1,4 +1,5 @@
 import type { DiscoverAction, DiscoverCategory } from "@vibehub/content-contracts";
+import { DISCOVER_CATEGORY_IDS } from "@vibehub/content-contracts";
 
 import type {
   LiveIngestSnapshot,
@@ -185,34 +186,9 @@ function shouldSkipEditorial(classification: SnapshotItemClassificationRow) {
 }
 
 function toDiscoverCategory(value: string): DiscoverCategory {
-  const allowed: DiscoverCategory[] = [
-    "open_source",
-    "skill",
-    "plugin",
-    "os",
-    "website",
-    "event",
-    "contest",
-    "news",
-    "model",
-    "api",
-    "sdk",
-    "agent",
-    "template",
-    "integration",
-    "research",
-    "dataset",
-    "benchmark",
-    "tutorial",
-    "newsletter",
-    "repo_list",
-    "job",
-    "grant",
-    "community",
-    "asset"
-  ];
+  const allowedSet = new Set<string>(DISCOVER_CATEGORY_IDS);
 
-  if (allowed.includes(value as DiscoverCategory)) {
+  if (allowedSet.has(value)) {
     return value as DiscoverCategory;
   }
 

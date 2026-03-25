@@ -62,11 +62,30 @@
 --font-display: SpaceGrotesk   --font-body: NotoSansKR
 ```
 
+### 디자인 SSOT 레이어
+```
+Layer 1: content-contracts/discover.ts → DISCOVER_CATEGORIES (id, label, group)
+Layer 2: design-tokens/index.ts → discoverCategoryVisuals (color, icon), discoverGroupLabels
+Layer 3: presenters (자동 파생) → present-discover-category.ts, discovery.css
+```
+- 카테고리 추가 = Layer 1에 1줄 + Layer 2에 1줄 → 타입/라벨/색상/아이콘 자동 반영
+- `/design-sync check`로 3레이어 정합성 검증 가능
+
+### 카테고리 색상 팔레트 (그룹별)
+| 그룹 | 색상 | 적용 카테고리 |
+|------|------|-------------|
+| core | mint | open_source, skill, plugin, os, website, event, contest, news |
+| builder | sky | model, api, sdk, agent, template, integration |
+| knowledge | purple | research, dataset, benchmark, tutorial, newsletter, repo_list |
+| opportunity | yellow | job, grant, community |
+| asset | orange | asset |
+
 ### CSS 토큰 사용 규칙
 - 색상 alpha가 필요하면 반드시 `rgba(var(--color-X-rgb), alpha)` 사용 — raw rgba 금지
 - 하드코딩 hex/rgba 대신 CSS 변수 참조
 - radius는 `--radius-panel` / `--radius-md` / `--radius-sm` 중 선택
 - font-size는 `--type-*` 토큰 중 가장 가까운 값 사용
+- 카테고리 pill 색상은 `.category-pill-{color}` 클래스 사용 — `discovery.css`에 정의
 
 ---
 
@@ -112,7 +131,7 @@ apps/web/
 ├── app/
 │   ├── layout.tsx                # 33줄, 폰트·메타·CSS변수
 │   ├── globals.css               # 438줄 ⚠️ 분리 대상
-│   ├── discovery.css             # 73줄
+│   ├── discovery.css             # 확장됨: category-pill, status-new, status-group 추가
 │   ├── status.css                # 신규 생성 (globals에서 미제거 상태)
 │   ├── (public)/                 # 공개 IA
 │   │   ├── page.tsx              # 103줄 (home)

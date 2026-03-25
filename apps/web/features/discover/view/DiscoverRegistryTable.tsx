@@ -23,7 +23,7 @@ export function DiscoverRegistryTable({ items }: { items: DiscoverItem[] }) {
                 <strong>{item.title}</strong>
                 <p className="muted">{item.summary}</p>
               </td>
-              <td>{presentDiscoverCategory(item.category)}</td>
+              <td>{presentDiscoverCategory(item.category).label}</td>
               <td>
                 <span className={`status status-${item.status}`}>{item.status}</span>
               </td>
