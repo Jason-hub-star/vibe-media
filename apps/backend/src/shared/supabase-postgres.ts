@@ -65,8 +65,7 @@ function isRetryableSupabaseError(error: unknown) {
   if (message.includes("circuit breaker open")) return true;
   if (message.includes("too many authentication errors")) return true;
   if (message.includes("prepared statement")) return true;
-  if (message.includes("connection_destroyed")) return true;
-  if (message.includes("connection closed")) return true;
+  if (code === "CONNECTION_DESTROYED" || message.includes("connection_destroyed")) return true;
 
   return [
     "08000",

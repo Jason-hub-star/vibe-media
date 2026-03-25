@@ -236,6 +236,7 @@ export async function recordVideoJobAttempt(args: {
         ${args.retryable ?? false},
         ${args.createdAt ?? new Date().toISOString()}::timestamptz
       )
+      on conflict (video_job_id, attempt_no) do nothing
     `;
   } finally {
     await sql.end();

@@ -2,11 +2,16 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { readWatchFolderState, scanWatchFolderOnce, writeWatchFolderState } from "../src/shared/watch-folder-worker";
 
 const tempDirs: string[] = [];
+
+beforeEach(async () => {
+  // 이전 실행이 중단돼 afterEach가 실행되지 않았을 경우에 대비해 상태를 초기화
+  await writeWatchFolderState({ files: {} });
+});
 
 afterEach(async () => {
   await writeWatchFolderState({ files: {} });
