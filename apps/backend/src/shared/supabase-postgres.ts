@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../../../..");
 const SUPABASE_QUERY_RETRY_LIMIT = 2;
-const SUPABASE_QUERY_RETRY_DELAY_MS = [150, 350];
+const SUPABASE_QUERY_RETRY_DELAY_MS = [500, 1500];
 
 type SqlClient = ReturnType<typeof postgres>;
 type SqlCallable = SqlClient & {
@@ -37,7 +37,7 @@ function createRawSupabaseSql(): SqlClient {
     max: 10,
     ssl: "require",
     connect_timeout: 10,
-    idle_timeout: 20,
+    idle_timeout: 60,
     backoff: (attemptNum: number) => Math.min((attemptNum + 1) * 100, 500),
     types: {
       // Return timestamps as ISO strings instead of Date objects.
@@ -65,6 +65,8 @@ function isRetryableSupabaseError(error: unknown) {
   if (message.includes("circuit breaker open")) return true;
   if (message.includes("too many authentication errors")) return true;
   if (message.includes("prepared statement")) return true;
+  if (message.includes("connection_destroyed")) return true;
+  if (message.includes("connection closed")) return true;
 
   return [
     "08000",
@@ -130,6 +132,14 @@ function createRetryingSupabaseSql(client: SqlClient): SqlCallable {
       const value = Reflect.get(activeClient as never, prop, receiver);
       if (typeof value !== "function") {
         return value;
+      }
+
+      // These helpers return postgres.js Parameter objects (not Promises).
+      // Wrapping them in withSqlRetry would cause `await Parameter` → NOT_TAGGED_CALL.
+      const parameterHelpers = new Set(["json", "array", "file"]);
+      if (parameterHelpers.has(prop as string)) {
+        return (...args: never[]) =>
+          Reflect.apply((activeClient as never)[prop as never], activeClient, args);
       }
 
       return (...args: never[]) =>
