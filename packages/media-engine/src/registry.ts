@@ -22,14 +22,8 @@ function resolveProviderKey(): ProviderKey {
 export function getProvider(): ImageGenerationProvider {
   const key = resolveProviderKey();
   if (cached && cachedKey === key) return cached;
-
   const factory = providers[key];
-  if (!factory) {
-    throw new Error(
-      `Unknown IMAGE_PROVIDER "${key}". Valid: ${Object.keys(providers).join(", ")}`,
-    );
-  }
-
+  if (!factory) throw new Error(`Unknown IMAGE_PROVIDER "${key}". Valid: ${Object.keys(providers).join(", ")}`);
   cached = factory();
   cachedKey = key;
   return cached;
@@ -37,17 +31,12 @@ export function getProvider(): ImageGenerationProvider {
 
 export function getProviderByName(name: ProviderKey): ImageGenerationProvider {
   const factory = providers[name];
-  if (!factory) {
-    throw new Error(
-      `Unknown provider "${name}". Valid: ${Object.keys(providers).join(", ")}`,
-    );
-  }
+  if (!factory) throw new Error(`Unknown provider "${name}". Valid: ${Object.keys(providers).join(", ")}`);
   return factory();
 }
 
 export function getProviderLabel(): string {
-  const key = resolveProviderKey();
-  return key === "mock" ? "mock" : "kie-nano-banana-2";
+  return resolveProviderKey() === "mock" ? "mock" : "kie-nano-banana-2";
 }
 
 export function isMockMode(): boolean {
