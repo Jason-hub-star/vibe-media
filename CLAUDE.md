@@ -26,10 +26,11 @@
 21. `docs/ref/STITCH-WORKFLOW.md`
 22. `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
 23. `docs/ref/ROUTE-SPECS.md`
-24. `docs/status/PROJECT-STATUS.md`
-25. `docs/status/EXECUTION-CHECKLIST.md`
-26. `docs/status/DECISION-LOG.md`
-27. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+24. `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
+25. `docs/status/PROJECT-STATUS.md`
+26. `docs/status/EXECUTION-CHECKLIST.md`
+27. `docs/status/DECISION-LOG.md`
+28. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.
@@ -107,6 +108,7 @@
 - `docs/ref/STITCH-WORKFLOW.md`
 - `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
 - `docs/ref/ROUTE-SPECS.md`
+- `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
 - `docs/status/EXECUTION-CHECKLIST.md`
 - `docs/status/PAGE-UPGRADE-BOARD.md`
 - `docs/status/DECISION-LOG.md`

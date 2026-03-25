@@ -82,6 +82,7 @@
 - admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching): done
 - Supabase connection pool deadlock fix (max:1→10) + timestamp Date→string parse fix: done
 - media-engine 패키지 (`@vibehub/media-engine`): done — takdizang에서 도메인 무관 인프라 추출 (이미지/텍스트/오디오/영상/스토리지 엔진, 플랫 구조 16개 파일)
+- Channel Publish Pipeline 설계: done — MimikaStudio TTS + Remotion 영상 + 멀티채널 배포(티스토리/유튜브/블로그/팟캐스트) 아키텍처 문서화 (`docs/ref/CHANNEL-PUBLISH-PIPELINE.md`)
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks

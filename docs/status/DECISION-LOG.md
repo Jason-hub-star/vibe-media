@@ -4,6 +4,21 @@
 
 ## Resolved
 
+### 2026-03-25 — Channel Publish Pipeline 설계 (MimikaStudio + 멀티채널 배포)
+- 상태: resolved
+- 결정:
+  - 내부 TTS/영상 가공은 **MimikaStudio** 단일 도구로 통합. Qwen3-TTS 등 별도 self-host는 하지 않음.
+  - MimikaStudio는 BSL-1.1이지만 **내부 도구로만 사용**, 산출물(mp4/mp3/text)만 외부 채널에 유통 → 라이선스 위반 없음.
+  - 외부 배포 채널: 티스토리, YouTube, Ghost/WordPress 블로그, 팟캐스트 RSS.
+  - 티스토리 Open API가 2024-02에 완전 종료됐으므로 **Playwright 브라우저 자동화**로 대체.
+  - YouTube는 Data API v3 resumable upload 사용. 일일 쿼터 ~6건 제한 → scheduled 큐로 분산.
+  - Remotion 영상 합성은 기존 media-engine의 `render-spawn.ts`를 확장. `getAudioData()` + `calculateMetadata()`로 나레이션 길이에 맞춘 영상 길이 자동 결정.
+  - 팟캐스트는 MimikaStudio mp3 → Supabase Storage + `podcast` npm RSS 생성.
+  - `publish-dispatcher`가 brief → TTS → 채널별 분배를 오케스트레이션. 채널별 실패는 독립 처리(`Promise.allSettled`).
+  - MimikaStudio MCP 서버(:8010)로 Claude Code 에이전트 직접 연동 가능.
+- 근거: 자동화 워크플로우로 티스토리/유튜브/블로그를 자동 배포하는 것이 목적. MimikaStudio는 Mac Apple Silicon 네이티브 MLX 가속 + 60+ REST API + MCP 통합으로 파이프라인 연동에 최적. 내부/외부 분리 원칙으로 라이선스 리스크 제거.
+- 상세 문서: `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
+
 ### 2026-03-25 — media-engine 패키지 추출 (takdizang → vibe-media)
 - 상태: resolved
 - 결정:
