@@ -1,3 +1,11 @@
+import type { ReviewStatus } from "./review";
+
+// editorial lifecycle 상수 — brief, discover, showcase 공통
+export const REVIEW_STATUSES = ["pending", "approved", "changes_requested", "rejected"] as const;
+
+export const DISCOVER_STATUSES = ["tracked", "watching", "featured"] as const;
+export type DiscoverStatus = (typeof DISCOVER_STATUSES)[number];
+
 export type DiscoverCategory =
   | "open_source"
   | "skill"
@@ -38,7 +46,10 @@ export interface DiscoverItem {
   title: string;
   category: DiscoverCategory;
   summary: string;
-  status: "tracked" | "watching" | "featured";
+  status: DiscoverStatus;
+  reviewStatus: ReviewStatus;
+  scheduledAt: string | null;
+  publishedAt: string | null;
   tags: string[];
   actions: DiscoverAction[];
   highlighted: boolean;

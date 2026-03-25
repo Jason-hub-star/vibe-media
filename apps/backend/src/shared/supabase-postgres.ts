@@ -9,8 +9,8 @@ import "./load-env";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../../../..");
-const SUPABASE_QUERY_RETRY_LIMIT = 2;
-const SUPABASE_QUERY_RETRY_DELAY_MS = [500, 1500];
+const SUPABASE_QUERY_RETRY_LIMIT = 3;
+const SUPABASE_QUERY_RETRY_DELAY_MS = [500, 1500, 3000];
 
 type SqlClient = ReturnType<typeof postgres>;
 type SqlCallable = SqlClient & {

@@ -4,31 +4,42 @@
 
 ## Resolved
 
-### 2026-03-25 — Channel Publish Pipeline 설계 (MimikaStudio + 멀티채널 배포)
+### 2026-03-25 — Discover Items 공개 노출: approved + published 게이트
 - 상태: resolved
 - 결정:
-  - 내부 TTS/영상 가공은 **MimikaStudio** 단일 도구로 통합. Qwen3-TTS 등 별도 self-host는 하지 않음.
-  - MimikaStudio는 BSL-1.1이지만 **내부 도구로만 사용**, 산출물(mp4/mp3/text)만 외부 채널에 유통 → 라이선스 위반 없음.
-  - 외부 배포 채널: 티스토리, YouTube, Ghost/WordPress 블로그, 팟캐스트 RSS.
-  - 티스토리 Open API가 2024-02에 완전 종료됐으므로 **Playwright 브라우저 자동화**로 대체.
-  - YouTube는 Data API v3 resumable upload 사용. 일일 쿼터 ~6건 제한 → scheduled 큐로 분산.
-  - Remotion 영상 합성은 기존 media-engine의 `render-spawn.ts`를 확장. `getAudioData()` + `calculateMetadata()`로 나레이션 길이에 맞춘 영상 길이 자동 결정.
-  - 팟캐스트는 MimikaStudio mp3 → Supabase Storage + `podcast` npm RSS 생성.
-  - `publish-dispatcher`가 brief → TTS → 채널별 분배를 오케스트레이션. 채널별 실패는 독립 처리(`Promise.allSettled`).
-  - MimikaStudio MCP 서버(:8010)로 Claude Code 에이전트 직접 연동 가능.
-- 근거: 자동화 워크플로우로 티스토리/유튜브/블로그를 자동 배포하는 것이 목적. MimikaStudio는 Mac Apple Silicon 네이티브 MLX 가속 + 60+ REST API + MCP 통합으로 파이프라인 연동에 최적. 내부/외부 분리 원칙으로 라이선스 리스크 제거.
-- 상세 문서: `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
+  - `/radar` 공개 페이지는 `reviewStatus === "approved" && publishedAt != null`인 discover 항목만 표시
+  - `isPublished()` 가드를 `content-contracts/editorial-guards.ts`에 한 번 정의, brief/discover/showcase 재사용
+  - `ReviewStatus`, `DiscoverStatus` 중앙 상수를 `content-contracts`에서 관리
+  - Supabase 쿼리, snapshot 폴백, mock 폴백 세 경로 모두 동일 필터 적용
+- 근거: DB에 `review_status`, `published_at` 컬럼이 존재하고 backend action handler도 지원하지만, 공개 읽기 쿼리가 이를 무시하고 있었음. 미승인/미발행 항목이 공개 사이트에 노출될 수 있는 상태.
+- 다음 단계: admin 목록에서는 전체 항목(미발행 포함) 표시 분리, Approve/Publish 버튼 UI 추가
 
-### 2026-03-25 — media-engine 패키지 추출 (takdizang → vibe-media)
+### 2026-03-25 — Brief Quality Gate를 CLI 워커에도 적용
 - 상태: resolved
 - 결정:
-  - takdizang의 도메인 무관 인프라 코드(Kie.ai, Gemini, Sharp, Remotion spawn, Supabase Storage)를 `packages/media-engine`으로 추출.
-  - 이커머스 특화 코드(usage-guard, marketing-script, compose 블록 에디터, Remotion composition UI)는 takdizang에 유지.
-  - 플랫 구조(src/ 단일 폴더, 16개 파일) 채택 — 하위 폴더 + barrel index 오버헤드 제거.
-  - Supabase Storage는 DI 패턴(`createStorageHelper(client)`)으로 양쪽 프로젝트에서 자기 클라이언트 주입 가능.
-  - Gemini 래퍼는 이커머스 프롬프트(CATEGORY_INSTRUCTIONS, PERSUASION_SEQUENCES) 제거, `callGemini(prompt, schema)` 범용 인터페이스.
-  - TTS/Publish는 인터페이스만 스캐폴딩 (types.ts에 통합), 구현체는 향후 apps/backend에서.
-- 근거: vibe-media의 IT 뉴스 brief를 블로그/영상/뉴스레터로 자동 변환하는 엔진 기반이 필요했고, takdizang과 동일 API(Kie.ai, Gemini, Supabase)를 공유하므로 코드 재사용이 합리적. 별도 패키지 분리로 양쪽 독립 진화 가능.
+  - `runBriefQualityCheck`를 `brief-quality-check.ts`로 분리해 `auto-publish`, `review:decision`, `publish:action` 세 경로 공유
+  - `review:decision approve` 시 quality check 실패하면 approve 거부
+  - `publish:action publish/schedule` 시 quality check 실패하면 publish 거부
+  - 기존 부실 브리프 9건 `draft + pending`으로 리셋 (레퍼런스 1건 제외)
+- 근거: `Creating with Sora Safely` 등 본문 1단락 + 소스 1개짜리 브리프가 CLI를 통해 quality gate 없이 published 상태로 올라갔음. `auto-publish` 워커에만 quality check가 있고 CLI 경로는 무방비였음.
+- 다음 단계: `daily-auto-publish` 자동화에 discover 자동 발행 단계 추가 완료
+
+### 2026-03-25 — Discover 자동 발행을 daily-auto-publish에 통합
+- 상태: resolved
+- 결정:
+  - `daily-auto-publish.md`에 discover 섹션(§8) 추가 — brief 발행 후 pending discover를 경량 quality check 후 자동 approved + published 전환
+  - discover quality 기준: title ≥5자, summary ≥20자, action ≥1개 + https
+  - 별도 자동화 파일을 만들지 않고 기존 프롬프트에 통합
+- 근거: discover는 파이프라인 sync 후 approve/publish 자동화가 없어서 전부 pending 상태로 방치됐음. brief와 달리 카드 수준이라 heavy quality check 불필요.
+
+### 2026-03-25 — Supabase Retry Budget 보강 (CONNECTION_DESTROYED 재시도 강화)
+- 상태: resolved
+- 결정:
+  - `SUPABASE_QUERY_RETRY_LIMIT`: 2 → 3 (최대 4회 시도)
+  - `SUPABASE_QUERY_RETRY_DELAY_MS`: `[500, 1500]` → `[500, 1500, 3000]` (총 예산 2000ms → 5000ms)
+- 근거: 2026-03-25 pipeline log에서 `pipeline:supabase-sync`가 `CONNECTION_DESTROYED`로 3회 모두 실패. 직전 4회 실행은 0 오류였으므로 Supabase AP-northeast-2 pooler cold-start가 원인으로 판단. 기존 총 재시도 예산 2000ms는 cold pooler 워밍업 지연보다 짧을 가능성이 높아 보강. 비즈니스 로직 변경 없이 상수 2줄 수정.
+- 측정 지표: 다음 5회 daily pipeline 실행 중 CONNECTION_DESTROYED 오류 횟수 (목표: 0/5)
+- 다음 단계: 다음 1주 pipeline 로그에서 재발 여부 확인 후 안정화 여부 기록
 
 ### 2026-03-25 — Local `code-review-graph` Ignore Baseline
 - 상태: resolved

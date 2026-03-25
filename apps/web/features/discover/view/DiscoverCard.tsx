@@ -3,16 +3,20 @@ import Link from "next/link";
 import type { DiscoverItem } from "@vibehub/content-contracts";
 
 import { presentDiscoverCategory } from "../presenter/present-discover-category";
-import { presentDiscoverStatus } from "../presenter/present-discover-status";
+import { presentDiscoverStatus, presentReviewStatus } from "../presenter/present-discover-status";
 
-export function DiscoverCard({ item }: { item: DiscoverItem }) {
+export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; showReviewStatus?: boolean }) {
   const { label: statusLabel, style: statusStyle } = presentDiscoverStatus(item.status);
+  const review = showReviewStatus ? presentReviewStatus(item.reviewStatus) : null;
 
   return (
     <article className="panel stack-tight">
       <div className="row-between">
         <p className="eyebrow">{presentDiscoverCategory(item.category)}</p>
-        <span className={`status status-${statusStyle}`}>{statusLabel}</span>
+        <div className="status-group">
+          <span className={`status status-${statusStyle}`}>{statusLabel}</span>
+          {review && <span className={`status status-${review.style}`}>{review.label}</span>}
+        </div>
       </div>
       <div className="stack-tight">
         <h3>{item.title}</h3>

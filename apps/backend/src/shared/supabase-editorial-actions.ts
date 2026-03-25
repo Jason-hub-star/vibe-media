@@ -1,5 +1,6 @@
 import type { ReviewStatus, VideoJobStatus } from "@vibehub/content-contracts";
 
+import { runBriefQualityCheck } from "./brief-quality-check";
 import { canMoveBriefStatus, canMoveVideoJobStatus } from "./status-rules";
 import { createSupabaseSql } from "./supabase-postgres";
 import { toStableUuid } from "./supabase-id";
@@ -20,6 +21,11 @@ interface BriefLifecycleRow {
   id: string;
   status: "draft" | "review" | "scheduled" | "published";
   review_status: ReviewStatus;
+  title: string;
+  summary: string;
+  body: string[];
+  source_links: { label: string; href: string }[];
+  source_count: number;
 }
 
 interface DiscoverLifecycleRow {
@@ -87,7 +93,7 @@ export async function applySupabaseReviewDecision(args: {
 
     if (row.target_type === "brief") {
       const briefRows = await sql<BriefLifecycleRow[]>`
-        select id, status, review_status
+        select id, status, review_status, title, summary, body, source_links, source_count
         from public.brief_posts
         where id = ${row.target_id}::uuid
         limit 1
@@ -96,6 +102,10 @@ export async function applySupabaseReviewDecision(args: {
       if (!brief) throw new Error(`Brief row not found for review ${args.reviewId}`);
       if (args.decision === "approve") {
         assertBriefCanApprove(brief.status);
+        const qc = runBriefQualityCheck(brief);
+        if (!qc.passed) {
+          throw new Error(`Brief cannot be approved — quality check failed: ${qc.failures.join("; ")}`);
+        }
       }
 
       const nextBriefStatus =
@@ -205,7 +215,7 @@ export async function applySupabasePublishAction(args: {
   try {
     if (args.targetType === "brief") {
       const rows = await sql<BriefLifecycleRow[]>`
-        select id, status, review_status
+        select id, status, review_status, title, summary, body, source_links, source_count
         from public.brief_posts
         where id = ${toStableUuid(args.targetId)}::uuid
         limit 1
@@ -214,6 +224,11 @@ export async function applySupabasePublishAction(args: {
       if (!row) throw new Error(`Brief row not found for ${args.targetId}`);
       if (row.review_status !== "approved") {
         throw new Error(`Brief ${args.targetId} must be approved before publish actions`);
+      }
+
+      const qc = runBriefQualityCheck(row);
+      if (!qc.passed) {
+        throw new Error(`Brief ${args.targetId} failed quality check: ${qc.failures.join("; ")}`);
       }
 
       if (args.action === "schedule") {

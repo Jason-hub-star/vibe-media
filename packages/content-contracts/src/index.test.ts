@@ -49,6 +49,9 @@ describe("shared contract shapes", () => {
       category: "plugin",
       summary: "Design variant generation for rapid exploration.",
       status: "featured",
+      reviewStatus: "approved",
+      scheduledAt: null,
+      publishedAt: "2026-03-22T09:00:00.000Z",
       tags: ["design", "sdk"],
       highlighted: true,
       actions: [

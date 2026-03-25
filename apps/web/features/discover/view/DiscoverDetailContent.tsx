@@ -15,6 +15,14 @@ export function DiscoverDetailContent({ item }: { item: DiscoverItem }) {
             <dd className="admin-detail-value">{item.slug}</dd>
           </div>
           <div className="admin-detail-row">
+            <dt className="admin-detail-label">리뷰 상태</dt>
+            <dd className="admin-detail-value">{item.reviewStatus}</dd>
+          </div>
+          <div className="admin-detail-row">
+            <dt className="admin-detail-label">발행일</dt>
+            <dd className="admin-detail-value">{item.publishedAt ?? "미발행"}</dd>
+          </div>
+          <div className="admin-detail-row">
             <dt className="admin-detail-label">하이라이트</dt>
             <dd className="admin-detail-value">{item.highlighted ? "예" : "아니오"}</dd>
           </div>

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { isPublished } from "@vibehub/content-contracts";
 
 import type { LiveIngestSnapshot } from "../src/shared/live-ingest-snapshot";
 import {
@@ -256,5 +257,14 @@ describe("supabase editorial sync", () => {
         publishedAt: null
       })
     ).toBe(false);
+  });
+
+  it("isPublished guard returns true only for approved + published items", () => {
+    expect(isPublished({ reviewStatus: "approved", publishedAt: "2026-03-23T09:00:00.000Z" })).toBe(true);
+    expect(isPublished({ reviewStatus: "approved", publishedAt: null })).toBe(false);
+    expect(isPublished({ reviewStatus: "pending", publishedAt: "2026-03-23T09:00:00.000Z" })).toBe(false);
+    expect(isPublished({ reviewStatus: "pending", publishedAt: null })).toBe(false);
+    expect(isPublished({ reviewStatus: "changes_requested", publishedAt: "2026-03-23T09:00:00.000Z" })).toBe(false);
+    expect(isPublished({ reviewStatus: "rejected", publishedAt: "2026-03-23T09:00:00.000Z" })).toBe(false);
   });
 });

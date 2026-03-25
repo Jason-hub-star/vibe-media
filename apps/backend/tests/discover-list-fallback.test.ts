@@ -21,7 +21,7 @@ describe("listDiscoverItems fallback", () => {
     vi.resetAllMocks();
   });
 
-  it("uses snapshot-derived discover items when Supabase returns null", async () => {
+  it("uses snapshot-derived discover items when Supabase returns null and item is published", async () => {
     listSupabaseDiscoverItems.mockResolvedValue(null);
     readLiveIngestSnapshot.mockReturnValue({ generatedAt: "2026-03-24T00:00:00.000Z" });
     buildEditorialRows.mockReturnValue({
@@ -35,7 +35,7 @@ describe("listDiscoverItems fallback", () => {
           status: "featured",
           review_status: "approved",
           scheduled_at: null,
-          published_at: null,
+          published_at: "2026-03-24T00:00:00.000Z",
           tags: ["repo", "release"],
           highlighted: true
         }
@@ -64,9 +64,43 @@ describe("listDiscoverItems fallback", () => {
       slug: "snapshot-item",
       category: "open_source",
       status: "featured",
+      reviewStatus: "approved",
+      publishedAt: "2026-03-24T00:00:00.000Z",
       highlighted: true
     });
     expect(items[0]?.actions[0]?.kind).toBe("github");
+  });
+
+  it("filters out unpublished snapshot items", async () => {
+    listSupabaseDiscoverItems.mockResolvedValue(null);
+    readLiveIngestSnapshot.mockReturnValue({ generatedAt: "2026-03-24T00:00:00.000Z" });
+    buildEditorialRows.mockReturnValue({
+      discoverItems: [
+        {
+          id: "discover-pending",
+          slug: "pending-item",
+          title: "Pending item",
+          category: "sdk",
+          summary: "Pending summary",
+          status: "tracked",
+          review_status: "pending",
+          scheduled_at: null,
+          published_at: null,
+          tags: ["sdk"],
+          highlighted: false
+        }
+      ],
+      discoverActions: [],
+      briefPosts: [],
+      adminReviews: []
+    });
+
+    const { listDiscoverItemsWithSource } = await import("../src/features/discover/list-discover-items");
+    const { items, source } = await listDiscoverItemsWithSource();
+
+    // pending item should be filtered out, falling back to mock
+    expect(source).toBe("mock");
+    expect(items.every((item) => item.reviewStatus === "approved" && item.publishedAt != null)).toBe(true);
   });
 
   it("falls back to mock discover entries when both Supabase and snapshot are unavailable", async () => {
@@ -84,6 +118,7 @@ describe("listDiscoverItems fallback", () => {
 
     expect(items.length).toBeGreaterThan(0);
     expect(source).toBe("mock");
-    expect(items.some((item) => item.category === "skill" || item.category === "plugin")).toBe(true);
+    // mock entries with pending/null publishedAt should be filtered out
+    expect(items.every((item) => item.reviewStatus === "approved" && item.publishedAt != null)).toBe(true);
   });
 });

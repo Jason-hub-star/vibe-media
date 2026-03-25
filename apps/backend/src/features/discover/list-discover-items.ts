@@ -1,4 +1,5 @@
 import type { DiscoverItem } from "@vibehub/content-contracts";
+import { isPublished } from "@vibehub/content-contracts";
 
 import { readLiveIngestSnapshot } from "../../shared/live-ingest-snapshot";
 import { discoverEntries } from "../../shared/mock-data";
@@ -40,10 +41,13 @@ function listSnapshotDiscoverItems() {
     category: item.category,
     summary: item.summary,
     status: item.status,
+    reviewStatus: item.review_status,
+    scheduledAt: item.scheduled_at,
+    publishedAt: item.published_at,
     tags: item.tags,
     highlighted: item.highlighted,
     actions: actionsByDiscoverId.get(item.id) ?? []
-  }));
+  })).filter(isPublished);
 }
 
 export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult> {
@@ -57,7 +61,7 @@ export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult
     return { items: sortDiscoverItems(snapshotItems), source: "snapshot" };
   }
 
-  return { items: sortDiscoverItems(discoverEntries), source: "mock" };
+  return { items: sortDiscoverItems(discoverEntries.filter(isPublished)), source: "mock" };
 }
 
 export async function listDiscoverItems(): Promise<DiscoverItem[]> {

@@ -1,4 +1,5 @@
-import type { BriefDetail, BriefListItem, DiscoverAction, DiscoverItem } from "@vibehub/content-contracts";
+import type { BriefDetail, BriefListItem, DiscoverAction, DiscoverItem, ReviewStatus } from "@vibehub/content-contracts";
+import { isPublished } from "@vibehub/content-contracts";
 
 import { createSupabaseSql, getSupabaseDbUrl } from "./supabase-postgres";
 
@@ -21,6 +22,9 @@ interface DiscoverRow {
   category: DiscoverItem["category"];
   summary: string;
   status: DiscoverItem["status"];
+  review_status: ReviewStatus;
+  scheduled_at: string | null;
+  published_at: string | null;
   tags: string[];
   highlighted: boolean;
   actions: DiscoverAction[];
@@ -69,6 +73,9 @@ async function fetchEditorialData() {
           category,
           summary,
           status,
+          review_status,
+          scheduled_at,
+          published_at,
           tags,
           highlighted
         from public.discover_items
@@ -106,9 +113,19 @@ async function fetchEditorialData() {
         coverImage: row.cover_image_url ?? undefined
       })),
       discover: discoverRows.map((row) => ({
-        ...row,
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        category: row.category,
+        summary: row.summary,
+        status: row.status,
+        reviewStatus: row.review_status,
+        scheduledAt: row.scheduled_at,
+        publishedAt: row.published_at,
+        tags: row.tags,
+        highlighted: row.highlighted,
         actions: actionMap.get(row.id) ?? []
-      }))
+      })).filter(isPublished)
     };
   } finally {
     await sql.end();

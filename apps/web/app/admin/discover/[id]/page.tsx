@@ -29,6 +29,8 @@ export default async function DiscoverDetailPage({
         metadata={[
           { label: "카테고리", value: item.category },
           { label: "슬러그", value: item.slug },
+          { label: "리뷰 상태", value: item.reviewStatus },
+          { label: "발행일", value: item.publishedAt ?? "미발행" },
           { label: "하이라이트", value: item.highlighted ? "예" : "아니오" },
           { label: "태그", value: item.tags.join(", ") || "없음" },
         ]}

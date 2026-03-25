@@ -98,6 +98,9 @@
 - [ ] `admin/video-jobs`를 CapCut handoff와 parent review 체크리스트 기준으로 고도화
 
 ## P2 — Discover / Brief Surface
+- [x] discover 공개 발행 게이트 (`isPublished` 가드 — approved + published만 `/radar` 노출)
+- [x] brief quality gate CLI 적용 (`review:decision`, `publish:action`에 `runBriefQualityCheck` 추가)
+- [x] discover 자동 발행 (`daily-auto-publish`에 discover 경량 검증 + auto-publish 통합)
 - [ ] `radar` 카테고리 필터 설계
 - [ ] `tracked / watching / featured` 노출 규칙 정리
 - [ ] `brief`와 `discover` 동시 노출 기준 고정

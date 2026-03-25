@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-24T10:31:27.657Z",
+  "generatedAt": "2026-03-24T22:06:05.426Z",
   "tables": {
     "sources": [
       {
@@ -9,10 +9,10 @@
         "base_url": "https://openai.com/news/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-24T10:31:27.657Z",
+        "last_success_at": "2026-03-24T22:06:05.426Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "source-ac035067e139",
@@ -21,10 +21,10 @@
         "base_url": "https://blog.google/innovation-and-ai/technology/ai/",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-24T10:31:27.657Z",
+        "last_success_at": "2026-03-24T22:06:05.426Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "source-df17efc53a21",
@@ -33,10 +33,10 @@
         "base_url": "https://github.com/openai/openai-node/releases",
         "source_tier": "auto-safe",
         "enabled": true,
-        "last_success_at": "2026-03-24T10:31:27.657Z",
+        "last_success_at": "2026-03-24T22:06:05.426Z",
         "last_failure_at": null,
         "failure_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "source-3a2941a186e8",
@@ -48,7 +48,7 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "stable RSS/API endpoint not wired yet",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "source-62eed9aaa9d2",
@@ -60,53 +60,53 @@
         "last_success_at": null,
         "last_failure_at": null,
         "failure_reason": "public RSS endpoint returned 404 during live fetch verification",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       }
     ],
     "ingest_runs": [
       {
-        "id": "run-82d3c6dd4f77",
+        "id": "run-01374b819e61",
         "source_id": "source-616388d9c125",
         "run_status": "drafted",
-        "started_at": "2026-03-24T10:31:27.657Z",
-        "finished_at": "2026-03-24T10:31:27.657Z",
+        "started_at": "2026-03-24T22:06:05.426Z",
+        "finished_at": "2026-03-24T22:06:05.426Z",
         "error_message": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "run-9ec89b8c5468",
+        "id": "run-4a9e03f67ef4",
         "source_id": "source-ac035067e139",
         "run_status": "drafted",
-        "started_at": "2026-03-24T10:31:27.657Z",
-        "finished_at": "2026-03-24T10:31:27.657Z",
+        "started_at": "2026-03-24T22:06:05.426Z",
+        "finished_at": "2026-03-24T22:06:05.426Z",
         "error_message": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "run-fa891440b515",
+        "id": "run-db54e99c2bd7",
         "source_id": "source-df17efc53a21",
         "run_status": "review",
-        "started_at": "2026-03-24T10:31:27.657Z",
-        "finished_at": "2026-03-24T10:31:27.657Z",
+        "started_at": "2026-03-24T22:06:05.426Z",
+        "finished_at": "2026-03-24T22:06:05.426Z",
         "error_message": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       }
     ],
     "ingested_items": [
       {
-        "id": "live-openai-news-rss-acec20302c",
+        "id": "live-openai-news-rss-5aac17e98e",
         "source_id": "source-616388d9c125",
-        "run_id": "run-82d3c6dd4f77",
-        "title": "Creating with Sora Safely",
-        "url": "https://openai.com/index/creating-with-sora-safely",
+        "run_id": "run-01374b819e61",
+        "title": "Helping developers build safer AI experiences for teens",
+        "url": "https://openai.com/index/teen-safety-policies-gpt-oss-safeguard",
         "content_type": "article",
         "raw_content": {
-          "publishedAt": "Mon, 23 Mar 2026 00:00:00 GMT",
-          "url": "https://openai.com/index/creating-with-sora-safely",
+          "publishedAt": "Tue, 24 Mar 2026 11:00:00 GMT",
+          "url": "https://openai.com/index/teen-safety-policies-gpt-oss-safeguard",
           "sourceId": "openai-news-rss"
         },
         "parsed_content": {
-          "summary": "To address the novel safety challenges posed by a state-of-the-art video model as well as a new social creation platform, we’ve built Sora 2 and the Sora app with safety at the fo...",
+          "summary": "OpenAI releases prompt-based teen safety policies for developers using gpt-oss-safeguard, helping moderate age-specific risks in AI systems.",
           "contentMarkdown": null,
           "parserName": "rss-summary",
           "parseStatus": "content-failed",
@@ -114,26 +114,27 @@
             "launch",
             "release",
             "ecosystem"
-          ]
+          ],
+          "imageUrl": null
         },
-        "dedupe_key": "acec20302c9edaace524b3a7e88f8648d15fe23d",
+        "dedupe_key": "5aac17e98eb60c8832a680f65bfa0bfaf14b35f1",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "live-openai-news-rss-fd3208099b",
+        "id": "live-openai-news-rss-508e5e5933",
         "source_id": "source-616388d9c125",
-        "run_id": "run-82d3c6dd4f77",
-        "title": "How we monitor internal coding agents for misalignment",
-        "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+        "run_id": "run-01374b819e61",
+        "title": "Update on the OpenAI Foundation",
+        "url": "https://openai.com/index/update-on-the-openai-foundation",
         "content_type": "article",
         "raw_content": {
-          "publishedAt": "Thu, 19 Mar 2026 10:00:00 GMT",
-          "url": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment",
+          "publishedAt": "Tue, 24 Mar 2026 09:00:00 GMT",
+          "url": "https://openai.com/index/update-on-the-openai-foundation",
           "sourceId": "openai-news-rss"
         },
         "parsed_content": {
-          "summary": "How OpenAI uses chain-of-thought monitoring to study misalignment in internal coding agents—analyzing real-world deployments to detect risks and strengthen AI safety safeguards.",
+          "summary": "The OpenAI Foundation announces plans to invest at least $1 billion in curing diseases, economic opportunity, AI resilience, and community programs.",
           "contentMarkdown": null,
           "parserName": "rss-summary",
           "parseStatus": "content-failed",
@@ -141,43 +142,46 @@
             "launch",
             "release",
             "ecosystem"
-          ]
+          ],
+          "imageUrl": null
         },
-        "dedupe_key": "fd3208099b40794a1e134aa1aee1271a25df42be",
+        "dedupe_key": "508e5e5933454f44ca0cdc8a425f7b68e76a02eb",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "live-openai-news-rss-625785a3d5",
+        "id": "live-openai-news-rss-49a9730ea5",
         "source_id": "source-616388d9c125",
-        "run_id": "run-82d3c6dd4f77",
-        "title": "OpenAI to acquire Astral",
-        "url": "https://openai.com/index/openai-to-acquire-astral",
+        "run_id": "run-01374b819e61",
+        "title": "Powering product discovery in ChatGPT",
+        "url": "https://openai.com/index/powering-product-discovery-in-chatgpt",
         "content_type": "article",
         "raw_content": {
-          "publishedAt": "Thu, 19 Mar 2026 00:00:00 GMT",
-          "url": "https://openai.com/index/openai-to-acquire-astral",
+          "publishedAt": "Tue, 24 Mar 2026 09:00:00 GMT",
+          "url": "https://openai.com/index/powering-product-discovery-in-chatgpt",
           "sourceId": "openai-news-rss"
         },
         "parsed_content": {
-          "summary": "Accelerates Codex growth to power the next generation of Python developer tools",
-          "contentMarkdown": null,
-          "parserName": "rss-summary",
-          "parseStatus": "content-failed",
+          "summary": "ChatGPT introduces richer, visually immersive shopping powered by the Agentic Commerce Protocol, enabling product discovery, side-by-side comparisons, and merchant integration.",
+          "contentMarkdown": "March 24, 2026\n\n[Product](https://openai.com/news/product-releases/)\n\nLaunching richer, more visually immersive shopping experiences powered by the Agentic Commerce Protocol\n\n<audio></audio>\n\nMore and more, people are starting their shopping in ChatGPT—to explore, compare, and figure out what to buy.\n\nShopping on the web is easy if you already know what you want. But when you’re still deciding, it often means jumping between tabs, reading the same “best of” lists, and trying to piece together the right answer.\n\nChatGPT solves that: figuring out *what* to buy. You can describe what you’re looking for, refine it in a conversation, and quickly compare options that fit your specific needs. Today, we’re making that experience better with richer and more visual shopping in ChatGPT. You can now browse products visually, compare options side-by-side, and get detailed, up-to-date information—all in one place. What used to take hours of searching and tab-hopping now happens in seconds.\n\nTo power this, we’re expanding the Agentic Commerce Protocol (ACP) to support product discovery—bringing more complete, relevant, and up-to-date information directly into ChatGPT.\n\n## Richer shopping experiences\n\nInstead of scrolling through pages of results, ChatGPT can help you find what you’re looking for based on your budget, preferences, and constraints—and surface products that fit. You can browse visually, upload images as inspiration for similar items, and refine results conversationally until you land on the right option.\n\nIt’s also much easier to compare. Products are presented side by side with key details like price, reviews, and features, so you can quickly evaluate your options without jumping between sites.\n\nUnder the hood, we’ve improved speed, relevance, and product coverage—so results are more up-to-date and more useful. That means less searching, fewer tabs, and faster decisions.\n\nFor users, this turns shopping from a fragmented, time-consuming process into a single, seamless experience. For merchants, it brings higher-intent shoppers who are closer to making a decision.\n\nThese updates are rolling out to all ChatGPT free, Go, Plus, and Pro users this week, with more to come as we continue to invest in product discovery with ChatGPT.\n\n## Before shopping improvements\n\n![shirt-input](https://images.ctfassets.net/kftzwdyauwt9/72knoyXV7nOy5lsp8Cx4DU/6f833e69cd8c416cde495c348b3011bc/shirt-input.png?w=640&q=90&fm=webp \"shirt-input\")\n\nHelp me find short sleeve button downs like this one\n\nThat shirt has a great vibe—short sleeve button-down (often called a camp shirt or short-sleeve oxford) with a soft fabric and a subtle floral/mini-print. If you want more like it, here are some solid directions and brands to check out:\n\n#### 🔎 What to look for\n\n- **Fabric:** Cotton, linen, or cotton-linen blends (breathable + slightly textured)\n- **Fit:** Relaxed or “standard” fit (not too slim)\n- **Collar:** Camp collar (more casual) or regular button-down like yours\n- **Prints:** Micro florals, ditsy prints, or washed patterns (not too loud)\n\n---\n\n#### 👍 Brands that nail this style\n\n- **Bonobos**  \n\tGreat fit options (slim/standard) and lots of subtle prints like yours.\n- **J.Crew** Look for their “Secret Wash” or linen shirts—often have similar small-scale patterns.\n- **Taylor Stitch** Higher quality, slightly rugged versions of this style.\n- **Marine Layer**  \n\tSuper soft fabrics and relaxed California vibe—very similar feel.\n- **Faherty**  \n\tA bit pricier, but excellent prints and comfort.\n- **Uniqlo**  \n\tBudget-friendly, simpler versions if you want something clean and easy.\n- **Outerknown**  \n\tGreat if you like that laid-back but polished look.\n\n---\n\n#### 🔥 Style tip based on your pic\n\nThat pink + white micro print works really well—flattering and summery. You could expand with:\n\n- Soft blues or sage green prints\n- Off-white with subtle patterns\n- Linen versions for warmer weather\n\n---\n\nIf you want, I can pull **specific shirts you can buy right now** (budget, mid-range, or premium).\n\n## After shopping improvements\n\n![shirt-input](https://images.ctfassets.net/kftzwdyauwt9/72knoyXV7nOy5lsp8Cx4DU/6f833e69cd8c416cde495c348b3011bc/shirt-input.png?w=640&q=90&fm=webp \"shirt-input\")\n\nHelp me find short sleeve button downs like this one\n\nYou’re basically wearing a **soft floral short-sleeve button-down with a relaxed fit + slightly washed color palette** —leans a little “California casual / vacation-but-not-loud.” I pulled options that match that exact vibe (not loud Hawaiian tourist shirts, more wearable everyday versions).\n\n---\n\n#### 🌸 Closest match to your vibe (muted floral, wearable everyday)\n\n![resort-shirts](https://images.ctfassets.net/kftzwdyauwt9/2RcTvt9PBcluqjbcrtfFgr/8770da04ed66bdb7b6ce64bcf161d5ba/resort-shirts.png?w=1200&q=90&fm=webp \"resort-shirts\")\n\nThese are your lane:\n\n- **Soft color base + small floral print** (like yours)\n- Not overly saturated\n- Easy to wear with jeans, chinos, or shorts\n- Slightly elevated vs beachy\n\n👉 If you want the closest upgrade to what you’re wearing:  \n**Abercrombie + Bonobos** are the safest bets.\n\n---\n\n#### 🌴 Slightly bolder / more “weekend” versions\n\n![resort-shirts-bolder](https://images.ctfassets.net/kftzwdyauwt9/426pZq4AihlnA5AsLzTJMq/f6c8f971bd838f321c0114d6dabd9329/resort-shirts-bolder.png?w=1200&q=90&fm=webp \"resort-shirts-bolder\")\n\nSame category, just:\n\n- Bigger prints\n- More contrast\n- Feels more vacation / dinner / drinks\n\n---\n\n#### 💸 Budget-friendly options (Target / Walmart tier)\n\n![resort-shirts-budget](https://images.ctfassets.net/kftzwdyauwt9/1S4jFuQjmBba6qbCyLbFJS/50ee539b0bd2eaf8cc3de2adb55a91cb/resort-shirts-budget.png?w=1200&q=90&fm=webp \"resort-shirts-budget\")\n\nGood if you want multiples:\n\n- Lightweight, breathable\n- Less premium fabric but solid rotation pieces\n- Easy to experiment with colors\n\n---\n\n#### 🧵 Nicer fabric / elevated feel (if you want to level it up)\n\n![resort-shirts-nicer](https://images.ctfassets.net/kftzwdyauwt9/6vceBw2zmEgzZGRvmOEE8s/a4395409334b8f37bed4c3a2be98e787/resort-shirts-nicer.png?w=1200&q=90&fm=webp \"resort-shirts-nicer\")\n\nWhat you get here:\n\n- Linen or linen-blend (breathes way better)\n- Softer drape (less stiff than your current shirt)\n- Feels more “intentional outfit” vs casual throw-on\n\n---\n\n#### 📊 Quick comparison (so you can decide fast)\n\n| Attribute | **Abercrombie Resort Shirt** | **Bonobos Riviera Linen Shirt** | **Club Room Linen Shirt** | **Nordstrom Leaf Print Shirt** | **Faherty Breeze Shirt** |\n| --- | --- | --- | --- | --- | --- |\n| Fabric | Linen blend | Linen | 100% linen | Linen | Premium cotton/linen blend |\n| Print style | Subtle floral | Refined floral | Classic floral | Leaf/organic | Minimal pattern |\n| Fit vibe | Relaxed | Tailored-relaxed | Regular | Regular | Relaxed |\n| Best use | Everyday go-to | Dressier casual | Cheap rotation | Subtle alt | Premium comfort |\n\n#### 🧠 My honest take for you\n\n- **Buy 1:** Abercrombie → your new default\n- **Add 1:** Bonobos *or* Faherty → for when you want to feel sharper\n- **Optional:** Grab a cheap Club Room to experiment with color\n\nThat gives you a **tight 2–3 shirt system** that all work with the same jeans/pants.\n\n## The foundation for AI-native commerce\n\nTo power this shopping experience, we’re extending ACP to be the connective layer between merchants and users throughout discovery.\n\nThrough ACP, merchants share product feeds and promotions so their catalogs are fully represented in ChatGPT. We support multiple delivery paths, including through third-party providers like Salesforce and Stripe, so merchants can participate with the systems they already use. Over time, ACP will serve as a foundation for broader AI-native commerce experiences, including personalization, local availability, and ETAs.\n\nAlready, leading retailers including Target, Sephora, Nordstrom, Lowe’s, Best Buy, The Home Depot, and Wayfair have integrated into ACP for discovery.\n\nFor merchants on Shopify, product data is already integrated into ChatGPT through Shopify Catalog, helping products appear more accurately and completely in relevant user conversations. No additional work is required from individual merchants.\n\n> \"Millions of Shopify merchants are open for business in ChatGPT. When buyers look for products, the Shopify Catalog offers the most relevant options from the brands that people love. They can complete purchases on the merchant's online store through an in-app browser, so everything happens seamlessly, with the merchant's brand front and center. This is AI shopping at scale.\"\n\n— Mani Fazeli, VP, Product at Shopify\n\n## Connecting ChatGPT users and merchants\n\nOur North star is providing the best experience for both consumers and merchants. The best consumer experiences are powered by deep partnership with merchants. To build these deep partnerships, we want to offer merchants options for how they convert consumers. We’ve found that the initial version of Instant Checkout did not offer the level of flexibility that we aspire to provide, so we’re allowing merchants to use their own checkout experiences while we focus our efforts on product discovery.\n\nMerchants interested in experimenting with deeper integrations and native experiences on ChatGPT continue to have the option to develop ChatGPT apps. Today, we are excited to share that Walmart is introducing an in-ChatGPT app experience that takes users from discovery in ChatGPT into a tailored Walmart environment that supports account linking, loyalty and Walmart payments. This new experience is now available in web browsers, with app access in iOS and Android to follow shortly.\n\n> “By partnering closely with OpenAI, we’ve been able to learn together as we move quickly to shape what agentic commerce can become. Today’s launch brings Walmart directly into the ChatGPT experience, combining leading conversational AI with the decades of retail expertise we’ve built serving customers.”\n\n— Daniel Danker, EVP, AI Acceleration, Product and Design at Walmart\n\n## Building for the future of shopping\n\nAs with other parts of ChatGPT, we’re building iteratively. We’re learning from early launches, incorporating feedback from users and merchants, and continuing to improve the experience over time. These updates reflect our focus on where ChatGPT can add the most value in shopping today. We’re grateful to the partners building with us, and we look forward to sharing more as this work evolves.",
+          "parserName": "defuddle",
+          "parseStatus": "content-enriched",
           "tags": [
             "launch",
             "release",
-            "ecosystem"
-          ]
+            "ecosystem",
+            "sdk"
+          ],
+          "imageUrl": null
         },
-        "dedupe_key": "625785a3d5f593f27a364382256cc02407505ebf",
+        "dedupe_key": "49a9730ea52b0ee77164492b60123d7643c7d6ad",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-google-ai-blog-rss-fa8ab9434e",
         "source_id": "source-ac035067e139",
-        "run_id": "run-9ec89b8c5468",
+        "run_id": "run-4a9e03f67ef4",
         "title": "Bringing the power of Personal Intelligence to more people",
         "url": "https://blog.google/products-and-platforms/products/search/personal-intelligence-expansion/",
         "content_type": "article",
@@ -194,16 +198,17 @@
           "tags": [
             "analysis",
             "research"
-          ]
+          ],
+          "imageUrl": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Header_gl7r1il.max-600x600.format-webp.webp"
         },
         "dedupe_key": "fa8ab9434e6026bbc7937295e6ec6fc1617a3d50",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-google-ai-blog-rss-0d93ef9037",
         "source_id": "source-ac035067e139",
-        "run_id": "run-9ec89b8c5468",
+        "run_id": "run-4a9e03f67ef4",
         "title": "Our latest investment in open source security for the AI era",
         "url": "https://blog.google/innovation-and-ai/technology/safety-security/ai-powered-open-source-security/",
         "content_type": "article",
@@ -220,16 +225,17 @@
           "tags": [
             "analysis",
             "research"
-          ]
+          ],
+          "imageUrl": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/25367___BRS___Aspen_Security_Fo.max-600x600.format-webp_J9uPoFt.webp"
         },
         "dedupe_key": "0d93ef9037ae092a67e3e864634d5a3fbbe946e3",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-google-ai-blog-rss-dbf82fe6e6",
         "source_id": "source-ac035067e139",
-        "run_id": "run-9ec89b8c5468",
+        "run_id": "run-4a9e03f67ef4",
         "title": "How AI is helping improve heart health in rural Australia",
         "url": "https://blog.google/innovation-and-ai/technology/health/google-ai-heart-health-australia/",
         "content_type": "article",
@@ -246,16 +252,17 @@
           "tags": [
             "analysis",
             "research"
-          ]
+          ],
+          "imageUrl": "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/AIHealth_v2_2096x1182_02.max-600x600.format-webp.webp"
         },
         "dedupe_key": "dbf82fe6e6487afbc99053ffa0947cdafb2e2c2f",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-github-releases-openai-node-15f01c0445",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-fa891440b515",
+        "run_id": "run-db54e99c2bd7",
         "title": "v6.32.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.32.0",
         "content_type": "repo",
@@ -273,16 +280,17 @@
             "repo",
             "release",
             "api"
-          ]
+          ],
+          "imageUrl": null
         },
         "dedupe_key": "15f01c0445bc6c747d0e51364ffcad4b720fd1d2",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-github-releases-openai-node-76b1f95215",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-fa891440b515",
+        "run_id": "run-db54e99c2bd7",
         "title": "v6.31.0",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.31.0",
         "content_type": "repo",
@@ -300,16 +308,17 @@
             "repo",
             "release",
             "api"
-          ]
+          ],
+          "imageUrl": null
         },
         "dedupe_key": "76b1f95215a3c4ae7b82b977d2babfbc2df40a27",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "live-github-releases-openai-node-dba46003c8",
         "source_id": "source-df17efc53a21",
-        "run_id": "run-fa891440b515",
+        "run_id": "run-db54e99c2bd7",
         "title": "v6.30.1",
         "url": "https://github.com/openai/openai-node/releases/tag/v6.30.1",
         "content_type": "repo",
@@ -327,55 +336,56 @@
             "repo",
             "release",
             "api"
-          ]
+          ],
+          "imageUrl": null
         },
         "dedupe_key": "dba46003c87cebe54b7a0dd26dfdff54a0613eaf",
         "ingest_status": "parsed",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       }
     ],
     "item_classifications": [
       {
-        "id": "classification-e64f411a5701",
-        "item_id": "live-openai-news-rss-acec20302c",
+        "id": "classification-d1c35684c6e4",
+        "item_id": "live-openai-news-rss-5aac17e98e",
         "category": "analysis",
         "importance_score": 95,
         "novelty_score": 72,
         "target_surface": "brief",
-        "reason": "live fetch classification for Creating with Sora Safely",
+        "reason": "live fetch classification for Helping developers build safer AI experiences for teens",
         "duplicate_of": null,
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "classification-b68aed12ddd3",
-        "item_id": "live-openai-news-rss-fd3208099b",
+        "id": "classification-cc49f4ba84fd",
+        "item_id": "live-openai-news-rss-508e5e5933",
         "category": "analysis",
         "importance_score": 95,
         "novelty_score": 72,
         "target_surface": "brief",
-        "reason": "live fetch classification for How we monitor internal coding agents for misalignment",
+        "reason": "live fetch classification for Update on the OpenAI Foundation",
         "duplicate_of": null,
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
-        "id": "classification-69769e3805c1",
-        "item_id": "live-openai-news-rss-625785a3d5",
-        "category": "analysis",
-        "importance_score": 95,
+        "id": "classification-19f12dd6dc4c",
+        "item_id": "live-openai-news-rss-49a9730ea5",
+        "category": "sdk",
+        "importance_score": 92,
         "novelty_score": 72,
-        "target_surface": "brief",
-        "reason": "live fetch classification for OpenAI to acquire Astral",
+        "target_surface": "both",
+        "reason": "dual-surface routing needs operator confirmation",
         "duplicate_of": null,
-        "confidence": 0.95,
+        "confidence": 0.92,
         "policy_flags": [],
-        "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "exception_reason": "dual-surface routing needs operator confirmation",
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-e672cab43078",
@@ -389,7 +399,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-a7fdbf3610ee",
@@ -403,7 +413,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-7bed1021f9d7",
@@ -417,7 +427,7 @@
         "confidence": 0.95,
         "policy_flags": [],
         "exception_reason": null,
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-18420467136c",
@@ -431,7 +441,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-5b6f42a123b9",
@@ -445,7 +455,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       },
       {
         "id": "classification-4d9901b0b3d7",
@@ -459,7 +469,7 @@
         "confidence": 0.92,
         "policy_flags": [],
         "exception_reason": "dual-surface routing needs operator confirmation",
-        "created_at": "2026-03-24T10:31:27.657Z"
+        "created_at": "2026-03-24T22:06:05.426Z"
       }
     ]
   },
@@ -503,66 +513,66 @@
     ],
     "ingestRuns": [
       {
-        "id": "run-view-82d3c6dd4f77",
+        "id": "run-view-01374b819e61",
         "sourceName": "OpenAI News",
         "runStatus": "drafted",
-        "startedAt": "2026-03-24T10:31:27.657Z",
-        "finishedAt": "2026-03-24T10:31:27.657Z",
+        "startedAt": "2026-03-24T22:06:05.426Z",
+        "finishedAt": "2026-03-24T22:06:05.426Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-9ec89b8c5468",
+        "id": "run-view-4a9e03f67ef4",
         "sourceName": "Google AI Blog",
         "runStatus": "drafted",
-        "startedAt": "2026-03-24T10:31:27.657Z",
-        "finishedAt": "2026-03-24T10:31:27.657Z",
+        "startedAt": "2026-03-24T22:06:05.426Z",
+        "finishedAt": "2026-03-24T22:06:05.426Z",
         "itemCount": 3,
         "errorMessage": null
       },
       {
-        "id": "run-view-fa891440b515",
+        "id": "run-view-db54e99c2bd7",
         "sourceName": "GitHub Releases",
         "runStatus": "review",
-        "startedAt": "2026-03-24T10:31:27.657Z",
-        "finishedAt": "2026-03-24T10:31:27.657Z",
+        "startedAt": "2026-03-24T22:06:05.426Z",
+        "finishedAt": "2026-03-24T22:06:05.426Z",
         "itemCount": 3,
         "errorMessage": null
       }
     ],
     "inboxItems": [
       {
-        "id": "live-openai-news-rss-acec20302c",
+        "id": "live-openai-news-rss-5aac17e98e",
         "sourceName": "OpenAI News",
         "sourceTier": "auto-safe",
-        "title": "Creating with Sora Safely",
+        "title": "Helping developers build safer AI experiences for teens",
         "contentType": "article",
         "stage": "drafted",
         "targetSurface": "brief",
         "confidence": 0.95,
-        "parsedSummary": "To address the novel safety challenges posed by a state-of-the-art video model as well as a new social creation platform, we’ve built Sora 2 and the Sora app with safety at the fo..."
+        "parsedSummary": "OpenAI releases prompt-based teen safety policies for developers using gpt-oss-safeguard, helping moderate age-specific risks in AI systems."
       },
       {
-        "id": "live-openai-news-rss-fd3208099b",
+        "id": "live-openai-news-rss-508e5e5933",
         "sourceName": "OpenAI News",
         "sourceTier": "auto-safe",
-        "title": "How we monitor internal coding agents for misalignment",
+        "title": "Update on the OpenAI Foundation",
         "contentType": "article",
         "stage": "drafted",
         "targetSurface": "brief",
         "confidence": 0.95,
-        "parsedSummary": "How OpenAI uses chain-of-thought monitoring to study misalignment in internal coding agents—analyzing real-world deployments to detect risks and strengthen AI safety safeguards."
+        "parsedSummary": "The OpenAI Foundation announces plans to invest at least $1 billion in curing diseases, economic opportunity, AI resilience, and community programs."
       },
       {
-        "id": "live-openai-news-rss-625785a3d5",
+        "id": "live-openai-news-rss-49a9730ea5",
         "sourceName": "OpenAI News",
         "sourceTier": "auto-safe",
-        "title": "OpenAI to acquire Astral",
+        "title": "Powering product discovery in ChatGPT",
         "contentType": "article",
-        "stage": "drafted",
-        "targetSurface": "brief",
-        "confidence": 0.95,
-        "parsedSummary": "Accelerates Codex growth to power the next generation of Python developer tools"
+        "stage": "classified",
+        "targetSurface": "both",
+        "confidence": 0.92,
+        "parsedSummary": "ChatGPT introduces richer, visually immersive shopping powered by the Agentic Commerce Protocol, enabling product discovery, side-by-side comparisons, and merchant integration. March 24, 2026 Product Launching richer, more visually immersi..."
       },
       {
         "id": "live-google-ai-blog-rss-fa8ab9434e",
@@ -633,6 +643,24 @@
     ],
     "reviewItems": [
       {
+        "id": "review-live-openai-news-rss-49a9730ea5",
+        "sourceItemId": "live-openai-news-rss-49a9730ea5",
+        "sourceLabel": "OpenAI News",
+        "sourceHref": "https://example.com/live-openai-news-rss-49a9730ea5",
+        "sourceExcerpt": "ChatGPT introduces richer, visually immersive shopping powered by the Agentic Commerce Protocol, enabling product discovery, side-by-side comparisons, and merchant integration. March 24, 2026 Product Launching richer, more visually immersi...",
+        "parsedSummary": "ChatGPT introduces richer, visually immersive shopping powered by the Agentic Commerce Protocol, enabling product discovery, side-by-side comparisons, and merchant integration. March 24, 2026 Product Launching richer, more visually immersi...",
+        "keyPoints": [
+          "target surface both",
+          "next queue review",
+          "source tier auto-safe"
+        ],
+        "targetSurface": "brief",
+        "reviewReason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "previewTitle": "Powering product discovery in ChatGPT",
+        "previewSummary": "ChatGPT introduces richer, visually immersive shopping powered by the Agentic Commerce Protocol, enabling product discovery, side-by-side comparisons, and merchant integration. March 24, 2026 Product Launching richer, more visually immersi..."
+      },
+      {
         "id": "review-live-github-releases-openai-node-15f01c0445",
         "sourceItemId": "live-github-releases-openai-node-15f01c0445",
         "sourceLabel": "GitHub Releases",
@@ -689,8 +717,8 @@
     ],
     "publishQueueItems": [
       {
-        "id": "publish-live-openai-news-rss-acec20302c",
-        "title": "Creating with Sora Safely",
+        "id": "publish-live-openai-news-rss-5aac17e98e",
+        "title": "Helping developers build safer AI experiences for teens",
         "targetType": "brief",
         "queueStatus": "scheduled",
         "nextAction": "Keep scheduled slot unless source links or title change.",
@@ -698,17 +726,8 @@
         "scheduledFor": "2026-03-22T18:30:00.000Z"
       },
       {
-        "id": "publish-live-openai-news-rss-fd3208099b",
-        "title": "How we monitor internal coding agents for misalignment",
-        "targetType": "brief",
-        "queueStatus": "scheduled",
-        "nextAction": "Keep scheduled slot unless source links or title change.",
-        "sourceLabel": "OpenAI News",
-        "scheduledFor": "2026-03-22T18:30:00.000Z"
-      },
-      {
-        "id": "publish-live-openai-news-rss-625785a3d5",
-        "title": "OpenAI to acquire Astral",
+        "id": "publish-live-openai-news-rss-508e5e5933",
+        "title": "Update on the OpenAI Foundation",
         "targetType": "brief",
         "queueStatus": "scheduled",
         "nextAction": "Keep scheduled slot unless source links or title change.",
@@ -744,6 +763,16 @@
       }
     ],
     "exceptionQueueItems": [
+      {
+        "id": "exception-live-openai-news-rss-49a9730ea5",
+        "title": "Powering product discovery in ChatGPT",
+        "targetType": "brief",
+        "currentStage": "classified",
+        "reason": "dual-surface routing needs operator confirmation",
+        "confidence": 0.92,
+        "sourceLabel": "OpenAI News",
+        "nextAction": "Confirm the final target surface before queueing this item."
+      },
       {
         "id": "exception-live-github-releases-openai-node-15f01c0445",
         "title": "v6.32.0",

@@ -14,6 +14,10 @@ export function presentDiscoverCard(item: DiscoverItem): AdminCardProps {
     category: item.category,
     metadata: [
       {
+        label: "Review",
+        value: item.reviewStatus,
+      },
+      {
         label: "Tags",
         value: item.tags.slice(0, 3).join(", ") || "없음",
       },

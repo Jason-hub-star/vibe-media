@@ -70,6 +70,7 @@
 - category는 `docs/ref/DISCOVERY-TAXONOMY.md`를 기준으로 관리한다.
 - action link는 복수 허용이며 빠른 이동과 다운로드를 지원한다.
 - briefs로 승격되기 전 단계의 리소스도 `discover_items`에서 관리할 수 있어야 한다.
+- 공개 `/radar` 페이지는 `review_status = 'approved' AND published_at IS NOT NULL`인 항목만 노출한다 (`isPublished` 가드).
 
 ## Showcase Notes
 - showcase는 `target_surface` 자동 분류 결과가 아니다.
