@@ -1,0 +1,22 @@
+{
+  "name": "@vibehub/media-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "sharp": "^0.34.5"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": ">=2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

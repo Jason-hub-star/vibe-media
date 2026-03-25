@@ -4,7 +4,8 @@ const nextConfig = {
     "@vibehub/backend",
     "@vibehub/content-contracts",
     "@vibehub/design-tokens",
-    "@vibehub/ui-patterns"
+    "@vibehub/ui-patterns",
+    "@vibehub/media-engine"
   ]
 };
 

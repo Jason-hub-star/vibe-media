@@ -15,7 +15,8 @@
     "paths": {
       "@vibehub/content-contracts": ["packages/content-contracts/src/index.ts"],
       "@vibehub/design-tokens": ["packages/design-tokens/src/index.ts"],
-      "@vibehub/ui-patterns": ["packages/ui-patterns/src/index.ts"]
+      "@vibehub/ui-patterns": ["packages/ui-patterns/src/index.ts"],
+      "@vibehub/media-engine": ["packages/media-engine/src/index.ts"]
     }
   }
 }
