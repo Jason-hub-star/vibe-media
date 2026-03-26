@@ -11,3 +11,6 @@ test-results
 .env.*.local
 *.tsbuildinfo
 supabase/.temp
+
+# media-engine output
+output/
