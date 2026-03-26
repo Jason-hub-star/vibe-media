@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
+import { SITE_URL } from "@/lib/constants";
 import { EmptyState } from "@/components/EmptyState";
+
+export const metadata: Metadata = {
+  title: "Radar — AI Discovery Hub",
+  description:
+    "Track emerging AI tools, research, and trends across 24 categories.",
+  alternates: { canonical: `${SITE_URL}/radar` }
+};
 import { PageFrame } from "@/components/PageFrame";
 import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";

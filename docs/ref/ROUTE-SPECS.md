@@ -28,8 +28,27 @@
 
 ### `/newsletter`
 - 목적: 구독 CTA
-- 핵심 섹션: form, hero placeholder
+- 핵심 섹션: form, hero placeholder, social proof CTA
 - 현재 상태: client-side success/error copy 구현
+- 메타데이터: title "Newsletter", description "Get weekly AI brief digests..."
+
+### `/privacy`
+- 목적: 개인정보처리방침 (뉴스레터 이메일 수집 법적 필수)
+- 핵심 섹션: 6개 조항 (수집정보, 사용목적, 공유, 쿠키, 보존, 연락처)
+
+### `/terms`
+- 목적: 이용약관
+- 핵심 섹션: 7개 조항 (동의, 서비스 설명, 지적재산권, 사용자 행위, 면책, 변경, 연락처)
+
+### `/feed.xml`
+- 목적: RSS 2.0 피드 (brief 전체)
+- 구현: Route Handler, 1시간 캐시
+
+## SEO Infrastructure
+- `robots.ts`: Next.js Metadata API, sitemap 경로 포함
+- `sitemap.ts`: 정적 7개 + 동적 brief slug 페이지
+- JSON-LD: Organization (root), NewsArticle + BreadcrumbList (brief detail)
+- GA4: `NEXT_PUBLIC_GA_ID` 환경변수 기반, 미설정 시 비렌더링
 
 ## Admin
 ### `/admin`

@@ -257,6 +257,16 @@ docs/design/
 - 전체 `npm run test && npm run build && npm run test:e2e`
 - 변경 요약 작성
 
+### M7: SEO & 상업화 기반 (2026-03-26) ✅
+- favicon.svg, robots.ts, sitemap.ts, RSS feed (`/feed.xml` route handler)
+- per-page metadata (6개 공개 페이지 + brief detail `generateMetadata`)
+- JSON-LD 3종 (Organization, NewsArticle, BreadcrumbList)
+- Footer 5-section 확장 (footer-grid, footer-heading, footer-links, footer-brand, footer-bottom)
+- share-bar CSS (share-bar, share-label, share-btn)
+- newsletter-proof CSS
+- GA4 Analytics 컴포넌트, Privacy/Terms 페이지
+- `SITE_URL` 중앙화 (`lib/constants.ts`), CSS 토큰 `var()` 준수
+
 ---
 
 ## 7. 참고 프로젝트 (패턴만 가져올 것)

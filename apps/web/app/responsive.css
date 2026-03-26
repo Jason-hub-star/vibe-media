@@ -120,9 +120,9 @@
   }
 
   /* ── Footer wrapping ── */
-  .site-footer .row-between {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 
   /* ── Touch target minimums ── */

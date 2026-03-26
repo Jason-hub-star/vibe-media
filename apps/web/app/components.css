@@ -201,6 +201,12 @@
   gap: 1rem;
 }
 
+.newsletter-proof {
+  font-size: var(--type-caption);
+  color: rgba(var(--color-cream-rgb), 0.5);
+  margin: 0;
+}
+
 .input {
   width: 100%;
   border: 1px solid rgba(var(--color-cream-rgb), 0.16);

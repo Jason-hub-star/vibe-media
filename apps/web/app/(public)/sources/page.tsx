@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
+
+import { SITE_URL } from "@/lib/constants";
 import { PageFrame } from "@/components/PageFrame";
 import { EmptyState } from "@/components/EmptyState";
+
+export const metadata: Metadata = {
+  title: "Source Registry",
+  description:
+    "30+ verified sources powering VibeHub's AI brief pipeline.",
+  alternates: { canonical: `${SITE_URL}/sources` }
+};
 import { SectionBlock } from "@/components/SectionBlock";
 import { listSources } from "@/features/sources/use-case/list-sources";
 import { SourceRow } from "@/features/sources/view/SourceRow";

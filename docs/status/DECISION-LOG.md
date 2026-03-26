@@ -4,6 +4,73 @@
 
 ## Resolved
 
+### 2026-03-26 — 로컬 LLM을 qwen3.5-9b로 교체
+- 상태: resolved
+- 결정:
+  - 로컬 LLM: `mistral-small3.1` → `qwen3.5-9b` (ollama)
+  - Claude 측: `claude-sonnet-4-6` 유지 (변경 없음)
+  - 하이브리드 모드 유지: runtime(chat/router/search/memory) = `qwen3.5-9b`, stage(classifier/brief-draft/discover-draft/critic) = `claude-sonnet-4-6`
+- 근거: 운영자가 로컬 모델을 qwen3.5-9b로 전환함
+- 영향: ARCHITECTURE.md, TELEGRAM-ORCHESTRATOR-CONTRACT.md, PROJECT-STATUS.md 동기화 완료. shadow trial 코드의 모델명은 다음 trial 실행 시 업데이트 예정. ORCHESTRATION-TRIAL-LOG.md의 과거 기록은 당시 실제 사용 모델명 유지
+
+### 2026-03-26 — NotebookLM CLI 채택 + Threads API 대기
+- 상태: resolved (NotebookLM), blocked (Threads)
+- 결정:
+  - NotebookLM: `notebooklm-mcp-cli` CLI 모드 채택 (MCP 모드는 향후 Claude Code 연동 시 전환)
+  - 비교 탈락: PleasePrompto/notebooklm-mcp (팟캐스트 기능 없음, Q&A 전용), Google Cloud Podcast API (Enterprise allowlist 접근 불가), AutoContent API (EUR 24+/월, 불필요)
+  - Python 3.12 설치 필요 (현재 3.9.6 → 3.10+ 필요)
+  - Threads API: Instagram 계정 곧 생성 예정 → Meta Developer 앱 생성은 계정 후 진행
+- 근거: notebooklm-mcp-cli가 유일하게 2인 대화 팟캐스트 + 무료 + Claude Code MCP 지원. 3,000+ stars, 활발한 유지보수. Google 공식 API는 allowlist 해제 시 전환 예정 (분기별 체크)
+
+### 2026-03-26 — Full Cycle 검증 + FK 버그 수정 + 상태 리셋
+- 상태: resolved
+- 결정:
+  - supabase-ingest-sync.ts의 upsertRuns/upsertItems/upsertClassifications/upsertRunAttempts에 orphan source_id 필터 추가 — stale 스냅샷의 고아 레코드가 FK 위반을 일으키던 연쇄 버그 수정
+  - supabase-editorial-sync.ts의 buildEditorialRows에도 동일 필터 적용
+  - draft+approved 비정상 5건을 draft+pending으로 리셋
+  - GPT-5.4 mini brief에 `[REFERENCE]` 태그 부여 — few-shot 풀의 첫 레퍼런스
+- 근거: 23개 소스 확장 후 첫 pipeline:daily 실행에서 FK 위반 연쇄 발생. 로컬 스냅샷에 이전 하드코딩 소스의 stale 데이터가 남아있어 DB에 없는 source_id 참조. draft+approved 5건은 이전 sync에서 상태 꼬임
+
+### 2026-03-26 — Brief Quality Score 0~100 확장
+- 상태: resolved
+- 결정:
+  - `brief-quality-check.ts`의 판정을 pass/fail → 0~100 점수 + A/B/C/D/F 등급으로 확장
+  - 기존 6개 게이트(50점) 유지 + 5개 확장 점수(50점) 추가: titleAppeal, summaryStandalone, structureScore, sourceDiversity, readability
+  - 등급 기준: A(≥85) B(≥70) C(≥55) D(≥40) F(<40)
+  - `passed`/`failures` 필드 유지 → auto-publish 하위호환
+- 근거: 기존 pass/fail은 "하한선"만 걸러내고 "품질 상향" 추적이 불가. 연속 점수가 있어야 소스별 품질 상관분석, 레퍼런스 brief 자동 선정, 프롬프트 튜닝 효과 측정이 가능
+- 검증: 레퍼런스급 brief 90점(A), 부실 brief 60~62점(C) — 등급 차이 명확
+
+### 2026-03-26 — Source Registry를 DB SSOT으로 전환
+- 상태: resolved
+- 결정:
+  - `live-source-registry.ts`가 Supabase `public.sources` 테이블을 직접 읽도록 변경
+  - `loadSourcesFromDb()` 함수 추가 — DB 연결 실패 시 하드코딩 3개 fallback 유지
+  - `sources` 테이블에 `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo` 컬럼 추가 (마이그레이션 적용)
+  - 30개 소스에 feed_url 매핑 데이터 채움
+  - `source_tier` 타입을 `auto-safe | render-required | manual-review-required`로 확장
+- 근거: 어드민 UI에 30개 소스가 표시되지만 실제 live-fetch는 하드코딩 3개만 수집. DB와 코드가 분리되어 어드민에서 소스 on/off가 작동하지 않았음
+- 다음 단계: 30개 소스의 feed_url이 실제로 유효한지 검증 (일부는 추정 URL)
+
+### 2026-03-26 — Channel Publish Pipeline v2: 전면 재설계
+- 상태: resolved (설계 완료, 구현 전 검증 예정)
+- 결정:
+  - **TTS 교체**: MimikaStudio → NotebookLM 2인 대화 팟캐스트(주 경로) + Qwen3-TTS 직접 서버(백업)
+  - **YouTube 전환**: Data API v3 자동 업로드 → 로컬 mp4 + metadata.json 생성 → 운영자 직접 업로드
+  - **Threads 추가**: Meta 공식 Publishing API를 최우선 텍스트 채널로 채택 (실현성 9/10, 250건/일)
+  - **크로스 프로모션**: 2-pass 발행(Pass 1: 본문, Pass 2: URL 상호 주입) + YouTube 비동기 3rd pass
+  - **피드백 루프**: YouTube Analytics + GA4 성과 수집 → 주간 insight → 프롬프트/템플릿 파라미터 조정 (자동 제안 + 운영자 승인)
+  - **채널 우선순위**: Threads(P1) → NotebookLM(P2) → Remotion(P3) → Ghost(P4) → 팟캐스트 RSS(P5) → 크로스 프로모션(P6) → 티스토리(P7) → Analytics(P8~P9)
+- 근거 (리서치 기반, 2026-03-26 조사):
+  - MimikaStudio: Alpha 단계, 단독 개발자(bus factor=1), macOS only, Docker 불가, API 스키마 비공개, 라이선스 불일치(README BSL-1.1 vs LICENSE GPLv3). 실현성 5/10
+  - YouTube OAuth 검증: 공식 4~6주, 실제 2~6개월. 미검증 시 private 잠금. 2026.1 AI 콘텐츠 대량 단속(47억 조회 채널 삭제)
+  - Claude Cowork 마우스 조작: 매 스텝 스크린샷+비전 → 느리고 불안정 (3/10). OS 파일 다이얼로그 특히 취약
+  - NotebookLM MCP CLI: 3,000+ stars, MCP 연동 지원, 2인 대화 품질 우수. 단 비공식 브라우저 자동화
+  - Qwen3-TTS: 한국어 WER 1.741 (오픈소스 최상위), Linux/Docker 가능
+  - Threads API: 2024.6 출시, 2025.7 대규모 확장. 텍스트+이미지+비디오+캐러셀+GIF+Poll
+  - Remotion v4.0.438: 성숙, render-spawn.ts 이미 존재. Media Parser deprecated → Mediabunny 기준
+- 다음 단계: 각 채널 연동 검증 후 P1(Threads)부터 순차 구현
+
 ### 2026-03-25 — Discover Items 공개 노출: approved + published 게이트
 - 상태: resolved
 - 결정:
@@ -494,6 +561,29 @@
 - 기준 문서:
   - `packages/design-tokens/src/index.ts`
   - `docs/status/FRONTEND-HANDOFF.md` §2 (CSS 토큰)
+
+### SEO & 상업화 기반 아키텍처 (2026-03-26)
+- 결정: Next.js Metadata API 기반 SEO 인프라 + RSS route handler + JSON-LD 구조화 데이터
+- 이유:
+  - 경쟁사 분석 결과 Disquiet(CSR)는 SEO 사실상 사망, 요즘IT(SSR+JSON-LD)가 최고 검색 노출
+  - TLDR은 기사별 고유 URL 없어 SEO 자산 축적 불가 — VibeHub는 `/brief/{slug}` 영구 링크로 차별화
+  - RSS feed는 TLDR/Rundown이 미제공 → 차별화 기회
+- 구현:
+  - robots.ts + sitemap.ts (동적 brief slug 포함)
+  - 6개 공개 페이지 고유 metadata + title template (`%s | VibeHub`)
+  - `/brief/[slug]` generateMetadata (OG article, Twitter card, canonical)
+  - JSON-LD 3종: Organization (root), NewsArticle (brief detail), BreadcrumbList (brief detail)
+  - GA4 Analytics (env 기반, `NEXT_PUBLIC_GA_ID` 없으면 비렌더링)
+  - RSS feed (`/feed.xml` route handler)
+  - Footer 5-section (Product/Legal/Connect/Brand + copyright)
+  - /privacy + /terms 법적 페이지
+  - Brief 상세 공유 버튼 (X, LinkedIn, Threads)
+- 미적용 (향후):
+  - Naver Search Advisor 등록 (도메인 확정 후)
+  - 동적 OG 이미지 생성 (opengraph-image.tsx)
+  - Kakao SDK 공유
+  - Cookie consent banner
+- 기준 문서: `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
 
 ## Next Review Order
 1. ~~review / publish mutation 모델 확정~~ done — Server Action 버튼 구현 완료

@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+
+import { SITE_URL } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  title: "VibeHub — Daily AI Briefs",
+  description:
+    "Curated AI news briefs from 30+ global sources, published daily.",
+  alternates: { canonical: SITE_URL }
+};
 
 import { PageFrame } from "@/components/PageFrame";
 import { PlaceholderArt } from "@/components/PlaceholderArt";

@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
+import { SITE_URL } from "@/lib/constants";
 import { PageFrame } from "@/components/PageFrame";
+
+export const metadata: Metadata = {
+  title: "AI Briefs Archive",
+  description:
+    "Browse all published AI briefs with quality scores and source tracking.",
+  alternates: { canonical: `${SITE_URL}/brief` }
+};
 import { SectionBlock } from "@/components/SectionBlock";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { BriefCard } from "@/features/brief/view/BriefCard";

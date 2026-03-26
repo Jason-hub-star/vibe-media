@@ -85,8 +85,25 @@
 - discover items 공개 발행 게이트: done — `isPublished()` 가드로 approved + published만 `/radar` 노출, 중앙 상수 + editorial-guards 패키지 추가
 - brief quality gate CLI 워커 적용: done — `runBriefQualityCheck` 공유 모듈 분리, `review:decision`/`publish:action` 양쪽에 gate 추가, 부실 브리프 9건 리셋
 - discover 자동 발행 통합: done — `daily-auto-publish.md`에 discover 경량 quality check + auto-publish 섹션 추가
+- Source Registry DB 연결: done — `live-source-registry.ts`가 Supabase `sources` 테이블을 SSOT으로 읽도록 변경, 30→23개 활성화 (7개 404/403 비활성), 수집량 9→63건/실행 (7배 증가)
+- Brief Quality Score 확장: done — pass/fail → 0~100 점수 + A/B/C/D/F 등급. 6개 게이트 + 5개 확장 점수(titleAppeal/summaryStandalone/structureScore/sourceDiversity/readability). 레퍼런스 brief 90점(A), 부실 brief 60점(C) 검증 완료
+- Full Cycle 검증 (2026-03-26): done
+  - pipeline:daily: 23개 소스 → 63건 fetch → 191건 로컬 스냅샷 → 19건 Supabase sync (FK 버그 4건 수정: orphan source_id 연쇄 위반)
+  - draft+approved 상태 꼬임 5건 리셋 → draft+pending
+  - 레퍼런스 brief [REFERENCE] 태깅 (GPT-5.4 mini, slug: openai-gpt-5-4-mini-nano-launch)
+  - 자동화 프롬프트 3건 추가/수정: daily-editorial-review(스코어+few-shot), daily-dedup-guard(신규), weekly-source-health(신규)
+  - Supabase 현황: sources 30(23활성) / ingest_runs 57 / ingested_items 19 / brief_posts 19(draft14+review4+published1) / discover_items 8
+- NotebookLM 도구 선정: done — `notebooklm-mcp-cli` (CLI 모드) 채택. PleasePrompto/notebooklm-mcp는 팟캐스트 기능 없음(Q&A 전용), Google 공식 Podcast API는 Enterprise allowlist 접근 불가
+- Threads API 사전 준비: blocked — Instagram 계정 곧 생성 예정, Meta Developer 앱은 계정 생성 후 진행
+- NotebookLM CLI 실동작 검증: done — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 설치 완료. ffmpeg loudnorm 후처리 파이프라인 포함 확정
 - Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
 - radar 카테고리 그룹 UI: done — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
+- Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
+  - MimikaStudio → NotebookLM 2인 대화(주) + Qwen3-TTS(백업)으로 교체
+  - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환
+  - Threads 공식 API 최우선 텍스트 채널로 추가 (9/10 실현성)
+  - 2-pass 크로스 프로모션 + YouTube 비동기 3rd pass 설계
+  - YouTube Analytics + GA4 피드백 루프 설계 (자동 제안 + 운영자 승인 모델)
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
@@ -134,13 +151,13 @@
 - web도 같은 backend use case를 통해 Supabase-first read path를 소비한다
 - public `brief`, `brief/[slug]`, `radar`와 admin `briefs`, `discover`도 이제 Supabase editorial drafts를 읽는다
 - source/tool decision is fixed for v1; orchestration default mode is now fixed to `hybrid`
-- `classifier` shadow trial now has an official 40-sample Sonnet rerun logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- `classifier` shadow trial now has an official 40-sample Sonnet rerun logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `qwen3.5-9b` retained as fallback
 - future Claude-side orchestrator executions are now pinned to `claude-sonnet-4-6`, and the Claude runner smoke test returned `SONNET_OK`
-- `brief draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
-- `discover draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
-- `critic` shadow trial now has an official 25-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `mistral-small3.1` retained as fallback
+- `brief draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `qwen3.5-9b` retained as fallback
+- `discover draft` shadow trial now has an official 20-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `qwen3.5-9b` retained as fallback
+- `critic` shadow trial now has an official 25-sample Sonnet result logged on 2026-03-22, and `claude-sonnet-4-6` is the stage winner with `qwen3.5-9b` retained as fallback
 - `telegram-orchestrator` activation boundary is now stage-scoped, so runtime `chat/router/search/memory` can stay local while stage pointers move independently
-- `telegram-orchestrator` stage pointer 4개가 모두 `claude-sonnet-4-6`로 활성화됐고 runtime `chat/router/search/memory`는 `mistral-small3.1`로 유지된다
+- `telegram-orchestrator` stage pointer 4개가 모두 `claude-sonnet-4-6`로 활성화됐고 runtime `chat/router/search/memory`는 `qwen3.5-9b`로 유지된다
 - 최종 orchestration 기본값은 `hybrid`로 채택됐다
 - admin pipeline UX overhaul (2026-03-22): done
   - sidebar drawer를 Pipeline / Editorial / Registry / Reference 4개 그룹으로 재편
@@ -196,3 +213,9 @@
   - `tools/token-lint.sh` standalone lint script (color/hex/font-size/border-radius 규칙)
   - `.claude/commands/token-lint.md` Claude Code 스킬
   - self-review에 CSS 토큰 준수 점검 단계 통합
+- SEO & 상업화 기반 구축 (2026-03-26): done
+  - Phase 1: favicon.svg, robots.ts, sitemap.ts (동적 brief slug), root metadata 확장 (title template, OG, Twitter, metadataBase)
+  - Phase 2: /brief/[slug] generateMetadata (OG article + Twitter + canonical), 6개 공개 페이지 고유 metadata, JSON-LD 3종 (Organization root, NewsArticle brief detail, BreadcrumbList)
+  - Phase 3: Footer 5-section 확장 (Product/Legal/Connect/Brand), /privacy + /terms 법적 페이지, GA4 Analytics 컴포넌트 (env 기반), RSS feed (/feed.xml route handler)
+  - Phase 4: Brief 상세 공유 버튼 (X/LinkedIn/Threads), Newsletter social proof CTA
+  - SEO 감사 문서: docs/ref/SEO-COMMERCIALIZATION-AUDIT.md (글로벌 7개 + 한국 5개 경쟁사 벤치마크)

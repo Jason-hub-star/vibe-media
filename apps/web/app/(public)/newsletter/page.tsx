@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
+
+import { SITE_URL } from "@/lib/constants";
 import { PageFrame } from "@/components/PageFrame";
+
+export const metadata: Metadata = {
+  title: "Newsletter",
+  description: "Get weekly AI brief digests delivered to your inbox.",
+  alternates: { canonical: `${SITE_URL}/newsletter` }
+};
 import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { NewsletterForm } from "@/features/newsletter/view/NewsletterForm";

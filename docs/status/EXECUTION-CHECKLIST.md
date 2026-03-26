@@ -92,6 +92,7 @@
 - [x] brief 검수 요청 + 예외 재시도 승격 액션
 - [x] brief cover image 파이프라인 (RSS → DB → 프론트)
 - [x] 레퍼런스 브리프 등록 (Quality Check 6/6 기준)
+- [x] SEO 기반 구축 (favicon, robots.ts, sitemap.ts, per-page metadata, JSON-LD 3종, GA4, RSS, 공유 버튼, Footer 확장, Privacy/Terms)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
@@ -111,12 +112,39 @@
 ## P3 — Hardening
 - [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`) — approved 브리프 quality check → scheduled → published 자동 전환
 - [x] auto-publish skip recovery + editorial integrity guard (`publish:repair-state`, `automation:check`, Supabase retry/backoff)
+- [x] Channel Publish Pipeline v2 설계 문서 — `CHANNEL-PUBLISH-PIPELINE.md` 전면 개편
 - [ ] admin 실제 인증/권한 모델 설계
 - [ ] showcase submission/auth flow 설계
 - [ ] observability / failure alert 설계
 - [ ] retry / rollback / blocked 승격 정책 구체화
-- [ ] publish policy와 YouTube 메타데이터 규칙 정교화
 - [ ] 운영 주간 점검 루틴 문서화
+
+## P3 — Pipeline Self-Improvement (Phase A, media-engine 조인 전)
+- [x] A-1: 30개 소스 feed_url 검증 → 23개 활성 / 7개 비활성화 (404/403)
+- [x] A-1: Source Registry DB SSOT 전환 (`loadSourcesFromDb()`) — 수집량 9→63건 (7배)
+- [x] A-2: Brief Quality Score 확장 (pass/fail → 0~100 + A/B/C/D/F) — 레퍼런스 90점 vs 부실 60점 검증
+- [x] A-2: 레퍼런스 brief [REFERENCE] 태깅 (GPT-5.4 mini) — 추가 레퍼런스는 editorial-review 자동화가 A등급 자동 태깅
+- [x] Full Cycle 검증 — FK 버그 4건 수정, draft+approved 5건 리셋, 191건 로컬/19건 Supabase sync 확인
+- [ ] A-3: classifier/draft/critic 프롬프트 구체화 + few-shot 레퍼런스 투입
+- [ ] A-4: brief 간 의미적 유사도 중복 감지 (Gemini embedding)
+- [ ] A-5: 소스→brief 품질 상관분석 + maxItems 자동 조정
+- [ ] A-5: 주간 품질 리포트 → Telegram 발송
+- [ ] 소스 자동 발견 cron (기존 brief source_links 역추적 + HN/GitHub Trending)
+- [ ] 비활성 소스 월 1회 재검증 (사이트 리뉴얼 후 URL 변경 대응)
+- [ ] 소스 자동 비활성화 (3회 연속 실패 → enabled=false)
+
+## P3 — Channel Publish (v2 설계 완료, 검증 후 구현)
+- [ ] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일
+- [~] P2: NotebookLM CLI → 팟캐스트 M4A 생성 — CLI 실동작 검증 완료 (17분 2인대화, loudnorm 후처리 확정). `notebooklm-bridge.ts` 코드 구현 미완
+- [ ] P3a: Gemini 섹션별 이미지 생성 (`gemini-image.ts`, 무료 $0)
+- [ ] P3b: Remotion BriefPodcast Composition + 로컬 저장 (`BriefPodcast.tsx`)
+- [ ] P4: Ghost/WP API 연동 (`ghost-publisher.ts`)
+- [ ] P5: 팟캐스트 메타데이터 + Spotify 직접 업로드 가이드 (`spotify-metadata.ts`)
+- [ ] P6: 크로스 프로모션 2-pass + 3rd pass (`cross-promo-sync.ts`)
+- [ ] P7: 티스토리 Playwright (보조) (`tistory-publisher.ts`)
+- [ ] P8: YouTube Analytics + GA4 피드백 수집기 (`analytics-collector.ts`)
+- [ ] P9: insight-generator 주간 리포트 (`insight-generator.ts`)
+- [ ] Supabase 스키마 확장 (channel_results, cross_promo, channel_metrics)
 
 ## Current Snapshot
 - [x] 공개 사이트 기본 shell
@@ -146,11 +174,15 @@
 - [ ] `/self-review` 커스텀 명령어
 - [x] source/tool 최종 채택
 - [x] orchestration 최종 채택
+- [x] Channel Publish Pipeline v2 설계 문서 (`CHANNEL-PUBLISH-PIPELINE.md`)
 
 ## Recommended Next Sequence
 1. ~~review / publish mutation과 schedule/publish action handler를 닫는다.~~ done
-2. **루트 env 기반 Supabase 연결 end-to-end 검증 유지** — 현재 머신에서는 `.env`/`.env.local`이 없어 `pipeline:daily`가 sync 단계에서 `SUPABASE_DB_URL is required`로 중단된다.
-3. `Defuddle`로 저장된 `contentMarkdown`을 classifier/draft 품질 규칙에 더 직접 반영할지 결정한다.
-4. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
-5. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
-6. observability / rollback / storage cleanup routine을 운영 문서와 함께 닫는다.
+2. ~~Source Registry DB SSOT + Quality Score 확장~~ done (23개 활성, 63건/실행, 0~100 스코어)
+3. **Pipeline Self-Improvement Phase A 나머지** — 레퍼런스 brief 선정(A-2) → 프롬프트 구체화(A-3) → 중복 감지(A-4) → 소스 피드백 루프(A-5) → 소스 자동 발견/비활성화
+4. **Channel Publish Phase B (텍스트 채널 먼저)** — Threads(P1) → Ghost(P4). 텍스트만으로 발행, 성과 데이터 수집 시작
+5. **Channel Publish Phase C (미디어 채널)** — NotebookLM(P2) → Gemini 이미지(P3a) → Remotion(P3b) → 크로스 프로모션(P6) → 피드백 루프(P8~P9)
+6. `Defuddle`로 저장된 `contentMarkdown`을 classifier/draft 품질 규칙에 더 직접 반영할지 결정한다.
+7. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
+8. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
+9. observability / rollback / storage cleanup routine을 운영 문서와 함께 닫는다.

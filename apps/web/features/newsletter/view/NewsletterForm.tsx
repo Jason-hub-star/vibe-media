@@ -32,6 +32,9 @@ export function NewsletterForm() {
       <button className="button-primary" type="submit">
         Join newsletter
       </button>
+      <p className="newsletter-proof">
+        Be among the first to get daily AI briefs delivered free.
+      </p>
       <p className="muted">{presentNewsletterCopy(state)}</p>
     </form>
   );
