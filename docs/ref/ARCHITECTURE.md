@@ -24,7 +24,9 @@
   - `classifier`, `brief draft`, `discover draft`, `critic`: `claude-sonnet-4-6`
 - `packages/media-engine`: 도메인 무관 미디어 엔진 (이미지/텍스트/오디오/영상/스토리지/채널발행)
   - 기존 16개 모듈 구현 완료 (Kie.ai, Gemini, Sharp, Remotion spawn, Supabase Storage)
-  - 채널 발행(tts/publish/image/feedback) 모듈은 설계 완료, 구현 전: `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
+  - 채널 발행 모듈 구현 완료: `publish/` (Threads, Ghost/Tistory 스텁, dispatcher, cross-promo), `tts/` (NotebookLM bridge), `stt/` (Whisper STT, SRT 유틸), `remotion/` (BriefAudiogram), `brand.ts`, `spawn-async.ts`
+  - 미완: `image/` (섹션별 AI 이미지, 후순위), `feedback/` (YouTube Analytics, 후순위)
+  - 상세: `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
 
 ## Discovery Extension Surface
 - public discovery lives at `/radar`

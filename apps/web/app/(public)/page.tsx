@@ -7,7 +7,7 @@ import { SITE_URL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "VibeHub — Daily AI Briefs",
   description:
-    "Curated AI news briefs from 30+ global sources, published daily.",
+    "Curated AI news briefs from verified global sources, published daily.",
   alternates: { canonical: SITE_URL }
 };
 
@@ -77,10 +77,10 @@ export default async function HomePage() {
         </div>
       </SectionBlock>
 
-      <SectionBlock eyebrow="Showcase lane" title="Vibe coding work that sits beside the brief engine">
+      <SectionBlock eyebrow="Showcase lane" title="Handpicked vibe coding work, curated separately from briefs">
         {homeShowcase.length === 0 ? (
           <article className="panel stack-tight">
-            <p className="eyebrow">Sidecar lane</p>
+            <p className="eyebrow">Showcase</p>
             <p className="muted">
               Showcase picks will appear here after the first manual curation pass.
             </p>
@@ -95,7 +95,7 @@ export default async function HomePage() {
         <article className="panel stack-tight">
           <p className="eyebrow">Why it fits</p>
           <p className="muted">
-            Showcase runs as a separate sidecar lane — it never mixes with the automated brief and radar pipelines.
+            Showcase is curated independently — each pick is chosen by hand, separate from daily briefs and radar items.
           </p>
           <div className="button-row">
             <Link className="button-secondary" href="/radar#showcase-picks">
@@ -122,7 +122,7 @@ export default async function HomePage() {
         </div>
       </SectionBlock>
 
-      <SectionBlock eyebrow="Discovery surface" title="A growing index for tools, events, and opportunities around the brief engine">
+      <SectionBlock eyebrow="Discovery surface" title="A growing index for tools, events, and opportunities across the AI landscape">
         <div className="summary-grid">
           <article className="panel stack-tight">
             <p className="eyebrow">Open source</p>

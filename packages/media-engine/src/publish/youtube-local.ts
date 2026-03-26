@@ -6,7 +6,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type { PublishPayload } from "../types";
-import { BRAND_NAME } from "../brand";
+import { BRAND_NAME, SITE_URL, THREADS_HANDLE } from "../brand";
 import type {
   ChannelPublisher,
   ChannelPublishResult,
@@ -75,6 +75,133 @@ function buildYouTubeDescription(payload: PublishPayload): string {
       : "";
   return `${body}${tags}\n\n---\nPowered by ${BRAND_NAME}`;
 }
+
+// ---------------------------------------------------------------------------
+// YouTube Upload Guide TXT — 사람이 읽고 복붙하기 편한 형식
+// ---------------------------------------------------------------------------
+
+export interface YouTubeUploadGuideOptions {
+  slug: string;
+  title: string;
+  summary?: string;
+  markdownBody?: string;
+  tags?: string[];
+  category?: string;
+  language?: string;
+  threadsUrl?: string;
+  briefUrl?: string;
+  coverImagePath?: string;
+  videoFilePath?: string;
+  srtFilePath?: string;
+}
+
+/**
+ * YouTube Studio에서 복붙할 수 있는 업로드 가이드 TXT 생성.
+ */
+export async function generateYouTubeUploadGuide(
+  options: YouTubeUploadGuideOptions,
+  outputDir: string,
+): Promise<string> {
+  const {
+    slug,
+    title,
+    summary,
+    markdownBody,
+    tags = [],
+    category,
+    language = "en",
+    threadsUrl,
+    briefUrl,
+  } = options;
+
+  // 본문에서 첫 3문장 추출 (요약이 없을 때)
+  const desc = summary ?? extractFirstSentences(markdownBody ?? "", 3);
+
+  // 해시태그
+  const hashtags = tags.map((t) => `#${t.replace(/\s+/g, "")}`).join(" ");
+  const brandTags = `#${BRAND_NAME} #AI #Tech`;
+
+  // 크로스프로모 링크
+  const links: string[] = [];
+  if (briefUrl) links.push(`📄 Full Article: ${briefUrl}`);
+  else links.push(`📄 Full Article: ${SITE_URL}/brief/${slug}`);
+  if (threadsUrl) links.push(`🧵 Threads: ${threadsUrl}`);
+  else links.push(`🧵 Threads: https://threads.net/@${THREADS_HANDLE}`);
+  links.push(`🌐 Website: ${SITE_URL}`);
+
+  // 파일 체크리스트
+  const files: string[] = [];
+  if (options.videoFilePath) files.push(`  ✅ Video: ${options.videoFilePath}`);
+  else files.push("  ⬜ Video: (NotebookLM 웹에서 다운로드 → 이 폴더에 저장)");
+  if (options.coverImagePath) files.push(`  ✅ Thumbnail: ${options.coverImagePath}`);
+  else files.push("  ⬜ Thumbnail: (AI Studio에서 생성 → 이 폴더에 저장)");
+  if (options.srtFilePath) files.push(`  ✅ Subtitles: ${options.srtFilePath}`);
+  else files.push("  ⬜ Subtitles: (Whisper STT 생성 예정)");
+
+  const guide = `═══════════════════════════════════════════════════
+  ${BRAND_NAME} — YouTube Upload Guide
+  ${new Date().toISOString().split("T")[0]}
+═══════════════════════════════════════════════════
+
+📋 TITLE (복사해서 붙여넣기)
+───────────────────────────────────────────────────
+${title}
+
+📝 DESCRIPTION (복사해서 붙여넣기)
+───────────────────────────────────────────────────
+${desc}
+
+${links.join("\n")}
+
+${hashtags} ${brandTags}
+
+---
+Powered by ${BRAND_NAME} | AI-curated tech insights
+
+🏷️ TAGS (쉼표 구분, YouTube Studio에 붙여넣기)
+───────────────────────────────────────────────────
+${[...tags, BRAND_NAME, "AI", "Tech News", category].filter(Boolean).join(", ")}
+
+⚙️ SETTINGS
+───────────────────────────────────────────────────
+  Category: Science & Technology (ID: 28)
+  Language: ${language}
+  Visibility: Unlisted → 확인 후 Public 전환
+  Comments: On
+  Age restriction: No
+
+📁 FILES CHECKLIST
+───────────────────────────────────────────────────
+${files.join("\n")}
+
+🚀 UPLOAD STEPS
+───────────────────────────────────────────────────
+  1. YouTube Studio → 만들기 → 동영상 업로드
+  2. 위 TITLE 복사 → 제목에 붙여넣기
+  3. 위 DESCRIPTION 복사 → 설명에 붙여넣기
+  4. 위 TAGS 복사 → 태그에 붙여넣기
+  5. 썸네일 업로드
+  6. 자막 파일(.srt) 업로드 (있으면)
+  7. Visibility: Unlisted로 먼저 업로드
+  8. 미리보기 확인 후 Public 전환
+═══════════════════════════════════════════════════
+`;
+
+  const guidePath = path.join(outputDir, "youtube-upload-guide.txt");
+  await fs.mkdir(outputDir, { recursive: true });
+  await fs.writeFile(guidePath, guide, "utf-8");
+  return guidePath;
+}
+
+function extractFirstSentences(text: string, count: number): string {
+  const sentences = text
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/\n+/g, " ")
+    .split(/(?<=[.!?])\s+/)
+    .filter((s) => s.trim().length > 10);
+  return sentences.slice(0, count).join(" ");
+}
+
 
 /**
  * YouTube Local Publisher — 로컬 메타데이터 생성용.

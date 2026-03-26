@@ -10,7 +10,7 @@ import { BriefListWithFilter } from "@/features/brief/view/BriefListWithFilter";
 export const metadata: Metadata = {
   title: "AI Briefs Archive",
   description:
-    "Browse all published AI briefs with quality scores and source tracking.",
+    "Browse all published AI briefs with source attribution.",
   alternates: { canonical: `${SITE_URL}/brief` }
 };
 
@@ -26,7 +26,7 @@ export default async function BriefPage() {
 
         {briefs.length === 0 ? (
           <div className="brief-cta-banner">
-            <p>Our editorial pipeline is running — the first published briefs will appear here soon.</p>
+            <p>We are preparing the first briefs — published stories will appear here soon.</p>
             <Link className="button-secondary" href="/radar">
               Explore Radar while you wait
             </Link>

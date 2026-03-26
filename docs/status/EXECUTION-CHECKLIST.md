@@ -155,8 +155,12 @@
 - [x] daily-auto-publish.md §9 채널 발행 단계 추가
 - [x] 크로스프로모 본문 발행에서 분리 (skipCrossPromo 옵션) — 채널 2개 이상 시 별도 워커 예정
 - [ ] channel_metrics 테이블 (YouTube Analytics + GA4 피드백 연동 시)
-- [ ] Ghost/Tistory 실제 API 연동
+- [ ] Ghost/Tistory 실제 API 연동 — 티스토리 API 2023-11 폐쇄 (신규 불가), Ghost는 셀프호스팅 시 연동 가능
 - [x] Threads 실제 토큰 확보 + 라이브 테스트 — @vibehub1030 발행 성공 (2026-03-26)
+- [x] Threads 토큰 갱신 + 만료일 추적 — 2026-05-25 만료, THREADS_TOKEN_EXPIRES 환경변수 추가
+- [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
+- [ ] 오디오/비디오 E2E 검증 (NotebookLM → Whisper STT → Remotion Audiogram)
+- [ ] MimikaStudio 설치 + 1인 나레이션 경로 검증 (Qwen3-TTS)
 
 ## Current Snapshot
 - [x] 공개 사이트 기본 shell
@@ -192,8 +196,8 @@
 1. ~~review / publish mutation과 schedule/publish action handler를 닫는다.~~ done
 2. ~~Source Registry DB SSOT + Quality Score 확장~~ done (23개 활성, 63건/실행, 0~100 스코어)
 3. **Pipeline Self-Improvement Phase A 나머지** — 레퍼런스 brief 선정(A-2) → 프롬프트 구체화(A-3) → 중복 감지(A-4) → 소스 피드백 루프(A-5) → 소스 자동 발견/비활성화
-4. **Channel Publish Phase B (텍스트 채널 먼저)** — Threads(P1) → Ghost(P4). 텍스트만으로 발행, 성과 데이터 수집 시작
-5. **Channel Publish Phase C (미디어 채널)** — NotebookLM(P2) → Gemini 이미지(P3a) → Remotion(P3b) → 크로스 프로모션(P6) → 피드백 루프(P8~P9)
+4. **Channel Publish Phase B (텍스트 채널)** — Threads(P1) 라이브 완료. Ghost는 셀프호스팅 결정 후 연동. 티스토리 API 폐쇄로 보류. 네이버는 반자동만 현실적
+5. **Channel Publish Phase C (미디어 채널)** — nlm CLI 설치 완료, MimikaStudio 클론 완료 → NotebookLM 로그인 → Whisper STT → Remotion Audiogram E2E 검증 → 크로스 프로모션(P6) → 피드백 루프(P8~P9)
 6. `Defuddle`로 저장된 `contentMarkdown`을 classifier/draft 품질 규칙에 더 직접 반영할지 결정한다.
 7. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
 8. admin auth + admin role gating을 Supabase SSR auth로 교체한다.

@@ -28,7 +28,7 @@ export default function TermsPage() {
           <p>
             VibeHub provides curated AI news briefs, a discovery radar for tools and
             resources, and a newsletter service. Content is sourced from publicly available
-            feeds and processed through our editorial pipeline.
+            feeds and reviewed by our editorial team.
           </p>
 
           <h3>3. Intellectual Property</h3>

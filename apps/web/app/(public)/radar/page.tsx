@@ -44,11 +44,11 @@ export default async function RadarPage() {
       <SectionBlock
         eyebrow="Showcase picks"
         sectionId="showcase-picks"
-        title="Curated vibe coding work in a sidecar lane, not mixed into the auto pipeline"
+        title="Handpicked vibe coding work, curated separately from the discovery index"
       >
         {showcasePicks.length === 0 ? (
           <EmptyState
-            body="Manual showcase curation will surface here without changing the discovery automation spine."
+            body="Curated showcase picks will appear here once the first items are selected."
             title="No showcase picks yet"
           />
         ) : (

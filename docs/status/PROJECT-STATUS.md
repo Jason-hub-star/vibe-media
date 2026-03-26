@@ -247,3 +247,17 @@
 - 동적 OG 이미지 생성 (2026-03-26): done — opengraph-image.tsx + twitter-image.tsx (root + brief detail), Edge runtime, 브랜드 톤 (ink/orange/cream)
 - 검색 + 카테고리 필터 (2026-03-26): done — 공용 FilterBar 컴포넌트 (검색 + pill 필터), brief topic 필터, radar category group 필터, SSOT 카테고리 기반, filter-pill CSS 공용화
 - About 페이지 (2026-03-26): done — 미션 + 서비스 설명 + 연락처 + 뉴스레터 CTA, Footer Company 섹션 추가 (5-section 완성), 내부 기술 비노출
+- 채널 전략 확정 (2026-03-26): done
+  - 주력 3채널: VibeHub 웹사이트 (자체 서버) + Threads API (@vibehub1030) + YouTube (로컬 생성 → 수동 업로드)
+  - 티스토리: API 신규 등록 2023년 11월 폐쇄 — 기존 토큰 없으면 연동 불가, 스텁 유지
+  - 네이버 블로그: 공식 글쓰기 API 폐쇄, Selenium 자동화 시 저품질/밴 리스크 매우 높음 — 반자동(글 생성 + 수동 발행)만 현실적
+  - Meta 비즈니스 인증: Development Mode + 본인 계정은 인증 불필요, Production 전환 시 사업자등록증 필요
+  - Ghost 블로그: 자체 호스팅 시 차단 위험 0, 다음 채널 확장 후보
+- Threads 토큰 갱신 (2026-03-26): done — refresh_access_token API 호출, 만료일 2026-05-25 (59일), .env.local에 THREADS_TOKEN_EXPIRES 추가
+- 오디오/비디오 파이프라인 도구 설치 (2026-03-26): in progress
+  - nlm CLI (NotebookLM): 설치 완료 (uv tool install), Google 로그인 대기
+  - MimikaStudio (로컬 TTS + 음성 복제): git clone 완료, install.sh 미실행 (5~10GB 모델)
+  - Remotion: node_modules 설치 완료, E2E 렌더 미검증
+  - Whisper STT: @remotion/install-whisper-cpp 설치 대기
+  - 썸네일: Gemini 2.0 Flash 이미지 품질 불만족 — Imagen 3 또는 대안 검토 필요
+  - E2E 파이프라인 (Brief → 오디오 → 자막 → 영상) 실행 검증: 미완

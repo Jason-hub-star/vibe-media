@@ -15,6 +15,7 @@ import {
   createGhostPublisher,
   createTistoryPublisher,
   createYouTubeLocalPublisher,
+  generateYouTubeUploadGuide,
 } from "@vibehub/media-engine";
 import type { BriefChannelMeta, ChannelConfig, ChannelName } from "@vibehub/media-engine";
 import { getSupabaseBriefDetail } from "../shared/supabase-editorial-read";
@@ -96,6 +97,27 @@ const result = await dispatchPublish({
 });
 
 console.log(JSON.stringify(result, null, 2));
+
+// ---------------------------------------------------------------------------
+// YouTube 업로드 가이드 TXT 생성 (output/{slug}/ 폴더에 같이 저장)
+// ---------------------------------------------------------------------------
+
+const threadsResult = result.results.find((r) => r.channel === "threads" && r.success);
+await generateYouTubeUploadGuide(
+  {
+    slug: brief.slug,
+    title: brief.title,
+    summary: brief.summary,
+    markdownBody: briefMeta.markdownBody,
+    tags: briefMeta.tags,
+    category: undefined,
+    language: "en",
+    threadsUrl: threadsResult?.publishedUrl,
+    briefUrl: undefined, // 자동으로 SITE_URL/brief/{slug} 사용
+  },
+  outputDir,
+);
+console.log(`YouTube upload guide saved to ${outputDir}/youtube-upload-guide.txt`);
 
 // DB 저장 + Telegram 보고
 await reportChannelPublish({

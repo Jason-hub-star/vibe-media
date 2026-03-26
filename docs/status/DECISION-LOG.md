@@ -4,6 +4,21 @@
 
 ## Resolved
 
+### 2026-03-26 — 채널 전략 확정 + 오디오/비디오 도구 선정
+- 상태: resolved
+- 결정:
+  - 주력 채널 3개로 확정: VibeHub 웹사이트 + Threads + YouTube
+  - 티스토리 채널 보류: Open API 2023년 11월 신규 등록 중단, 기존 토큰 없으면 연동 불가
+  - 네이버 블로그 완전 자동화 포기: 공식 API 폐쇄, Selenium 자동화 시 저품질/밴 리스크 높음. 반자동(글 생성 + Telegram 알림 + 수동 발행)만 허용
+  - Meta 비즈니스 인증: Development Mode + 본인 계정(@vibehub1030)이면 불필요. Production 전환 시 사업자등록증 필요
+  - Ghost 블로그: 다음 채널 확장 1순위 후보 (자체 호스팅 = API 차단 위험 0)
+  - Threads 토큰 갱신: refresh_access_token API 성공, 만료일 2026-05-25
+  - 1인 나레이션 도구: MimikaStudio (Qwen3-TTS, Mac Apple Silicon, CLI+MCP) 채택 — Qwen3-TTS FastAPI 직접 구축 대비 설치 간편
+  - 2인 팟캐스트 도구: NotebookLM CLI (nlm) 유지
+  - 썸네일: Gemini 2.0 Flash 이미지 생성 품질 불만족 — Imagen 3 또는 대안 검토 필요
+- 근거: BENG 블로그 사례 분석 (Meta API 차단, 비즈니스 인증 미완료 시 일괄 차단). 티스토리/네이버 API 현황 웹 조사. MimikaStudio는 Qwen3-TTS + 음성 복제 + MCP 지원이 CLI로 통합됨
+- 영향: 파이프라인 채널 목록 축소 (6→3 주력), 티스토리/네이버 스텁은 코드에 유지하되 활성화 안 함
+
 ### 2026-03-26 — 파이프라인 자동화 완성 + 크로스프로모 분리
 - 상태: resolved
 - 결정:
