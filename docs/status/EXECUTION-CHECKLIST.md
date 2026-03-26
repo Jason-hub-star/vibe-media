@@ -95,6 +95,13 @@
 - [x] SEO 기반 구축 (favicon, robots.ts, sitemap.ts, per-page metadata, JSON-LD 3종, GA4, RSS, 공유 버튼, Footer 확장, Privacy/Terms)
 - [x] 동적 OG 이미지 (opengraph-image.tsx + twitter-image.tsx, root + brief detail)
 - [x] 검색 + 카테고리 필터 (공용 FilterBar, brief topic 필터, radar group 필터)
+- [x] `/radar/[id]` 공개 상세 페이지 (JSON-LD Thing, 동적 OG/Twitter 이미지, sitemap 확장)
+- [x] URL 기반 필터 동기화 (brief `topic`+`q`, radar `group`+`q`, debounce 300ms)
+- [x] 관련 브리프 섹션 (brief 상세 하단 topic 기반 매칭, discover 상세 relatedBriefSlugs 매칭)
+- [x] favicon + apple-touch-icon (ImageResponse 동적 생성)
+- [x] OG 이미지 브랜드 하드코딩 제거 (6파일 → colorTokens + brandTokens + categoryAccentHex)
+- [x] URL 필터 공용 훅 추출 (useFilterUrlSync — BriefList/DiscoverList 중복 제거)
+- [x] `/seo-check` 스킬 추가 (route별 SEO 완성도 점검)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
@@ -106,7 +113,7 @@
 - [x] discover 자동 발행 (`daily-auto-publish`에 discover 경량 검증 + auto-publish 통합)
 - [x] Category SSOT (`DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일)
 - [x] radar 카테고리 그룹 UI (Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지)
-- [ ] `radar` 카테고리 필터 설계
+- [x] `radar` 카테고리 필터 URL 동기화 (`/radar?group=X&q=Y`)
 - [ ] `tracked / watching / featured` 노출 규칙 정리
 - [ ] `brief`와 `discover` 동시 노출 기준 고정
 - [ ] action link 검증 규칙 정리

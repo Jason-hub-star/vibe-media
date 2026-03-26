@@ -4,6 +4,28 @@
 
 ## Resolved
 
+### 2026-03-27 — SEO & Public Surface 강화 설계 결정
+- 상태: resolved
+- 결정:
+  - `/radar/[id]` JSON-LD 타입을 `Thing`으로 채택 (Article은 brief 전용, WebPage는 너무 generic)
+  - URL 필터 파라미터 명명: brief는 `topic`+`q`, radar는 `group`+`q` (카테고리 필터 값이 group 단위이므로)
+  - 관련 브리프 전략: discover 상세에서는 `relatedBriefSlugs` 기반 매칭, brief 상세에서는 같은 `topic` 기반 매칭 (최대 4개)
+  - OG 이미지 색상: 카테고리별 design-token 색상(mint/sky/purple/yellow/orange) 기반 동적 액센트
+  - favicon: ImageResponse 기반 동적 생성 (V 마크, ink 배경 + orange 텍스트)
+- 근거: JSON-LD Thing은 schema.org에서 가장 범용적이면서 discover 아이템의 다양한 카테고리를 포괄. URL 필터는 북마크/공유 가능성 확보를 위한 필수 SEO 요소. 관련 브리프는 내부 링크 강화 + 이탈율 감소 효과
+- 영향: SEO 크롤러가 discover 개별 아이템에 접근 가능, 필터 상태가 URL에 보존되어 공유/북마크 가능
+
+### 2026-03-27 — OG 이미지 브랜드 토큰화 + 필터 훅 공용화
+- 상태: resolved
+- 결정:
+  - OG/Twitter 이미지 8파일의 raw hex/문자열 하드코딩 → `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens 패키지)로 중앙화
+  - `brandTokens` 신규: `name`, `domain`, `briefTagline`, `radarTagline` — OG 이미지 내 브랜드 표기 SSOT
+  - `categoryAccentHex` 신규: `CategoryColorToken → hex` 자동 매핑 — 카테고리 색상 추가 시 design-tokens 1곳만 수정
+  - Brief/Discover 목록의 URL 필터 동기화 로직 → `useFilterUrlSync()` 공용 훅 추출 (debounce, searchParams, router.replace 중복 제거)
+  - `/seo-check` 스킬 추가: route별 metadata/JSON-LD/OG 이미지/sitemap/내부 링크/브랜드 하드코딩 점검
+- 근거: raw hex 8파일 분산은 브랜드 색상 변경 시 누락 위험. URL 동기화 로직이 Brief/Discover에서 동일 패턴 복제. media-engine에 이미 `brand.ts` SSOT가 있으므로 web 쪽도 동일 원칙 적용
+- 영향: 브랜드 색상/명칭 변경 시 design-tokens 1곳만 수정. 새 목록 페이지 추가 시 useFilterUrlSync 1줄로 URL 동기화 완료
+
 ### 2026-03-26 — 채널 전략 확정 + 오디오/비디오 도구 선정
 - 상태: resolved
 - 결정:

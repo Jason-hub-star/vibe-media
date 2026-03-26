@@ -1,27 +1,29 @@
 import { ImageResponse } from "next/og";
 
-import { getBriefDetail } from "@/features/brief/use-case/get-brief-detail";
-import { colorTokens, brandTokens } from "@vibehub/design-tokens";
+import { getDiscoverItemDetail } from "@/features/discover/use-case/get-discover-item-detail";
+import { presentDiscoverCategory } from "@/features/discover/presenter/present-discover-category";
+import { colorTokens, brandTokens, categoryAccentHex } from "@vibehub/design-tokens";
 
 export const runtime = "edge";
-export const alt = `${brandTokens.name} Brief`;
+export const alt = `${brandTokens.name} Radar`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const INK = colorTokens.ink;
 const CREAM = colorTokens.cream;
-const ORANGE = colorTokens.orange;
 
 export default async function TwitterImage({
   params
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { slug } = await params;
-  const brief = await getBriefDetail(slug);
+  const { id } = await params;
+  const item = await getDiscoverItemDetail(id);
 
-  const title = brief?.title ?? "Brief not found";
-  const topic = brief?.topic ?? "AI Brief";
+  const title = item?.title ?? "Item not found";
+  const cat = item ? presentDiscoverCategory(item.category) : null;
+  const accent = cat ? (categoryAccentHex[cat.color] ?? colorTokens.orange) : colorTokens.orange;
+  const categoryLabel = cat ? `${cat.icon} ${cat.label}` : "Radar";
 
   return new ImageResponse(
     (
@@ -41,7 +43,7 @@ export default async function TwitterImage({
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <div
             style={{
-              background: ORANGE,
+              background: accent,
               color: INK,
               padding: "6px 16px",
               borderRadius: "6px",
@@ -51,7 +53,7 @@ export default async function TwitterImage({
           >
             {brandTokens.name}
           </div>
-          <div style={{ fontSize: "22px", opacity: 0.6 }}>{topic}</div>
+          <div style={{ fontSize: "22px", opacity: 0.6 }}>{categoryLabel}</div>
         </div>
         <div
           style={{

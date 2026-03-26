@@ -31,7 +31,11 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
         </div>
       </div>
       <div className="stack-tight">
-        <h3>{item.title}</h3>
+        <h3>
+          <Link href={`/radar/${item.id}`} className="inline-link">
+            {item.title}
+          </Link>
+        </h3>
         <p className="muted">{item.summary}</p>
       </div>
       <div className="tag-row">

@@ -6,6 +6,8 @@ import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 import { getAdjacentBriefs } from "@/features/brief/use-case/get-adjacent-briefs";
 import { getBriefDetail } from "@/features/brief/use-case/get-brief-detail";
+import { listBriefs } from "@/features/brief/use-case/list-briefs";
+import { RelatedBriefs } from "@/features/brief/view/RelatedBriefs";
 import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
 import { BriefInsight } from "@/features/brief/view/BriefInsight";
 import { BriefMetaBar } from "@/features/brief/view/BriefMetaBar";
@@ -54,9 +56,10 @@ export default async function BriefDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [brief, adjacent] = await Promise.all([
+  const [brief, adjacent, allBriefs] = await Promise.all([
     getBriefDetail(slug),
-    getAdjacentBriefs(slug)
+    getAdjacentBriefs(slug),
+    listBriefs()
   ]);
 
   if (!brief) {
@@ -151,6 +154,16 @@ export default async function BriefDetailPage({
           <BriefNav prev={adjacent.prev} next={adjacent.next} />
         </div>
       </SectionBlock>
+
+      {brief.topic && (
+        <SectionBlock eyebrow="Related" title="More on this topic">
+          <RelatedBriefs
+            currentSlug={slug}
+            topic={brief.topic}
+            briefs={allBriefs}
+          />
+        </SectionBlock>
+      )}
     </PageFrame>
   );
 }

@@ -14,6 +14,10 @@ interface FilterBarProps {
   filters: FilterOption[];
   /** Placeholder for search input */
   searchPlaceholder?: string;
+  /** Initial active filter (from URL param) */
+  initialFilter?: string | null;
+  /** Initial search query (from URL param) */
+  initialQuery?: string;
   /** Called on filter or search change */
   onChange: (state: { activeFilter: string | null; query: string }) => void;
 }
@@ -25,10 +29,12 @@ interface FilterBarProps {
 export function FilterBar({
   filters,
   searchPlaceholder = "Search...",
+  initialFilter,
+  initialQuery,
   onChange
 }: FilterBarProps) {
-  const [active, setActive] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
+  const [active, setActive] = useState<string | null>(initialFilter ?? null);
+  const [query, setQuery] = useState(initialQuery ?? "");
 
   function handleFilter(id: string | null) {
     const next = active === id ? null : id;

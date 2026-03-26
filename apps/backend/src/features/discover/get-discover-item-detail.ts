@@ -1,10 +1,17 @@
-import type { DiscoverItem } from "@vibehub/content-contracts";
+import type { DiscoverItemDetail } from "@vibehub/content-contracts";
 
 import { listDiscoverItems } from "./list-discover-items";
 
 export async function getDiscoverItemDetail(
   id: string,
-): Promise<DiscoverItem | null> {
+): Promise<DiscoverItemDetail | null> {
   const items = await listDiscoverItems();
-  return items.find((item) => item.id === id) ?? null;
+  const item = items.find((i) => i.id === id);
+  if (!item) return null;
+
+  return {
+    ...item,
+    fullDescription: item.summary,
+    relatedBriefSlugs: [],
+  };
 }

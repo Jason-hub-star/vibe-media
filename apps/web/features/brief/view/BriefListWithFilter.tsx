@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import type { BriefListItem } from "@vibehub/content-contracts";
 
 import { FilterBar } from "@/components/FilterBar";
+import { useFilterUrlSync } from "@/features/shared/view/use-filter-url-sync";
 
 import { BriefCard } from "./BriefCard";
 import { BriefPlaceholderCard } from "./BriefPlaceholderCard";
@@ -23,9 +24,9 @@ function uniqueTopics(briefs: BriefListItem[]) {
 }
 
 export function BriefListWithFilter({ briefs }: { briefs: BriefListItem[] }) {
-  const [filter, setFilter] = useState<{ activeFilter: string | null; query: string }>({
-    activeFilter: null,
-    query: ""
+  const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
+    basePath: "/brief",
+    filterParam: "topic"
   });
 
   const topics = useMemo(() => uniqueTopics(briefs), [briefs]);
@@ -54,7 +55,9 @@ export function BriefListWithFilter({ briefs }: { briefs: BriefListItem[] }) {
       <FilterBar
         filters={topics}
         searchPlaceholder="Search briefs..."
-        onChange={setFilter}
+        initialFilter={initialFilter}
+        initialQuery={initialQuery}
+        onChange={handleChange}
       />
       <div className="brief-grid">
         {filtered.map((brief, i) => (

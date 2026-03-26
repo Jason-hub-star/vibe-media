@@ -103,6 +103,24 @@ export const discoverCategoryVisuals: Record<string, CategoryVisual> = {
   asset: { color: "orange", icon: "🎨" },
 };
 
+// ── Brand Constants ──────────────────────────────────────────────────────────
+export const brandTokens = {
+  name: "VibeHub",
+  domain: "vibehub.tech",
+  briefTagline: "Daily AI Briefs",
+  radarTagline: "AI Discovery Hub",
+} as const;
+
+/** CategoryColorToken → hex 매핑 (OG 이미지 등 서버사이드 렌더용) */
+export const categoryAccentHex: Record<CategoryColorToken, string> = {
+  mint: colorTokens.mint,
+  sky: colorTokens.sky,
+  purple: colorTokens.purple,
+  yellow: colorTokens.yellow,
+  orange: colorTokens.orange,
+  rose: colorTokens.rose,
+};
+
 // 카테고리 그룹 라벨 (프론트엔드 섹션 헤더용)
 export const discoverGroupLabels: Record<string, string> = {
   core: "Tools & Resources",

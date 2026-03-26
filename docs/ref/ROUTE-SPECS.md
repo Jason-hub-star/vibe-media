@@ -9,17 +9,26 @@
 ### `/brief`
 - 목적: 브리프 아카이브
 - 핵심 섹션: brief card grid
+- URL 필터: `?topic=X&q=Y` (새로고침 시 필터 유지, debounce 300ms)
 - 상태 강화 예정: list loading/empty/error
 
 ### `/radar`
 - 목적: 오픈소스, 스킬, 플러그인, 사이트, 이벤트, 공모전 discovery 허브
 - 핵심 섹션: hero, showcase picks, featured picks, discovery index
-- 현재 상태: scaffold cards + fast action links
+- URL 필터: `?group=X&q=Y` (새로고침 시 필터 유지, debounce 300ms)
+- 현재 상태: scaffold cards + fast action links + 상세 페이지 링크
+
+### `/radar/[id]`
+- 목적: 디스커버리 항목 상세 (SEO 크롤링 + 공유 가능 URL)
+- 핵심 섹션: 카테고리 pill, 상태 뱃지, summary, fullDescription, 태그, 액션 버튼, 관련 브리프
+- 메타데이터: title, description, OG article, Twitter card, canonical, JSON-LD Thing + BreadcrumbList
+- 동적 이미지: opengraph-image.tsx + twitter-image.tsx (카테고리 색상 기반 액센트)
+- 현재 상태: 구현 완료, notFound() 폴백
 
 ### `/brief/[slug]`
 - 목적: 브리프 상세와 출처 확인
-- 핵심 섹션: summary/body, sources
-- 현재 상태: Supabase-first detail read 구현, not found 분기 포함
+- 핵심 섹션: summary/body, sources, 관련 브리프 (같은 topic)
+- 현재 상태: Supabase-first detail read 구현, not found 분기 포함, 하단 RelatedBriefs 섹션 추가
 
 ### `/sources`
 - 목적: 추적 소스 레지스트리
@@ -52,9 +61,15 @@
 
 ## SEO Infrastructure
 - `robots.ts`: Next.js Metadata API, sitemap 경로 포함
-- `sitemap.ts`: 정적 7개 + 동적 brief slug 페이지
-- JSON-LD: Organization (root), NewsArticle + BreadcrumbList (brief detail)
+- `sitemap.ts`: 정적 7개 + 동적 brief slug + 동적 discover item 페이지
+- JSON-LD: Organization (root), NewsArticle + BreadcrumbList (brief detail), Thing + BreadcrumbList (radar detail)
+- OG/Twitter 이미지: `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens) 기반 — raw hex 하드코딩 금지
 - GA4: `NEXT_PUBLIC_GA_ID` 환경변수 기반, 미설정 시 비렌더링
+
+## Shared Utilities
+- `useFilterUrlSync` (`features/shared/view/`): URL ↔ 필터 상태 동기화 훅 (basePath, filterParam, queryParam). Brief/Radar 공용
+- `brandTokens` (`design-tokens`): name, domain, briefTagline, radarTagline — OG 이미지 브랜드 SSOT
+- `categoryAccentHex` (`design-tokens`): CategoryColorToken → hex 자동 매핑 — OG 이미지 카테고리 색상
 
 ## Admin
 ### `/admin`

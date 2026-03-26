@@ -9,6 +9,13 @@ import { SITE_URL } from "@/lib/constants";
 
 import "./globals.css";
 
+const NAVER_SITE_VERIFICATION = process.env.NAVER_SITE_VERIFICATION;
+const ORGANIZATION_SAME_AS = [
+  "https://github.com/vibehub",
+  process.env.THREADS_PROFILE_URL,
+  process.env.YOUTUBE_CHANNEL_URL
+].filter((value): value is string => Boolean(value));
+
 const display = Space_Grotesk({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -41,6 +48,13 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image"
   },
+  verification: NAVER_SITE_VERIFICATION
+    ? {
+        other: {
+          "naver-site-verification": NAVER_SITE_VERIFICATION
+        }
+      }
+    : undefined,
   robots: { index: true, follow: true },
   alternates: {
     types: { "application/rss+xml": "/feed.xml" }
@@ -59,6 +73,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             name: "VibeHub",
             url: SITE_URL,
             logo: `${SITE_URL}/brand/logo-mark.svg`,
+            ...(ORGANIZATION_SAME_AS.length > 0
+              ? { sameAs: ORGANIZATION_SAME_AS }
+              : {}),
             description:
               "Curated AI news briefs from 30+ global sources, published daily."
           }}

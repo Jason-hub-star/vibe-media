@@ -148,7 +148,10 @@
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit --incremental false`; keep this as the canonical Next 16 flow on new machines
 - auto-publish quality failure는 이제 `draft + pending`으로 자동 복귀하지만, 반복 실패 브리프의 editorial prompt 보강은 여전히 운영 튜닝 과제다
 - page-level loading/empty/error states: implemented at route-group level ((public) + admin)
-- discovery filters, sort rules, and category drill-down are still scaffold-level only
+- discovery filters are now URL-synced (group + search), sort rules and advanced drill-down are still scaffold-level
+- `useFilterUrlSync` 공용 훅이 `features/shared/view/`에 추가됨 — 새 목록 페이지 필터 추가 시 이 훅을 재사용
+- OG 이미지는 모두 `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens)에서 색상/문자열을 읽음 — 브랜드 변경 시 design-tokens만 수정
+- `/seo-check` 스킬로 route별 SEO 완성도(metadata, JSON-LD, OG 이미지, sitemap, 내부 링크, 브랜드 하드코딩) 점검 가능
 - `/admin/pipeline`은 독립 페이지가 아닌 redirect→대시보드 구조. 파이프라인 모니터는 대시보드 하단 PipelineMonitorClient로 임베드됨
 - `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
 - `admin/video-jobs`는 이제 `auto analysis -> CapCut -> parent review -> private upload` 흐름을 반영하는 scaffold 상태다
@@ -254,6 +257,13 @@
   - Meta 비즈니스 인증: Development Mode + 본인 계정은 인증 불필요, Production 전환 시 사업자등록증 필요
   - Ghost 블로그: 자체 호스팅 시 차단 위험 0, 다음 채널 확장 후보
 - Threads 토큰 갱신 (2026-03-26): done — refresh_access_token API 호출, 만료일 2026-05-25 (59일), .env.local에 THREADS_TOKEN_EXPIRES 추가
+- SEO & Public Surface 강화 (2026-03-27): done
+  - Phase A: `/radar/[id]` 공개 상세 페이지 (generateMetadata, JSON-LD Thing + BreadcrumbList, 동적 OG/Twitter 이미지 — 카테고리 색상 기반)
+  - Phase A: DiscoverCard에 상세 링크 추가, Sitemap에 discover 아이템 동적 포함
+  - Phase B: URL 기반 필터 동기화 — `/brief?topic=X&q=Y`, `/radar?group=X&q=Y` (debounce 300ms, 새로고침 시 유지)
+  - Phase C: 관련 브리프 섹션 — brief 상세 하단에 같은 topic 브리프 최대 4개 표시
+  - Phase D: favicon (32x32) + apple-touch-icon (180x180) ImageResponse 생성
+  - 확장성 리팩터: OG 이미지 6파일 raw hex → `colorTokens`/`brandTokens` 통일, `categoryAccentHex` 중앙 매핑, `useFilterUrlSync` 공용 훅 추출 (Brief/Radar 중복 제거), `/seo-check` 스킬 추가
 - 오디오/비디오 파이프라인 도구 설치 (2026-03-26): in progress
   - nlm CLI (NotebookLM): 설치 완료 (uv tool install), Google 로그인 대기
   - MimikaStudio (로컬 TTS + 음성 복제): git clone 완료, install.sh 미실행 (5~10GB 모델)

@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import type { DiscoverItem, DiscoverCategory } from "@vibehub/content-contracts";
 import { DISCOVER_CATEGORIES } from "@vibehub/content-contracts";
 
 import { FilterBar, type FilterOption } from "@/components/FilterBar";
+import { useFilterUrlSync } from "@/features/shared/view/use-filter-url-sync";
 
 import { DiscoverCard } from "./DiscoverCard";
 import { presentDiscoverCategory, groupByCategory } from "../presenter/present-discover-category";
@@ -32,9 +33,9 @@ interface Props {
 }
 
 export function DiscoverListWithFilter({ items }: Props) {
-  const [filter, setFilter] = useState<{ activeFilter: string | null; query: string }>({
-    activeFilter: null,
-    query: ""
+  const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
+    basePath: "/radar",
+    filterParam: "group"
   });
 
   const groupFilters = useMemo(() => buildGroupFilters(), []);
@@ -68,7 +69,9 @@ export function DiscoverListWithFilter({ items }: Props) {
       <FilterBar
         filters={groupFilters}
         searchPlaceholder="Search tools, events, repos..."
-        onChange={setFilter}
+        initialFilter={initialFilter}
+        initialQuery={initialQuery}
+        onChange={handleChange}
       />
       {grouped.size === 0 ? (
         <p className="muted" style={{ textAlign: "center", padding: "2rem 0" }}>
