@@ -166,6 +166,17 @@
 - [ ] Ghost/Tistory 실제 API 연동 — 티스토리 API 2023-11 폐쇄 (신규 불가), Ghost는 셀프호스팅 시 연동 가능
 - [x] Threads 실제 토큰 확보 + 라이브 테스트 — @vibehub1030 발행 성공 (2026-03-26)
 - [x] Threads 토큰 갱신 + 만료일 추적 — 2026-05-25 만료, THREADS_TOKEN_EXPIRES 환경변수 추가
+- [x] 오디오/비디오 E2E 검증 완료 (2026-03-27)
+  - NotebookLM 비디오 생성 + Claude in Chrome 다운로드 자동화
+  - faster-whisper STT 자막 생성 (48세그먼트)
+  - talking-head-anime-3 토킹 아바타 렌더 (separable_float, MPS ~10fps)
+  - ffmpeg-full 최종 합성 (아바타 PIP + 자막 burn-in)
+  - final.mp4 생성 성공
+- [x] daily-media-publish.md 자동화 프롬프트 추가 + 코워크 설정값 강제 지침
+- [ ] Remotion 하이브리드 검증 — NLM 비디오 + Remotion 인트로/아웃트로/장면 전환/@remotion/captions 단어별 자막
+- [ ] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제)
+- [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
+- [x] Threads 토큰 갱신 + 만료일 추적 — 2026-05-25 만료, THREADS_TOKEN_EXPIRES 환경변수 추가
 - [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
 - [ ] 오디오/비디오 E2E 검증 (NotebookLM → Whisper STT → Remotion Audiogram)
 - [ ] MimikaStudio 설치 + 1인 나레이션 경로 검증 (Qwen3-TTS)

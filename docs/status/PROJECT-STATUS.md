@@ -268,10 +268,17 @@
   - `sitemap.ts`에서 정적 페이지와 publish timestamp 없는 항목의 `lastModified: new Date()` 제거 — 실제 콘텐츠 날짜가 있을 때만 `lastModified` 출력
   - `/admin` route tree에 `robots: { index: false, follow: false }` 추가 + `robots.ts`에서 `/admin` disallow
   - root metadata에 `NAVER_SITE_VERIFICATION` 조건부 구조 추가, Organization JSON-LD에 `sameAs` 지원 (GitHub 기본 + Threads/YouTube env 확장)
-- 오디오/비디오 파이프라인 도구 설치 (2026-03-26): in progress
-  - nlm CLI (NotebookLM): 설치 완료 (uv tool install), Google 로그인 대기
-  - MimikaStudio (로컬 TTS + 음성 복제): git clone 완료, install.sh 미실행 (5~10GB 모델)
-  - Remotion: node_modules 설치 완료, E2E 렌더 미검증
-  - Whisper STT: @remotion/install-whisper-cpp 설치 대기
-  - 썸네일: Gemini 2.0 Flash 이미지 품질 불만족 — Imagen 3 또는 대안 검토 필요
-  - E2E 파이프라인 (Brief → 오디오 → 자막 → 영상) 실행 검증: 미완
+- 오디오/비디오 파이프라인 E2E 검증 (2026-03-27): done
+  - nlm CLI (NotebookLM): 설치 + 로그인 완료, 오디오/비디오 생성 성공
+  - MimikaStudio: Python 3.11 venv 설치 완료 (faster-whisper 포함)
+  - Whisper STT: faster-whisper base 모델, 48세그먼트 자막 생성 성공
+  - talking-head-anime-3: 설치 + 모델 다운로드 완료, Apple Silicon MPS ~10fps
+  - SadTalker: 제거 (애니 캐릭터 호환 안 됨 → talking-head-anime-3 채택)
+  - ffmpeg-full: brew 설치 완료 (libass 포함, 자막 burn-in 가능)
+  - NotebookLM 다운로드: Claude in Chrome 확장으로 자동화 성공
+  - 아바타 규칙 확정: 전신 이미지 + 512x512 투명 패딩 (강제 리사이즈 금지)
+  - 합성 레이아웃 확정: 500px, W-350:H-275, 자막 하단 중앙
+  - daily-media-publish.md 자동화 프롬프트 추가 (파이프라인 체인 연결)
+  - E2E 최종 결과: final.mp4 (NLM 비디오 + 토킹 아바타 PIP + 자막) 생성 성공
+  - 썸네일: Gemini 2.0 Flash 품질 불만족 — 웹 수동 생성으로 운영
+  - 미검증: Remotion 하이브리드 (NLM 비디오 + Remotion 인트로/아웃트로/장면 전환)
