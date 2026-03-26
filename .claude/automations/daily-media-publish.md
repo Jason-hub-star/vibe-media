@@ -54,10 +54,18 @@ ls ~/MimikaStudio/venv/bin/python               # faster-whisper
 
 ## 2. 대상 Brief 선정
 
+### 자동 모드 (기본)
 `daily-auto-publish`에서 새로 `published`된 brief slug를 대상으로 한다.
-또는 수동 지정: `npm run publish:channels <slug>` 결과에서 성공한 slug.
-
 대상이 0건이면 "미디어 발행 대상 없음"으로 종료.
+
+### 수동 모드
+사용자가 slug를 직접 지정하면 해당 brief로 실행한다.
+예: "openai-gpt-5-4-mini-nano-launch로 미디어 파이프라인 실행해줘"
+
+수동 모드에서는:
+- `--skip-threads`: Threads 재발행 방지 (이미 발행된 brief일 때)
+- `--skip-nlm`: NotebookLM 생성 건너뛰기 (이미 다운로드한 경우)
+- `--force`: output 폴더에 final.mp4가 있어도 다시 생성
 
 ---
 
@@ -195,11 +203,19 @@ EOF
 
 ## 8. YouTube 가이드 + Threads 발행
 
+### 자동 모드
 ```bash
 npm run publish:channels <slug>
 # → output/<slug>/youtube-upload-guide.txt 자동 생성
 # → Threads 자동 발행
 # → DB 저장 + Telegram 보고
+```
+
+### 수동 모드 (--skip-threads)
+이미 Threads에 발행된 brief면 중복 방지를 위해 가이드 TXT만 생성:
+```bash
+npm run publish:channels <slug> --dry-run
+# → youtube-upload-guide.txt 생성 (발행 안 함)
 ```
 
 ---
