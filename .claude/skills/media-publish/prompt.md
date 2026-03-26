@@ -149,13 +149,18 @@ npm run publish:channels <slug>
 | nlm CLI | `nlm` (uv tool) |
 | 렌더 스크립트 | `tools/talking-head-render.py` |
 
-## 아바타 규칙
+## 아바타 규칙 (수정 금지)
 
 - **전신 이미지만 사용** (클로즈업은 입 변형 안 됨)
 - 투명 배경 PNG (RGBA)
-- 원본 비율 유지: 512x512에 투명 패딩 또는 강제 리사이즈
+- **512x512 투명 패딩 필수** — `img.resize((512, 512))` 강제 리사이즈 금지 (찌그러짐+입 안 움직임)
 - 입 다문 표정이 입 벌린 표정보다 변화 폭이 더 클 수 있지만, 전신이면 벌린 표정도 OK
 - 현재 확정 아바타: `output/{slug}/avartar.png` (VH TECH 전신)
+
+## ffmpeg 합성 규칙 (수정 금지)
+
+- `scale=500:-1` / `overlay=W-350:H-275` / `Alignment=2` / `FontSize=20` / `crf 20`
+- 이 값들은 시행착오 끝에 확정됨 — 임의로 바꾸지 말 것
 
 ## 제약사항
 

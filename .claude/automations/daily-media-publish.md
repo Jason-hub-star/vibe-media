@@ -151,11 +151,22 @@ EOF
 
 ## 6. Talking Head 아바타 렌더
 
-### 확정 설정
-- 모델: `separable_float` (MPS ~10fps)
-- FPS: 24
-- 아바타: `output/<slug>/avartar.png` (전신 이미지 필수)
-- 비율: 512x512 투명 패딩 (원본 비율 유지)
+### ⚠️ 반드시 아래 설정을 그대로 사용할 것 — 값을 변경하지 마라
+
+### 확정 설정 (2026-03-27 검증 완료, 수정 금지)
+- 모델: `separable_float` (standard_float 사용 금지 — 2배 느림)
+- FPS: `24`
+- 이미지 전처리: **비율 유지 투명 패딩** (512x512 강제 리사이즈 금지 — 찌그러짐+입 안 움직임 원인)
+  ```python
+  # 올바른 방법 (패딩)
+  img = Image.open(avatar_path).convert("RGBA")
+  new_h = int(img.height * (512 / img.width))
+  img_resized = img.resize((512, new_h), Image.LANCZOS)
+  canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+  canvas.paste(img_resized, (0, 0))
+
+  # 금지: img.resize((512, 512)) — 찌그러짐 발생
+  ```
 
 ```bash
 ~/talking-head-anime-3-demo/venv/bin/python \
@@ -167,15 +178,21 @@ EOF
 ```
 
 ⚠️ 아바타 이미지가 없으면 이 단계를 skip한다.
-⚠️ 전신 이미지만 사용 — 클로즈업은 입 변형이 안 됨.
+⚠️ **전신 이미지만 사용** — 클로즈업은 입 변형이 안 됨.
+⚠️ **512x512 강제 리사이즈 금지** — 반드시 투명 패딩 방식 사용.
 
 ---
 
 ## 7. ffmpeg 최종 합성
 
-### 확정 레이아웃
-- 아바타: 500px, 위치 `W-350:H-275` (우하단)
-- 자막: 하단 중앙 (Alignment=2, FontSize=20)
+### ⚠️ 반드시 아래 명령어를 그대로 사용할 것 — 값을 변경하지 마라
+
+### 확정 레이아웃 (2026-03-27 검증 완료, 수정 금지)
+- 아바타: `scale=500:-1` (500px 폭, 비율 자동)
+- 위치: `overlay=W-350:H-275` (우하단, NLM 워터마크 가림)
+- 자막: `Alignment=2` (하단 중앙), `FontSize=20`, `MarginV=20`
+- 코덱: `libx264 -crf 20`
+- ffmpeg 경로: `/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg`
 
 ```bash
 /opt/homebrew/opt/ffmpeg-full/bin/ffmpeg -y \

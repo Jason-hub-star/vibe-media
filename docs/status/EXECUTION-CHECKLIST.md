@@ -102,6 +102,7 @@
 - [x] OG 이미지 브랜드 하드코딩 제거 (6파일 → colorTokens + brandTokens + categoryAccentHex)
 - [x] URL 필터 공용 훅 추출 (useFilterUrlSync — BriefList/DiscoverList 중복 제거)
 - [x] `/seo-check` 스킬 추가 (route별 SEO 완성도 점검)
+- [x] SEO 하드닝 (sitemap `lastModified` 안정화, `/admin` noindex/disallow, Naver verification + Organization `sameAs` env 구조)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화

@@ -264,6 +264,10 @@
   - Phase C: 관련 브리프 섹션 — brief 상세 하단에 같은 topic 브리프 최대 4개 표시
   - Phase D: favicon (32x32) + apple-touch-icon (180x180) ImageResponse 생성
   - 확장성 리팩터: OG 이미지 6파일 raw hex → `colorTokens`/`brandTokens` 통일, `categoryAccentHex` 중앙 매핑, `useFilterUrlSync` 공용 훅 추출 (Brief/Radar 중복 제거), `/seo-check` 스킬 추가
+- SEO 하드닝 (2026-03-27): done
+  - `sitemap.ts`에서 정적 페이지와 publish timestamp 없는 항목의 `lastModified: new Date()` 제거 — 실제 콘텐츠 날짜가 있을 때만 `lastModified` 출력
+  - `/admin` route tree에 `robots: { index: false, follow: false }` 추가 + `robots.ts`에서 `/admin` disallow
+  - root metadata에 `NAVER_SITE_VERIFICATION` 조건부 구조 추가, Organization JSON-LD에 `sameAs` 지원 (GitHub 기본 + Threads/YouTube env 확장)
 - 오디오/비디오 파이프라인 도구 설치 (2026-03-26): in progress
   - nlm CLI (NotebookLM): 설치 완료 (uv tool install), Google 로그인 대기
   - MimikaStudio (로컬 TTS + 음성 복제): git clone 완료, install.sh 미실행 (5~10GB 모델)
