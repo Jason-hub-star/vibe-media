@@ -34,9 +34,16 @@ nlm video create <notebook-id> -f brief -s classic --language en -y
 nlm studio status <notebook-id>
 ```
 
-⚠️ 완료 후 **NotebookLM 웹에서 수동 다운로드** 필요:
-- 비디오 → `output/{slug}/video.mp4`
-- 오디오 → `output/{slug}/audio.m4a` (선택)
+완료 후 다운로드 — **Claude in Chrome 자동화** 또는 수동:
+
+**방법 A (자동): Claude in Chrome 확장 사용**
+`notebooklm-download.skill` 참조. Chrome이 열려있고 Claude in Chrome 확장이 활성화된 상태라면:
+1. `mcp__Claude_in_Chrome__navigate` → NotebookLM 노트북 URL 이동
+2. 스튜디오 패널에서 artifact에 호버 → ⋮ 클릭 → "다운로드" 클릭
+3. `~/Downloads/`에서 파일 확인 → `output/{slug}/`로 이동
+
+**방법 B (수동):**
+- NotebookLM 웹에서 직접 다운로드 → `output/{slug}/`에 저장 (2분)
 
 ### 2. Whisper STT 자막 생성
 
@@ -152,6 +159,7 @@ npm run publish:channels <slug>
 
 ## 제약사항
 
-- NotebookLM 미디어 다운로드는 수동 (Google CDN 인증 제한)
+- NotebookLM 미디어 다운로드: **Claude in Chrome 확장으로 자동화 가능** (Python/httpx 직접 다운로드는 Google CDN 인증 루프로 불가)
 - talking-head-anime-3는 Apple Silicon MPS에서 ~10fps (2분 영상 ~5분)
 - 썸네일은 수동 (Gemini AI Studio 웹에서 생성)
+- Claude in Chrome 전제조건: Mac 켜짐 + Chrome 실행 + Claude 확장 활성화
