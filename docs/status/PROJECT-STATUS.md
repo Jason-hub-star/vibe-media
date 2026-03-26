@@ -95,7 +95,8 @@
   - Supabase 현황: sources 30(23활성) / ingest_runs 57 / ingested_items 19 / brief_posts 19(draft14+review4+published1) / discover_items 8
 - NotebookLM 도구 선정: done — `notebooklm-mcp-cli` (CLI 모드) 채택. PleasePrompto/notebooklm-mcp는 팟캐스트 기능 없음(Q&A 전용), Google 공식 Podcast API는 Enterprise allowlist 접근 불가
 - Threads API 사전 준비: blocked — Instagram 계정 곧 생성 예정, Meta Developer 앱은 계정 생성 후 진행
-- NotebookLM CLI 실동작 검증: done — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 설치 완료. ffmpeg loudnorm 후처리 파이프라인 포함 확정
+- NotebookLM CLI 실동작 검증: done — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 + ffmpeg 설치 완료
+- 영상 전략 확정: done — Audiogram 방식 (웨이브폼+자막+커버 1장), 섹션별 이미지는 후순위. 다국어 2트랙 (영어+스페인어) 자막 번역 동시 생성 (비용 $0). 자기개선은 YouTube Analytics 숫자만 읽음
 - Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
 - radar 카테고리 그룹 UI: done — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
 - Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편

@@ -138,8 +138,10 @@
 ## P3 — Channel Publish (v2 설계 완료, 검증 후 구현)
 - [ ] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일
 - [~] P2: NotebookLM CLI → 팟캐스트 M4A 생성 — CLI 실동작 검증 완료 (17분 2인대화, loudnorm 후처리 확정). `notebooklm-bridge.ts` 코드 구현 미완
-- [ ] P3a: Gemini 섹션별 이미지 생성 (`gemini-image.ts`, 무료 $0)
-- [ ] P3b: Remotion BriefPodcast Composition + 로컬 저장 (`BriefPodcast.tsx`)
+- [ ] P3a: Whisper STT + Gemini 번역 (영어→스페인어 SRT)
+- [ ] P3b: Remotion BriefAudiogram ×2언어 (웨이브폼+자막+커버) + 로컬 저장
+- [ ] P3c: 썸네일 생성 (Gemini, en/es 각 1장)
+- [ ] P3d: 섹션별 AI 이미지 (후순위 — YouTube retention 데이터 보고 결정)
 - [ ] P4: Ghost/WP API 연동 (`ghost-publisher.ts`)
 - [ ] P5: 팟캐스트 메타데이터 + Spotify 직접 업로드 가이드 (`spotify-metadata.ts`)
 - [ ] P6: 크로스 프로모션 2-pass + 3rd pass (`cross-promo-sync.ts`)
