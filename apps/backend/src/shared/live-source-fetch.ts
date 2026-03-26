@@ -6,7 +6,7 @@ import { parseHTML } from "linkedom";
 import type { IngestSourceFixture } from "./ingest-source-fixtures";
 import { runBriefDiscoverCycle, type BriefDiscoverCycleReport } from "./brief-discover-cycle";
 import type { LiveSourceDefinition } from "./live-source-registry";
-import { liveSourceRegistry } from "./live-source-registry";
+import { liveSourceRegistry, loadSourcesFromDb } from "./live-source-registry";
 import { parseGitHubReleaseItems, parseRssItems } from "./live-source-parse";
 
 export type LiveItemParserName = "rss-summary" | "defuddle";
@@ -17,7 +17,7 @@ export interface LiveFetchedItem {
   id: string;
   sourceId: string;
   sourceName: string;
-  sourceTier: "auto-safe";
+  sourceTier: "auto-safe" | "render-required" | "manual-review-required";
   title: string;
   url: string;
   publishedAt: string | null;
@@ -260,9 +260,13 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
 }
 
 export async function runLiveSourceFetch(
-  sources: LiveSourceDefinition[] = liveSourceRegistry,
+  sources?: LiveSourceDefinition[],
   performedAt = new Date().toISOString()
 ): Promise<LiveSourceFetchReport> {
+  // DB SSOT: 인자 없으면 DB에서 로드, 실패 시 하드코딩 fallback
+  if (!sources) {
+    sources = await loadSourcesFromDb();
+  }
   const sourceStatuses: LiveSourceFetchStatus[] = [];
   const items: LiveFetchedItem[] = [];
 

@@ -1,9 +1,25 @@
-# Channel Publish Pipeline
+# Channel Publish Pipeline v2
 
 ## Goal
-- critic 통과 후 approved brief를 **티스토리, 유튜브, 블로그, 팟캐스트** 등 외부 채널로 자동 배포한다.
-- 내부에서 MimikaStudio로 TTS/영상을 가공하고, **산출물(mp4/mp3/text)만** 외부에 유통한다.
-- BSL-1.1 도구(MimikaStudio)는 내부 가공에만 사용되며, 외부 채널에는 산출물만 전달된다.
+- critic 통과 후 published brief를 **Threads, Ghost/블로그, 티스토리, YouTube, 팟캐스트** 등 외부 채널로 자동/반자동 배포한다.
+- 오디오는 **NotebookLM 2인 대화 팟캐스트**(주 경로) 또는 **Qwen3-TTS 1인 나레이션**(백업 경로)으로 생성한다.
+- YouTube 영상은 로컬에 완성품으로 저장하고, **운영자가 직접 업로드**한다.
+- 모든 채널은 **크로스 프로모션 링크**로 서로를 연결해 트래픽을 순환시킨다.
+
+## v1 → v2 변경 사유
+
+| 항목 | v1 (기존) | v2 (현재) | 변경 근거 |
+|------|----------|----------|----------|
+| TTS 엔진 | MimikaStudio (P1) | NotebookLM 2인 대화 (주) + Qwen3-TTS (백업) | MimikaStudio: alpha 단계, 단독 개발자, macOS only, API 스키마 비공개, 라이선스 혼란 (README BSL-1.1 vs LICENSE GPLv3). 실현성 5/10 |
+| YouTube 업로드 | Data API v3 자동 | 로컬 저장 → 운영자 직접 업로드 | OAuth 검증 2~6개월 병목, 미검증 시 private 잠금. 직접 업로드는 밴 리스크 0 |
+| Threads | 미포함 | 최우선 텍스트 채널 (P1) | 공식 무료 API, 250건/일, 텍스트+이미지+비디오+캐러셀. 실현성 9/10 |
+| 크로스 프로모션 | 미포함 | 2-pass 발행 + YouTube 비동기 3rd pass | 채널 간 트래픽 순환 없으면 각 채널이 고립된 섬 |
+| 피드백 루프 | 미포함 | YouTube Analytics 기반 자기개선 | 발행 후 성과 데이터가 파이프라인에 돌아오지 않으면 품질 개선 불가 |
+| 팟캐스트 배포 | Supabase Storage + RSS 셀프호스팅 | Spotify 직접 업로드 → 자동 RSS → Apple/YouTube | 셀프호스팅은 과도한 엔지니어링. Spotify 무료 호스팅이 비용 0 + 코드 0 |
+| Remotion 라이선스 | Company License 필요 (리스크) | 개인 무료 확정 | 개인(individual)은 무조건 무료, 상업적 포함. 유료는 영리법인 4명+ |
+| Threads 크로스 프로모션 | (미설계) | 자체 답글(reply_to_id)로 링크 추가 | Threads API에 수정 엔드포인트 없음, 답글은 250건 제한 미포함 |
+
+---
 
 ## Architecture Overview
 
@@ -11,21 +27,31 @@
 ┌──────────────────── VibeHub 내부 (Mac Apple Silicon) ────────────────────┐
 │                                                                          │
 │  [기존 파이프라인]                                                        │
-│  수집 → 가공 → 초안 → critic → publisher → publish queue                 │
-│                                                 ↓                        │
+│  수집 → 가공 → 초안 → critic → publisher → publish:auto → published      │
+│                                                              ↓           │
 │  [Channel Renderer Layer]                                                │
-│  publish-dispatcher                                                      │
-│    ├─ TEXT    brief body → HTML/마크다운 가공                             │
-│    ├─ AUDIO   brief → MimikaStudio :8000 TTS → .mp3                     │
-│    ├─ VIDEO   나레이션.mp3 + 이미지 → Remotion renderMedia → .mp4        │
-│    └─ FEED    메타데이터 → RSS XML 갱신                                  │
-│                                                 ↓                        │
+│  publish-dispatcher (2-pass)                                             │
+│    ├─ TEXT     brief → Threads 요약 / Ghost 전문 / 티스토리 전문         │
+│    ├─ AUDIO    brief → NotebookLM 2인 대화 → .mp3                       │
+│    │           (fallback: Qwen3-TTS 1인 나레이션)                        │
+│    ├─ VIDEO    mp3 + 이미지 → Remotion renderMedia → .mp4               │
+│    └─ PROMO    Pass 2: 수집된 URL로 크로스 프로모션 주입                  │
+│                                                              ↓           │
 │  [Channel Uploader Layer]                                                │
-│  channel-uploader                                                        │
-│    ├─ 티스토리: Playwright 브라우저 자동화 (Open API 종료됨)               │
-│    ├─ 유튜브:   YouTube Data API v3 (OAuth + resumable upload)           │
-│    ├─ 블로그:   Ghost/WordPress REST API                                 │
-│    └─ 팟캐스트: Supabase Storage + RSS feed XML                          │
+│    ├─ Threads:  공식 Publishing API (OAuth 2.0)                          │
+│    ├─ Ghost:    Admin API (REST)                                         │
+│    ├─ 티스토리: Playwright 브라우저 자동화 (보조)                         │
+│    └─ YouTube:  로컬 저장 → 운영자 직접 업로드                           │
+│                                                                          │
+│  [반자동 채널] (운영자 직접)                                              │
+│    ├─ YouTube:  /output/youtube-ready/ mp4 → YouTube Studio 업로드       │
+│    └─ Spotify:  /output/podcast/ mp3 → Spotify for Creators 업로드       │
+│                 Spotify 자동 RSS → Apple Podcasts / YouTube 연동          │
+│                                                                          │
+│  [Feedback Loop] (비동기)                                                │
+│    ├─ YouTube Analytics API → 성과 수집                                  │
+│    ├─ GA4 Data API → 블로그/티스토리 트래픽                              │
+│    └─ insight-generator → 프롬프트/템플릿 파라미터 조정                   │
 │                                                                          │
 │  산출물(mp4/mp3/text)만 외부로 나감                                       │
 └──────────────────────────────────────────────────────────────────────────┘
@@ -37,417 +63,548 @@
 npm run pipeline:daily        ← 수집→가공→초안→critic
 npm run publish:auto          ← approved → scheduled → published
 npm run publish:channels      ← published brief → 채널별 렌더+배포 (신규)
+npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 등록 → Pass 3
 ```
 
-`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다. 기존 파이프라인의 `publisher` 에이전트 뒤에 위치하며, event-driven 흐름을 따른다.
+`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다.
 
 ---
 
-## Layer 1: MimikaStudio TTS 통합
+## 채널 실현성 평가 요약
 
-### 제품 사양
+리서치 기반 실현성 점수 (2026-03-26 조사).
+
+| 채널 | 방식 | 실현성 | 일일 제한 | 핵심 리스크 |
+|------|------|--------|----------|------------|
+| **Threads** | 공식 Publishing API | **9/10** | 250건/일 | Meta 앱 리뷰 승인 |
+| **Ghost/WP** | 공식 REST API | **8/10** | 없음 (셀프호스팅) | 서버 운영 |
+| **팟캐스트** | NotebookLM + RSS | **7/10** | NotebookLM 비공식 | Google 내부 API 변경 시 깨짐 |
+| **Remotion 영상** | CLI spawn | **7.5/10** | CPU 바운드 | 개인 무료 확정, 템플릿 품질 의존 |
+| **YouTube** | 운영자 직접 업로드 | **10/10** | 없음 | 수동 → 자동화 불완전 |
+| **티스토리** | Playwright 자동화 | **5/10** | ~5건/일 | API 종료, UI 변경, AI 감지 |
+
+### 폐기된 경로
+
+| 경로 | 폐기 사유 |
+|------|----------|
+| MimikaStudio TTS | Alpha, 단독 개발자(bus factor=1), macOS only, Docker 불가, API 스키마 비공개, 라이선스 불일치 |
+| YouTube Data API 자동 업로드 | OAuth 검증 2~6개월, 미검증 시 private 잠금, 2026.1 AI 콘텐츠 대량 단속 |
+| Claude Cowork 마우스 조작 업로드 | 매 스텝 스크린샷+비전 분석 → 느리고 불안정 (3/10), OS 파일 다이얼로그 취약 |
+
+---
+
+## Layer 1: 오디오 생성
+
+### 주 경로 — NotebookLM 2인 대화 팟캐스트
 
 | 항목 | 내용 |
 |------|------|
-| 아키텍처 | FastAPI 백엔드 + MCP 서버 + Flutter UI (3-layer) |
-| REST API | `localhost:8000` — 60+ endpoint, Swagger UI: `/docs` |
-| MCP 서버 | `localhost:8010` — 50+ tool, Claude Code 직접 연동 |
-| 헤드리스 모드 | `mimikactl up --no-flutter` — API/MCP만 구동 |
-| 출력 포맷 | WAV, MP3, M4B (챕터 마커) |
-| Job Queue | 내장 — 배치 TTS/음성복제/오디오북 자동 처리 |
-| 라이선스 | BSL-1.1 (내부 도구 사용 — 제약 없음) |
-
-### 지원 엔진
-
-| 엔진 | 파라미터 | 한국어 | 특징 |
-|------|---------|--------|------|
-| Kokoro | 82M | 미지원 | 영어 전용, sub-200ms 저지연 |
-| Qwen3-TTS | 0.6B~1.7B (8bit 포함) | 지원 | 3초 zero-shot 음성 복제, 10개 언어 |
-| Chatterbox | — | 지원 | 23개 언어, 다국어 최강 |
-| Supertonic-2 | ONNX | 지원 | en/ko/es/pt/fr 5개 언어 |
-
-### 한국어 TTS 엔진 선택 기준
-
-- 한국어 brief 나레이션 → **Qwen3-TTS** 또는 **Chatterbox** 우선
-- 영어 brief 나레이션 → **Kokoro** (저지연) 또는 **Qwen3-TTS**
-- 음성 복제 필요 시 → **Qwen3-TTS** (3초 레퍼런스)
-
-### CLI 명령
+| 도구 | [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) |
+| GitHub | 3,000+ stars, 406 커밋, 활발 유지 |
+| 방식 | Playwright 브라우저 자동화 (비공식 내부 API) |
+| MCP 연동 | `nlm setup add claude-code` → Claude Code에서 35개 도구 직접 사용 |
+| 출력 | 2인 AI 호스트 대화형 MP3 |
+| 스타일 | Deep Dive / Brief / Critique / Debate 선택 |
+| 입력 제한 | 100,000 토큰 |
 
 ```bash
-# 설치
-./install.sh
+# 셋업
+pip install notebooklm-mcp-cli
+nlm login                          # 브라우저로 Google 인증
+nlm setup add claude-code          # Claude Code MCP 자동 등록
 
-# 서비스 시작 (헤드리스)
-./bin/mimikactl up --no-flutter
-
-# 서비스 상태 확인
-./bin/mimikactl status
-
-# 로그 확인
-./bin/mimikactl logs backend
-
-# 모델 다운로드
-./bin/mimikactl models download kokoro    # ~300MB
-./bin/mimikactl models download qwen3     # ~4GB (1.7B)
+# 팟캐스트 생성 흐름
+nlm notebook create "Brief: OpenAI o3"
+nlm source add <notebook-id> --text "$(cat brief-body.md)"
+nlm audio create <notebook-id> --confirm
+nlm download audio <notebook-id> -o ./output/podcast/
 ```
 
-### REST API 호출 패턴
+**장점**: 1인 나레이션보다 2인 대화가 청취 몰입도 훨씬 높음. brief 원문을 자동으로 대화체로 재구성.
 
-```typescript
-// mimika-client.ts
-interface MimikaConfig {
-  baseUrl: string;       // default: http://localhost:8000
-  mcpPort: number;       // default: 8010
-}
+**검증 완료 (2026-03-26)**:
+- `nlm login` → `nlm notebook create` → `nlm source add --text` → `nlm audio create` → `nlm download audio` 전체 흐름 성공
+- 출력: M4A 32MB, AAC 44.1kHz 스테레오 257kbps, **17분 15초** 2인 대화
+- 원본 볼륨 -28.0 dB (작음) → `ffmpeg loudnorm -16 LUFS` 정규화 필수 → -19.4 dB로 개선 확인
+- 생성 소요: ~5분 (in_progress → completed)
+- Python 3.12 필요 (pyenv local 3.12.13 설정 완료)
 
-interface TtsRequest {
-  text: string;
-  engine: 'kokoro' | 'qwen3' | 'chatterbox' | 'supertonic';
-  voicePreset: string;   // e.g. 'bf_emma', custom clone preset
-  outputFormat: 'mp3' | 'wav';
-  language: string;      // e.g. 'ko', 'en'
-}
-
-interface TtsResult {
-  jobId: string;
-  status: 'queued' | 'processing' | 'done' | 'failed';
-  audioPath: string;     // 로컬 파일 경로
-  durationMs: number;
-}
+**오디오 후처리 (자동, 파이프라인 코드에 포함)**:
+```bash
+ffmpeg -i {raw} -af loudnorm=I=-16:TP=-1.5:LRA=11 -ar 44100 -b:a 192k {normalized} -y
 ```
 
-### MCP 에이전트 연동
+**리스크**: 비공식 자동화 → Google 내부 API 변경 시 깨짐. 전용 Google 계정 사용 권장.
 
-MimikaStudio MCP 서버(`:8010`)를 Claude Code에 등록하면 에이전트가 직접 TTS를 호출할 수 있다.
+### 백업 경로 — Qwen3-TTS 1인 나레이션
 
-```
-Claude Code → MimikaStudio MCP :8010
-  → tts_generate(text, voice, engine)
-  → voice_clone(reference_audio, name)
-  → audiobook_generate_from_file(pdf_path, voice, format)
-  → job_status(job_id)
-```
+NotebookLM 장애 시 fallback.
 
-### 음성 프리셋 관리
-
-- MimikaStudio에 8개 번들 레퍼런스 음성 내장 (Alistair, Anastasia, Beatrice 등)
-- YouTube URL에서 레퍼런스 음성 임포트 가능
-- 커스텀 프리셋은 MimikaStudio Voice Prompts에서 관리
-- VibeHub brief에 `voicePreset` 필드를 추가하여 brief별 음성 지정 가능
-
-### 시스템 요구사항
-
-| 항목 | 사양 |
+| 항목 | 내용 |
 |------|------|
-| OS | macOS 13+ (Ventura 이상) |
-| 프로세서 | Apple Silicon (M1/M2/M3/M4) — Intel 미지원 |
-| RAM | 최소 8GB, 권장 16GB+ |
-| 저장공간 | 모델 5~10GB |
-| Python | 3.10+ |
-| Flutter | 3.x (UI 사용 시) |
+| 엔진 | Qwen3-TTS (Alibaba) |
+| 한국어 품질 | WER 1.741 (오픈소스 최상위, 10개 언어 중 최저 에러율) |
+| 모델 크기 | 0.6B / 1.7B (8bit 양자화 지원) |
+| 배포 | FastAPI 직접 서버 (Linux/Docker 가능) |
+| 대안 | Chatterbox TTS Server (23개 언어, OpenAI-compatible API) |
+
+MimikaStudio를 거치지 않고 Qwen3-TTS를 직접 Python 서버로 운용하면 macOS 종속 제거 + Docker 배포 가능.
 
 ---
 
-## Layer 2: Remotion 영상 합성
+## Layer 2: 섹션별 이미지 생성 (Gemini)
 
-### 기존 자산
+### 목적
 
-media-engine에 `render-spawn.ts`가 이미 존재한다. Remotion CLI 크로스플랫폼 spawn을 처리하며, 이를 확장하여 brief 영상 렌더링에 사용한다.
+brief 본문을 섹션으로 파싱한 뒤, 각 섹션에 맞는 이미지를 AI로 생성한다. Remotion 영상에서 오디오 진행에 따라 **섹션별 이미지가 전환**되는 비주얼을 제공한다.
+
+### 비용 분석 (2026-03-26 조사)
+
+| 서비스 | 장당 가격 | 월 450장 (15/일) | 비고 |
+|--------|----------|-----------------|------|
+| **Gemini 2.5 Flash (무료 티어)** | **$0** | **$0** | 하루 500건 무료, 15장이면 3%만 사용 |
+| Kie.ai Nano Banana (현재 스택) | $0.02 | $9 | `kie-client.ts` 이미 구현됨 |
+| GPT Image 1 Mini | $0.005 | $2.25 | |
+| Flux 2 Klein | $0.014 | $6.30 | |
+
+**채택: Gemini 2.5 Flash 무료 티어** — 비용 $0, `gemini-client.ts`에 이미지 모드 추가만 필요. Kie.ai는 fallback으로 유지.
+
+### 기존 인프라 활용
+
+| 모듈 | 역할 | 상태 |
+|------|------|------|
+| `gemini-client.ts` | Gemini API 래퍼 (현재 텍스트 전용) | ✅ 있음, 이미지 모드 추가 필요 |
+| `brief-parser.ts` | brief → 섹션 분리, `imageSlot` 자동 할당 | ✅ 있음 |
+| `normalize.ts` | WebP 변환 + 리사이즈 (2048/640) | ✅ 있음 |
+| `kie-client.ts` + `kie-provider.ts` | Kie.ai 이미지 생성 | ✅ 있음 (fallback) |
+| `registry.ts` | Provider 팩토리 (`USE_MOCK` 전환) | ✅ 있음 |
+
+### 구현 설계
+
+```typescript
+// gemini-image.ts — Gemini 이미지 생성 모드 추가
+interface GeminiImageOptions {
+  prompt: string;           // 섹션 headline + body 요약
+  aspectRatio?: '16:9' | '9:16' | '1:1';
+  apiKey?: string;
+}
+
+interface GeminiImageResult {
+  imageBase64: string;      // base64 PNG/JPEG
+  mimeType: string;
+}
+
+// Gemini 2.5 Flash의 이미지 생성 모드 사용
+// 무료 티어: 500 requests/day, 카드 등록 불필요
+```
+
+### 파이프라인 흐름
+
+```
+brief 본문
+  │
+  ├─ brief-parser.ts → sections[] (headline, body, imageSlot)
+  │
+  ├─ 섹션별 이미지 프롬프트 생성
+  │   "Generate an editorial illustration for a tech brief section
+  │    about: {section.headline}. Context: {section.body의 첫 2문장}"
+  │
+  ├─ gemini-image.ts → 섹션별 이미지 생성 (16:9)
+  │   (fallback: kie-provider.ts)
+  │
+  ├─ normalize.ts → WebP 1920x1080 리사이즈
+  │
+  └─ 출력: sections[].imageUrl (로컬 경로)
+       → Remotion inputProps로 전달
+```
+
+### Remotion에서 사용
+
+```typescript
+// BriefPodcast.tsx에서
+interface BriefPodcastProps {
+  narrationAudio: string;        // NotebookLM MP3
+  sections: {
+    headline: string;
+    imageUrl: string;            // Gemini 생성 이미지
+    startFrame: number;          // Whisper 타이밍 기반
+    endFrame: number;
+  }[];
+  subtitlesSrt: string;          // Whisper SRT
+}
+
+// 오디오 진행에 따라 섹션 이미지가 전환
+// 각 섹션에서: 이미지 페이드인 → headline 오버레이 → 자막 표시
+```
+
+### 이미지 생성 전략
+
+| 전략 | 설명 | 사용 시점 |
+|------|------|----------|
+| **기본** | 커버 이미지 1장 + 자막 + 파형 | 이미지 생성 없이도 영상 성립 |
+| **섹션별** | brief 섹션마다 Gemini 이미지 1장 | brief 3~5섹션 → 3~5장 생성 |
+| **하이브리드** | 커버(RSS 수집) + 나머지 섹션만 생성 | 커버는 원본 사용, 나머지만 AI |
+
+기본 전략으로도 영상이 성립하므로, 이미지 생성은 **opt-in 플래그**로 제어한다:
+
+```bash
+npm run publish:channels <brief-id>              # 기본: 커버만
+npm run publish:channels <brief-id> --with-images # 섹션별 이미지 생성
+```
+
+---
+
+## Layer 3: Remotion 영상 합성
+
+### 현재 상태
+
+- Remotion v4.0.438 (2026-03-19), 성숙하고 활발한 릴리스
+- media-engine에 `render-spawn.ts` 이미 존재 (크로스플랫폼 CLI spawn)
+- Media Parser 2026-02-01 deprecated → 신규 구현은 **Mediabunny** 기준
+- 개인(individual) 무료 확정 (영리법인 4명+ 시 유료 전환)
 
 ### 오디오-영상 동기화
 
-Remotion 공식 문서 기준, 오디오 길이에 맞춘 영상 길이 자동 계산이 가능하다.
-
-```typescript
-// Remotion Composition
-import { getAudioData } from '@remotion/media-utils';
-
-// calculateMetadata에서 나레이션 길이로 durationInFrames 자동 결정
-export const calculateMetadata = async ({ props }) => {
-  const audioData = await getAudioData(props.narrationAudio);
-  return {
-    durationInFrames: Math.ceil(audioData.durationInSeconds * 30), // 30fps
-  };
-};
+```
+NotebookLM MP3 → Whisper STT → SRT 타임스탬프 → remotion-subtitles → Remotion 렌더
 ```
 
-### 영상 Composition 구조
-
-```typescript
-// BriefVideo.tsx — brief를 영상으로 변환하는 Remotion Composition
-interface BriefVideoProps {
-  briefTitle: string;
-  briefBody: string;        // 자막용
-  coverImage: string;        // brief cover image
-  narrationAudio: string;    // MimikaStudio 출력 .mp3
-  sourceDomains: string[];   // 출처 표시
-}
-
-// <Audio> 컴포넌트로 나레이션 삽입
-// visualizeAudio()로 음성 파형 기반 자막 타이밍 동기화
-// 커버 이미지 + 자막 + 소스 도메인 표시
-```
+| 기능 | 구현 방법 |
+|------|----------|
+| 오디오 길이 → 프레임 수 | `getAudioData()` → `durationInFrames` 자동 계산 |
+| 자막 동기화 | Whisper/Deepgram → SRT → `remotion-subtitles` 라이브러리 |
+| 카라오케 하이라이트 | 단어별 타이밍으로 강조 가능 |
 
 ### 영상 유형
 
 | Composition | 해상도 | 용도 |
 |-------------|--------|------|
-| `BriefVideo` | 1920×1080 (16:9) | 유튜브 일반 영상 |
-| `BriefShort` | 1080×1920 (9:16) | 유튜브 Shorts |
+| `BriefPodcast` | 1920×1080 (16:9) | YouTube 일반 영상 (팟캐스트 + 비주얼) |
+| `BriefShort` | 1080×1920 (9:16) | YouTube Shorts / Threads 비디오 |
 
-### 렌더링 실행
+### 렌더 성능
 
-```bash
-# render-spawn.ts를 통해 실행
-npx remotion render BriefVideo --props='{"briefTitle":"..."}' out/brief.mp4
+- Apple Silicon Mac: 1분짜리 1080p 영상 기준 1~3분 렌더
+- `--concurrency` 플래그로 전체 CPU 코어 활용
+- `npx remotion benchmark`로 최적 concurrency 탐색
+
+### 로컬 출력 구조
+
+```
+output/youtube-ready/
+  2026-03-25-openai-o3.mp4           ← 16:9 영상
+  2026-03-25-openai-o3-short.mp4     ← 9:16 Shorts
+  2026-03-25-openai-o3-thumb.jpg     ← 썸네일
+  2026-03-25-openai-o3-metadata.json ← 제목/설명/태그 (크로스 프로모션 포함)
 ```
 
-### 주의사항
-
-- Remotion Media Parser는 2026-02-01부로 deprecated → **Mediabunny** 기준으로 구현
-- 렌더링은 CPU 집약적 → 배치 처리 시 동시 렌더 수 제한 필요
+`metadata.json`에는 크로스 프로모션 링크가 포함된 YouTube 설명란 텍스트가 들어가므로, 운영자는 **복사-붙여넣기만** 하면 된다.
 
 ---
 
 ## Layer 3: 채널별 업로더
 
-### 3-1. 티스토리
+### 3-1. Threads (최우선 텍스트 채널)
 
-#### 현실: Open API 종료
-
-티스토리 Open API는 **2024년 2월 완전 종료**되었다. 파일 첨부 → 글 관련 → 댓글 관련 → 기타 순으로 순차 종료됐으며, 공식 대안 API는 제공되지 않는다.
-
-#### 대안: Playwright 브라우저 자동화
-
-```typescript
-// tistory-publisher.ts
-interface TistoryConfig {
-  blogUrl: string;           // e.g. https://myblog.tistory.com
-  loginMethod: 'kakao';     // 티스토리는 카카오 로그인
-  sessionStoragePath: string; // 세션 재사용용 쿠키 저장 경로
-}
-
-interface TistoryPublishRequest {
-  title: string;
-  content: string;           // HTML body
-  category: string;
-  tags: string[];
-  coverImage?: string;       // 로컬 파일 경로
-  visibility: 'private' | 'public';
-}
-
-// Playwright 흐름:
-// 1. 저장된 세션으로 로그인 시도 → 만료 시 재로그인
-// 2. 글쓰기 페이지 이동
-// 3. 제목/본문(HTML) 입력
-// 4. 커버 이미지 업로드
-// 5. 카테고리/태그 설정
-// 6. 공개 설정 → 발행
-// 7. 발행된 URL 반환
-```
-
-#### 운영 정책
-
-- 티스토리 하루 글 5개 제한 — 초과 시 저품질 판정 위험
-- 자동 생성 콘텐츠 감지 방지 → brief body에 editorial 편집 품질 유지
-- 세션 만료 시 watchdog으로 에스컬레이션
-
-### 3-2. YouTube Data API v3
-
-#### 사전 준비
-
-| 단계 | 내용 | 소요 |
-|------|------|------|
-| Google Cloud 프로젝트 생성 | YouTube Data API v3 활성화 | 즉시 |
-| OAuth 2.0 인증 | client ID/secret 생성 | 즉시 |
-| 앱 인증 심사 | 미인증 → private만 가능 | **2~4주** |
-| Refresh token 발급 | 1회 인증 후 토큰 저장 | 즉시 |
-
-#### 쿼터 제한
-
-- 일일 기본 쿼터: **10,000 유닛**
-- 업로드 1건: **1,600 유닛**
-- **하루 최대 ~6건** 업로드 가능
-- 쿼터 리셋: 매일 자정 (Pacific Time)
-- 별도 Google Cloud 프로젝트로 쿼터 풀 분리 가능
-
-#### 업로드 프로토콜
+| 항목 | 내용 |
+|------|------|
+| API | Meta Threads Publishing API (공식, 무료) |
+| 인증 | OAuth 2.0 (`threads_basic` + `threads_content_publish`) |
+| 일일 제한 | 250 posts/24h (rolling window) |
+| 텍스트 제한 | 500자 (UTF-8) |
+| 미디어 | 텍스트, 이미지, 비디오 (MOV/MP4, ≤5분, ≤1GB), 캐러셀 (2~20개), GIF, Poll |
 
 ```typescript
-// youtube-publisher.ts
-interface YouTubeUploadRequest {
-  videoPath: string;          // Remotion 출력 .mp4
-  title: string;              // brief.title (15~70자)
-  description: string;        // brief.summary + source links
-  tags: string[];
-  categoryId: string;         // YouTube 카테고리 ID
-  privacyStatus: 'private' | 'unlisted' | 'public';
-  scheduledAt?: Date;         // 예약 발행
-  thumbnailPath?: string;     // brief.coverImage
+// threads-publisher.ts
+interface ThreadsPublishRequest {
+  text: string;              // brief 요약 (≤500자)
+  imageUrl?: string;         // brief cover image
+  videoUrl?: string;         // Remotion Short (선택)
+  replyToId?: string;        // 크로스 프로모션 답글용
 }
 
-// Resumable Upload 프로토콜 (5MB 이상 필수):
-// 1. POST 메타데이터 → 세션 URI 수신
-// 2. PUT 비디오 데이터 (256KB 청크)
-// 3. 중단 시 세션 URI로 재개
-// 성공 시 HTTP 201 + video ID 반환
+// 발행 프로세스:
+// 텍스트 전용: POST /{user-id}/threads?auto_publish_text=... (1단계)
+// 미디어 포함: POST /{user-id}/threads → POST /{user-id}/threads_publish (2단계)
 ```
 
-#### OAuth 스코프
-
-```
-https://www.googleapis.com/auth/youtube.upload
-```
-
-최소 권한 원칙 — `youtube` 전체 스코프 대신 `youtube.upload`만 사용.
-
-#### Shorts 업로드
-
-일반 `videos.insert`와 동일한 엔드포인트를 사용한다:
-- 길이: 60초 이하
-- 해상도: 1080×1920 (9:16)
-- 제목 또는 설명에 `#Shorts` 포함
-- 커스텀 썸네일 설정 불가 (YouTube 자동 지정)
-
-#### 업로드 후 처리
+### 3-2. Ghost / WordPress (장문 블로그)
 
 ```typescript
-// videos.list로 processing 상태 확인
-// status: 'uploaded' → 'processing' → 'processed'
-// processingDetails로 진행률 폴링
-```
-
-### 3-3. 블로그 (Ghost / WordPress)
-
-```typescript
-// blog-publisher.ts
-interface BlogConfig {
-  platform: 'ghost' | 'wordpress';
-  apiUrl: string;
-  apiKey: string;             // Ghost Admin API key / WP Application Password
-}
-
+// ghost-publisher.ts
 interface BlogPublishRequest {
   title: string;
-  content: string;            // HTML body
+  content: string;           // HTML body + 오디오 embed + 크로스 프로모션 footer
   tags: string[];
   coverImage?: string;
-  audioEmbed?: string;        // MimikaStudio mp3 URL (optional)
   status: 'draft' | 'published';
 }
 
 // Ghost: Admin API POST /ghost/api/admin/posts/
 // WordPress: REST API POST /wp-json/wp/v2/posts
-// 오디오 embed: <audio src="...mp3"> 태그 삽입
 ```
 
-### 3-4. 팟캐스트 RSS
+### 3-3. 티스토리 (한국 SEO 보조 채널)
+
+Open API 2024년 2월 완전 종료. Playwright 브라우저 자동화로 대체.
 
 ```typescript
-// podcast-publisher.ts
-import Podcast from 'podcast';
-
-interface PodcastEpisode {
+// tistory-publisher.ts
+interface TistoryPublishRequest {
   title: string;
-  description: string;
-  audioUrl: string;           // Supabase Storage public URL
-  duration: string;           // HH:MM:SS
-  pubDate: Date;
+  content: string;           // HTML body
+  category: string;
+  tags: string[];
+  coverImage?: string;
+  visibility: 'private' | 'public';
 }
 
-// 흐름:
-// 1. MimikaStudio TTS → mp3 생성
-// 2. mp3 → Supabase Storage 업로드 (기존 supabase-storage.ts 활용)
-// 3. podcast npm 패키지로 RSS XML 생성/갱신
-// 4. RSS XML → Supabase Storage에 호스팅
-// 5. RSS feed URL을 Apple Podcasts / Spotify에 등록 (1회)
+// Playwright 흐름:
+// 1. 저장된 세션으로 로그인 → 만료 시 카카오 재로그인
+// 2. 글쓰기 → 제목/본문/카테고리/태그/커버이미지 → 발행
+// 3. 발행된 URL 반환
 ```
+
+**운영 제한**: 하루 ~5건, AI 감지 위험 → 2~3건 이내 권장. 반드시 인간 편집 레이어 통과 후 발행.
+
+### 3-4. 팟캐스트 (Spotify 직접 업로드)
+
+RSS 셀프호스팅은 소규모 운영에 과도한 엔지니어링이다 (Supabase egress 5GB/월 무료 → 50MB 에피소드 100회 다운로드로 소진). 대신 Spotify for Creators에 직접 업로드한다.
+
+```
+흐름:
+1. NotebookLM → mp3 생성 (또는 Qwen3-TTS fallback)
+2. mp3 + 에피소드 메타데이터 → /output/podcast/ 에 로컬 저장
+3. 운영자가 Spotify for Creators에 직접 업로드 (주 1~2회)
+4. Spotify가 RSS 자동 생성 → Apple Podcasts / YouTube에 제출 (1회 설정)
+```
+
+```typescript
+// spotify-metadata.ts — 업로드용 메타데이터 생성 (업로드 자체는 수동)
+interface PodcastEpisodeMeta {
+  title: string;
+  description: string;       // brief 요약 + 크로스 프로모션 링크
+  audioPath: string;         // 로컬 mp3 경로
+  durationMs: number;
+  coverImagePath: string;    // brief cover image
+}
+```
+
+**Spotify 요구사항**: 커버아트 1400×1400~3000×3000 JPG/PNG, 에피소드 ≤200MB, title/description 필수.
+
+**초기 설정 (1회)**: Spotify RSS → Apple Podcasts 제출 (심사 3~5영업일) → YouTube Studio 연결 (오디오→영상 자동 변환).
+
+### 3-5. YouTube (운영자 직접 업로드)
+
+YouTube는 API를 통한 자동 업로드를 하지 않는다. media-engine이 영상 파일 + metadata.json을 로컬에 생성하고, 운영자가 직접 업로드한다.
+
+```
+media-engine 책임:
+  ✅ mp4 영상 렌더링 (16:9 + 9:16)
+  ✅ 썸네일 생성
+  ✅ metadata.json (제목/설명/태그, 크로스 프로모션 링크 포함)
+  ✅ /output/youtube-ready/ 에 완성품 저장
+
+운영자 책임:
+  ✅ YouTube Studio에서 직접 업로드
+  ✅ metadata.json의 제목/설명 복사-붙여넣기
+  ✅ 업로드 후 video_id를 시스템에 등록 (CLI 또는 admin UI)
+```
+
+업로드 후 `npm run publish:link-youtube <brief-id> <video-id>` 실행 → Pass 3으로 나머지 채널에 YouTube 링크 추가.
 
 ---
 
-## Layer 4: Publish Dispatcher
+## Layer 4: 크로스 프로모션
+
+### 트래픽 순환 설계
+
+각 채널의 강점으로 다른 채널을 끌어당기는 구조.
+
+```
+Threads (발견) ──"전문 읽기"──► Ghost/Blog (체류)
+     ▲                              │
+     │                        "팟캐스트로 듣기"
+  "의견 나누기"                      │
+     │                              ▼
+     └──────────────── 팟캐스트 (습관) ──"영상으로 보기"──► YouTube (몰입)
+                                                              │
+                                                        "원문+Threads"
+                                                              │
+                                                              ▼
+                                                      티스토리 (SEO) ──"Threads에서 토론"──► Threads
+```
+
+| 채널 | 역할 | 끌어오는 트래픽 |
+|------|------|---------------|
+| **Threads** | 발견 + 토론 허브 | 짧은 요약으로 관심 유발 → 블로그/팟캐스트 유도 |
+| **Ghost/Blog** | 깊은 체류 | 전문 + 오디오 embed + 영상 embed = 원스톱 |
+| **팟캐스트** | 습관 형성 | 출퇴근 청취 → "더 보기" 링크로 블로그/Threads |
+| **YouTube** | 몰입 + 알고리즘 | 추천 알고리즘 → 설명란 링크로 생태계 유입 |
+| **티스토리** | 한국 SEO | 네이버/다음 검색 유입 → Threads/블로그로 전환 |
+
+### 채널별 프로모션 삽입 규칙
+
+| 발행 채널 | 삽입 내용 |
+|----------|----------|
+| **Threads** | `🎙️ 팟캐스트로 듣기: {podcast_url}` · `📖 전문 읽기: {blog_url}` · `▶️ 영상으로 보기: {youtube_url}` |
+| **Ghost/Blog** | 상단: 팟캐스트 `<audio>` embed · 하단: Threads 댓글 CTA + YouTube embed + 티스토리 미러 |
+| **티스토리** | 하단: `원문: {blog_url}` · `팟캐스트: {podcast_url}` · `Threads에서 의견 나누기: {threads_url}` |
+| **팟캐스트** | 에피소드 설명: `📖 원문: {blog_url}` · `💬 Threads: {threads_url}` · `▶️ YouTube: {youtube_url}` |
+| **YouTube** | 설명란: `📖 원문: {blog_url}` · `🎙️ 팟캐스트: {podcast_url}` · `💬 Threads: {threads_url}` + 고정 댓글 |
+
+### 2-pass + 비동기 3rd pass 발행 프로세스
+
+```
+publish:channels <brief-id>
+  │
+  ├─ 1. brief 로드 + 커버이미지 준비
+  │
+  ├─ 2. Pass 1: 병렬 발행 (프로모션 링크 없이)
+  │     ├─ Threads API      → threads_url ✓
+  │     ├─ Ghost API        → blog_url ✓
+  │     ├─ 티스토리 Playwright → tistory_url ✓
+  │     ├─ NotebookLM MCP   → MP3 → Supabase → podcast_url ✓
+  │     └─ Remotion render  → mp4 → /output/youtube-ready/ (URL 없음)
+  │
+  ├─ 3. channel_results 저장 (Supabase)
+  │
+  ├─ 4. Pass 2: 크로스 프로모션 주입 (수집된 URL로)
+  │     ├─ Threads  → reply_to_id 답글로 링크 추가 (편집 API 없음)
+  │     ├─ Ghost    → API PATCH 하단 프로모션 블록
+  │     ├─ 팟캐스트  → 에피소드 설명 업데이트
+  │     └─ 티스토리  → Playwright 편집
+  │
+  ├─ 5. cross_promo_synced = true
+  │
+  └─ 6. (비동기) 운영자 YouTube 업로드 후
+        → publish:link-youtube <brief-id> <video-id>
+        → Pass 3: youtube_url을 나머지 채널에 추가
+        → youtube_linked = true
+```
+
+### brief → 채널별 콘텐츠 변환 규칙
+
+| 채널 | 입력 | 변환 | 출력 |
+|------|------|------|------|
+| **Threads** | title + summary + coverImage | 500자 이내 요약 + 이미지 | 텍스트+이미지 포스트 |
+| **Ghost/Blog** | 전체 brief HTML | 본문 + 오디오 embed + 프로모션 footer | 블로그 글 |
+| **티스토리** | 전체 brief HTML | 본문 + 커버이미지 + 프로모션 footer | 블로그 글 |
+| **팟캐스트** | brief 본문 | NotebookLM 2인 대화 | MP3 에피소드 |
+| **YouTube** | brief + 팟캐스트 MP3 | Remotion 영상화 | mp4 (수동 업로드) |
+
+---
+
+## Layer 5: 품질 자기개선 루프
+
+### 채널별 지표 수집 가능성
+
+| 채널 | 지표 수집 | API | 수집 가능 지표 |
+|------|----------|-----|---------------|
+| **YouTube** | ✅ 완전 | YouTube Analytics API | views, CTR, retention, watch time, engagement |
+| **Ghost/Blog** | ⚠️ GA4 연동 | GA4 Data API | pageviews, bounce rate, session duration |
+| **티스토리** | ⚠️ GA4 우회 | GA4 Data API | pageviews (GA4 설치 시) |
+| **Threads** | ⚠️ 제한적 | Threads Insights API | likes, replies, reposts (follower > 100 필요) |
+| **팟캐스트** | ❌ 없음 | 없음 | Spotify/Apple 대시보드 수동 확인만 |
+
+### 피드백 루프 구조
+
+```
+발행 → 채널별 URL + video_id 기록
+                ↓
+analytics-collector (cron, 주 1회)
+  ├─ YouTube Analytics API → views, CTR, retention per video
+  ├─ GA4 Data API → pageviews per blog/tistory post
+  └─ Threads Insights → engagement per post
+                ↓
+Supabase brief_posts.channel_metrics (jsonb)
+                ↓
+insight-generator (주 1회)
+  ├─ "상위 20% brief" 특성 분석 (길이, 톤, 구조, 토픽)
+  ├─ "retention 높은 영상" 템플릿 변수 분석
+  └─ 주간 리포트 생성 + Telegram 발송
+                ↓
+parameter-adjuster (수동 승인)
+  ├─ brief draft 프롬프트에 few-shot 예시 교체
+  ├─ Remotion 템플릿 변수 조정 (컬러, 인트로 길이, 폰트)
+  └─ TTS 엔진/음성 프리셋 교체
+                ↓
+다음 배치에 반영
+```
+
+**핵심 원칙**: "완전 자율"이 아니라 **"자동 제안 + 운영자 승인"** 모델.
+
+### 자기개선 가능 항목
+
+| 항목 | 방법 | 실현성 |
+|------|------|--------|
+| Brief 텍스트 품질 | engagement 높은 brief 특성 → 프롬프트 few-shot 교체 | 8/10 |
+| 영상 템플릿 | YouTube retention curve → 템플릿 변수 (색상, 전환, 인트로) 조정 | 7/10 |
+| 썸네일 | YouTube Test & Compare 네이티브 A/B (3개 변형) | 7/10 |
+| TTS 음성 | NISQA/TTSDS2 자동 품질 점수 + retention 교차 검증 | 6/10 |
+| 발행 시간 | 채널별 engagement peak 시간 분석 → 스케줄 최적화 | 8/10 |
+
+---
+
+## Layer 6: Publish Dispatcher
 
 ### 오케스트레이션
 
 ```typescript
 // publish-dispatcher.ts
+type ChannelName = 'threads' | 'ghost' | 'tistory' | 'podcast' | 'youtube';
+
 interface PublishTarget {
-  channel: 'tistory' | 'youtube' | 'blog' | 'podcast';
+  channel: ChannelName;
   enabled: boolean;
   config: ChannelConfig;
 }
 
 interface PublishResult {
-  channel: string;
+  channel: ChannelName;
   success: boolean;
   publishedUrl?: string;
   error?: string;
   timestamp: Date;
+  canUpdate: boolean;        // Pass 2 업데이트 가능 여부
 }
 
-async function dispatch(
-  brief: BriefPost,
-  targets: PublishTarget[]
-): Promise<PublishResult[]> {
-  const results: PublishResult[] = [];
+interface CrossPromoBlock {
+  threads?: string;
+  blog?: string;
+  tistory?: string;
+  podcast?: string;
+  youtube?: string;          // 운영자 수동 등록 후 채워짐
+}
 
-  // 1. 공통 가공: MimikaStudio TTS 나레이션 생성
-  const narration = await mimikaClient.generate({
-    text: brief.body,
-    engine: 'qwen3',
-    voicePreset: brief.voicePreset || 'default-ko',
-    outputFormat: 'mp3',
-    language: brief.language || 'ko',
-  });
-
-  // 2. 영상 필요 채널이 있으면 Remotion 렌더
-  const needsVideo = targets.some(
-    t => t.enabled && t.channel === 'youtube'
-  );
-  let videoPath: string | undefined;
-  if (needsVideo) {
-    videoPath = await renderBriefVideo({
-      briefTitle: brief.title,
-      briefBody: brief.body,
-      coverImage: brief.coverImageUrl,
-      narrationAudio: narration.audioPath,
-      sourceDomains: brief.sourceDomains,
-    });
-  }
-
-  // 3. 채널별 업로드 (병렬 가능)
-  const uploads = targets
-    .filter(t => t.enabled)
-    .map(async (target) => {
-      switch (target.channel) {
-        case 'tistory':
-          return tistoryPublisher.publish(brief, target.config);
-        case 'youtube':
-          return youtubePublisher.upload(videoPath!, brief, target.config);
-        case 'blog':
-          return blogPublisher.publish(brief, narration, target.config);
-        case 'podcast':
-          return podcastPublisher.publish(brief, narration, target.config);
-      }
-    });
-
-  return Promise.allSettled(uploads);
+interface BriefChannelMeta {
+  channelResults: PublishResult[];
+  crossPromo: CrossPromoBlock;
+  crossPromoSynced: boolean;   // Pass 2 완료
+  youtubeLinked: boolean;      // Pass 3 완료
+  channelMetrics?: object;     // analytics-collector가 채움
 }
 ```
 
-### 상태 기록
+### 프로모션 텍스트 생성
 
-배포 결과는 brief metadata에 채널별 URL로 기록한다:
+```typescript
+// promo-templates.ts
 
-```json
-{
-  "channel_results": [
-    { "channel": "tistory", "url": "https://myblog.tistory.com/123", "publishedAt": "..." },
-    { "channel": "youtube", "url": "https://youtu.be/abc123", "publishedAt": "..." },
-    { "channel": "podcast", "url": "https://..../feed.xml", "episode": 42 }
-  ]
-}
+// Threads: 500자 이내 요약 + 크로스 링크
+function threadsPost(brief, promo): string;
+
+// Ghost/Blog: 하단 프로모션 HTML 블록
+function blogPromoFooter(promo): string;
+
+// YouTube: 설명란 텍스트 (metadata.json에 포함)
+function youtubeDescription(brief, promo): string;
+
+// 팟캐스트: 에피소드 설명 텍스트
+function podcastEpisodeNote(brief, promo): string;
+
+// 티스토리: 하단 프로모션 HTML
+function tistoryPromoFooter(promo): string;
 ```
 
 ### 실패 처리
@@ -455,7 +612,8 @@ async function dispatch(
 - 채널별 업로드 실패는 다른 채널에 영향을 주지 않는다 (`Promise.allSettled`)
 - 실패한 채널은 `channel_results`에 error 기록
 - 반복 실패 시 watchdog 에스컬레이션 (기존 `AGENT-OPERATING-MODEL.md` 정책 준수)
-- 티스토리 세션 만료, YouTube 쿼터 초과 등은 retryable 실패로 분류
+- 티스토리 세션 만료, NotebookLM 장애 등은 retryable 실패로 분류
+- NotebookLM 장애 시 Qwen3-TTS fallback 자동 전환
 
 ---
 
@@ -464,51 +622,76 @@ async function dispatch(
 ```
 packages/media-engine/src/
   tts/
+    notebooklm-bridge.ts        ← NotebookLM MCP CLI 래퍼 (주 경로)
+    qwen3-client.ts             ← Qwen3-TTS FastAPI 클라이언트 (백업 경로)
     tts-types.ts                ← TtsRequest, TtsResult, VoicePreset 타입
-    mimika-client.ts            ← MimikaStudio REST :8000 호출 + job polling
+  image/
+    gemini-image.ts             ← Gemini 2.5 Flash 이미지 생성 (무료 티어, $0)
+    section-image-pipeline.ts   ← brief sections → 섹션별 이미지 프롬프트 → 생성 → 정규화
   publish/
-    channel-types.ts            ← ChannelRenderer, PublishTarget, PublishResult
-    tistory-publisher.ts        ← Playwright 브라우저 자동화
-    youtube-publisher.ts        ← YouTube Data API v3 OAuth + resumable upload
-    blog-publisher.ts           ← Ghost Admin API / WordPress REST API
-    podcast-publisher.ts        ← mp3 → Supabase Storage + RSS XML
-    publish-dispatcher.ts       ← brief → TTS → 채널별 분배 오케스트레이션
-  (기존 16개 파일 유지)
+    channel-types.ts            ← PublishTarget, PublishResult, CrossPromoBlock, BriefChannelMeta
+    promo-templates.ts          ← 채널별 프로모션 텍스트 생성기
+    cross-promo-sync.ts         ← Pass 2 + Pass 3 크로스 프로모션 업데이트
+    threads-publisher.ts        ← Threads 공식 Publishing API
+    ghost-publisher.ts          ← Ghost Admin API / WordPress REST API
+    tistory-publisher.ts        ← Playwright 브라우저 자동화 (보조)
+    spotify-metadata.ts         ← mp3 + 에피소드 메타데이터 생성 (업로드는 Spotify에 수동)
+    youtube-local.ts            ← 로컬 파일 생성 + metadata.json (업로드는 수동)
+    publish-dispatcher.ts       ← 2-pass 오케스트레이션 + YouTube 비동기 3rd pass
+  feedback/
+    analytics-collector.ts      ← YouTube Analytics + GA4 수집 cron
+    insight-generator.ts        ← 주간 성과 분석 + 리포트
+  (기존 16개 모듈 유지)
 
 apps/backend/
   scripts/
-    publish-channels.ts         ← CLI entrypoint: npm run publish:channels
+    publish-channels.ts         ← CLI: npm run publish:channels <brief-id>
+    link-youtube.ts             ← CLI: npm run publish:link-youtube <brief-id> <video-id>
 
 tools/
   remotion/
     src/
-      BriefVideo.tsx            ← brief 일반 영상 Composition (16:9)
-      BriefShort.tsx            ← brief Shorts Composition (9:16, 60초)
+      BriefPodcast.tsx          ← 팟캐스트 영상 Composition (16:9)
+      BriefShort.tsx            ← Shorts Composition (9:16, 60초)
 ```
 
-### 환경변수
+---
+
+## 환경변수
 
 ```bash
-# MimikaStudio
-MIMIKA_BASE_URL=http://localhost:8000
-MIMIKA_MCP_PORT=8010
+# Threads API (Meta)
+THREADS_USER_ID=...
+THREADS_ACCESS_TOKEN=...
 
-# YouTube Data API
-YOUTUBE_CLIENT_ID=...
-YOUTUBE_CLIENT_SECRET=...
-YOUTUBE_REFRESH_TOKEN=...
-
-# 티스토리 (Playwright 세션)
-TISTORY_BLOG_URL=https://myblog.tistory.com
-TISTORY_SESSION_PATH=./state/tistory-session.json
-
-# Ghost Blog (선택)
+# Ghost Blog
 GHOST_API_URL=https://myblog.ghost.io
 GHOST_ADMIN_API_KEY=...
+
+# 티스토리 (Playwright)
+TISTORY_BLOG_URL=https://myblog.tistory.com
+TISTORY_SESSION_PATH=./state/tistory-session.json
 
 # 팟캐스트
 PODCAST_TITLE=VibeHub AI Brief
 PODCAST_FEED_PATH=./state/podcast-feed.xml
+
+# NotebookLM (nlm CLI가 브라우저 쿠키로 인증, 별도 env 불필요)
+
+# Qwen3-TTS (백업)
+QWEN3_TTS_URL=http://localhost:8001
+
+# YouTube Analytics (피드백 루프)
+YOUTUBE_ANALYTICS_CLIENT_ID=...
+YOUTUBE_ANALYTICS_CLIENT_SECRET=...
+YOUTUBE_ANALYTICS_REFRESH_TOKEN=...
+
+# GA4 (피드백 루프)
+GA4_PROPERTY_ID=...
+GA4_CREDENTIALS_PATH=./state/ga4-service-account.json
+
+# 로컬 출력
+YOUTUBE_OUTPUT_DIR=./output/youtube-ready
 ```
 
 ---
@@ -517,25 +700,55 @@ PODCAST_FEED_PATH=./state/podcast-feed.xml
 
 | 패키지 | 용도 | 설치 |
 |--------|------|------|
-| `playwright` | 티스토리 브라우저 자동화 | `npm install playwright` |
-| `googleapis` | YouTube Data API v3 | `npm install googleapis` |
-| `google-auth-library` | YouTube OAuth | `npm install google-auth-library` |
-| `podcast` | RSS feed 생성 | `npm install podcast` |
+| `playwright` | 티스토리 자동화 | `npm install playwright` |
+| ~~podcast~~ | ~~RSS feed 생성~~ | 삭제 — Spotify 직접 업로드로 대체 |
 | `@remotion/cli` | 영상 렌더링 | 기존 설치됨 |
 | `@remotion/media-utils` | 오디오 길이 계산 | `npm install @remotion/media-utils` |
+| `remotion-subtitles` | SRT → 애니메이션 자막 | `npm install remotion-subtitles` |
+| `googleapis` | YouTube Analytics + GA4 | `npm install googleapis` |
+| `notebooklm-mcp-cli` | NotebookLM CLI/MCP | `pip install notebooklm-mcp-cli` |
 
 ---
 
 ## 구현 우선순위
 
-| Phase | 내용 | 의존성 | 산출물 |
+| Phase | 내용 | 실현성 | 산출물 |
 |-------|------|--------|--------|
-| **P1** | MimikaStudio Mac 설치 + `mimika-client.ts` | Mac 환경 | TTS API 호출 가능 |
-| **P2** | 티스토리 Playwright 자동화 | playwright | 텍스트 게시 자동화 |
-| **P3** | Remotion BriefVideo Composition | P1 TTS 출력 | mp4 영상 생성 |
-| **P4** | YouTube Data API 업로더 | P3 영상 + OAuth 셋업 | 유튜브 업로드 자동화 |
-| **P5** | 팟캐스트 RSS + 블로그 API | P1 TTS 출력 | 오디오/텍스트 배포 |
-| **P6** | `publish-dispatcher` 통합 | P1~P5 전체 | `npm run publish:channels` |
+| **P1** | Threads API 연동 (`threads-publisher.ts`) | 9/10 | brief → Threads 자동 발행. Instagram 계정 생성 후 Meta Developer 앱 진행 |
+| **P2** | NotebookLM MCP → 팟캐스트 MP3 생성 | 7/10 | brief → 2인 대화 MP3 |
+| **P3a** | Gemini 섹션별 이미지 생성 (`gemini-image.ts`) | 9/10 | 무료 $0, gemini-client.ts 확장 |
+| **P3b** | Remotion BriefPodcast Composition + 로컬 저장 | 7.5/10 | MP3 + 섹션 이미지 → mp4 + metadata.json |
+| **P4** | Ghost/WP API 연동 | 8/10 | brief 전문 블로그 자동 발행 |
+| **P5** | 팟캐스트 메타데이터 생성 + Spotify 업로드 가이드 | 8/10 | mp3 + metadata → 수동 업로드 |
+| **P6** | 크로스 프로모션 (2-pass + 3rd pass) | — | 모든 채널 상호 링크 |
+| **P7** | 티스토리 Playwright (보조) | 5/10 | 한국 SEO 커버리지 |
+| **P8** | YouTube Analytics + GA4 피드백 수집기 | 8/10 | 성과 데이터 Supabase 저장 |
+| **P9** | insight-generator 주간 리포트 | 7/10 | 자동 제안 + 운영자 승인 루프 |
+
+---
+
+## Supabase 스키마 확장 (검증 후 적용)
+
+```sql
+-- brief_posts 채널 발행 메타데이터
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS channel_results jsonb DEFAULT '[]';
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS cross_promo jsonb DEFAULT '{}';
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS cross_promo_synced boolean DEFAULT false;
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_video_id text;
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_linked boolean DEFAULT false;
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS channel_metrics jsonb DEFAULT '{}';
+```
+
+---
+
+## 완성 기준점
+
+| 레벨 | 정의 | 측정 기준 |
+|------|------|----------|
+| **MVP** | brief → Threads 자동 발행 + 팟캐스트 MP3 생성 | Threads API 호출 성공 + NotebookLM MP3 다운로드 |
+| **v1.0** | 전 채널 발행 + 크로스 프로모션 | 5개 채널 모두 결과 기록 + Pass 2 완료 |
+| **v1.5** | YouTube 완성품 + 수동 업로드 루프 | mp4 + metadata.json 생성 + video_id 등록 → Pass 3 |
+| **v2.0** | 피드백 루프 가동 | Analytics 수집 → 주간 insight → 운영자 승인 → 파라미터 반영 |
 
 ---
 
@@ -543,14 +756,14 @@ PODCAST_FEED_PATH=./state/podcast-feed.xml
 
 | 리스크 | 영향도 | 대응 |
 |--------|--------|------|
-| 티스토리 Open API 완전 종료 | 높음 | Playwright 브라우저 자동화로 대체, 세션 쿠키 재사용 |
-| 티스토리 하루 5개 글 제한 | 중간 | `scheduled` 큐로 일일 배분, 초과 시 다음날 이월 |
-| YouTube 쿼터 하루 ~6건 | 중간 | 일일 배치 스케줄링, 별도 GCP 프로젝트로 풀 확장 가능 |
-| YouTube OAuth 미인증 앱 | 높음 | Google 인증 심사 **2~4주 사전 신청** 필수 |
-| MimikaStudio Alpha 단계 | 중간 | job 실패 시 watchdog 에스컬레이션, TTS 재시도 로직 |
-| MimikaStudio BSL-1.1 라이선스 | 낮음 | 내부 도구로만 사용, 산출물만 외부 유통 → 위반 없음 |
-| Remotion Mediabunny 마이그레이션 | 낮음 | Media Parser deprecated (2026-02) → 신규 구현은 Mediabunny 기준 |
-| Playwright 티스토리 UI 변경 | 중간 | selector 기반 → data-testid 또는 role 기반 선택자 우선 |
+| NotebookLM 비공식 API 변경 | 높음 | Qwen3-TTS fallback 자동 전환, `nlm doctor` 정기 점검 |
+| Threads API 정책 변경 | 낮음 | 공식 API이므로 사전 공지 예상, 마이그레이션 여유 있음 |
+| 티스토리 UI 변경 | 중간 | role/data-testid 기반 선택자, 보조 채널이므로 영향 제한적 |
+| 티스토리 하루 5건 제한 | 낮음 | 2~3건 이내 운영, 초과 시 다음날 이월 |
+| ~~Remotion Company License~~ | ~~중간~~ | **해소됨** — 개인(individual) 무조건 무료. 영리법인 4명+ 시 유료 전환 |
+| YouTube 수동 업로드 번거로움 | 낮음 | metadata.json으로 복사-붙여넣기 최소화 |
+| GA4/Analytics 인증 | 낮음 | read-only 스코프, 앱 인증 불필요 |
+| NotebookLM Google 계정 리스크 | 중간 | 별도 서비스 계정 사용, 대량 생성 자제 |
 
 ---
 
@@ -558,10 +771,11 @@ PODCAST_FEED_PATH=./state/podcast-feed.xml
 
 | 채널 | 일일 제한 | 대응 전략 |
 |------|----------|-----------|
-| 티스토리 | ~5건/일 (비공식) | 일일 배치 최대 3~4건 권장 |
-| YouTube | ~6건/일 (쿼터) | scheduled 큐, 필요 시 GCP 프로젝트 분리 |
-| Ghost/WordPress | API 제한 없음 (셀프호스팅) | 제한 없음 |
-| 팟캐스트 RSS | 제한 없음 | 제한 없음 |
+| Threads | 250건/일 | 충분, 제한 걱정 없음 |
+| Ghost/WordPress | 없음 (셀프호스팅) | 제한 없음 |
+| 티스토리 | ~5건/일 (비공식) | 2~3건 이내 권장 |
+| YouTube | 수동 업로드 | 운영자 판단 |
+| 팟캐스트 RSS | 없음 | 제한 없음 |
 
 ---
 
@@ -572,17 +786,30 @@ PODCAST_FEED_PATH=./state/podcast-feed.xml
 - `docs/ref/AGENT-OPERATING-MODEL.md` — publisher/watchdog 에이전트 역할
 - `docs/ref/AUTO-PUBLISH-RULES.md` — approved → scheduled → published 전환 규칙
 - `docs/ref/VIDEO-PIPELINE.md` — video_jobs 파이프라인 (Remotion 연동 참고)
-- `docs/ref/VIDEO-WORKER-CONTRACT.md` — watch folder 계약 (Playwright 정책 참고)
-- `packages/media-engine/CLAUDE.md` — media-engine 구조 (render-spawn.ts, supabase-storage.ts)
+- `packages/media-engine/CLAUDE.md` — media-engine 구조
 
-### 외부
-- [MimikaStudio GitHub](https://github.com/BoltzmannEntropy/MimikaStudio)
-- [MimikaStudio 공식 사이트](https://boltzmannentropy.github.io/mimikastudio.github.io/)
+### 외부 — 채널 API
+- [Threads Publishing API](https://developers.facebook.com/docs/threads/posts/) — Meta 공식
+- [Threads API Changelog](https://developers.facebook.com/docs/threads/changelog/) — 2025.7 대규모 확장
+- [Ghost Admin API](https://ghost.org/docs/admin-api/) — 공식
+- [WordPress REST API](https://developer.wordpress.org/rest-api/) — 공식
 - [티스토리 Open API 종료 안내](https://tistory.github.io/document-tistory-apis/)
-- [YouTube Data API v3 공식](https://developers.google.com/youtube/v3)
-- [YouTube Upload API 가이드](https://postproxy.dev/blog/youtube-upload-api-guide/)
-- [Remotion 공식 문서](https://www.remotion.dev/docs/)
-- [Remotion Audio 사용법](https://www.remotion.dev/docs/using-audio)
-- [Remotion 오디오 동기화](https://oboe.com/learn/mastering-programmatic-video-with-remotion-4bsrlt/audio-and-synchronization-4)
-- [podcast npm 패키지](https://www.npmjs.com/package/podcast)
+- [YouTube Analytics API](https://developers.google.com/youtube/analytics) — 공식
+- [GA4 Data API](https://developers.google.com/analytics/devguides/reporting/data/v1) — 공식
+
+### 외부 — 오디오/영상
+- [notebooklm-mcp-cli](https://github.com/jacob-bd/notebooklm-mcp-cli) — NotebookLM MCP 자동화
+- [Google Podcast API](https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/podcast-api) — 공식 (Enterprise 화이트리스트)
+- [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) — 한국어 WER 1.741
+- [Chatterbox TTS Server](https://github.com/devnen/Chatterbox-TTS-Server) — OpenAI-compatible
+- [Remotion 공식 문서](https://www.remotion.dev/docs/) — v4.0.438
+- [Remotion & Mediabunny](https://www.remotion.dev/docs/mediabunny/) — Media Parser 후계
+- [remotion-subtitles](https://github.com/ahgsql/remotion-subtitles) — SRT 자막 라이브러리
+- [podcast npm](https://www.npmjs.com/package/podcast) — RSS 생성
 - [Playwright 공식](https://playwright.dev/)
+
+### 외부 — 리서치 근거
+- [MimikaStudio 폐기 근거](https://github.com/BoltzmannEntropy/MimikaStudio) — Alpha, 단독 개발자, 라이선스 혼란
+- [YouTube OAuth 검증 지연](https://discuss.google.dev/t/oauth-data-access-verification-stuck-under-review-for-6-months/339927) — 2~6개월
+- [YouTube AI 콘텐츠 단속](https://flocker.tv/posts/youtube-inauthentic-content-ai-enforcement/) — 2026.1 대량 삭제
+- [Qwen3-TTS 벤치마크](https://arxiv.org/html/2601.15621v1) — 한국어 WER 1.741

@@ -51,7 +51,18 @@ ORDER BY slug ASC
 
 ### 3-3. 본문 작성
 
-아래 구조로 작성한다. **레퍼런스 브리프**(`openai-gpt-5-4-mini-nano-launch`)를 기준으로 삼는다.
+아래 구조로 작성한다. **레퍼런스 브리프 풀**에서 가장 유사한 토픽의 A등급 brief를 few-shot 예시로 참조한다.
+
+**레퍼런스 조회**:
+```sql
+SELECT title, summary, body, source_links FROM public.brief_posts
+WHERE last_editor_note LIKE '%[REFERENCE]%'
+  AND review_status = 'approved'
+ORDER BY published_at DESC NULLS LAST
+LIMIT 3
+```
+
+조회 결과가 0건이면 기존 레퍼런스(`openai-gpt-5-4-mini-nano-launch`)를 사용한다.
 
 #### 제목 규칙
 - 영어, 15-70자
@@ -85,7 +96,19 @@ ORDER BY slug ASC
 - 각 소스: `{ "label": "사이트명", "href": "https://..." }`
 - 모든 href는 HTTP(S)여야 함
 
-### 3-4. 품질 검증 (자체 체크)
+### 3-4. 품질 스코어 기록 + 레퍼런스 태깅
+
+작성 후 `brief-quality-check.ts`의 확장 스코어(0~100)를 산출한다.
+
+**산출 기준** (게이트 50점 + 확장 50점):
+- 게이트: title(10) + summary(10) + body(10) + source(10) + 용어(5) + URL(5)
+- 확장: titleAppeal(10) + summaryStandalone(10) + structureScore(10) + sourceDiversity(10) + readability(10)
+
+**등급**: A(≥85) B(≥70) C(≥55) D(≥40) F(<40)
+
+**A등급 레퍼런스 자동 태깅**: score ≥ 85이면 `last_editor_note`에 `[REFERENCE]` 태그를 추가한다. 이 brief는 향후 few-shot 예시 풀에 포함된다.
+
+### 3-5. 품질 검증 (자체 체크)
 
 작성 후 아래 6항목을 자체 검증한다:
 
@@ -100,7 +123,7 @@ ORDER BY slug ASC
 
 **6/6 통과해야만 DB에 기록한다.** 하나라도 실패하면 해당 브리프는 건너뛰고 사유를 기록한다.
 
-### 3-5. DB 업데이트
+### 3-6. DB 업데이트
 
 품질 검증 통과 시:
 
@@ -137,7 +160,8 @@ ON CONFLICT DO NOTHING
 ## Daily Editorial Review
 
 - 대상: N건
-- 가공 완료: M건
+- 가공 완료: M건 (평균 스코어: XX점)
+- A등급 레퍼런스 태깅: N건
 - 건너뜀: K건 (사유: ...)
 - 품질 통과율: M/N
 

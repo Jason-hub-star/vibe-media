@@ -118,7 +118,7 @@
 ## Default Mode
 - 최종 운영 기본값은 `hybrid`
 - 기본 active:
-  - `chat/router/search/memory`: `mistral-small3.1`
+  - `chat/router/search/memory`: `qwen3.5-9b`
   - `classifier`: `claude-sonnet-4-6`
   - `brief draft`: `claude-sonnet-4-6`
   - `discover draft`: `claude-sonnet-4-6`
@@ -130,5 +130,5 @@
 - stage pointer activation은 runtime chat/search/memory active를 바꾸지 않는다.
 - automatic rollback monitor는 runtime role activation에서만 켠다.
 - 현재 상태:
-  - runtime role active는 `mistral-small3.1`
+  - runtime role active는 `qwen3.5-9b`
   - stage pointer 4개는 모두 `claude-sonnet-4-6`

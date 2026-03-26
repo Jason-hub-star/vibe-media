@@ -49,7 +49,12 @@ async function upsertSources(sql: ReturnType<typeof createSupabaseSql>, snapshot
 }
 
 async function upsertRuns(sql: ReturnType<typeof createSupabaseSql>, snapshot: LiveIngestSnapshot) {
+  const validSourceIds = new Set(snapshot.tables.sources.map(s => s.id));
   for (const row of snapshot.tables.ingest_runs) {
+    if (!validSourceIds.has(row.source_id)) {
+      console.warn(`[sync] skipping orphan run ${row.id}: source_id ${row.source_id} not in snapshot sources`);
+      continue;
+    }
     await sql`
       insert into public.ingest_runs (
         id,
@@ -79,7 +84,12 @@ async function upsertRuns(sql: ReturnType<typeof createSupabaseSql>, snapshot: L
 }
 
 async function upsertItems(sql: ReturnType<typeof createSupabaseSql>, snapshot: LiveIngestSnapshot) {
+  const validSourceIds = new Set(snapshot.tables.sources.map(s => s.id));
   for (const row of snapshot.tables.ingested_items) {
+    if (!validSourceIds.has(row.source_id)) {
+      console.warn(`[sync] skipping orphan item ${row.id}: source_id ${row.source_id} not in snapshot sources`);
+      continue;
+    }
     await sql`
       insert into public.ingested_items (
         id,
@@ -121,7 +131,18 @@ async function upsertItems(sql: ReturnType<typeof createSupabaseSql>, snapshot: 
 }
 
 async function upsertClassifications(sql: ReturnType<typeof createSupabaseSql>, snapshot: LiveIngestSnapshot) {
+  // items whose source_id is valid — only these were actually upserted to Supabase
+  const validSourceIds = new Set(snapshot.tables.sources.map(s => s.id));
+  const validItemIds = new Set(
+    snapshot.tables.ingested_items
+      .filter(i => validSourceIds.has(i.source_id))
+      .map(i => i.id)
+  );
   for (const row of snapshot.tables.item_classifications) {
+    if (!validItemIds.has(row.item_id)) {
+      console.warn(`[sync] skipping orphan classification ${row.id}: item_id ${row.item_id} not in valid items`);
+      continue;
+    }
     await sql`
       insert into public.item_classifications (
         id,
@@ -166,7 +187,9 @@ async function upsertClassifications(sql: ReturnType<typeof createSupabaseSql>, 
 }
 
 async function upsertRunAttempts(sql: ReturnType<typeof createSupabaseSql>, snapshot: LiveIngestSnapshot) {
+  const validSourceIds = new Set(snapshot.tables.sources.map(s => s.id));
   for (const row of snapshot.tables.ingest_runs) {
+    if (!validSourceIds.has(row.source_id)) continue;
     const attemptId = toStableUuid(`ingest-run-attempt:${row.id}:1`);
     await sql`
       insert into public.ingest_run_attempts (

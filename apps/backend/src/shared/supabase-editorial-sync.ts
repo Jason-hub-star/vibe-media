@@ -241,7 +241,13 @@ function deriveDiscoverActions(
 }
 
 export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
-  const itemsById = new Map(snapshot.tables.ingested_items.map((item) => [item.id, item]));
+  const validSourceIds = new Set(snapshot.tables.sources.map(s => s.id));
+  // only include items whose source was actually synced to Supabase
+  const itemsById = new Map(
+    snapshot.tables.ingested_items
+      .filter(item => validSourceIds.has(item.source_id))
+      .map((item) => [item.id, item])
+  );
   const sourcesById = new Map(snapshot.tables.sources.map((source) => [source.id, source]));
 
   const briefPosts: BriefPostRow[] = [];

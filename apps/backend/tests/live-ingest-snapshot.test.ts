@@ -81,7 +81,7 @@ describe("live ingest snapshot", () => {
 
     const snapshot = materializeLiveIngestSnapshot(report);
 
-    expect(snapshot.tables.sources).toHaveLength(5);
+    expect(snapshot.tables.sources).toHaveLength(3); // hardcoded fallback: 3개
     expect(snapshot.tables.ingest_runs).toHaveLength(1);
     expect(snapshot.tables.ingested_items).toHaveLength(1);
     expect(snapshot.tables.item_classifications).toHaveLength(1);

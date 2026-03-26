@@ -27,7 +27,7 @@ export interface SnapshotSourceRow {
   name: string;
   kind: string;
   base_url: string;
-  source_tier: "auto-safe";
+  source_tier: "auto-safe" | "render-required" | "manual-review-required";
   enabled: boolean;
   last_success_at: string | null;
   last_failure_at: string | null;

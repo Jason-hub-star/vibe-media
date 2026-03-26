@@ -5,6 +5,7 @@
 - `apps/backend`: backend naming skeleton and future services
 - `packages/content-contracts`: shared types and status values
 - `packages/design-tokens`: visual tokens and asset specs
+- `packages/media-engine`: 도메인 무관 미디어 처리 엔진
 - `supabase`: schema and lightweight functions
 - `tools/stitch`: design prompt and variant generation helpers
 
@@ -19,8 +20,11 @@
 - source/tool 최종 채택은 `docs/ref/SOURCE-RESEARCH-METHOD.md` 결과를 따른다.
 - LLM 역할 매핑은 `docs/ref/LLM-ORCHESTRATION-MAP.md`를 따른다.
 - 현재 운영 기본값은 하이브리드다.
-  - `chat/router/search/memory`: `mistral-small3.1`
+  - `chat/router/search/memory`: `qwen3.5-9b` (ollama, 로컬)
   - `classifier`, `brief draft`, `discover draft`, `critic`: `claude-sonnet-4-6`
+- `packages/media-engine`: 도메인 무관 미디어 엔진 (이미지/텍스트/오디오/영상/스토리지/채널발행)
+  - 기존 16개 모듈 구현 완료 (Kie.ai, Gemini, Sharp, Remotion spawn, Supabase Storage)
+  - 채널 발행(tts/publish/image/feedback) 모듈은 설계 완료, 구현 전: `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
 
 ## Discovery Extension Surface
 - public discovery lives at `/radar`

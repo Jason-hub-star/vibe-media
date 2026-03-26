@@ -31,6 +31,7 @@
 26. `docs/status/EXECUTION-CHECKLIST.md`
 27. `docs/status/DECISION-LOG.md`
 28. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+29. `docs/status/PIPELINE-DIAGRAM.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.

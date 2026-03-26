@@ -37,8 +37,10 @@
 - `ShowcaseTeaser`
 
 ## Pipeline Notes
-- `sources`는 수집 원천을 관리한다.
+- `sources`는 수집 원천을 관리한다. DB가 SSOT이며 `pipeline:live-fetch`가 직접 읽는다.
   - core fields: `name`, `kind`, `base_url`, `source_tier`, `enabled`
+  - fetch fields: `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo`
+  - tracking fields: `last_success_at`, `last_failure_at`, `failure_reason`
 - `ingest_runs`는 개별 실행 단위를 기록한다.
   - core fields: `source_id`, `run_status`, `started_at`, `finished_at`, `error_message`
 - `ingested_items`는 source에서 들어온 개별 결과를 저장한다.
