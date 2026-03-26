@@ -219,3 +219,5 @@
   - Phase 3: Footer 5-section 확장 (Product/Legal/Connect/Brand), /privacy + /terms 법적 페이지, GA4 Analytics 컴포넌트 (env 기반), RSS feed (/feed.xml route handler)
   - Phase 4: Brief 상세 공유 버튼 (X/LinkedIn/Threads), Newsletter social proof CTA
   - SEO 감사 문서: docs/ref/SEO-COMMERCIALIZATION-AUDIT.md (글로벌 7개 + 한국 5개 경쟁사 벤치마크)
+- 동적 OG 이미지 생성 (2026-03-26): done — opengraph-image.tsx + twitter-image.tsx (root + brief detail), Edge runtime, 브랜드 톤 (ink/orange/cream)
+- 검색 + 카테고리 필터 (2026-03-26): done — 공용 FilterBar 컴포넌트 (검색 + pill 필터), brief topic 필터, radar category group 필터, SSOT 카테고리 기반, filter-pill CSS 공용화

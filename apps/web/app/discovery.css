@@ -133,3 +133,13 @@
     padding: 0.7rem 0;
   }
 }
+
+/* ── Discover filter sections ── */
+
+.discover-filter-section {
+  margin-top: 1.5rem;
+}
+
+.discover-filter-section .eyebrow {
+  margin-bottom: 0.75rem;
+}

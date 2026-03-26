@@ -2,6 +2,15 @@ import type { Metadata } from "next";
 
 import { SITE_URL } from "@/lib/constants";
 import { EmptyState } from "@/components/EmptyState";
+import { PageFrame } from "@/components/PageFrame";
+import { PlaceholderArt } from "@/components/PlaceholderArt";
+import { SectionBlock } from "@/components/SectionBlock";
+import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
+import { DiscoverCard } from "@/features/discover/view/DiscoverCard";
+import { DiscoverListWithFilter } from "@/features/discover/view/DiscoverListWithFilter";
+import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
+import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
+import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
 export const metadata: Metadata = {
   title: "Radar — AI Discovery Hub",
@@ -9,22 +18,12 @@ export const metadata: Metadata = {
     "Track emerging AI tools, research, and trends across 24 categories.",
   alternates: { canonical: `${SITE_URL}/radar` }
 };
-import { PageFrame } from "@/components/PageFrame";
-import { PlaceholderArt } from "@/components/PlaceholderArt";
-import { SectionBlock } from "@/components/SectionBlock";
-import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
-import { DiscoverCard } from "@/features/discover/view/DiscoverCard";
-import { presentDiscoverCategory, groupByCategory } from "@/features/discover/presenter/present-discover-category";
-import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
-import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
-import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
 export default async function RadarPage() {
   const items = await listDiscoverItems();
   const showcaseEntries = await listShowcaseEntries();
   const featured = items.filter((item) => item.highlighted);
   const rest = items.filter((item) => !item.highlighted);
-  const grouped = groupByCategory(rest);
   const showcasePicks = showcaseEntries.filter(
     (entry) => entry.featuredRadar && isPublishedShowcaseEntry(entry)
   );
@@ -76,32 +75,9 @@ export default async function RadarPage() {
         )}
       </SectionBlock>
 
-      {grouped.size === 0 ? (
-        <SectionBlock eyebrow="Discovery index" title="Extensible categories for the next curation wave">
-          <EmptyState
-            body="Tracked resources will show up here after sources and curation rules are connected."
-            title="No discovery items yet"
-          />
-        </SectionBlock>
-      ) : (
-        Array.from(grouped.entries()).map(([category, categoryItems]) => {
-          const cat = presentDiscoverCategory(category);
-          return (
-            <SectionBlock
-              key={category}
-              eyebrow={`${cat.icon} ${cat.label}`}
-              sectionId={`category-${category}`}
-              title={`${categoryItems.length} item${categoryItems.length > 1 ? "s" : ""} in ${cat.groupLabel}`}
-            >
-              <div className="panel-grid">
-                {categoryItems.map((item) => (
-                  <DiscoverCard item={item} key={item.id} />
-                ))}
-              </div>
-            </SectionBlock>
-          );
-        })
-      )}
+      <SectionBlock eyebrow="Discovery index" title="Browse by category group or search across all items">
+        <DiscoverListWithFilter items={rest} />
+      </SectionBlock>
     </PageFrame>
   );
 }

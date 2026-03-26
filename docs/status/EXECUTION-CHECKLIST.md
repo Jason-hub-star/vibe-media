@@ -93,6 +93,8 @@
 - [x] brief cover image 파이프라인 (RSS → DB → 프론트)
 - [x] 레퍼런스 브리프 등록 (Quality Check 6/6 기준)
 - [x] SEO 기반 구축 (favicon, robots.ts, sitemap.ts, per-page metadata, JSON-LD 3종, GA4, RSS, 공유 버튼, Footer 확장, Privacy/Terms)
+- [x] 동적 OG 이미지 (opengraph-image.tsx + twitter-image.tsx, root + brief detail)
+- [x] 검색 + 카테고리 필터 (공용 FilterBar, brief topic 필터, radar group 필터)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화

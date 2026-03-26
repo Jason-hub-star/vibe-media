@@ -222,6 +222,51 @@
   resize: vertical;
 }
 
+/* -- filter bar (shared: brief + radar) -- */
+
+.filter-bar {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filter-search {
+  max-width: 360px;
+}
+
+.filter-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.filter-pill {
+  border: 1px solid rgba(var(--color-cream-rgb), 0.14);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  color: rgba(var(--color-cream-rgb), 0.72);
+  font: inherit;
+  font-size: var(--type-caption);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.filter-pill:hover {
+  background: rgba(var(--color-cream-rgb), 0.06);
+}
+
+.filter-pill--active {
+  background: rgba(var(--color-orange-rgb), 0.18);
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+}
+
+.filter-pill-icon {
+  margin-right: 0.25rem;
+}
+
 /* -- state components -- */
 
 .state-box {
