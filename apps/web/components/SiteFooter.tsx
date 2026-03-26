@@ -7,6 +7,11 @@ const productLinks = [
   { href: "/newsletter", label: "Newsletter" }
 ];
 
+const companyLinks = [
+  { href: "/about", label: "About" },
+  { href: "mailto:contact@vibehub.tech", label: "Contact" }
+];
+
 const legalLinks = [
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms of Service" }
@@ -20,6 +25,17 @@ export function SiteFooter() {
           <p className="footer-heading">Product</p>
           <ul className="footer-links">
             {productLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href}>{link.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="footer-col">
+          <p className="footer-heading">Company</p>
+          <ul className="footer-links">
+            {companyLinks.map((link) => (
               <li key={link.href}>
                 <Link href={link.href}>{link.label}</Link>
               </li>
