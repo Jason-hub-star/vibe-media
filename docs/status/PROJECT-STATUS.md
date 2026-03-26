@@ -222,3 +222,4 @@
   - SEO 감사 문서: docs/ref/SEO-COMMERCIALIZATION-AUDIT.md (글로벌 7개 + 한국 5개 경쟁사 벤치마크)
 - 동적 OG 이미지 생성 (2026-03-26): done — opengraph-image.tsx + twitter-image.tsx (root + brief detail), Edge runtime, 브랜드 톤 (ink/orange/cream)
 - 검색 + 카테고리 필터 (2026-03-26): done — 공용 FilterBar 컴포넌트 (검색 + pill 필터), brief topic 필터, radar category group 필터, SSOT 카테고리 기반, filter-pill CSS 공용화
+- About 페이지 (2026-03-26): done — 미션 + 서비스 설명 + 연락처 + 뉴스레터 CTA, Footer Company 섹션 추가 (5-section 완성), 내부 기술 비노출

@@ -32,6 +32,12 @@
 - 현재 상태: client-side success/error copy 구현
 - 메타데이터: title "Newsletter", description "Get weekly AI brief digests..."
 
+### `/about`
+- 목적: 서비스 소개 + 연락처 + 뉴스레터 CTA
+- 핵심 섹션: 미션, What we do, Brief/Radar 설명, 연락처 (contact@vibehub.tech), NewsletterForm 재사용
+- 메타데이터: title "About", canonical /about
+- 원칙: 내부 기술(파이프라인/AI/스코어) 노출 없음 — 사용자 가치만 표현
+
 ### `/privacy`
 - 목적: 개인정보처리방침 (뉴스레터 이메일 수집 법적 필수)
 - 핵심 섹션: 6개 조항 (수집정보, 사용목적, 공유, 쿠키, 보존, 연락처)
