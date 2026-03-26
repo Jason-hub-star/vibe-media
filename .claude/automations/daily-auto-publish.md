@@ -214,3 +214,15 @@ npm run publish:channels <brief-slug>
 - 발행 결과는 DB + Telegram 모두에 기록한다.
 - 실패한 채널은 다음 수동 실행 시 재시도 가능하다 (`npm run publish:channels <slug>`).
 - dry-run 모드(`--dry-run`)로 사전 검증이 가능하다.
+
+---
+
+## 10. 미디어 발행 연결
+
+채널 발행(§9) 완료 후, `daily-media-publish.md`가 이어서 실행된다.
+미디어 파이프라인(NotebookLM → 자막 → 아바타 → 합성 → YouTube 가이드)은 별도 프롬프트로 분리되어 있다.
+
+```
+daily-auto-publish (§9 채널 발행)
+  └→ daily-media-publish (NotebookLM → 자막 → 아바타 → 합성)
+```
