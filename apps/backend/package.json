@@ -28,7 +28,9 @@
     "trial:brief-draft": "tsx src/workers/run-brief-draft-shadow-trial.ts",
     "trial:discover-draft": "tsx src/workers/run-discover-draft-shadow-trial.ts",
     "trial:all": "tsx src/workers/run-all-shadow-trials.ts",
-    "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts"
+    "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts",
+    "publish:channels": "tsx src/workers/run-publish-channels.ts",
+    "publish:link-youtube": "tsx src/workers/run-link-youtube.ts"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",

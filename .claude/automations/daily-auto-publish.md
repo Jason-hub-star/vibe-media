@@ -16,6 +16,7 @@ quality check 실패 항목은 `draft + pending`으로 되돌려 다음 editoria
 
 ```
 daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-publish (이것)
+  └→ publish:channels (published 브리프 → 외부 채널 배포, §9)
 ```
 
 ---
@@ -173,3 +174,43 @@ Brief 보고와 함께 Telegram에 포함한다:
 - Brief처럼 body 가공이나 editorial rewrite는 하지 않는다 — 파이프라인이 만든 그대로 발행한다.
 - 품질 검증 실패 항목은 skip만 하고 상태를 바꾸지 않는다 (다음 실행에서 재시도).
 - Brief와 Discover 보고를 하나의 Telegram 메시지로 합쳐 보낸다.
+
+---
+
+## 9. 외부 채널 발행 (Channel Publish)
+
+Auto Publish에서 새로 `published` 전환된 brief를 외부 채널(Threads, YouTube 등)에 자동 배포한다.
+
+### 9-1. 대상 선정
+
+Auto Publish(§3)에서 `published`로 전환된 brief slug 목록을 수집한다.
+전환된 brief가 0건이면 이 단계를 skip한다.
+
+### 9-2. 채널 발행 실행
+
+각 published brief에 대해:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+npm run publish:channels <brief-slug>
+```
+
+- `PUBLISH_CHANNELS` 환경변수로 활성 채널 제어 (기본: `threads,youtube`)
+- 각 brief별로 독립 실행 — 한 brief 실패가 다른 brief에 영향 없음
+- 결과는 자동으로 DB(`channel_publish_results`)에 저장 + Telegram 보고
+
+### 9-3. 안전장치
+
+- `published` 상태 brief만 대상 — draft/review/scheduled는 절대 건드리지 않음
+- 동일 brief 중복 발행 방지: `channel_publish_results` 테이블에 이전 성공 기록이 있으면 skip
+- Threads API 250건/일 제한 — 일일 brief 10건 이하이므로 안전
+- 채널별 실패 격리: `Promise.allSettled`로 한 채널 실패가 다른 채널에 영향 없음
+
+### 9-4. 행동 원칙 (Channel Publish)
+
+- Auto Publish에서 전환된 brief만 대상으로 한다 — 과거 published brief는 건드리지 않는다.
+- 발행 결과는 DB + Telegram 모두에 기록한다.
+- 실패한 채널은 다음 수동 실행 시 재시도 가능하다 (`npm run publish:channels <slug>`).
+- dry-run 모드(`--dry-run`)로 사전 검증이 가능하다.

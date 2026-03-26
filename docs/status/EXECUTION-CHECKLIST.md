@@ -135,20 +135,28 @@
 - [ ] 비활성 소스 월 1회 재검증 (사이트 리뉴얼 후 URL 변경 대응)
 - [ ] 소스 자동 비활성화 (3회 연속 실패 → enabled=false)
 
-## P3 — Channel Publish (v2 설계 완료, 검증 후 구현)
-- [ ] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일
-- [~] P2: NotebookLM CLI → 팟캐스트 M4A 생성 — CLI 실동작 검증 완료 (17분 2인대화, loudnorm 후처리 확정). `notebooklm-bridge.ts` 코드 구현 미완
-- [ ] P3a: Whisper STT + Gemini 번역 (영어→스페인어 SRT)
-- [ ] P3b: Remotion BriefAudiogram ×2언어 (웨이브폼+자막+커버) + 로컬 저장
-- [ ] P3c: 썸네일 생성 (Gemini, en/es 각 1장)
+## P3 — Channel Publish (v2 설계 완료 → 코드 구현 완료)
+- [x] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일, dryRun 지원
+- [x] P2: NotebookLM CLI → 팟캐스트 M4A 생성 (`notebooklm-bridge.ts`) — nlm CLI spawn + ffmpeg loudnorm
+- [x] P3a: Whisper STT + Gemini 번역 (`whisper-stt.ts`, `srt-utils.ts`) — SRT 파싱/생성/번역
+- [x] P3b: Remotion BriefAudiogram (`BriefAudiogram.tsx`, `render-audiogram.ts`) — 웨이브폼+자막+커버 Composition
+- [x] P3c: 썸네일 생성 (`thumbnail-gen.ts`) — Sharp SVG 브랜드 + 커버 리사이즈 1280×720
 - [ ] P3d: 섹션별 AI 이미지 (후순위 — YouTube retention 데이터 보고 결정)
-- [ ] P4: Ghost/WP API 연동 (`ghost-publisher.ts`)
-- [ ] P5: 팟캐스트 메타데이터 + Spotify 직접 업로드 가이드 (`spotify-metadata.ts`)
-- [ ] P6: 크로스 프로모션 2-pass + 3rd pass (`cross-promo-sync.ts`)
-- [ ] P7: 티스토리 Playwright (보조) (`tistory-publisher.ts`)
+- [x] P4: Ghost/WP API 스텁 (`ghost-publisher.ts`) — 인터페이스 구현, API 연동 미완
+- [x] P5: 팟캐스트 메타데이터 (`spotify-metadata.ts`) — JSON 생성 완전 구현
+- [x] P6: 크로스 프로모션 2-pass + 3rd pass (`cross-promo-sync.ts`) — 완전 구현
+- [x] P7: 티스토리 스텁 (`tistory-publisher.ts`) — 인터페이스 구현, API 연동 미완
+- [x] Publish Dispatcher (`publish-dispatcher.ts`) — Promise.allSettled 병렬 + 실패 격리
+- [x] Backend CLI (`publish:channels`, `publish:link-youtube`)
 - [ ] P8: YouTube Analytics + GA4 피드백 수집기 (`analytics-collector.ts`)
 - [ ] P9: insight-generator 주간 리포트 (`insight-generator.ts`)
-- [ ] Supabase 스키마 확장 (channel_results, cross_promo, channel_metrics)
+- [x] Supabase 스키마 확장 — channel_publish_results + publish_dispatches 테이블 생성 (2026-03-26)
+- [x] 채널 발행 DB 저장 + Telegram 보고 연결 (channel-publish-report.ts)
+- [x] daily-auto-publish.md §9 채널 발행 단계 추가
+- [x] 크로스프로모 본문 발행에서 분리 (skipCrossPromo 옵션) — 채널 2개 이상 시 별도 워커 예정
+- [ ] channel_metrics 테이블 (YouTube Analytics + GA4 피드백 연동 시)
+- [ ] Ghost/Tistory 실제 API 연동
+- [x] Threads 실제 토큰 확보 + 라이브 테스트 — @vibehub1030 발행 성공 (2026-03-26)
 
 ## Current Snapshot
 - [x] 공개 사이트 기본 shell

@@ -23,6 +23,14 @@
 - `showcase_links`
 - `ingest_run_attempts`
 - `video_job_attempts`
+- `channel_publish_results`
+  - 채널별 발행 결과 이력. brief_slug + channel_name + created_at으로 추적.
+  - core fields: `brief_slug`, `channel_name`, `success`, `published_url`, `error_message`
+  - meta fields: `dry_run`, `duration_ms`, `created_at`
+  - 인덱스: brief_slug+created_at desc, channel_name+success+created_at desc
+- `publish_dispatches`
+  - 발행 배치 단위 기록. 한 번의 publish:channels 실행 = 1개 dispatch.
+  - core fields: `brief_slug`, `channels` (text[]), `all_success`, `dry_run`, `duration_ms`
 
 ## Shared Contracts
 - `BriefListItem`

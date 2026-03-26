@@ -94,7 +94,7 @@
   - 자동화 프롬프트 3건 추가/수정: daily-editorial-review(스코어+few-shot), daily-dedup-guard(신규), weekly-source-health(신규)
   - Supabase 현황: sources 30(23활성) / ingest_runs 57 / ingested_items 19 / brief_posts 19(draft14+review4+published1) / discover_items 8
 - NotebookLM 도구 선정: done — `notebooklm-mcp-cli` (CLI 모드) 채택. PleasePrompto/notebooklm-mcp는 팟캐스트 기능 없음(Q&A 전용), Google 공식 Podcast API는 Enterprise allowlist 접근 불가
-- Threads API 사전 준비: blocked — Instagram 계정 곧 생성 예정, Meta Developer 앱은 계정 생성 후 진행
+- Threads API 사전 준비: done — Meta Developer 앱 생성, OAuth redirect URI 설정, @vibehub1030 액세스 토큰 발급 완료
 - NotebookLM CLI 실동작 검증: done — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 + ffmpeg 설치 완료
 - 영상 전략 확정: done — Audiogram 방식 (웨이브폼+자막+커버 1장), 섹션별 이미지는 후순위. 다국어 2트랙 (영어+스페인어) 자막 번역 동시 생성 (비용 $0). 자기개선은 YouTube Analytics 숫자만 읽음
 - Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
@@ -105,6 +105,30 @@
   - Threads 공식 API 최우선 텍스트 채널로 추가 (9/10 실현성)
   - 2-pass 크로스 프로모션 + YouTube 비동기 3rd pass 설계
   - YouTube Analytics + GA4 피드백 루프 설계 (자동 제안 + 운영자 승인 모델)
+- Channel Publish Pipeline v2 구현: done — 23개 신규 파일, ~2,800줄
+  - Phase 0: 공통 타입 (channel-types.ts, fetch-with-retry.ts)
+  - Phase 1: Threads Publisher (createContainer → publish 2단계 + 크로스프로모 답글)
+  - Phase 2: NotebookLM Bridge (nlm CLI spawn + ffmpeg loudnorm)
+  - Phase 3a: Whisper STT (whisper-cpp spawn + SRT 파싱/생성/번역)
+  - Phase 3b: Remotion BriefAudiogram (웨이브폼+자막+커버 Composition)
+  - Phase 3c: 썸네일 생성 (Sharp SVG 브랜드 썸네일 + 커버 리사이즈)
+  - Phase 4: 크로스프로모 (2-pass sync + YouTube 비동기 3rd pass)
+  - Phase 5: Publish Dispatcher (Promise.allSettled 병렬 발행 + 실패 격리)
+  - Phase 6: Backend CLI (publish:channels, publish:link-youtube)
+  - Phase 7: 스텁 Publishers (ghost, tistory, spotify-metadata, youtube-local)
+  - 테스트: 28개 신규 테스트 전부 통과 (threads 7, dispatcher 6, srt-utils 5, notebooklm 3, promo 6, fetch-retry 1)
+  - 코드 품질 개선: spawnAsync 공용 유틸 추출 (3곳 중복 제거), 브랜드 상수화 (4곳 하드코딩 → brand.ts), 채널 on/off 환경변수화 (PUBLISH_CHANNELS)
+  - briefMeta DB 연결: placeholder → Supabase getSupabaseBriefDetail() 실제 조회
+- Threads 라이브 발행 검증: done — @vibehub1030 계정에 실제 포스팅 성공 (brief: openai-gpt-5-4-mini-nano-launch)
+  - 2단계 API 흐름 검증: createContainer → publish 정상 동작
+  - 크로스프로모: skipCrossPromo=true 기본 적용 (Threads 전파 지연 → 채널 2개 이상 운영 시 별도 워커로 분리 예정)
+  - Supabase → Threads 전체 경로 E2E 확인: DB brief 조회 → 본문 생성 → API 발행 → URL 반환
+- 파이프라인 자동화 연결: done
+  - channel_publish_results + publish_dispatches 테이블 생성 (Supabase 마이그레이션 적용)
+  - 채널 발행 결과 DB 자동 저장 (channel-publish-report.ts)
+  - 채널 발행 Telegram 보고 연결 — E2E 수신 확인 완료
+  - daily-auto-publish.md §9 채널 발행 단계 추가 (published brief → publish:channels 자동 연결)
+  - SCHEMA.md에 신규 테이블 2개 문서화
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks

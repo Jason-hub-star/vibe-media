@@ -4,6 +4,27 @@
 
 ## Resolved
 
+### 2026-03-26 — 파이프라인 자동화 완성 + 크로스프로모 분리
+- 상태: resolved
+- 결정:
+  - 채널 발행 결과를 DB(channel_publish_results, publish_dispatches)에 자동 저장
+  - Telegram 보고를 채널 발행에도 연결 — E2E 수신 확인 완료
+  - daily-auto-publish.md §9에 채널 발행 단계 추가 (published brief → publish:channels)
+  - 크로스프로모(Pass 2)를 본문 발행에서 분리 — skipCrossPromo=true 기본
+- 근거: Threads API가 포스트 생성 직후 media ID 조회 불가 (전파 지연). 현재 활성 채널이 Threads 1개뿐이라 크로스프로모 대상 없음. Ghost/Spotify 등 2번째 채널 운영 시 별도 워커로 추가 예정
+- 영향: 파이프라인 끝에서 끝까지 추적 가능 (fetch → ingest → sync → editorial → publish → channel dispatch → DB + Telegram)
+
+### 2026-03-26 — Threads @vibehub1030 라이브 발행 성공
+- 상태: resolved
+- 결정:
+  - Threads 계정: `@vibehub1030` (user_id: 26406071412413302)
+  - Meta Developer 앱(1578133636823974) + OAuth redirect URI(`https://localhost`) 설정 완료
+  - 환경변수: THREADS_USER_ID, THREADS_ACCESS_TOKEN, THREADS_HANDLE → `.env.local`
+  - 크로스프로모 답글: 발행 후 3초 딜레이 추가 (Threads 전파 시간 필요)
+  - 코드 품질 개선 동시 수행: spawnAsync 공용 유틸 (3곳 → 1곳), brand.ts 브랜드 상수 (하드코딩 4곳 제거), PUBLISH_CHANNELS 환경변수화
+- 근거: 실제 API 2단계(createContainer → publish) 검증 완료. dry-run + 라이브 모두 성공
+- 영향: `publish:channels <slug>` CLI로 Supabase brief → Threads 전체 경로 E2E 동작 확인
+
 ### 2026-03-26 — 로컬 LLM을 qwen3.5-9b로 교체
 - 상태: resolved
 - 결정:
@@ -52,8 +73,22 @@
 - 근거: 어드민 UI에 30개 소스가 표시되지만 실제 live-fetch는 하드코딩 3개만 수집. DB와 코드가 분리되어 어드민에서 소스 on/off가 작동하지 않았음
 - 다음 단계: 30개 소스의 feed_url이 실제로 유효한지 검증 (일부는 추정 URL)
 
+### 2026-03-26 — Channel Publish Pipeline v2: 코드 구현 완료
+- 상태: resolved (구현 완료, 실제 API 토큰 확보 후 라이브 테스트 예정)
+- 구현:
+  - 23개 신규 파일, ~2,800줄 media-engine에 추가
+  - Threads Publisher: createContainer → publish 2단계 + 답글 크로스프로모. fetch-with-retry로 429 대응
+  - NotebookLM Bridge: nlm CLI spawn 5단계 + ffmpeg loudnorm 2-pass
+  - Whisper STT: ffmpeg 16kHz WAV 변환 → whisper.cpp SRT 생성 + Gemini JSON schema 번역
+  - Remotion BriefAudiogram: 웨이브폼(visualizeAudio) + 자막 오버레이 + 커버 이미지 Composition
+  - 썸네일: Sharp SVG 브랜드 썸네일 + 커버 이미지 리사이즈 1280×720
+  - Publish Dispatcher: Promise.allSettled 병렬 발행 + 실패 격리 + 크로스프로모 자동 실행
+  - Backend CLI: `publish:channels <brief-id> [--dry-run]`, `publish:link-youtube <brief-id> <video-id>`
+  - 테스트: 5개 파일, 25개 테스트 전부 통과
+- 미완: Ghost/Tistory 실제 API 연동(스텁), Threads 토큰 확보, Supabase channel_results 스키마
+
 ### 2026-03-26 — Channel Publish Pipeline v2: 전면 재설계
-- 상태: resolved (설계 완료, 구현 전 검증 예정)
+- 상태: resolved (설계 완료)
 - 결정:
   - **TTS 교체**: MimikaStudio → NotebookLM 2인 대화 팟캐스트(주 경로) + Qwen3-TTS 직접 서버(백업)
   - **YouTube 전환**: Data API v3 자동 업로드 → 로컬 mp4 + metadata.json 생성 → 운영자 직접 업로드

@@ -22,6 +22,8 @@
     "publish:action": "npm run publish:action -w @vibehub/backend",
     "publish:auto-dry": "npm run publish:auto-dry -w @vibehub/backend",
     "publish:auto": "npm run publish:auto -w @vibehub/backend",
+    "publish:channels": "npm run publish:channels -w @vibehub/backend",
+    "publish:link-youtube": "npm run publish:link-youtube -w @vibehub/backend",
     "publish:repair-state": "npm run publish:repair-state -w @vibehub/backend",
     "automation:check": "node scripts/check-automation-sync.mjs",
     "trial:classifier": "npm run trial:classifier -w @vibehub/backend",
