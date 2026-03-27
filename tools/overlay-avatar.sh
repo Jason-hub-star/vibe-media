@@ -12,7 +12,7 @@ SLUG="${1:?Usage: bash tools/overlay-avatar.sh <slug>}"
 OUT="output/${SLUG}"
 
 # 설정값 (수정 금지 — 2026-03-27 검증 완료)
-AVATAR_SCALE="${AVATAR_SCALE:-500}"
+AVATAR_SCALE="${AVATAR_SCALE:-600}"
 CRF="${CRF:-20}"
 FPS="${FPS:-24}"
 SAMPLE_RATE="${SAMPLE_RATE:-48000}"
@@ -41,13 +41,13 @@ fi
 case "$MODE" in
 
   male_solo)
-    echo "Single male avatar (W-350:H-275)"
+    echo "Single male avatar (W-460:H-330)"
     $FFMPEG -y \
       -i "${OUT}/video.mp4" \
       -i "${OUT}/avatar-male-alpha.mov" \
       -filter_complex " \
         [1:v]scale=${AVATAR_SCALE}:-1[avatar]; \
-        [0:v][avatar]overlay=W-350:H-275:shortest=1[vid]; \
+        [0:v][avatar]overlay=W-460:H-330:shortest=1[vid]; \
         [vid]${SUB_FILTER}[out]" \
       -map "[out]" -map 0:a \
       -c:v libx264 -crf "$CRF" -preset fast -c:a copy -shortest \
@@ -55,13 +55,13 @@ case "$MODE" in
     ;;
 
   female_solo)
-    echo "Single female avatar (W-350:H-275)"
+    echo "Single female avatar (W-420:H-330)"
     $FFMPEG -y \
       -i "${OUT}/video.mp4" \
       -i "${OUT}/avatar-female-alpha.mov" \
       -filter_complex " \
         [1:v]scale=${AVATAR_SCALE}:-1[avatar]; \
-        [0:v][avatar]overlay=W-350:H-275:shortest=1[vid]; \
+        [0:v][avatar]overlay=W-420:H-330:shortest=1[vid]; \
         [vid]${SUB_FILTER}[out]" \
       -map "[out]" -map 0:a \
       -c:v libx264 -crf "$CRF" -preset fast -c:a copy -shortest \
@@ -70,8 +70,8 @@ case "$MODE" in
 
   dual)
     echo "Dual avatars — male(left) + female(right)"
-    # 남자: 좌하단 (overlay=0:H-275)
-    # 여자: 우하단 (overlay=W-350:H-275)
+    # 남자: 좌하단 (overlay=-180:H-330)
+    # 여자: 우하단 (overlay=W-420:H-330)
     $FFMPEG -y \
       -i "${OUT}/video.mp4" \
       -i "${OUT}/avatar-male-alpha.mov" \
@@ -79,8 +79,8 @@ case "$MODE" in
       -filter_complex " \
         [1:v]scale=${AVATAR_SCALE}:-1[male]; \
         [2:v]scale=${AVATAR_SCALE}:-1[female]; \
-        [0:v][male]overlay=0:H-275:shortest=1[tmp]; \
-        [tmp][female]overlay=W-350:H-275:shortest=1[vid]; \
+        [0:v][male]overlay=-180:H-330:shortest=1[tmp]; \
+        [tmp][female]overlay=W-420:H-330:shortest=1[vid]; \
         [vid]${SUB_FILTER}[out]" \
       -map "[out]" -map 0:a \
       -c:v libx264 -crf "$CRF" -preset fast -c:a copy -shortest \

@@ -275,8 +275,8 @@ EOF
 ### ⚠️ 반드시 아래 명령어를 그대로 사용할 것 — 값을 변경하지 마라
 
 ### 확정 레이아웃 (2026-03-27 검증 완료, 수정 금지)
-- 아바타: `scale=500:-1` (500px 폭, 비율 자동)
-- 위치: `overlay=W-350:H-275` (우하단, NLM 워터마크 가림)
+- 아바타: `scale=600:-1` (600px 폭, 비율 자동)
+- 위치: `overlay=W-420:H-330` (우하단, NLM 워터마크 가림)
 - 자막: `Alignment=2` (하단 중앙), `FontSize=20`, `MarginV=20`
 - 코덱: `libx264 -crf 20`
 - ffmpeg 경로: `/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg`
@@ -286,8 +286,8 @@ EOF
   -i output/<slug>/video.mp4 \
   -i output/<slug>/avatar-alpha.mov \
   -filter_complex " \
-    [1:v]scale=500:-1[avatar]; \
-    [0:v][avatar]overlay=W-350:H-275:shortest=1[vid]; \
+    [1:v]scale=600:-1[avatar]; \
+    [0:v][avatar]overlay=W-420:H-330:shortest=1[vid]; \
     [vid]subtitles=output/<slug>/subtitles-en.srt:force_style='FontSize=20,FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=1,MarginV=20,Alignment=2'[out]" \
   -map "[out]" -map 0:a \
   -c:v libx264 -crf 20 -preset fast -c:a copy -shortest \

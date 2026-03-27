@@ -138,7 +138,10 @@ npm run publish:channels {slug}
 
 ## ffmpeg 합성 규칙 (수정 금지)
 
-- 아바타 overlay: `scale=500:-1` / `overlay=W-350:H-275` / `Alignment=2` / `FontSize=20` / `crf 20`
+- 아바타 overlay: `scale=600:-1` / `crf 20` / `Alignment=2` / `FontSize=20`
+  · 남자 solo: `overlay=W-460:H-330` (팔 안 잘림)
+  · 여자 solo: `overlay=W-420:H-330`
+  · 듀얼: 남(좌 `-180:H-330`) + 여(우 `W-420:H-330`)
 - 이 값들은 시행착오 끝에 확정됨 — 임의로 바꾸지 말 것
 
 ## Remotion + compose 규칙
