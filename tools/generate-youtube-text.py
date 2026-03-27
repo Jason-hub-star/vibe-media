@@ -103,12 +103,46 @@ TEXT_OVERLAY: <max 4 words for the thumbnail>"""
                 result = json.loads(resp.read())
                 return result["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as e:
-            print(f"❌ Gemini API error: {e}")
+            print(f"⚠️ Gemini API failed: {e}")
             return None
+
+    def call_ollama(prompt, model="vibehub-chat:latest"):
+        """로컬 LLM 폴백 (ollama)."""
+        url = "http://localhost:11434/api/generate"
+        data = json.dumps({
+            "model": model,
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.7, "num_predict": 2000}
+        }).encode()
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                result = json.loads(resp.read())
+                return result.get("response", "")
+        except Exception as e:
+            print(f"⚠️ Ollama failed: {e}")
+            return None
+
+    def call_llm(prompt):
+        """Gemini → Ollama → None 폴백 체인."""
+        if api_key:
+            result = call_gemini(prompt)
+            if result:
+                print("  (via Gemini)")
+                return result
+
+        result = call_ollama(prompt)
+        if result:
+            print("  (via Ollama local)")
+            return result
+
+        print("  ❌ All LLM backends failed")
+        return None
 
     # Description 생성
     print("Generating YouTube description...")
-    desc_text = call_gemini(desc_prompt)
+    desc_text = call_llm(desc_prompt)
     if desc_text:
         guide_path = f"{out_dir}/youtube-upload-guide.txt"
 
@@ -155,7 +189,7 @@ TEXT_OVERLAY: <max 4 words for the thumbnail>"""
 
     # 썸네일 프롬프트 생성
     print("Generating thumbnail prompt...")
-    thumb_text = call_gemini(thumb_prompt)
+    thumb_text = call_llm(thumb_prompt)
     if thumb_text:
         thumb_path = f"{out_dir}/thumbnail-prompt.txt"
         with open(thumb_path, "w") as f:
