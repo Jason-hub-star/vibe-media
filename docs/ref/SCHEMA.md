@@ -57,8 +57,11 @@
 - `item_classifications`는 `brief | discover | both | archive | discard` 판정을 가진다.
   - core fields: `item_id`, `category`, `importance_score`, `novelty_score`, `target_surface`
 - `brief_posts`와 `discover_items`는 공개 surface와 admin review/publish control surface가 함께 보는 editorial spine이다.
-  - lifecycle fields: `review_status`, `scheduled_at`, `published_at`
-  - media fields: `cover_image_url` (OG image or RSS enclosure URL, nullable)
+  - identity fields: `id` (uuid PK), `slug` (text, unique), `title` (text), `summary` (text)
+  - content fields: `body` (jsonb), `source_links` (jsonb), `source_count` (integer), `cover_image_url` (text, nullable)
+  - relation fields: `source_item_id` (uuid FK → ingested_items, nullable)
+  - lifecycle fields: `status` (text: draft/review/scheduled/published), `review_status` (text: pending/approved/changes_requested/rejected), `scheduled_at` (timestamptz), `published_at` (timestamptz)
+  - editor fields: `last_editor_note` (text, nullable — quality fail 사유 등 기록)
 - `admin_reviews`는 review queue spine이다.
 - `ingest_run_attempts`와 `video_job_attempts`는 retry / failure history를 기록한다.
 - `video_jobs`는 공개 surface가 아니라 내부 `watch folder -> auto analysis -> CapCut -> parent review -> private upload` 흐름을 관리한다.
