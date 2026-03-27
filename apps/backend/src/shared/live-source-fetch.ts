@@ -179,6 +179,10 @@ async function enrichArticleContent(url: string) {
       ) as unknown as CSSStyleDeclaration;
   }
 
+  // og:image 추출 — HTML을 이미 fetch했으므로 추가 요청 없음
+  const ogImageMeta = dom.document.querySelector('meta[property="og:image"]');
+  const ogImageUrl = ogImageMeta?.getAttribute("content")?.trim() || null;
+
   const result = await runDefuddleQuietly(() =>
     Defuddle(dom.document, url, {
       separateMarkdown: true,
@@ -191,7 +195,7 @@ async function enrichArticleContent(url: string) {
     throw new Error("defuddle returned empty markdown");
   }
 
-  return contentMarkdown;
+  return { contentMarkdown, ogImageUrl };
 }
 
 async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedItem[]> {
@@ -213,9 +217,12 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         sourceName: source.sourceName
       });
 
+      let ogImageUrl: string | null = null;
       if (shouldEnrichArticle(source)) {
         try {
-          contentMarkdown = await enrichArticleContent(item.url);
+          const enriched = await enrichArticleContent(item.url);
+          contentMarkdown = enriched.contentMarkdown;
+          ogImageUrl = enriched.ogImageUrl;
           parserName = "defuddle";
           parseStatus = "content-enriched";
         } catch {
@@ -237,7 +244,7 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         parseStatus,
         contentType: source.contentType,
         tags: inferTags(source, copy.title, copy.summary),
-        imageUrl: item.imageUrl ?? undefined
+        imageUrl: item.imageUrl ?? ogImageUrl ?? undefined
       });
     }
 
