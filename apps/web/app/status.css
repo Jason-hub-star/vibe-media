@@ -32,16 +32,37 @@
 .status-ready,
 .status-approved,
 .status-discover,
-.status-publish {
+.status-publish,
+.status-approved_for_listing,
+.status-passed,
+.status-promoted_to_showcase {
   background: rgba(var(--color-mint-rgb), 0.18);
   color: var(--color-mint);
 }
 
 .status-asset_pending,
 .status-failed,
-.status-discard {
+.status-discard,
+.status-screening_failed,
+.status-rejected,
+.status-spam_blocked,
+.status-duplicate,
+.status-duplicate_blocked {
   background: rgba(var(--color-rose-rgb), 0.18);
   color: var(--color-rose);
+}
+
+.status-submitted,
+.status-pending,
+.status-imported {
+  background: rgba(var(--color-sky-rgb), 0.18);
+  color: var(--color-sky);
+}
+
+.status-screened,
+.status-hidden_from_listing {
+  background: rgba(var(--color-yellow-rgb), 0.18);
+  color: var(--color-yellow);
 }
 
 .status-brief {

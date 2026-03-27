@@ -1,9 +1,12 @@
 "use server";
 
-import type { ShowcaseLink } from "@vibehub/content-contracts";
-
-import { saveShowcaseEntry } from "@vibehub/backend";
+import {
+  DEFAULT_CANONICAL_LOCALE,
+  DEFAULT_TARGET_LOCALES,
+  type ShowcaseLink,
+} from "@vibehub/content-contracts";
 import { revalidatePath } from "next/cache";
+import { saveShowcaseEntry } from "@vibehub/backend";
 
 export interface ShowcaseFormState {
   status: "idle" | "success" | "error";
@@ -14,6 +17,10 @@ const initialState: ShowcaseFormState = {
   status: "idle",
   message: null
 };
+
+const SHOWCASE_REVALIDATE_LOCALES = Array.from(
+  new Set([DEFAULT_CANONICAL_LOCALE, ...DEFAULT_TARGET_LOCALES]),
+);
 
 function toText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -120,11 +127,16 @@ export async function saveShowcaseEntryAction(
       sourceDiscoverItemId: toText(formData.get("sourceDiscoverItemId")) || null,
       featuredHome: parseBoolean(formData, "featuredHome"),
       featuredRadar: parseBoolean(formData, "featuredRadar"),
+      featuredSubmitHub: parseBoolean(formData, "featuredSubmitHub"),
       displayOrder: Number.parseInt(toText(formData.get("displayOrder")) || "0", 10) || 0
     });
 
     revalidatePath("/");
-    revalidatePath("/radar");
+    revalidatePath("/sources");
+    for (const locale of SHOWCASE_REVALIDATE_LOCALES) {
+      revalidatePath(`/${locale}`);
+      revalidatePath(`/${locale}/sources`);
+    }
     revalidatePath("/admin/showcase");
 
     return {

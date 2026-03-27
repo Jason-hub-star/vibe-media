@@ -15,6 +15,7 @@ interface StepDef {
   label: string;
   command: string;
   itemPattern: RegExp;
+  blocking?: boolean;
 }
 
 const STEPS: StepDef[] = [
@@ -22,12 +23,20 @@ const STEPS: StepDef[] = [
   { id: "ingest", label: "Ingest", command: "npm run pipeline:live-ingest", itemPattern: /items stored:\s*(\d+)/ },
   { id: "sync", label: "Supabase Sync", command: "npm run pipeline:supabase-sync", itemPattern: /items synced:\s*(\d+)/ },
   { id: "obsidian-export", label: "Obsidian Export", command: "npm run pipeline:obsidian-export", itemPattern: /items exported:\s*(\d+)/ },
+  {
+    id: "tool-candidates",
+    label: "Imported Candidates",
+    command: "npm run pipeline:tool-candidates",
+    itemPattern: /imports persisted:\s*(\d+)/,
+    blocking: false,
+  },
 ];
 
 async function main() {
   const results: PipelineStageResult[] = [];
   const highlights: string[] = [];
   let totalItems = 0;
+  let sidecarWarningCount = 0;
   const overallStart = Date.now();
 
   for (const step of STEPS) {
@@ -52,6 +61,19 @@ async function main() {
         durationMs: Date.now() - start,
       });
     } catch (err) {
+      if (step.blocking === false) {
+        sidecarWarningCount += 1;
+        highlights.push(`${step.label} sidecar가 실패했지만 brief/discover 본선은 유지했습니다.`);
+        results.push({
+          id: step.id,
+          label: step.label,
+          status: "error",
+          durationMs: Date.now() - start,
+          errorMessage: err instanceof Error ? err.message.slice(0, 200) : "Unknown error",
+        });
+        continue;
+      }
+
       highlights.push(`${step.label} 단계에서 중단됐고 이후 단계는 실행되지 않았습니다.`);
       results.push({
         id: step.id,
@@ -72,14 +94,22 @@ async function main() {
   }
 
   const totalDurationMs = Date.now() - overallStart;
-  const errorCount = results.filter((r) => r.status === "error").length;
+  const errorCount = results.filter((r) => {
+    const step = STEPS.find((entry) => entry.id === r.id);
+    return r.status === "error" && step?.blocking !== false;
+  }).length;
   if (errorCount === 0 && totalItems === 0) {
     highlights.push("전체 처리 건수가 0입니다. 실제 무변경일 수도 있지만 source 상태와 itemPattern을 다시 확인하세요.");
+  }
+  if (sidecarWarningCount > 0) {
+    highlights.push(`Imported Candidates sidecar warning ${sidecarWarningCount}건이 있었습니다.`);
   }
 
   await sendPipelineReport({ stages: results, totalDurationMs, totalItems, errorCount, highlights });
 
-  console.log(`Pipeline complete: ${totalItems} items, ${errorCount} errors, ${(totalDurationMs / 1000).toFixed(1)}s`);
+  console.log(
+    `Pipeline complete: ${totalItems} items, ${errorCount} blocking errors, ${sidecarWarningCount} sidecar warnings, ${(totalDurationMs / 1000).toFixed(1)}s`,
+  );
   process.exit(errorCount > 0 ? 1 : 0);
 }
 

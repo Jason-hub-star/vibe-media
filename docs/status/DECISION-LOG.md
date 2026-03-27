@@ -4,6 +4,24 @@
 
 ## Resolved
 
+### 2026-03-27 — 구 (public)/ 라우트 제거 + [locale]/(public)/ 단일 정본
+- 상태: resolved
+- 결정: `app/(public)/` 17개 tsx 제거, `app/[locale]/(public)/`만 유일 공개 라우트로 확정
+- 근거: middleware가 locale prefix 없는 접근을 301 리다이렉트하므로 구 라우트에 직접 도달 불가. 양쪽 존재 시 빌드 번들 증가 + 라우트 혼동 위험. CLAUDE.md는 `[locale]/(public)/`로 이동하여 보존
+- 영향: Next.js 빌드 번들 축소, 라우트 정본이 단일화되어 유지보수 명확성 확보
+
+### 2026-03-27 — i18n 다국어 확장 설계 결정
+- 상태: resolved
+- 결정:
+  - Slug: 영어 slug 통일 (`/es/brief/same-english-slug`) — 언어별 slug 생성/관리 복잡성 회피
+  - 채널: 단일 YouTube 채널 + locale별 재생목록 — 운영 부담 최소화
+  - Fallback: variant 없으면 영어 원문 + "Translation pending" 배너 — SEO 유지 + UX 명확성
+  - Locales: en (canonical) + es (first target) — `DEFAULT_LOCALE_REGISTRY` 기반 확장
+  - DB: 별도 variant 테이블 (brief_post_variants, discover_item_variants) — 원본 테이블 오염 없음
+  - 라우트: `[locale]/(public)/` prefix + middleware 리다이렉트 — admin은 locale 무관
+- 근거: 스페인어권 AI 콘텐츠 시장 성장 + SEO hreflang 이점. variant 테이블 분리로 기존 영어 흐름 무영향 보장. Gemini 번역 비용 $0 (2.5 Flash)
+- 영향: 신규 locale 추가 시 `DEFAULT_LOCALE_REGISTRY`에 1줄 추가만 필요. 모든 downstream (backend/frontend/media-engine)이 자동 인식
+
 ### 2026-03-27 — Weekly Autoresearch: Hugging Face Blog RSS 소스 후보 확정
 - 상태: resolved
 - 결정:

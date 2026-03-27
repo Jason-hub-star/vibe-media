@@ -3,7 +3,7 @@ import Link from "next/link";
 const productLinks = [
   { href: "/brief", label: "Brief" },
   { href: "/radar", label: "Radar" },
-  { href: "/sources", label: "Sources" },
+  { href: "/sources", label: "Submit Tool" },
   { href: "/newsletter", label: "Newsletter" }
 ];
 

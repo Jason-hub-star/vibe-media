@@ -16,10 +16,12 @@ interface ChannelResult {
   error?: string;
   publishedAt?: string;
   crossPromoInjected?: boolean;
+  locale?: string;
 }
 
 interface DispatchReport {
   briefSlug: string;
+  locale?: string;
   results: ChannelResult[];
   crossPromoResults?: ChannelResult[];
   allSuccess: boolean;
@@ -44,13 +46,14 @@ export async function savePublishResults(report: DispatchReport): Promise<void> 
         (${report.briefSlug}, ${channels}, ${report.allSuccess}, ${report.dryRun}, ${report.durationMs})
     `;
 
-    // 채널별 결과 기록
+    // 채널별 결과 기록 (locale 포함)
+    const reportLocale = report.locale ?? "en";
     for (const r of report.results) {
       await sql`
         insert into public.channel_publish_results
-          (brief_slug, channel_name, success, published_url, error_message, dry_run, duration_ms)
+          (brief_slug, channel_name, success, published_url, error_message, dry_run, duration_ms, locale)
         values
-          (${report.briefSlug}, ${r.channel}, ${r.success}, ${r.publishedUrl ?? null}, ${r.error ?? null}, ${report.dryRun}, ${report.durationMs})
+          (${report.briefSlug}, ${r.channel}, ${r.success}, ${r.publishedUrl ?? null}, ${r.error ?? null}, ${report.dryRun}, ${report.durationMs}, ${r.locale ?? reportLocale})
       `;
     }
   } catch (err) {
@@ -67,8 +70,9 @@ export async function savePublishResults(report: DispatchReport): Promise<void> 
 function buildChannelPublishText(report: DispatchReport): string {
   const icon = report.allSuccess ? "📢" : "⚠️";
   const mode = report.dryRun ? " [DRY RUN]" : "";
+  const localeTag = report.locale && report.locale !== "en" ? ` [${report.locale.toUpperCase()}]` : "";
   const lines: string[] = [
-    `${icon} Channel Publish${mode}`,
+    `${icon} Channel Publish${localeTag}${mode}`,
     `━━━━━━━━━━━━━━━━━━`,
     `Brief: ${report.briefSlug}`,
   ];

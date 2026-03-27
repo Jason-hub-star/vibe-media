@@ -1,5 +1,10 @@
 import type { BriefDetail, BriefListItem, DiscoverAction, DiscoverItem, ReviewStatus } from "@vibehub/content-contracts";
-import { isPublished } from "@vibehub/content-contracts";
+import {
+  DEFAULT_CANONICAL_LOCALE,
+  DEFAULT_TARGET_LOCALES,
+  isPublished,
+  normalizeLocaleCodes,
+} from "@vibehub/content-contracts";
 
 import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { createSupabaseSql, getSupabaseDbUrl } from "./supabase-postgres";
@@ -37,6 +42,16 @@ let cachedBriefs: BriefDetail[] | null = null;
 let cachedDiscover: DiscoverItem[] | null = null;
 let cachedAt = 0;
 let inFlight: Promise<{ briefs: BriefDetail[]; discover: DiscoverItem[] } | null> | null = null;
+
+function buildDefaultLocaleMetadata() {
+  const canonicalLocale = DEFAULT_CANONICAL_LOCALE;
+  return {
+    locale: canonicalLocale,
+    canonicalLocale,
+    availableLocales: [canonicalLocale],
+    targetLocales: normalizeLocaleCodes(DEFAULT_TARGET_LOCALES, canonicalLocale),
+  };
+}
 
 function canReadSupabase() {
   try {
@@ -102,17 +117,35 @@ async function fetchEditorialData() {
     }
 
     return {
-      briefs: briefRows.map((row) => ({
-        slug: row.slug,
-        title: row.title,
-        summary: row.summary,
-        status: row.status,
-        publishedAt: row.published_at,
-        sourceCount: row.source_count,
-        body: Array.isArray(row.body) ? row.body : [],
-        sourceLinks: Array.isArray(row.source_links) ? row.source_links : [],
-        coverImage: row.cover_image_url ?? undefined
-      })),
+      briefs: briefRows.map((row) => {
+        const body = Array.isArray(row.body) ? row.body : [];
+        return {
+          slug: row.slug,
+          title: row.title,
+          summary: row.summary,
+          status: row.status,
+          publishedAt: row.published_at,
+          sourceCount: row.source_count,
+          body,
+          sourceLinks: Array.isArray(row.source_links) ? row.source_links : [],
+          coverImage: row.cover_image_url ?? undefined,
+          translationStatus: "canonical" as const,
+          variants: [
+            {
+              locale: DEFAULT_CANONICAL_LOCALE,
+              slug: row.slug,
+              title: row.title,
+              summary: row.summary,
+              body,
+              status: row.status,
+              publishedAt: row.published_at,
+              translationStatus: "canonical" as const,
+              isCanonical: true,
+            },
+          ],
+          ...buildDefaultLocaleMetadata(),
+        };
+      }),
       discover: discoverRows
         .map((row) => {
           const actions = actionMap.get(row.id) ?? [];
@@ -134,7 +167,9 @@ async function fetchEditorialData() {
             publishedAt: row.published_at,
             tags: normalizeDiscoverTags({ tags: Array.isArray(row.tags) ? row.tags : [] }),
             highlighted: row.highlighted,
-            actions
+            actions,
+            translationStatus: "canonical" as const,
+            ...buildDefaultLocaleMetadata(),
           };
         })
         .filter(isPublished)

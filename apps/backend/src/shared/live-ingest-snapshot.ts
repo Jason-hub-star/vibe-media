@@ -28,6 +28,7 @@ export interface SnapshotSourceRow {
   kind: string;
   base_url: string;
   source_tier: "auto-safe" | "render-required" | "manual-review-required";
+  pipeline_lane: "editorial" | "tool_candidate";
   enabled: boolean;
   last_success_at: string | null;
   last_failure_at: string | null;
@@ -165,6 +166,7 @@ export function materializeLiveIngestSnapshot(
       kind: source.fetchKind,
       base_url: source.href,
       source_tier: source.sourceTier,
+      pipeline_lane: source.pipelineLane,
       enabled: source.enabled,
       last_success_at: status?.status === "fetched" ? report.performedAt : null,
       last_failure_at: status?.status === "failed" ? report.performedAt : null,

@@ -45,6 +45,12 @@ export function ShowcaseDetailContent({ entry }: { entry: ShowcaseEntry }) {
               {entry.featuredRadar ? "Y" : "N"}
             </dd>
           </div>
+          <div className="admin-detail-row">
+            <dt className="admin-detail-label">서밋 허브 피처</dt>
+            <dd className="admin-detail-value">
+              {entry.featuredSubmitHub ? "Y" : "N"}
+            </dd>
+          </div>
           {entry.publishedAt && (
             <div className="admin-detail-row">
               <dt className="admin-detail-label">발행일</dt>

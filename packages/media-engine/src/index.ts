@@ -28,6 +28,7 @@ export * from "./publish/thumbnail-gen";
 export * from "./publish/promo-templates";
 export * from "./publish/cross-promo-sync";
 export * from "./publish/publish-dispatcher";
+export * from "./publish/locale-publish-helpers";
 
 // --- TTS ---
 export * from "./tts/tts-types";
@@ -36,6 +37,7 @@ export * from "./tts/notebooklm-bridge";
 // --- STT ---
 export * from "./stt/whisper-stt";
 export * from "./stt/srt-utils";
+export * from "./stt/locale-srt-pipeline";
 
 // --- Remotion (import directly from subpath when remotion is installed) ---
 // BriefAudiogram: ./remotion/BriefAudiogram

@@ -5,6 +5,10 @@
 
 import fs from "fs/promises";
 import path from "path";
+import {
+  getPrimaryLocale,
+  getVariantForLocale,
+} from "./channel-types";
 import type { BriefChannelMeta } from "./channel-types";
 
 export interface SpotifyEpisodeMeta {
@@ -34,13 +38,16 @@ export function buildSpotifyMeta(
   audioPath: string,
   durationSec: number,
 ): SpotifyEpisodeMeta {
+  const locale = getPrimaryLocale(meta);
+  const variant = getVariantForLocale(meta, locale);
+
   return {
-    title: meta.title,
-    description: meta.markdownBody.slice(0, 4000),
-    tags: meta.tags,
+    title: variant?.title ?? meta.title,
+    description: (variant?.markdownBody ?? meta.markdownBody).slice(0, 4000),
+    tags: variant?.tags ?? meta.tags,
     audioFilePath: audioPath,
     durationSec,
-    language: meta.languages[0] ?? "en",
+    language: locale,
     publishDate: new Date().toISOString(),
   };
 }

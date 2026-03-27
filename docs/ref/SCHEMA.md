@@ -22,16 +22,30 @@
 - `asset_slots`
 - `showcase_entries`
 - `showcase_links`
+- `tool_submissions`
+- `tool_candidate_imports`
 - `ingest_run_attempts`
 - `video_job_attempts`
 - `channel_publish_results`
   - 채널별 발행 결과 이력. brief_slug + channel_name + created_at으로 추적.
-  - core fields: `brief_slug`, `channel_name`, `success`, `published_url`, `error_message`
+  - core fields: `brief_slug`, `channel_name`, `success`, `published_url`, `error_message`, `locale`
   - meta fields: `dry_run`, `duration_ms`, `created_at`
   - 인덱스: brief_slug+created_at desc, channel_name+success+created_at desc
 - `publish_dispatches`
   - 발행 배치 단위 기록. 한 번의 publish:channels 실행 = 1개 dispatch.
   - core fields: `brief_slug`, `channels` (text[]), `all_success`, `dry_run`, `duration_ms`
+- `brief_post_variants`
+  - brief_posts의 다국어 변형. canonical_id + locale 유니크.
+  - core fields: `canonical_id` (uuid FK → brief_posts), `locale`, `title`, `summary`, `body` (jsonb)
+  - status fields: `translation_status` (pending/translated/quality_failed/published), `quality_status` (pending/passed/failed), `publish_status` (draft/scheduled/published)
+  - timestamp fields: `translated_at`, `quality_checked_at`, `published_at`, `created_at`, `updated_at`
+  - trigger: `trg_brief_variants_updated_at` — updated_at 자동 갱신
+  - 인덱스: canonical_id+locale (unique), locale+translation_status
+- `discover_item_variants`
+  - discover_items의 다국어 변형. canonical_id + locale 유니크. body 필드 없음.
+  - core fields: `canonical_id` (uuid FK → discover_items), `locale`, `title`, `summary`
+  - status/timestamp fields: brief_post_variants와 동일 구조
+  - trigger: `trg_discover_variants_updated_at` — updated_at 자동 갱신
 
 ## Shared Contracts
 - `BriefListItem`
@@ -44,11 +58,16 @@
 - `AssetSlot`
 - `ShowcaseEntry`
 - `ShowcaseTeaser`
+- `ToolSubmission`
+- `ToolSubmissionTeaser`
+- `ToolCandidateImport`
+- `ToolCandidateImportTeaser`
 
 ## Pipeline Notes
 - `sources`는 수집 원천을 관리한다. DB가 SSOT이며 `pipeline:live-fetch`가 직접 읽는다.
   - core fields: `name`, `kind`, `base_url`, `source_tier`, `enabled`
-  - fetch fields: `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo`
+  - pipeline fields: `pipeline_lane` (`editorial | tool_candidate`)
+  - fetch fields: `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo`, `github_search_query`
   - tracking fields: `last_success_at`, `last_failure_at`, `failure_reason`
 - `ingest_runs`는 개별 실행 단위를 기록한다.
   - core fields: `source_id`, `run_status`, `started_at`, `finished_at`, `error_message`
@@ -71,7 +90,20 @@
   - `cover_asset`, `tags`, `primary_link_*`
   - `review_status`, `scheduled_at`, `published_at`
   - `origin`, `created_by`, `submitted_by`, `author_label`
-  - `source_discover_item_id`, `featured_home`, `featured_radar`, `display_order`
+  - `source_discover_item_id`, `featured_home`, `featured_radar`, `featured_submit_hub`, `display_order`
+- `tool_submissions`는 비로그인 submit hub intake 저장소다.
+  - identity fields: `id`, `slug`, `title`, `submitter_email`
+  - content fields: `summary`, `description`, `website_url`, `github_url`, `demo_url`, `docs_url`, `tags`
+  - screening fields: `status`, `screening_status`, `screening_score`, `screening_notes`
+  - tracking fields: `origin_ip_hash`, `user_agent_hash`, `source_locale`, `target_locales`
+  - future-auth fields: `submitted_by_account_id`, `promoted_showcase_entry_id`
+- `tool_candidate_imports`는 외부 소스에서 자동 수집한 후보 저장소다.
+  - identity fields: `id`, `slug`, `title`, `source_id`, `source_entry_url`
+  - content fields: `summary`, `description`, `website_url`, `github_url`, `demo_url`, `docs_url`, `tags`
+  - screening fields: `status`, `screening_status`, `screening_score`, `screening_notes`
+  - attribution fields: `source_name_snapshot`, `source_entry_external_id`
+  - tracking fields: `source_locale`, `target_locales`, `first_seen_at`, `last_seen_at`, `imported_at`
+  - future-linking fields: `promoted_showcase_entry_id`, `linked_submission_id`
 - `public` schema에는 위 allowlist만 유지한다. legacy public tables는 SQL backup 후 cleanup 대상이다.
 - `item_classifications`에는 아래 개념이 필요하다.
   - `target_surface`
@@ -89,4 +121,6 @@
 ## Showcase Notes
 - showcase는 `target_surface` 자동 분류 결과가 아니다.
 - showcase는 `brief/discover`와 같은 공개 셸을 공유하지만 ingest/classification/sync 본선에는 올라가지 않는다.
-- 나중에 로그인 기반 사용자 제출이 들어와도 같은 showcase lane 안에서만 검수/게시되도록 설계한다.
+- `Latest Submissions`는 `tool_submissions`에서 읽고, `Showcase Picks`는 `showcase_entries`만 사용한다.
+- `Imported Candidates`는 `tool_candidate_imports`에서 읽고, direct submission과 절대 섞지 않는다.
+- 나중에 로그인 기반 사용자 제출이 들어와도 `submitter_email`과 `submitted_by_account_id`를 연결하는 방식으로 확장한다.

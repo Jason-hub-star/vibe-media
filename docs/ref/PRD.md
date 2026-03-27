@@ -3,11 +3,13 @@
 ## Product Definition
 - 공개 사이트는 AI Brief 허브다.
 - 공개 사이트는 `radar`를 통해 오픈소스, 스킬, 플러그인, OS, 웹사이트, 이벤트, 공모전도 큐레이션할 수 있다.
+- 공개 사이트의 라우트 SSOT는 `apps/web/app/[locale]/(public)/`다.
+- legacy `apps/web/app/(public)/` route group은 제거 완료다.
 - `video`는 공개 콘텐츠가 아니라 `/admin` 내부 운영 기능이다.
 - `showcase`는 자동 `brief/discover` 파이프라인과 분리된 수동 큐레이션 sidecar lane으로 운영한다.
 - 아들 게임 영상은 `watch folder -> auto analysis -> CapCut finishing -> parent review -> private upload` 흐름으로 운영한다.
 - 핵심 운영 흐름은 `수집 -> 가공 -> 초안 -> 검수 -> 배포`다.
-- 공개 사용자 흐름은 `discover radar item -> inspect briefs and sources -> subscribe`다.
+- 공개 사용자 흐름은 `discover radar item -> inspect briefs -> submit tool or subscribe`다.
 - 운영자 흐름은 `sources / inbox / classification / review / publish queue`를 따른다.
 - 영상 운영 흐름은 `video-jobs / parent review / private upload queue`를 따른다.
 - `Brief`와 `Discover`는 같은 ingest spine을 공유하며 동시 운영한다.
@@ -16,12 +18,16 @@
 - 로컬 LLM과 Claude 병행 사용은 허용되며, 역할 분업은 shadow 비교 후 확정한다.
 
 ## Core Routes
-- `/`
-- `/brief`
-- `/brief/[slug]`
-- `/radar`
-- `/sources`
-- `/newsletter`
+- `/:locale`
+- `/:locale/brief`
+- `/:locale/brief/[slug]`
+- `/:locale/radar`
+- `/:locale/radar/[id]`
+- `/:locale/sources`
+- `/:locale/newsletter`
+- `/:locale/about`
+- `/:locale/privacy`
+- `/:locale/terms`
 - `/admin`
 - `/admin/inbox`
 - `/admin/runs`
@@ -36,6 +42,8 @@
 - `/admin/sources`
 - `/admin/assets`
 - `/admin/showcase`
+- `/admin/submissions`
+- `/admin/submissions/[id]`
 
 ## Quality Rules
 - 스타일은 ExpeditionHub 기반 개선형
@@ -60,6 +68,7 @@
 
 ## Current Delivery Status
 - 공개 허브 기본 화면 구현 완료
+- localized public route tree 정리 완료: `[locale]/(public)` 18개 파일 (`17 tsx + 1 CLAUDE.md`)
 - discovery 확장을 위한 `radar` 공개 route와 `admin/discover` 운영 route 추가
 - 홈 티저 + `radar` 전시 섹션 + `/admin/showcase`로 이어지는 showcase sidecar lane foundation 추가
 - admin 개요, inbox, runs, review, briefs, discover, publish, exceptions, policies, programs, video-jobs, sources, assets 화면 구현 완료

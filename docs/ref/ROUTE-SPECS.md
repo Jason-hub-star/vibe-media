@@ -1,5 +1,21 @@
 # Route Specs
 
+## Public Route Tree
+- 공개 라우트는 `apps/web/app/[locale]/(public)/` 기준으로만 유지한다.
+- 레거시 `apps/web/app/(public)/` route group은 제거 완료다.
+- 현재 localized public tree는 총 18개 파일이다.
+  - `17`개 `tsx`
+  - `1`개 `CLAUDE.md`
+- 포함 범위: home, brief list/detail + OG/Twitter 이미지, radar list/detail + OG/Twitter 이미지, sources submit hub, newsletter, about, privacy, terms, route-group loading/error
+
+## Locale Routing
+- `middleware.ts`가 locale prefix 없는 접근을 `Accept-Language` 기반으로 `/en/...` 또는 `/es/...`로 301 리다이렉트
+- admin, api, _next, 정적 파일은 미들웨어에서 제외
+- 지원 locale: `en` (canonical), `es` (first target) — `packages/content-contracts/src/locales.ts` SSOT
+- 모든 공개 페이지에 `generateMetadata` + `buildAlternates` (hreflang) + `getOgLocale` 적용
+- `sitemap.ts`가 모든 정적/동적 페이지를 locale × 2로 생성 (hreflang alternates 포함)
+- `/[locale]/brief/[slug]`에서 variant 조회 → 있으면 번역 콘텐츠, 없으면 영어 + TranslationPendingBanner
+
 ## Public
 ### `/`
 - 목적: 브랜드 허브, 최근 브리프 진입점, 자산 전략 소개
@@ -14,9 +30,10 @@
 
 ### `/radar`
 - 목적: 오픈소스, 스킬, 플러그인, 사이트, 이벤트, 공모전 discovery 허브
-- 핵심 섹션: hero, showcase picks, featured picks, discovery index
+- 핵심 섹션: hero, featured picks, discovery index
 - URL 필터: `?group=X&q=Y` (새로고침 시 필터 유지, debounce 300ms)
 - 현재 상태: scaffold cards + fast action links + 상세 페이지 링크
+- 공개 규칙: showcase는 radar에서 소비하지 않는다. showcase 노출은 home + submit hub에서만 유지한다.
 
 ### `/radar/[id]`
 - 목적: 디스커버리 항목 상세 (SEO 크롤링 + 공유 가능 URL)
@@ -31,9 +48,11 @@
 - 현재 상태: Supabase-first detail read 구현, not found 분기 포함, 하단 RelatedBriefs 섹션 추가
 
 ### `/sources`
-- 목적: 추적 소스 레지스트리
-- 핵심 섹션: source rows
-- 상태 강화 예정: empty/error
+- 목적: 비로그인 `Submit Tool` 허브
+- 핵심 섹션: Showcase Picks, Submit Your Tool, Latest Submissions, Imported Candidates
+- 공개 규칙: Latest Submissions에는 자동 심사 통과분만 노출
+- 공개 규칙: Imported Candidates는 외부 소스 attribution을 유지하며 direct submission과 분리 노출
+- 현재 상태: locale public route로 통합 완료, non-login submission intake + imported sidecar lane + showcase 승격 분리 운영
 
 ### `/newsletter`
 - 목적: 구독 CTA
@@ -75,7 +94,7 @@
 ### `/admin`
 - 목적: 운영자 메인 대시보드 (운영 콕핏)
 - 핵심 섹션: 최근 완료 항목 → 배포 준비 현황 → 대기열 현황 → 자동화 이력 → Pipeline Monitor
-- 사이드바 그룹: 파이프라인(소스→파이프라인→수집 현황) / 에디토리얼(브리프→디스커버리→검토 대기→발행) / 레지스트리(쇼케이스·비디오 작업·에셋) / 참조(운영 규칙) — 총 12개, 파이프라인 흐름순 배치
+- 사이드바 그룹: 파이프라인(소스→파이프라인→수집 현황) / 에디토리얼(브리프→디스커버리→검토 대기→발행) / 레지스트리(툴 제출·가져온 툴 후보·쇼케이스·비디오 작업·에셋) / 참조(운영 규칙) — 총 13개, 파이프라인 흐름순 배치
 - 대기열 카드 클릭 시 각 목록 페이지로 이동
 - 현재 인증 성격: 로컬 스캐폴드 게이트, production auth 아님
 
@@ -105,8 +124,27 @@
 
 ### `/admin/showcase`
 - 목적: 수동 큐레이션 showcase lane 운영
-- 핵심 섹션: 신규 전시 등록, discovery reference 연결, featured home/radar 제어, 게시 상태 관리
+- 핵심 섹션: 신규 전시 등록, discovery reference 연결, featured home/submit hub 제어, 게시 상태 관리
 - 현재 상태: sidecar lane editor form + existing entry editor cards
+
+### `/admin/submissions`
+- 목적: 비로그인 tool submission intake 운영
+- 핵심 섹션: 제출 목록, screening 상태, showcase 승격/거절
+- 현재 상태: card grid + detail workflow
+
+### `/admin/imported-tools`
+- 목적: 외부 자동수집 tool candidate 운영
+- 핵심 섹션: imported 목록, source attribution, showcase 승격/숨김/거절
+- 현재 상태: card grid + detail workflow
+
+### `/admin/translations`
+- 목적: 다국어 번역 현황 모니터링 + 재시도/강제 승인
+- 핵심 섹션: 통계 카드 (전체/번역 완료/대기/품질 실패/발행), 상태 테이블
+- 현재 상태: brief_posts LEFT JOIN brief_post_variants 조회 + 상세 페이지 (영/스 비교)
+
+### `/admin/translations/[slug]`
+- 목적: 개별 brief 번역 상세 (영어 원문 vs 스페인어 variant 병렬 비교)
+- 핵심 섹션: 원문 메타, variant 메타, 공개 페이지 링크, CLI 재번역 안내
 
 ### `/admin/collection`
 - 목적: 수신함 + 실행 이력 통합 ("수집 현황")
@@ -206,6 +244,16 @@
 - 목적: 쇼케이스 항목 상세
 - 핵심 섹션: 요약, 본문, 태그, 발행 상태
 - 현재 상태: AdminDetailLayout + ShowcaseDetailContent 구현
+
+### `/admin/submissions/[id]`
+- 목적: tool submission 상세
+- 핵심 섹션: 원본 입력, screening notes, submitter 정보, 승격/거절 액션
+- 현재 상태: AdminDetailLayout + ToolSubmissionDetailContent 구현
+
+### `/admin/imported-tools/[id]`
+- 목적: imported tool candidate 상세
+- 핵심 섹션: source attribution, screening notes, 승격/숨김/거절 액션
+- 현재 상태: AdminDetailLayout + ToolCandidateImportDetailContent 구현
 
 ## API Routes
 

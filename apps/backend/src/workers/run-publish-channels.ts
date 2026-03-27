@@ -16,10 +16,17 @@ import {
   createTistoryPublisher,
   createYouTubeLocalPublisher,
   generateYouTubeUploadGuide,
+  buildLocaleCrossPromoText,
+  appendLocaleLinksToDescription,
 } from "@vibehub/media-engine";
-import type { BriefChannelMeta, ChannelConfig, ChannelName } from "@vibehub/media-engine";
+import {
+  DEFAULT_CANONICAL_LOCALE,
+  normalizeLocaleCodes,
+} from "@vibehub/content-contracts";
+import type { BriefChannelMeta, BriefChannelVariantMeta, ChannelConfig, ChannelName } from "@vibehub/media-engine";
 import { getSupabaseBriefDetail } from "../shared/supabase-editorial-read";
 import { reportChannelPublish } from "../shared/channel-publish-report";
+import { createSupabaseSql } from "../shared/supabase-postgres";
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -44,6 +51,10 @@ if (!brief) {
   process.exit(1);
 }
 
+const canonicalLocale = brief.canonicalLocale ?? brief.locale ?? DEFAULT_CANONICAL_LOCALE;
+const availableLocales = normalizeLocaleCodes(brief.availableLocales, canonicalLocale);
+const targetLocales = normalizeLocaleCodes(brief.targetLocales, canonicalLocale);
+
 const briefMeta: BriefChannelMeta = {
   briefId: brief.slug,
   slug: brief.slug,
@@ -52,7 +63,22 @@ const briefMeta: BriefChannelMeta = {
   htmlBody: undefined,
   tags: brief.sourceLinks?.map((s: { label: string }) => s.label).slice(0, 5) ?? [],
   coverImageUrl: brief.coverImage,
-  languages: ["en"],
+  languages: availableLocales,
+  canonicalLocale,
+  defaultLocale: brief.locale ?? canonicalLocale,
+  availableLocales,
+  targetLocales,
+  variants: {
+    [canonicalLocale]: {
+      locale: canonicalLocale,
+      title: brief.title,
+      markdownBody: Array.isArray(brief.body) ? brief.body.join("\n\n") : "",
+      htmlBody: undefined,
+      tags: brief.sourceLinks?.map((s: { label: string }) => s.label).slice(0, 5) ?? [],
+      coverImageUrl: brief.coverImage,
+      publishedAt: brief.publishedAt ?? undefined,
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -111,7 +137,7 @@ await generateYouTubeUploadGuide(
     markdownBody: briefMeta.markdownBody,
     tags: briefMeta.tags,
     category: undefined,
-    language: "en",
+    language: briefMeta.defaultLocale ?? canonicalLocale,
     threadsUrl: threadsResult?.publishedUrl,
     briefUrl: undefined, // 자동으로 SITE_URL/brief/{slug} 사용
   },
@@ -119,9 +145,10 @@ await generateYouTubeUploadGuide(
 );
 console.log(`YouTube upload guide saved to ${outputDir}/youtube-upload-guide.txt`);
 
-// DB 저장 + Telegram 보고
+// DB 저장 + Telegram 보고 (canonical locale)
 await reportChannelPublish({
   briefSlug: brief.slug,
+  locale: canonicalLocale,
   results: result.results,
   crossPromoResults: result.crossPromoResults,
   allSuccess: result.allSuccess,
@@ -129,4 +156,84 @@ await reportChannelPublish({
   dryRun,
 });
 
-process.exit(result.allSuccess ? 0 : 1);
+// ---------------------------------------------------------------------------
+// Locale variant 발행 (canonical 이외의 locale)
+// ---------------------------------------------------------------------------
+
+const localeArg = args.find((a) => a.startsWith("--locale="))?.split("=")[1];
+const publishLocales = localeArg
+  ? [localeArg]
+  : targetLocales.filter((l) => l !== canonicalLocale);
+
+let allLocalesSuccess = result.allSuccess;
+
+for (const locale of publishLocales) {
+  // variant 조회 — quality_failed는 의도적으로 발행 skip (영어만 발행됨)
+  // 테이블 미존재(마이그레이션 미적용) 시에도 영어 발행은 정상 진행
+  const sql = createSupabaseSql();
+  let variant: { title: string; summary: string; body: string[] } | null = null;
+  try {
+    const rows = await sql<Array<{ title: string; summary: string; body: string[] }>>`
+      select v.title, v.summary, v.body
+      from public.brief_post_variants v
+      join public.brief_posts bp on bp.id = v.canonical_id
+      where bp.slug = ${brief.slug}
+        and v.locale = ${locale}
+        and v.translation_status in ('translated', 'published')
+        and v.quality_status = 'passed'
+      limit 1
+    `;
+    if (rows.length > 0) variant = rows[0];
+  } catch (err) {
+    // 테이블 미존재 등 DB 에러 → locale skip
+    console.warn(`\nVariant query failed for ${locale}: ${err instanceof Error ? err.message : err}`);
+  } finally {
+    await sql.end();
+  }
+
+  if (!variant) {
+    console.log(`\nSkipping locale ${locale} — no approved variant found.`);
+    continue;
+  }
+
+  console.log(`\nPublishing locale variant: ${locale}`);
+
+  const variantBody = Array.isArray(variant.body) ? variant.body.join("\n\n") : "";
+  const localeMeta: BriefChannelMeta = {
+    ...briefMeta,
+    defaultLocale: locale,
+    variants: {
+      ...briefMeta.variants,
+      [locale]: {
+        locale,
+        title: variant.title,
+        markdownBody: variantBody,
+        tags: briefMeta.tags,
+        coverImageUrl: brief.coverImage,
+      },
+    },
+  };
+
+  const localeResult = await dispatchPublish({
+    briefMeta: localeMeta,
+    channels,
+    dryRun,
+    skipCrossPromo: true,
+  });
+
+  console.log(JSON.stringify(localeResult, null, 2));
+
+  await reportChannelPublish({
+    briefSlug: brief.slug,
+    locale,
+    results: localeResult.results,
+    crossPromoResults: localeResult.crossPromoResults,
+    allSuccess: localeResult.allSuccess,
+    durationMs: localeResult.durationMs,
+    dryRun,
+  });
+
+  if (!localeResult.allSuccess) allLocalesSuccess = false;
+}
+
+process.exit(allLocalesSuccess ? 0 : 1);

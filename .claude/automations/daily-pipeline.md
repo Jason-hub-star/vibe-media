@@ -107,6 +107,8 @@ pipeline:watch-folder    — 영상 폴더 감시 워커
 
 review:decision          — 리뷰 판정 실행
 publish:action           — 퍼블리시 액션 실행
+translate:variant        — Brief/Discover 다국어 번역 (EN→ES)
+video:locale-fanout      — locale별 SRT 자막 번역 생성
 
 trial:classifier         — 분류기 shadow trial
 trial:brief-draft        — Brief 초안 shadow trial

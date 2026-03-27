@@ -121,6 +121,20 @@ test("admin showcase shows card grid or empty state", async ({ page }) => {
   await expectCardGridOrEmpty(page);
 });
 
+test("admin submissions shows card grid or empty state", async ({ page }) => {
+  await page.goto("/admin/submissions");
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: "툴 제출" })).toBeVisible();
+  await expectCardGridOrEmpty(page);
+});
+
+test("admin imported tools shows card grid or empty state", async ({ page }) => {
+  await page.goto("/admin/imported-tools");
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: "가져온 툴 후보" })).toBeVisible();
+  await expectCardGridOrEmpty(page);
+});
+
 // ── 정책/프로그램 (카드 그리드 아닌 기존 참조 화면) ──
 
 test("admin policies and programs show Korean headings", async ({ page }) => {

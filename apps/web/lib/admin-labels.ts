@@ -38,6 +38,8 @@ export const ADMIN_SIDEBAR_GROUPS = [
   {
     name: "레지스트리",
     links: [
+      { href: "/admin/submissions", label: "툴 제출" },
+      { href: "/admin/imported-tools", label: "가져온 툴 후보" },
       { href: "/admin/showcase", label: "쇼케이스" },
       { href: "/admin/video-jobs", label: "비디오 작업" },
       { href: "/admin/assets", label: "에셋" },
@@ -83,6 +85,14 @@ export const ADMIN_PAGE_LABELS: Record<string, AdminPageLabel> = {
   "/admin/showcase": {
     title: "쇼케이스",
     subtitle: "수동 큐레이션 사이드카 레인을 운영합니다",
+  },
+  "/admin/submissions": {
+    title: "툴 제출",
+    subtitle: "비로그인 제출 레인을 검토하고 쇼케이스로 승격합니다",
+  },
+  "/admin/imported-tools": {
+    title: "가져온 툴 후보",
+    subtitle: "외부 소스에서 수집한 후보를 검토하고 쇼케이스로 승격합니다",
   },
   "/admin/video-jobs": {
     title: "비디오 작업",

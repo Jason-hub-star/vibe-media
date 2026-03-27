@@ -131,7 +131,18 @@ export function buildCrossPromoBlocks(
   return blocks;
 }
 
-function channelLabel(channel: ChannelName): string {
+function channelLabel(channel: ChannelName, locale?: string): string {
+  if (locale === "es") {
+    const esMap: Record<ChannelName, string> = {
+      threads: "Leer en Threads",
+      ghost: "Artículo completo en VibeHub",
+      tistory: "Leer en Tistory",
+      spotify: "Escuchar en Spotify",
+      youtube: "Ver en YouTube",
+      "podcast-rss": "Suscribirse al Podcast",
+    };
+    return esMap[channel] ?? channel;
+  }
   const map: Record<ChannelName, string> = {
     threads: "Read on Threads",
     ghost: "Full article on VibeHub",

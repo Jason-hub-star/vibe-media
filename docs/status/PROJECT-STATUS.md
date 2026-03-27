@@ -50,6 +50,7 @@
 - token system: done
 - test harness: done
 - route-level design docs: in progress
+- public localized route consolidation: done — legacy `app/(public)` 제거, `app/[locale]/(public)`만 유지, 18개 파일 (`17 tsx + 1 CLAUDE.md`)
 - frontend CSS split (M1): done
 - frontend 3-state components (M2): done
 - frontend loading/error routes (M3): done
@@ -209,8 +210,14 @@
   - `lang="en"` 설정, 홈/brief/radar/sources/footer 전체 영어 전환
   - Discover status 라벨 (공개 radar용) 영어 전환 (Featured/Watching/Tracked)
   - 어드민 라벨은 한국어 유지
+- public route consolidation (2026-03-27): done
+  - 구 public route group 제거 완료 (`apps/web/app/(public)` 삭제)
+  - 공개 route SSOT를 `apps/web/app/[locale]/(public)`로 고정
+  - localized public tree 현재 18개 파일 유지 (`17 tsx + 1 CLAUDE.md`)
+  - `/sources`는 Source Registry가 아닌 Submit Tool 허브 설명으로 문서/구현 동기화
 - 디자인 토큰 통일 완료: CSS 6개 파일(globals/components/status/discovery/admin/pipeline)에서 raw rgba/hex 141건을 `var()` 참조로 전환. `colorRgbTokens`, `purple`, `--radius-md/sm`, `--type-body/label` 추가.
 - design docs need route-by-route expansion for Claude-led frontend refinement
+- localized public route tree는 이제 `[locale]/(public)`만 관리하면 된다. 문서와 핸드오프에 legacy `(public)` 경로를 다시 쓰지 않는다.
 - admin authentication is intentionally local-only and must be replaced before real deployment
 - showcase는 홈 티저 + `/radar` 섹션 + `/admin/showcase`까지 구현됐고, ingest/classification/sync 본선과는 분리된 sidecar lane으로 유지된다
 - showcase의 로그인 기반 사용자 submission은 아직 미구현이며, 현재는 editorial-only manual curation으로 운영된다
@@ -296,3 +303,27 @@
   - approved+draft 상태 꼬임: DB 트리거(trg_fix_approved_draft)로 재발 방지
   - 미구현 보류: pyannote-audio 화자 분리 (정확도 향상용, HuggingFace 토큰 필요, 무료)
   - 미구현 보류: MimikaStudio 1인 나레이션 (주인님 목소리 복제), @remotion/captions 단어별 자막
+- i18n 다국어 확장 — EN→ES (2026-03-27): done
+  - Phase 1: DB 스키마 — `brief_post_variants`, `discover_item_variants` 테이블 생성 + `channel_publish_results`에 locale 컬럼 추가
+  - Phase 2: Translation Worker — Gemini JSON Schema 번역 (고유명사/URL/마크다운 보존), CLI `translate:variant`
+  - Phase 3: Quality Gates — 스페인어 전용 품질 검사 (제목/요약 길이, 악센트, 미번역 감지, 고유명사 보존, 단락 수, 3-gram 반복)
+  - Phase 4: Video Fan-out — locale별 SRT 번역 (`locale-srt-pipeline.ts`), CLI `video:locale-fanout`
+  - Phase 5: Channel Publish per Locale — locale 순회 발행 + locale 크로스프로모 + DB locale 기록
+  - Phase 6: Web Route 재구성 — `[locale]/(public)/` prefix, middleware locale 감지/리다이렉트, hreflang alternates, sitemap × 2 locales
+  - Phase 7: Admin Translation Dashboard — `/admin/translations` 상태 테이블 + 통계 + 영/스 비교
+  - 총 ~30 신규 파일, ~26 수정 파일, ~2,100+ 신규 줄
+  - 설계 결정: 영어 slug 통일, 단일 YouTube 채널 + locale별 재생목록, 영어 fallback + "Translation pending" 배너
+  - 자기리뷰 수정: brief detail variant 실제 로드 구현 (`get-brief-variant.ts`), locale 검증 추가, crossPromoResults 누락 수정
+  - 구 `(public)/` 라우트 17개 제거 → `[locale]/(public)/`만 유일 정본으로 확정 (CLAUDE.md도 이동)
+- Submit Tool 허브 (2026-03-27): done (주인님 구현)
+  - `/sources`를 Showcase Picks + Submit Your Tool + Latest Submissions 허브로 교체
+  - `tool_submissions` 테이블 + 마이그레이션, 비로그인 제출 폼 (honeypot, rate limit, URL 정규화, 중복 검사, reachability)
+  - `featured_submit_hub` 플래그로 submit hub 전용 showcase 큐레이션 분리
+  - `/admin/submissions` 목록 + 상세 + promote/reject 액션
+  - locale 라우트와 패턴 완전 일치 (generateMetadata, locale revalidate 등)
+- Imported Candidates sidecar lane (2026-03-27): done (주인님 구현)
+  - `sources.pipeline_lane` + `tool_candidate_imports` 스키마 추가
+  - `tool-candidates:fetch/screen/sync` + `pipeline:tool-candidates` sidecar worker 추가
+  - `/sources`에 Imported Candidates 4번째 레인 추가, direct submission과 분리 노출
+  - `/admin/imported-tools` 목록 + 상세 + promote/hide/reject 액션 추가
+  - `pipeline:daily` 끝에 non-blocking imported-candidates sidecar 연결

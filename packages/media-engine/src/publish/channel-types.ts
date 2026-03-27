@@ -3,7 +3,10 @@
  * 기존 types.ts의 PublishTarget/PublishResult를 extends.
  */
 
+import type { LocaleCode } from "@vibehub/content-contracts";
 import type { PublishPayload, PublishResult, PublishTarget } from "../types";
+
+export type { LocaleCode };
 
 // ---------------------------------------------------------------------------
 // Channel 식별
@@ -77,6 +80,20 @@ export interface CrossPromoResult {
 // ---------------------------------------------------------------------------
 
 /** 브리프의 채널 발행 메타데이터 (DB brief_channel_meta JSONB 필드용) */
+export interface BriefChannelVariantMeta {
+  locale: LocaleCode;
+  title: string;
+  markdownBody: string;
+  htmlBody?: string;
+  tags?: string[];
+  coverImageUrl?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  subtitlePath?: string;
+  publishedAt?: string;
+}
+
 export interface BriefChannelMeta {
   briefId: string;
   slug: string;
@@ -101,8 +118,30 @@ export interface BriefChannelMeta {
   publishedUrls?: Partial<Record<ChannelName, string>>;
   /** 발행 일시 */
   publishedAt?: string;
-  /** 언어 목록 */
+  /** 현재 생성된 locale 목록 (legacy alias: languages) */
   languages: string[];
+  canonicalLocale?: LocaleCode;
+  defaultLocale?: LocaleCode;
+  availableLocales?: LocaleCode[];
+  targetLocales?: LocaleCode[];
+  variants?: Partial<Record<LocaleCode, BriefChannelVariantMeta>>;
+}
+
+export function getPrimaryLocale(meta: BriefChannelMeta): LocaleCode {
+  return (
+    meta.defaultLocale ??
+    meta.canonicalLocale ??
+    meta.availableLocales?.[0] ??
+    meta.languages[0] ??
+    "en"
+  );
+}
+
+export function getVariantForLocale(
+  meta: BriefChannelMeta,
+  locale: LocaleCode = getPrimaryLocale(meta),
+): BriefChannelVariantMeta | null {
+  return meta.variants?.[locale] ?? null;
 }
 
 // ---------------------------------------------------------------------------

@@ -13,10 +13,12 @@ NotebookLM 비디오 생성 → 다운로드 → 자막 생성 → 토킹 아바
 
 ```
 daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-publish
+  └→ §10 번역 (translate:variant --locale=es)
   └→ daily-media-publish (이것)
       1. NotebookLM 비디오 생성 (nlm CLI)
       2. 다운로드 (Claude in Chrome)
       3. Whisper STT 자막
+      3-1. 스페인어 SRT 번역 (video:locale-fanout, 선택)
       4. Talking Head 아바타 렌더
       5. ffmpeg 최종 합성
       6. YouTube 가이드 TXT
@@ -229,6 +231,24 @@ segments, info = model.transcribe("output/<slug>/audio-for-stt.wav", language="e
 # → output/<slug>/subtitles-en.srt
 EOF
 ```
+
+### 5-1. 스페인어 SRT 자동 번역 (선택)
+
+영어 SRT 생성 후, 스페인어 자막도 자동 생성할 수 있다:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+npm run video:locale-fanout <slug> --locales=en,es
+```
+
+- `GEMINI_API_KEY` 필수 (Gemini로 SRT 텍스트 번역, 타임코드 유지)
+- 결과: `output/<slug>/subtitles-es.srt`
+- 같은 오디오 + 다른 자막으로 YouTube에 다국어 자막 업로드 가능
+- 실패해도 영어 자막은 정상 유지
+
+이 단계는 `GEMINI_API_KEY`가 있을 때만 실행한다. 없으면 skip.
 
 ---
 

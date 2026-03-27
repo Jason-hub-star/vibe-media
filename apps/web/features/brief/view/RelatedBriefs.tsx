@@ -8,13 +8,14 @@ interface RelatedBriefsProps {
   currentSlug: string;
   topic?: string;
   briefs: BriefListItem[];
+  locale?: string;
 }
 
 /**
  * Displays up to MAX_RELATED related briefs (same topic, excluding current).
  * Hides entirely if no matches found.
  */
-export function RelatedBriefs({ currentSlug, topic, briefs }: RelatedBriefsProps) {
+export function RelatedBriefs({ currentSlug, topic, briefs, locale }: RelatedBriefsProps) {
   const related = briefs
     .filter((b) => b.slug !== currentSlug && b.topic === topic)
     .slice(0, MAX_RELATED);
@@ -24,7 +25,7 @@ export function RelatedBriefs({ currentSlug, topic, briefs }: RelatedBriefsProps
   return (
     <div className="brief-grid">
       {related.map((brief) => (
-        <BriefCard brief={brief} key={brief.slug} />
+        <BriefCard brief={brief} key={brief.slug} locale={locale} />
       ))}
     </div>
   );

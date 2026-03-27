@@ -22,6 +22,7 @@ export interface SaveShowcaseEntryInput {
   sourceDiscoverItemId?: string | null;
   featuredHome?: boolean;
   featuredRadar?: boolean;
+  featuredSubmitHub?: boolean;
   displayOrder?: number;
 }
 
@@ -84,6 +85,7 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
         source_discover_item_id,
         featured_home,
         featured_radar,
+        featured_submit_hub,
         display_order
       )
       values (
@@ -107,6 +109,7 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
         ${input.sourceDiscoverItemId ?? null}::uuid,
         ${input.featuredHome ?? false},
         ${input.featuredRadar ?? false},
+        ${input.featuredSubmitHub ?? false},
         ${input.displayOrder ?? 0}
       )
       on conflict (id) do update set
@@ -129,6 +132,7 @@ export async function saveSupabaseShowcaseEntry(input: SaveShowcaseEntryInput) {
         source_discover_item_id = excluded.source_discover_item_id,
         featured_home = excluded.featured_home,
         featured_radar = excluded.featured_radar,
+        featured_submit_hub = excluded.featured_submit_hub,
         display_order = excluded.display_order,
         updated_at = now()
       returning id

@@ -150,6 +150,56 @@
   font-size: var(--type-small);
 }
 
+.submission-card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.submission-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.submit-tool-grid {
+  align-items: start;
+}
+
+.submission-card {
+  min-height: 100%;
+}
+
+.submission-card-header {
+  align-items: flex-start;
+}
+
+.submission-meta {
+  font-size: var(--type-small);
+}
+
+.imported-card {
+  min-height: 100%;
+}
+
+.imported-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.submission-form {
+  min-height: 100%;
+}
+
+.submission-honeypot {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .placeholder-frame {
   position: relative;
   overflow: hidden;

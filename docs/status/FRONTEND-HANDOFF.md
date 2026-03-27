@@ -9,8 +9,8 @@
 
 - **VibeHub Media**: AI Brief 에디토리얼 허브 (공개) + 내부 운영 콕핏 (admin)
 - **파이프라인**: collect → process → draft → review → publish
-- **공개 IA**: `/` (home), `/brief`, `/brief/[slug]`, `/radar` (discovery), `/sources`, `/newsletter`
-- **Admin IA**: `/admin` + 14개 하위 route (inbox, runs, review, briefs, discover, publish, exceptions, video-jobs, policies, programs, sources, assets)
+- **공개 IA**: `/:locale` (home), `/:locale/brief`, `/:locale/brief/[slug]`, `/:locale/radar`, `/:locale/radar/[id]`, `/:locale/sources`, `/:locale/newsletter`, `/:locale/about`, `/:locale/privacy`, `/:locale/terms`
+- **Admin IA**: `/admin` + 운영 route들 (collection, pending, briefs, discover, publish, showcase, submissions, sources, assets, video-jobs 등)
 - **video는 공개 콘텐츠가 아님** → `/admin/video-jobs` 내부 운영 기능
 - **admin 진입은 로컬 스캐폴드** → production auth처럼 확장 금지
 
@@ -107,8 +107,8 @@ npm run test:e2e                # playwright (apps/web/tests/e2e)
 ## 4. 현재 구현 상태
 
 ### 완료 (happy-path 스캐폴드)
-- 공개 6개 route 전부 렌더링 동작
-- Admin 14개 route 전부 렌더링 동작
+- localized public route tree 렌더링 동작
+- Admin route tree 렌더링 동작
 - Supabase 읽기 경로 연결 (briefs, discover, review, publish, exceptions)
 - 데이터 흐름: `features/{domain}/api/*.ts` → `features/{domain}/use-case/*.ts` → page
 
@@ -133,13 +133,17 @@ apps/web/
 │   ├── globals.css               # 438줄 ⚠️ 분리 대상
 │   ├── discovery.css             # 확장됨: category-pill, status-new, status-group 추가
 │   ├── status.css                # 신규 생성 (globals에서 미제거 상태)
-│   ├── (public)/                 # 공개 IA
-│   │   ├── page.tsx              # 103줄 (home)
-│   │   ├── brief/page.tsx        # 29줄
-│   │   ├── brief/[slug]/page.tsx # 41줄
-│   │   ├── radar/page.tsx        # 57줄
-│   │   ├── sources/page.tsx      # 29줄
-│   │   ├── newsletter/page.tsx   # 존재
+│   ├── [locale]/(public)/        # 공개 IA SSOT
+│   │   ├── 총 18개 파일          # 17 tsx + 1 CLAUDE.md
+│   │   ├── page.tsx              # localized home
+│   │   ├── brief/page.tsx        # brief list
+│   │   ├── brief/[slug]/page.tsx # brief detail
+│   │   ├── radar/page.tsx        # discovery list
+│   │   ├── radar/[id]/page.tsx   # discovery detail
+│   │   ├── sources/page.tsx      # Submit Tool hub
+│   │   ├── newsletter/page.tsx   # newsletter
+│   │   ├── about/privacy/terms   # static pages
+│   │   ├── loading.tsx/error.tsx # route-group state
 │   │   └── CLAUDE.md
 │   └── admin/                    # 운영 IA
 │       ├── page.tsx              # 107줄 (videoJobs 버그)
@@ -199,7 +203,7 @@ docs/design/
 - daykervibe 패턴 참고 (sectioned shell, source-limited 처리)
 
 ### M3: 전 라우트 에러 핸들링 ✅
-- 공개 6개 + admin 9개 = 15개 route에 loading.tsx + error.tsx 추가
+- localized public route group + admin route에 loading.tsx + error.tsx 추가
 - `admin/page.tsx` videoJobs 버그 수정
 
 ### M4: 타이포·간격·위계 품질 ✅

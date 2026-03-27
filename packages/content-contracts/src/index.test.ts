@@ -6,6 +6,8 @@ import type {
   ExceptionQueueItem,
   PublishQueueItem,
   ShowcaseEntry,
+  ToolCandidateImport,
+  ToolSubmission,
   VideoJob
 } from "./index";
 
@@ -107,10 +109,76 @@ describe("shared contract shapes", () => {
       sourceDiscoverItemId: null,
       featuredHome: true,
       featuredRadar: true,
+      featuredSubmitHub: true,
       displayOrder: 1
     };
 
     expect(item.origin).toBe("editorial");
+  });
+
+  it("accepts a valid tool submission", () => {
+    const item: ToolSubmission = {
+      id: "submission-1",
+      slug: "vibe-ops-console",
+      title: "Vibe Ops Console",
+      summary: "An automation dashboard for multi-step content operations.",
+      description: "Tracks submissions, editorial review, and publish readiness.",
+      websiteUrl: "https://example.com",
+      githubUrl: "https://github.com/example/vibe-ops",
+      demoUrl: null,
+      docsUrl: "https://example.com/docs",
+      tags: ["automation", "dashboard"],
+      submitterEmail: "owner@example.com",
+      submitterName: "VibeHub Labs",
+      status: "approved_for_listing",
+      screeningStatus: "passed",
+      screeningScore: 0.91,
+      screeningNotes: ["Homepage reachable", "No duplicate detected"],
+      originIpHash: null,
+      userAgentHash: null,
+      sourceLocale: "en",
+      targetLocales: ["en", "es"],
+      submittedByAccountId: null,
+      promotedShowcaseEntryId: null,
+      createdAt: "2026-03-27T18:00:00.000Z",
+      updatedAt: "2026-03-27T18:00:00.000Z",
+    };
+
+    expect(item.screeningStatus).toBe("passed");
+  });
+
+  it("accepts a valid imported tool candidate", () => {
+    const item: ToolCandidateImport = {
+      id: "candidate-1",
+      slug: "agent-board",
+      title: "Agent Board",
+      summary: "A shared dashboard for agent traces, runs, and deployment status.",
+      description: "Imported from an external launch source and screened before listing.",
+      websiteUrl: "https://example.com/agent-board",
+      githubUrl: "https://github.com/example/agent-board",
+      demoUrl: null,
+      docsUrl: "https://example.com/agent-board/docs",
+      tags: ["agent", "automation"],
+      status: "approved_for_listing",
+      screeningStatus: "passed",
+      screeningScore: 0.89,
+      screeningNotes: ["Imported from Hacker News Show HN", "Homepage reachable"],
+      sourceId: "source-hn-show",
+      sourceName: "Hacker News Show HN",
+      sourceEntryUrl: "https://news.ycombinator.com/item?id=123",
+      sourceEntryExternalId: "123",
+      sourceLocale: "en",
+      targetLocales: ["en", "es"],
+      firstSeenAt: "2026-03-27T18:00:00.000Z",
+      lastSeenAt: "2026-03-27T18:00:00.000Z",
+      importedAt: "2026-03-27T18:00:00.000Z",
+      promotedShowcaseEntryId: null,
+      linkedSubmissionId: null,
+      createdAt: "2026-03-27T18:00:00.000Z",
+      updatedAt: "2026-03-27T18:00:00.000Z",
+    };
+
+    expect(item.sourceName).toBe("Hacker News Show HN");
   });
 
   it("accepts a valid exception queue item", () => {

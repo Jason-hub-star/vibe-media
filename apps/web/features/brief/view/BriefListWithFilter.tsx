@@ -23,9 +23,10 @@ function uniqueTopics(briefs: BriefListItem[]) {
   }, []);
 }
 
-export function BriefListWithFilter({ briefs }: { briefs: BriefListItem[] }) {
+export function BriefListWithFilter({ briefs, locale }: { briefs: BriefListItem[]; locale?: string }) {
+  const basePath = locale ? `/${locale}/brief` : "/brief";
   const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
-    basePath: "/brief",
+    basePath,
     filterParam: "topic"
   });
 
@@ -61,7 +62,7 @@ export function BriefListWithFilter({ briefs }: { briefs: BriefListItem[] }) {
       />
       <div className="brief-grid">
         {filtered.map((brief, i) => (
-          <BriefCard brief={brief} isLead={i === 0} key={brief.slug} />
+          <BriefCard brief={brief} isLead={i === 0} key={brief.slug} locale={locale} />
         ))}
         {Array.from({ length: placeholderCount }, (_, i) => (
           <BriefPlaceholderCard key={`ph-${i}`} index={i} />

@@ -14,3 +14,8 @@
 | `/admin/video-jobs` | InProgress |
 | `/admin/sources` | InProgress |
 | `/admin/assets` | InProgress |
+
+## Route Tree Note
+- legacy `apps/web/app/(public)` route group 제거 완료
+- public SSOT는 `apps/web/app/[locale]/(public)/`
+- 현재 파일 수: `18`개 (`17 tsx + 1 CLAUDE.md`)

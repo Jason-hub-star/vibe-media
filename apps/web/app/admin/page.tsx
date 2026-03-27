@@ -10,6 +10,8 @@ import { listPublishQueue } from "@/features/publish/use-case/list-publish-queue
 import { listReviewItems } from "@/features/review/use-case/list-review-items";
 import { listRuns } from "@/features/runs/use-case/list-runs";
 import { listSources } from "@/features/sources/use-case/list-sources";
+import { listImportedToolCandidates } from "@/features/tool-candidate-imports/use-case/list-imported-tool-candidates";
+import { listToolSubmissions } from "@/features/tool-submissions/use-case/list-tool-submissions";
 import { listVideoJobs } from "@/features/video-jobs/use-case/list-video-jobs";
 import { getRecentCompletions } from "@/features/admin-dashboard/use-case/get-recent-completions";
 import { getDeploymentReadiness } from "@/features/admin-dashboard/use-case/get-deployment-readiness";
@@ -28,6 +30,8 @@ export default async function AdminPage() {
     sources,
     discoverItems,
     reviewItems,
+    importedCandidates,
+    submissions,
     videoJobs,
     assetSlots,
     recentCompletions,
@@ -41,6 +45,8 @@ export default async function AdminPage() {
     listSources().catch(() => []),
     listDiscoverItems().catch(() => []),
     listReviewItems().catch(() => []),
+    listImportedToolCandidates().catch(() => []),
+    listToolSubmissions().catch(() => []),
     Promise.resolve().then(() => listVideoJobs()).catch(() => []),
     Promise.resolve().then(() => listAssetSlots()).catch(() => []),
     getRecentCompletions(),
@@ -55,6 +61,8 @@ export default async function AdminPage() {
     { id: "video-jobs", href: "/admin/video-jobs", label: "비디오 작업", count: videoJobs.length, body: "영상 자동화 체크포인트" },
     { id: "sources", href: "/admin/sources", label: "소스", count: sources.length, body: "등록된 피드와 신뢰 레이어" },
     { id: "discover", href: "/admin/discover", label: "디스커버리", count: discoverItems.length, body: "큐레이션 레지스트리 항목" },
+    { id: "imported-tools", href: "/admin/imported-tools", label: "가져온 툴 후보", count: importedCandidates.length, body: "외부 소스에서 수집한 후보 레인" },
+    { id: "submissions", href: "/admin/submissions", label: "툴 제출", count: submissions.length, body: "비로그인 제출과 자동 심사 결과" },
     { id: "assets", href: "/admin/assets", label: "에셋", count: assetSlots.length, body: "이미지 슬롯과 교체 사양" },
   ];
 

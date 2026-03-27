@@ -104,6 +104,11 @@
 - [x] `/seo-check` 스킬 추가 (route별 SEO 완성도 점검)
 - [x] SEO 하드닝 (sitemap `lastModified` 안정화, `/admin` noindex/disallow, Naver verification + Organization `sameAs` env 구조)
 - [x] Editorial guardrail auto-approve (`review:auto-approve`, qualityScore/dedup/confidence/source-tier hold, daily-editorial-review 연동)
+- [x] i18n 다국어 라우트 재구성 (`[locale]/(public)/` prefix, middleware, hreflang, sitemap × 2)
+- [x] 구 `(public)/` 라우트 제거 → `[locale]/(public)/`만 유일 정본
+- [x] i18n Translation Worker + Quality Gates + Video Fan-out + Channel Publish per Locale
+- [x] `/admin/translations` 번역 대시보드
+- [x] Submit Tool 허브 (`/sources` → 3레인 허브 + `tool_submissions` + admin submissions)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
@@ -125,7 +130,8 @@
 - [x] auto-publish skip recovery + editorial integrity guard (`publish:repair-state`, `automation:check`, Supabase retry/backoff)
 - [x] Channel Publish Pipeline v2 설계 문서 — `CHANNEL-PUBLISH-PIPELINE.md` 전면 개편
 - [ ] admin 실제 인증/권한 모델 설계
-- [ ] showcase submission/auth flow 설계
+- [x] showcase submission intake flow (`tool_submissions` + 비로그인 폼 + 자동 심사 + promote/reject)
+- [ ] showcase submission auth flow 설계 (로그인 기반 제출 + accounts 연결)
 - [ ] observability / failure alert 설계
 - [ ] retry / rollback / blocked 승격 정책 구체화
 - [ ] 운영 주간 점검 루틴 문서화

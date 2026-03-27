@@ -40,14 +40,14 @@ test("public UX — header has no Admin link", async ({ page }) => {
 test("public UX — home hero shows user-facing copy", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
-  await expect(page.locator("h1")).toContainText("AI 뉴스를 빠르게");
-  await expect(page.locator(".hero-grid .muted")).toContainText("글로벌 AI 소스를 매일 정리해");
+  await expect(page.locator("h1")).toContainText("AI news, distilled into daily briefs");
+  await expect(page.locator(".hero-grid .muted")).toContainText("We curate global AI sources every day");
 });
 
 test("public UX — footer shows user tagline", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
-  await expect(page.locator("footer .eyebrow")).toContainText("AI 뉴스를 매일 정리하는");
+  await expect(page.locator("footer .eyebrow")).toContainText("Daily AI news briefs");
 });
 
 test("public UX — brief detail eyebrow is not raw status", async ({ page }) => {

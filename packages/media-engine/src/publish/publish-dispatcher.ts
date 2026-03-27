@@ -16,6 +16,7 @@ import type {
   DispatchResult,
   PublishDispatchOptions,
 } from "./channel-types";
+import { getPrimaryLocale, getVariantForLocale } from "./channel-types";
 import type { PublishPayload } from "../types";
 import { runCrossPromoSync } from "./cross-promo-sync";
 
@@ -49,13 +50,15 @@ function toPublishPayload(
   options: PublishDispatchOptions,
 ): PublishPayload {
   const meta = options.briefMeta;
+  const locale = getPrimaryLocale(meta);
+  const variant = getVariantForLocale(meta, locale);
   return {
-    title: meta.title,
-    markdownBody: meta.markdownBody,
-    htmlBody: meta.htmlBody,
-    tags: meta.tags,
-    thumbnailUrl: meta.thumbnailUrls?.en,
-    videoUrl: meta.videoUrls?.en,
+    title: variant?.title ?? meta.title,
+    markdownBody: variant?.markdownBody ?? meta.markdownBody,
+    htmlBody: variant?.htmlBody ?? meta.htmlBody,
+    tags: variant?.tags ?? meta.tags,
+    thumbnailUrl: variant?.thumbnailUrl ?? meta.thumbnailUrls?.[locale],
+    videoUrl: variant?.videoUrl ?? meta.videoUrls?.[locale],
   };
 }
 

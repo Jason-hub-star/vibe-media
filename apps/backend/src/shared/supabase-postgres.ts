@@ -166,7 +166,12 @@ export function readMigrationSql() {
     "supabase/migrations/20260322213000_expand_editorial_lifecycle_and_retry.sql",
     "supabase/migrations/20260322214000_expand_video_jobs_storage_metadata.sql",
     "supabase/migrations/20260322215000_enable_rls_for_media_tables.sql",
-    "supabase/migrations/20260323000000_add_showcase_sidecar_lane.sql"
+    "supabase/migrations/20260323000000_add_showcase_sidecar_lane.sql",
+    "supabase/migrations/20260324200000_add_brief_cover_image.sql",
+    "supabase/migrations/20260326180000_add_channel_publish_results.sql",
+    "supabase/migrations/20260327100000_add_locale_variant_tables.sql",
+    "supabase/migrations/20260327113000_add_tool_submissions_and_submit_hub.sql",
+    "supabase/migrations/20260327143000_add_tool_candidate_imports_and_source_lanes.sql",
   ];
 
   return files.map((relativePath) => ({

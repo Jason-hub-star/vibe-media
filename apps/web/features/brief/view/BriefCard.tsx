@@ -11,9 +11,11 @@ import { briefStatusPublicCopy } from "../presenter/present-brief-status";
 interface BriefCardProps {
   brief: BriefListItem;
   isLead?: boolean;
+  locale?: string;
 }
 
-export function BriefCard({ brief, isLead }: BriefCardProps) {
+export function BriefCard({ brief, isLead, locale }: BriefCardProps) {
+  const briefPrefix = locale ? `/${locale}/brief` : "/brief";
   const isPublished = brief.status === "published" && brief.publishedAt;
   const freshness = isPublished ? presentFreshness(brief.publishedAt!) : null;
   const dateLabel = isPublished
@@ -54,7 +56,7 @@ export function BriefCard({ brief, isLead }: BriefCardProps) {
           ))}
         </div>
       )}
-      <Link className="inline-link" href={`/brief/${brief.slug}`}>
+      <Link className="inline-link" href={`${briefPrefix}/${brief.slug}`}>
         Read brief
       </Link>
     </article>

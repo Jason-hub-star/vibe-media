@@ -1,3 +1,4 @@
+import type { LocaleCode, TranslationStatus } from "./locales";
 import type { ReviewStatus } from "./review";
 
 // editorial lifecycle 상수 — brief, discover, showcase 공통
@@ -56,6 +57,8 @@ export const DISCOVER_CATEGORY_GROUPS: Record<DiscoverCategory, DiscoverCategory
 ) as Record<DiscoverCategory, DiscoverCategoryGroup>;
 
 export type DiscoverActionKind = "visit" | "download" | "docs" | "github" | "apply" | "brief";
+/** @deprecated Use TranslationStatus from locales.ts */
+export type DiscoverTranslationStatus = TranslationStatus;
 
 export interface DiscoverAction {
   kind: DiscoverActionKind;
@@ -76,9 +79,26 @@ export interface DiscoverItem {
   tags: string[];
   actions: DiscoverAction[];
   highlighted: boolean;
+  locale?: LocaleCode;
+  canonicalLocale?: LocaleCode;
+  availableLocales?: LocaleCode[];
+  targetLocales?: LocaleCode[];
+  translationStatus?: DiscoverTranslationStatus;
+}
+
+export interface DiscoverLocaleVariant {
+  locale: LocaleCode;
+  slug: string;
+  title: string;
+  summary: string;
+  status: DiscoverStatus;
+  publishedAt: string | null;
+  translationStatus?: DiscoverTranslationStatus;
+  isCanonical?: boolean;
 }
 
 export interface DiscoverItemDetail extends DiscoverItem {
   fullDescription: string;
   relatedBriefSlugs: string[];
+  variants?: DiscoverLocaleVariant[];
 }

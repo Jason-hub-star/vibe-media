@@ -123,4 +123,52 @@ describe("PublishDispatcher", () => {
     expect(result.crossPromoResults).toBeDefined();
     expect(result.crossPromoResults!.length).toBeGreaterThan(0);
   });
+
+  it("should prefer the configured locale variant payload", async () => {
+    const publishSpy = vi.fn(async (payload: PublishPayload) => ({
+      channel: "threads" as const,
+      success: true,
+      publishedUrl: `https://test.com/threads/es`,
+      publishedAt: new Date().toISOString(),
+    }));
+
+    registerPublisher("threads", () => ({
+      name: "threads",
+      channel: "threads",
+      publish: publishSpy,
+      injectCrossPromo: vi.fn(async () => ({ channel: "threads", success: true })),
+    }));
+
+    const channels: ChannelConfig[] = [{ name: "threads", enabled: true }];
+
+    await dispatchPublish({
+      briefMeta: {
+        ...baseMeta,
+        defaultLocale: "es",
+        availableLocales: ["en", "es"],
+        variants: {
+          es: {
+            locale: "es",
+            title: "Titulo en Espanol",
+            markdownBody: "Cuerpo en espanol",
+            tags: ["ia"],
+            thumbnailUrl: "https://cdn.test/thumb-es.png",
+            videoUrl: "https://cdn.test/video-es.mp4",
+          },
+        },
+      },
+      channels,
+    });
+
+    expect(publishSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Titulo en Espanol",
+        markdownBody: "Cuerpo en espanol",
+        tags: ["ia"],
+        thumbnailUrl: "https://cdn.test/thumb-es.png",
+        videoUrl: "https://cdn.test/video-es.mp4",
+      }),
+      expect.anything(),
+    );
+  });
 });

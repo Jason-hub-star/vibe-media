@@ -23,6 +23,7 @@ interface ShowcaseEntryRow {
   source_discover_item_id: string | null;
   featured_home: boolean;
   featured_radar: boolean;
+  featured_submit_hub: boolean;
   display_order: number;
   created_at: string;
 }
@@ -94,6 +95,7 @@ function buildShowcaseEntries(rows: ShowcaseEntryRow[], linkRows: ShowcaseLinkRo
         sourceDiscoverItemId: row.source_discover_item_id,
         featuredHome: row.featured_home,
         featuredRadar: row.featured_radar,
+        featuredSubmitHub: row.featured_submit_hub,
         displayOrder: row.display_order
       }) satisfies ShowcaseEntry
   );
@@ -126,6 +128,7 @@ async function fetchShowcaseData() {
           source_discover_item_id,
           featured_home,
           featured_radar,
+          featured_submit_hub,
           display_order,
           created_at
         from public.showcase_entries

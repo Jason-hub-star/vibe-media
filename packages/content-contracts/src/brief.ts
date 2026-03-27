@@ -1,4 +1,20 @@
+import type { LocaleCode, TranslationStatus } from "./locales";
+
 export type BriefStatus = "draft" | "review" | "scheduled" | "published";
+/** @deprecated Use TranslationStatus from locales.ts */
+export type BriefTranslationStatus = TranslationStatus;
+
+export interface BriefLocaleVariant {
+  locale: LocaleCode;
+  slug: string;
+  title: string;
+  summary: string;
+  status: BriefStatus;
+  publishedAt: string | null;
+  body?: string[];
+  translationStatus?: BriefTranslationStatus;
+  isCanonical?: boolean;
+}
 
 export interface BriefListItem {
   slug: string;
@@ -19,6 +35,16 @@ export interface BriefListItem {
   topic?: string;
   /** Cover image URL from source og:image or enclosure */
   coverImage?: string;
+  /** 현재 응답이 대표하는 locale */
+  locale?: LocaleCode;
+  /** 정본 기준 locale */
+  canonicalLocale?: LocaleCode;
+  /** 이미 생성된 locale 목록 */
+  availableLocales?: LocaleCode[];
+  /** 생성 목표 locale 목록 */
+  targetLocales?: LocaleCode[];
+  /** 현재 locale의 번역/변형 상태 */
+  translationStatus?: BriefTranslationStatus;
 }
 
 export interface BriefDetail extends BriefListItem {
@@ -27,4 +53,5 @@ export interface BriefDetail extends BriefListItem {
     label: string;
     href: string;
   }>;
+  variants?: BriefLocaleVariant[];
 }

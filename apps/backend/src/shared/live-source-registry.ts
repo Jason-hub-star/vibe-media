@@ -3,11 +3,13 @@ import type { InboxItemContentType } from "@vibehub/content-contracts";
 import { createSupabaseSql, getSupabaseDbUrl } from "./supabase-postgres";
 
 export type LiveSourceFetchKind = "rss" | "github-releases";
+export type PipelineLane = "editorial" | "tool_candidate";
 
 interface LiveSourceBase {
   id: string;
   sourceName: string;
   sourceTier: "auto-safe" | "render-required" | "manual-review-required";
+  pipelineLane: PipelineLane;
   fetchKind: LiveSourceFetchKind;
   href: string;
   contentType: InboxItemContentType;
@@ -36,6 +38,7 @@ const hardcodedFallback: LiveSourceDefinition[] = [
     id: "openai-news-rss",
     sourceName: "OpenAI News",
     sourceTier: "auto-safe",
+    pipelineLane: "editorial",
     fetchKind: "rss",
     href: "https://openai.com/news/",
     feedUrl: "https://openai.com/news/rss.xml",
@@ -48,6 +51,7 @@ const hardcodedFallback: LiveSourceDefinition[] = [
     id: "google-ai-blog-rss",
     sourceName: "Google AI Blog",
     sourceTier: "auto-safe",
+    pipelineLane: "editorial",
     fetchKind: "rss",
     href: "https://blog.google/innovation-and-ai/technology/ai/",
     feedUrl: "https://blog.google/innovation-and-ai/technology/ai/rss/",
@@ -60,6 +64,7 @@ const hardcodedFallback: LiveSourceDefinition[] = [
     id: "github-releases-openai-node",
     sourceName: "GitHub Releases",
     sourceTier: "auto-safe",
+    pipelineLane: "editorial",
     fetchKind: "github-releases",
     href: "https://github.com/openai/openai-node/releases",
     owner: "openai",
@@ -80,6 +85,7 @@ interface SupabaseFetchSourceRow {
   kind: string;
   base_url: string;
   source_tier: string;
+  pipeline_lane: string;
   enabled: boolean;
   feed_url: string | null;
   content_type: string;
@@ -95,6 +101,7 @@ function mapRowToDefinition(row: SupabaseFetchSourceRow): LiveSourceDefinition |
     id: row.id,
     sourceName: row.name,
     sourceTier: row.source_tier as LiveSourceDefinition["sourceTier"],
+    pipelineLane: (row.pipeline_lane as PipelineLane | null) ?? "editorial",
     href: row.base_url,
     contentType: row.content_type as InboxItemContentType,
     defaultTags: row.default_tags ?? [],
@@ -118,20 +125,21 @@ function mapRowToDefinition(row: SupabaseFetchSourceRow): LiveSourceDefinition |
  * Supabase sources 테이블에서 live-fetch 대상 소스를 읽는다.
  * DB 연결 실패 시 하드코딩 fallback을 반환한다.
  */
-export async function loadSourcesFromDb(): Promise<LiveSourceDefinition[]> {
+export async function loadSourcesFromDb(pipelineLane: PipelineLane = "editorial"): Promise<LiveSourceDefinition[]> {
   if (!getSupabaseDbUrl()) {
     console.log("[source-registry] SUPABASE_DB_URL 없음 → 하드코딩 fallback 사용 (3개)");
-    return hardcodedFallback;
+    return hardcodedFallback.filter((source) => source.pipelineLane === pipelineLane);
   }
 
   const sql = createSupabaseSql();
   try {
     const rows = await sql<SupabaseFetchSourceRow[]>`
       SELECT id, name, kind, base_url, source_tier, enabled,
-             feed_url, content_type, default_tags, max_items, fetch_kind,
+             pipeline_lane, feed_url, content_type, default_tags, max_items, fetch_kind,
              github_owner, github_repo
       FROM public.sources
       WHERE enabled = true
+        AND pipeline_lane = ${pipelineLane}
       ORDER BY name ASC
     `;
 
@@ -139,7 +147,7 @@ export async function loadSourcesFromDb(): Promise<LiveSourceDefinition[]> {
 
     if (definitions.length === 0) {
       console.log("[source-registry] DB에서 유효한 소스 0개 → 하드코딩 fallback 사용");
-      return hardcodedFallback;
+      return hardcodedFallback.filter((source) => source.pipelineLane === pipelineLane);
     }
 
     console.log(`[source-registry] DB에서 소스 ${definitions.length}개 로드 (RSS ${definitions.filter(d => d.fetchKind === "rss").length}개, GitHub ${definitions.filter(d => d.fetchKind === "github-releases").length}개)`);

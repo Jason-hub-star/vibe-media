@@ -217,12 +217,70 @@ npm run publish:channels <brief-slug>
 
 ---
 
-## 10. 미디어 발행 연결
+## 10. 다국어 번역 (i18n Translation)
 
-채널 발행(§9) 완료 후, `daily-media-publish.md`가 이어서 실행된다.
+채널 발행(§9)에서 새로 published된 brief를 스페인어로 자동 번역한다.
+번역 variant가 생성되어야 다음 `publish:channels` 실행 시 locale별 발행이 이뤄진다.
+
+### 10-1. 대상 선정
+
+§9에서 `published`로 전환 + 채널 발행된 brief slug 목록을 사용한다.
+대상이 0건이면 skip.
+
+### 10-2. 번역 실행
+
+각 published brief에 대해:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+npm run translate:variant <brief-slug> --locale=es
+```
+
+- `GEMINI_API_KEY` 필수 (Gemini 2.5 Flash 번역, 비용 $0)
+- 번역 후 자동으로 품질 체크 실행 (악센트/미번역/고유명사/단락수 등 7개 규칙)
+- 품질 통과 시 `translation_status = translated`, `quality_status = passed`
+- 품질 실패 시 `translation_status = quality_failed` — 영어 발행은 계속 유지
+
+### 10-3. Discover 번역 (선택)
+
+Brief 번역 완료 후, 최근 published discover 항목도 번역할 수 있다:
+
+```bash
+npm run translate:variant <discover-slug> --locale=es --discover
+```
+
+Discover는 title + summary만 번역하므로 빠르다 (brief 대비 ~1/3).
+
+### 10-4. 안전장치
+
+- 번역 실패해도 영어 발행은 절대 영향 없음 (variant 테이블 분리)
+- Gemini API 429 시 1회 자동 재시도 (2초 대기)
+- `--dry-run`으로 사전 검증 가능
+- 잘못된 locale(`kr` 등) 전달 시 즉시 거부
+- canonical locale(`en`) 번역 시도 시 즉시 거부
+
+### 10-5. 행동 원칙 (Translation)
+
+- 번역은 published brief만 대상 — draft/review 상태는 건드리지 않는다
+- 품질 실패 variant는 admin `/admin/translations`에서 수동 확인 가능
+- 번역된 variant는 다음 `publish:channels` 실행 시 자동으로 es 발행에 포함된다
+- `daily-media-publish`의 SRT 번역(§3)과는 독립 — 텍스트 번역과 영상 자막은 별개 파이프라인
+
+### 10-6. 결과 보고
+
+Telegram 보고는 별도로 하지 않는다 (번역 워커 자체는 console 출력만).
+품질 실패 건이 있으면 `/admin/translations`에서 확인.
+
+---
+
+## 11. 미디어 발행 연결
+
+채널 발행(§9) + 번역(§10) 완료 후, `daily-media-publish.md`가 이어서 실행된다.
 미디어 파이프라인(NotebookLM → 자막 → 아바타 → 합성 → YouTube 가이드)은 별도 프롬프트로 분리되어 있다.
 
 ```
-daily-auto-publish (§9 채널 발행)
+daily-auto-publish (§9 채널 발행 → §10 번역)
   └→ daily-media-publish (NotebookLM → 자막 → 아바타 → 합성)
 ```

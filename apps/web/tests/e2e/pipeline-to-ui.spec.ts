@@ -11,16 +11,13 @@ async function signIn(page: import("@playwright/test").Page) {
 
 // --- M2: Pipeline data appears on public pages ---
 
-test("public /sources shows at least one source", async ({ page }) => {
+test("public /sources shows submit hub sections", async ({ page }) => {
   await page.goto("/sources");
   await page.waitForLoadState("networkidle");
-  const body = await page.textContent("body");
-  expect(body).toBeTruthy();
-  const hasSource =
-    body!.includes("OpenAI News") ||
-    body!.includes("Google AI Blog") ||
-    body!.includes("GitHub Releases");
-  expect(hasSource).toBe(true);
+  await expect(page.getByRole("heading", { name: /share your tool, pass automated screening/i })).toBeVisible();
+  await expect(page.getByText(/Showcase Picks/i)).toBeVisible();
+  await expect(page.getByText(/Latest Submissions/i)).toBeVisible();
+  await expect(page.getByText(/Imported Candidates/i)).toBeVisible();
 });
 
 test("public /brief renders at least one brief card", async ({ page }) => {
@@ -33,7 +30,7 @@ test("public /brief renders at least one brief card", async ({ page }) => {
 test("public /radar renders at least one discover card", async ({ page }) => {
   await page.goto("/radar");
   await page.waitForLoadState("networkidle");
-  await expect(page.getByRole("heading", { name: /curated vibe coding work in a sidecar lane/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /one place to spot tools, skills, events, and launches worth acting on/i })).toBeVisible();
   const cards = page.locator("article, [class*='card']");
   await expect(cards.first()).toBeVisible({ timeout: 10_000 });
 });
@@ -100,4 +97,16 @@ test("admin /admin/showcase renders card grid", async ({ page }) => {
   await page.goto("/admin/showcase", { timeout: 45_000 });
   await signIn(page);
   await expect(page.getByRole("heading", { name: "쇼케이스" })).toBeVisible({ timeout: 15_000 });
+});
+
+test("admin /admin/submissions renders card grid", async ({ page }) => {
+  await page.goto("/admin/submissions", { timeout: 45_000 });
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: "툴 제출" })).toBeVisible({ timeout: 15_000 });
+});
+
+test("admin /admin/imported-tools renders card grid", async ({ page }) => {
+  await page.goto("/admin/imported-tools", { timeout: 45_000 });
+  await signIn(page);
+  await expect(page.getByRole("heading", { name: "가져온 툴 후보" })).toBeVisible({ timeout: 15_000 });
 });

@@ -203,6 +203,10 @@ export function ShowcaseEditorForm({
           <input defaultChecked={entry?.featuredRadar ?? false} name="featuredRadar" type="checkbox" />
           <span>Feature on Radar</span>
         </label>
+        <label className="showcase-toggle">
+          <input defaultChecked={entry?.featuredSubmitHub ?? false} name="featuredSubmitHub" type="checkbox" />
+          <span>Feature on Submit hub</span>
+        </label>
       </div>
 
       <div className="button-row">

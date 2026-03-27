@@ -30,6 +30,7 @@ export interface ShowcaseEntry {
   sourceDiscoverItemId: string | null;
   featuredHome: boolean;
   featuredRadar: boolean;
+  featuredSubmitHub: boolean;
   displayOrder: number;
 }
 
@@ -44,5 +45,6 @@ export interface ShowcaseTeaser {
   authorLabel: string | null;
   featuredHome: boolean;
   featuredRadar: boolean;
+  featuredSubmitHub: boolean;
   publishedAt: string | null;
 }

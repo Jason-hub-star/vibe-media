@@ -9,6 +9,7 @@ import type {
   DiscoverItem,
   IngestRun,
   SourceEntry,
+  ToolCandidateImport,
   VideoJob,
   ShowcaseEntry,
   AssetSlot,
@@ -25,6 +26,7 @@ import { presentSourceCard } from "../../web/features/sources/presenter/present-
 import { presentVideoJobCard } from "../../web/features/video-jobs/presenter/present-video-job-card";
 import { presentShowcaseCard } from "../../web/features/showcase/presenter/present-showcase-card";
 import { presentAssetCard } from "../../web/features/assets/presenter/present-asset-card";
+import { presentToolCandidateImportCard } from "../../web/features/tool-candidate-imports/presenter/present-tool-candidate-import-card";
 
 describe("Admin card presenters", () => {
   it("presentInboxCard maps fields correctly", () => {
@@ -207,6 +209,7 @@ describe("Admin card presenters", () => {
       sourceDiscoverItemId: null,
       featuredHome: true,
       featuredRadar: false,
+      featuredSubmitHub: true,
       reviewStatus: "approved",
       publishedAt: "2026-03-22",
       displayOrder: 1,
@@ -227,5 +230,41 @@ describe("Admin card presenters", () => {
     const card = presentAssetCard(item);
     expect(card.title).toBe("Hero Banner");
     expect(card.status).toBe("hero");
+  });
+
+  it("presentToolCandidateImportCard maps source attribution", () => {
+    const item: ToolCandidateImport = {
+      id: "import-1",
+      slug: "agent-workbench",
+      title: "Agent Workbench",
+      summary: "Imported from a trusted launch source.",
+      description: "detail",
+      websiteUrl: "https://example.com/agent-workbench",
+      githubUrl: "https://github.com/example/agent-workbench",
+      demoUrl: null,
+      docsUrl: null,
+      tags: ["agent"],
+      status: "approved_for_listing",
+      screeningStatus: "passed",
+      screeningScore: 0.9,
+      screeningNotes: ["Imported website reachable."],
+      sourceId: "source-1",
+      sourceName: "Hacker News Show HN",
+      sourceEntryUrl: "https://news.ycombinator.com/item?id=1",
+      sourceEntryExternalId: "1",
+      sourceLocale: "en",
+      targetLocales: ["en", "es"],
+      firstSeenAt: "2026-03-27T00:00:00.000Z",
+      lastSeenAt: "2026-03-27T00:00:00.000Z",
+      importedAt: "2026-03-27T00:00:00.000Z",
+      promotedShowcaseEntryId: null,
+      linkedSubmissionId: null,
+      createdAt: "2026-03-27T00:00:00.000Z",
+      updatedAt: "2026-03-27T00:00:00.000Z",
+    };
+    const card = presentToolCandidateImportCard(item);
+    expect(card.href).toBe("/admin/imported-tools/import-1");
+    expect(card.status).toBe("approved_for_listing");
+    expect(card.metadata!.some((m) => m.value === "Hacker News Show HN")).toBe(true);
   });
 });

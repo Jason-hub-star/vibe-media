@@ -17,6 +17,10 @@
     "pipeline:supabase-migrate": "tsx src/workers/run-supabase-migrations.ts",
     "pipeline:supabase-sync": "tsx src/workers/run-supabase-live-ingest.ts",
     "pipeline:obsidian-export": "tsx src/workers/run-obsidian-discover-export.ts",
+    "tool-candidates:fetch": "tsx src/workers/run-tool-candidates-fetch.ts",
+    "tool-candidates:screen": "tsx src/workers/run-tool-candidates-screen.ts",
+    "tool-candidates:sync": "tsx src/workers/run-tool-candidates-sync.ts",
+    "pipeline:tool-candidates": "tsx src/workers/run-tool-candidates-pipeline.ts",
     "pipeline:daily": "tsx src/workers/run-daily-pipeline.ts",
     "pipeline:watch-folder": "tsx src/workers/run-watch-folder-worker.ts",
     "review:decision": "tsx src/workers/run-review-decision.ts",
@@ -31,7 +35,9 @@
     "trial:all": "tsx src/workers/run-all-shadow-trials.ts",
     "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts",
     "publish:channels": "tsx src/workers/run-publish-channels.ts",
-    "publish:link-youtube": "tsx src/workers/run-link-youtube.ts"
+    "publish:link-youtube": "tsx src/workers/run-link-youtube.ts",
+    "translate:variant": "tsx src/workers/run-translate-variant.ts",
+    "video:locale-fanout": "tsx src/workers/run-video-locale-fanout.ts"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",
