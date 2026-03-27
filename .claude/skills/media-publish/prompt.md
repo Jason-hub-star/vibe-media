@@ -159,8 +159,19 @@ npm run publish:channels <slug>
 
 ## ffmpeg 합성 규칙 (수정 금지)
 
-- `scale=500:-1` / `overlay=W-350:H-275` / `Alignment=2` / `FontSize=20` / `crf 20`
+- 아바타 overlay: `scale=500:-1` / `overlay=W-350:H-275` / `Alignment=2` / `FontSize=20` / `crf 20`
 - 이 값들은 시행착오 끝에 확정됨 — 임의로 바꾸지 말 것
+
+## Remotion 인트로/아웃트로 + 최종 합성 규칙
+
+- 인트로: `npx remotion render ... BrandIntro intro.mp4 --props='{"title":"<제목>"}'`
+- 아웃트로: `npx remotion render ... BrandOutro outro.mp4`
+- 최종 합성: `bash tools/compose-final.sh <slug>`
+  · 인트로→본편: xfade 크로스페이드 (1초)
+  · 본편→아웃트로: silencedetect로 음성 끝 자동 감지 → fade-out/fade-in (0.5초)
+  · 워터마크 노출 0% (크로스페이드가 아닌 검정 경유 전환)
+  · 모든 값 동적 계산 — 하드코딩 없음
+  · 설정 오버라이드: `FADE_DUR=0.5 INTRO_XFADE_DUR=1 bash tools/compose-final.sh <slug>`
 
 ## 제약사항
 

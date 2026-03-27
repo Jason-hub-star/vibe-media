@@ -7,6 +7,8 @@ import type { AnyZodObject } from "remotion";
 import React from "react";
 import { BriefAudiogram } from "./BriefAudiogram";
 import type { BriefAudiogramProps } from "./BriefAudiogram";
+import { BrandIntro, BrandOutro } from "./BrandIntroOutro";
+import type { IntroProps, OutroProps } from "./BrandIntroOutro";
 
 type NoSchema = AnyZodObject;
 
@@ -27,6 +29,27 @@ const RemotionRoot: React.FC = () => {
           brandColor: "#0A0A0A",
           accentColor: "#F97316",
         }}
+      />
+      <Composition<NoSchema, IntroProps & Record<string, unknown>>
+        id="BrandIntro"
+        component={BrandIntro}
+        durationInFrames={72}
+        fps={24}
+        width={1280}
+        height={720}
+        defaultProps={{
+          title: "VibeHub Brief",
+          subtitle: "AI-curated tech insights",
+        }}
+      />
+      <Composition<NoSchema, OutroProps & Record<string, unknown>>
+        id="BrandOutro"
+        component={BrandOutro}
+        durationInFrames={120}
+        fps={24}
+        width={1280}
+        height={720}
+        defaultProps={{}}
       />
     </>
   );

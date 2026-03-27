@@ -218,6 +218,30 @@ EOF
 
 ---
 
+## 7-2. Remotion 인트로/아웃트로 + 최종 합성
+
+### 인트로/아웃트로 렌더
+```bash
+npx remotion render packages/media-engine/src/remotion/index.tsx BrandIntro output/<slug>/intro.mp4 --props='{"title":"<brief-title>","subtitle":"AI-curated tech insights"}'
+npx remotion render packages/media-engine/src/remotion/index.tsx BrandOutro output/<slug>/outro.mp4
+```
+
+### 최종 합성
+```bash
+bash tools/compose-final.sh <slug>
+# → output/<slug>/complete.mp4
+```
+
+compose-final.sh가 자동으로:
+1. 인트로→본편: xfade 크로스페이드 (1초)
+2. 음성 끝나는 시점 자동 감지 (silencedetect)
+3. 본편→아웃트로: fade-out/fade-in (0.5초, 워터마크 노출 0%)
+4. 모든 파일 규격 통일 (24fps, 48000Hz)
+
+⚠️ compose-final.sh를 직접 실행할 것 — ffmpeg 명령을 자체 생성하지 마라.
+
+---
+
 ## 8. YouTube 가이드 + Threads 발행
 
 ### 자동 모드
