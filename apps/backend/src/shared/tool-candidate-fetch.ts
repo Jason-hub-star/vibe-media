@@ -137,7 +137,7 @@ async function fetchRssDirectory(
     source.maxItems,
   );
 
-  return entryMatches
+  return (entryMatches
     .map((match) => {
       const itemXml = match[1];
       const title = itemXml.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/)?.slice(1).find(Boolean)?.trim();
@@ -162,7 +162,7 @@ async function fetchRssDirectory(
         sourceEntryExternalId: createHash("sha1").update(`${source.id}:${link}`).digest("hex"),
       } satisfies ImportedToolCandidateDraft;
     })
-    .filter((item): item is ImportedToolCandidateDraft => Boolean(item));
+    .filter(Boolean)) as ImportedToolCandidateDraft[];
 }
 
 async function fetchSource(

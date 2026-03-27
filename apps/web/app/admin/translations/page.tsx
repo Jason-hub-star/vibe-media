@@ -6,7 +6,7 @@ export default async function TranslationsPage() {
   const overview = await getTranslationOverview();
 
   return (
-    <AdminShell title="번역 대시보드" eyebrow="Translations">
+    <AdminShell title="번역 대시보드" subtitle="Translations">
       <div className="panel-grid" style={{ marginBottom: "2rem" }}>
         <article className="panel stack-tight">
           <p className="eyebrow">전체 Brief</p>

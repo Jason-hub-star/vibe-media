@@ -1,4 +1,4 @@
-import type { ToolCandidateImport } from "@vibehub/content-contracts";
+import type { ToolCandidateImport, ShowcaseLink } from "@vibehub/content-contracts";
 
 import {
   showcaseEntries,
@@ -148,15 +148,15 @@ export async function promoteImportedToolCandidateToShowcase(candidateId: string
     primaryLink: candidate.demoUrl
       ? { kind: "demo", label: "Open demo", href: candidate.demoUrl }
       : { kind: "primary", label: "Visit website", href: candidate.websiteUrl },
-    links: [
+    links: ([
       candidate.githubUrl
-        ? { kind: "github", label: "GitHub", href: candidate.githubUrl }
+        ? { kind: "github" as const, label: "GitHub", href: candidate.githubUrl }
         : null,
       candidate.docsUrl
-        ? { kind: "docs", label: "Docs", href: candidate.docsUrl }
+        ? { kind: "docs" as const, label: "Docs", href: candidate.docsUrl }
         : null,
-      { kind: "brief", label: `Source · ${candidate.sourceName}`, href: candidate.sourceEntryUrl },
-    ].filter((item): item is NonNullable<typeof item> => Boolean(item)),
+      { kind: "brief" as const, label: `Source · ${candidate.sourceName}`, href: candidate.sourceEntryUrl },
+    ].filter(Boolean) as ShowcaseLink[]),
     reviewStatus: "approved",
     scheduledAt: null,
     publishedAt: new Date().toISOString(),

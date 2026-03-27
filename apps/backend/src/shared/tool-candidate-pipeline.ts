@@ -94,7 +94,7 @@ export async function runToolCandidateScreen() {
       );
       const duplicateShowcase = showcaseEntries.find((item) => {
         const showcaseLinks = [item.primaryLink.href, ...item.links.map((link) => link.href)];
-        return showcaseLinks.includes(websiteUrl) || item.slug === slug;
+        return (websiteUrl !== null && showcaseLinks.includes(websiteUrl)) || item.slug === slug;
       });
 
       const context = await buildImportedScreeningContext({

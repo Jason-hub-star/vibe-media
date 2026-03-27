@@ -1,0 +1,28 @@
+# Media output (large video/audio files)
+output/
+
+# Dev caches
+apps/web/.next/
+.next/
+
+# Docs
+docs/
+
+# Tools
+tools/
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/tests/
+**/__tests__/
+
+# Local state
+apps/backend/state/
+
+# Media assets (large)
+*.mov
+*.mp4
+*.wav
+*.mp3
+*.srt

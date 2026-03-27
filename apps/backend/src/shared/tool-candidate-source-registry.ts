@@ -41,8 +41,7 @@ const hardcodedFallback: ToolCandidateSourceDefinition[] = [
     pipelineLane: "tool_candidate",
     fetchKind: "github-search",
     href: "https://github.com/search",
-    githubSearchQuery:
-      "(topic:agent OR topic:automation OR topic:developer-tools) archived:false is:public",
+    githubSearchQuery: "topic:developer-tools archived:false is:public stars:>10",
     defaultTags: ["github", "open-source", "tooling"],
     maxItems: 8,
     enabled: true,

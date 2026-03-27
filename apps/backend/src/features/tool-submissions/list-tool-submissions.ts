@@ -1,4 +1,4 @@
-import type { ToolSubmission } from "@vibehub/content-contracts";
+import type { ToolSubmission, ShowcaseLink } from "@vibehub/content-contracts";
 
 import { showcaseEntries, toolSubmissions as mockToolSubmissions } from "../../shared/mock-data";
 import { getSupabaseDbUrl } from "../../shared/supabase-postgres";
@@ -161,14 +161,14 @@ export async function promoteToolSubmissionToShowcase(submissionId: string) {
     primaryLink: submission.demoUrl
       ? { kind: "demo", label: "Open demo", href: submission.demoUrl }
       : { kind: "primary", label: "Visit website", href: submission.websiteUrl },
-    links: [
+    links: ([
       submission.githubUrl
-        ? { kind: "github", label: "GitHub", href: submission.githubUrl }
+        ? { kind: "github" as const, label: "GitHub", href: submission.githubUrl }
         : null,
       submission.docsUrl
-        ? { kind: "docs", label: "Docs", href: submission.docsUrl }
+        ? { kind: "docs" as const, label: "Docs", href: submission.docsUrl }
         : null,
-    ].filter((item): item is NonNullable<typeof item> => Boolean(item)),
+    ].filter(Boolean) as ShowcaseLink[]),
     reviewStatus: "approved",
     scheduledAt: null,
     publishedAt: new Date().toISOString(),

@@ -215,6 +215,10 @@
   - 공개 route SSOT를 `apps/web/app/[locale]/(public)`로 고정
   - localized public tree 현재 18개 파일 유지 (`17 tsx + 1 CLAUDE.md`)
   - `/sources`는 Source Registry가 아닌 Submit Tool 허브 설명으로 문서/구현 동기화
+- imported candidate source seed hardening (2026-03-27): done
+  - `tool_candidate` source registry를 migration으로 seed/upsert하도록 정리
+  - GitHub imported search query 기본값을 `topic:developer-tools archived:false is:public stars:>10`로 고정
+  - 새 DB에서도 fallback source id 없이 imported sidecar가 Supabase sync로 바로 올라갈 수 있게 정리
 - 디자인 토큰 통일 완료: CSS 6개 파일(globals/components/status/discovery/admin/pipeline)에서 raw rgba/hex 141건을 `var()` 참조로 전환. `colorRgbTokens`, `purple`, `--radius-md/sm`, `--type-body/label` 추가.
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - localized public route tree는 이제 `[locale]/(public)`만 관리하면 된다. 문서와 핸드오프에 legacy `(public)` 경로를 다시 쓰지 않는다.

@@ -22,7 +22,7 @@ export async function getBriefVariant(
   if (locale === "en") return null;
 
   try {
-    const { createSupabaseSql } = await import("@vibehub/backend/shared/supabase-postgres");
+    const { createSupabaseSql } = await import("@vibehub/backend");
     const sql = createSupabaseSql();
 
     try {

@@ -19,7 +19,7 @@ export default async function TranslationDetailPage({
   const esVariant = rows.find((r) => r.locale === "es" && r.translationStatus);
 
   return (
-    <AdminShell title={canonical.title} eyebrow="번역 상세">
+    <AdminShell title={canonical.title} subtitle="번역 상세">
       <div className="brief-reading-col stack-tight">
         <div className="panel stack-tight">
           <h3>영어 원문 (Canonical)</h3>

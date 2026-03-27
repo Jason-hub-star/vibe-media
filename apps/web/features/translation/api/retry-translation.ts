@@ -3,7 +3,7 @@
  * Server Action으로 사용 가능.
  */
 
-import { createSupabaseSql } from "@vibehub/backend/shared/supabase-postgres";
+import { createSupabaseSql } from "@vibehub/backend";
 
 export async function retryTranslation(slug: string, locale: string): Promise<{ success: boolean; error?: string }> {
   let sql: ReturnType<typeof createSupabaseSql>;

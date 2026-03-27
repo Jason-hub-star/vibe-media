@@ -172,6 +172,7 @@ export function readMigrationSql() {
     "supabase/migrations/20260327100000_add_locale_variant_tables.sql",
     "supabase/migrations/20260327113000_add_tool_submissions_and_submit_hub.sql",
     "supabase/migrations/20260327143000_add_tool_candidate_imports_and_source_lanes.sql",
+    "supabase/migrations/20260327183000_seed_tool_candidate_sources.sql",
   ];
 
   return files.map((relativePath) => ({

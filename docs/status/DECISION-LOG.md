@@ -4,6 +4,16 @@
 
 ## Resolved
 
+### 2026-03-27 — Imported Candidate Source Registry seed를 migration으로 고정
+- 상태: resolved
+- 결정:
+  - `tool_candidate` lane 기본 source 6개(`Hacker News Show HN`, `GitHub Search: developer tools`, `DevHunt`, `LeanVibe`, `BetaList`, `Product Hunt`)를 migration에서 seed/upsert하도록 고정
+  - `sources (pipeline_lane, name)` unique index 추가 — 새 환경에서도 source row를 중복 없이 재적용 가능
+  - `GitHub Search: developer tools` 기본 쿼리를 `topic:developer-tools archived:false is:public stars:>10`으로 교체
+  - seed migration에 `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo` 보강을 포함해 fresh DB에서도 imported lane이 바로 동작하게 정리
+- 근거: imported sidecar는 Supabase source row의 UUID를 전제로 sync 여부를 결정하는데, 기존 구현은 fallback 코드 + 수동 DB 작업 + 기존 DB row가 섞여 있었다. 새 DB에서는 source seed가 없으면 계속 mock mode에 머무르고, GitHub 검색식도 DB row가 남아 있으면 코드 fallback 수정만으로는 갱신되지 않았다.
+- 영향: 새 환경에서 migration만 적용하면 `tool_candidate` source registry가 즉시 살아나며, imported sidecar가 fallback id 없이 Supabase sync로 바로 올라갈 수 있다. GitHub imported 후보도 0건 검색식 문제를 피한다.
+
 ### 2026-03-27 — 구 (public)/ 라우트 제거 + [locale]/(public)/ 단일 정본
 - 상태: resolved
 - 결정: `app/(public)/` 17개 tsx 제거, `app/[locale]/(public)/`만 유일 공개 라우트로 확정

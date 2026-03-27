@@ -109,6 +109,8 @@
 - [x] i18n Translation Worker + Quality Gates + Video Fan-out + Channel Publish per Locale
 - [x] `/admin/translations` 번역 대시보드
 - [x] Submit Tool 허브 (`/sources` → 3레인 허브 + `tool_submissions` + admin submissions)
+- [x] Imported Candidates sidecar lane (`tool_candidate_imports` + `/admin/imported-tools` + source registry lane 분리)
+- [x] imported candidate source seed hardening (`tool_candidate` source registry migration seed/upsert + GitHub query 기본값 교정)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화

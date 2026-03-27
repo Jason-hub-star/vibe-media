@@ -2,7 +2,7 @@
  * 번역 상태 목록 — brief_posts LEFT JOIN brief_post_variants.
  */
 
-import { createSupabaseSql } from "@vibehub/backend/shared/supabase-postgres";
+import { createSupabaseSql } from "@vibehub/backend";
 
 export interface TranslationStatusRow {
   slug: string;

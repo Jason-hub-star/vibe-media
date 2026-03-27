@@ -4,7 +4,7 @@ import { getDiscoverItemDetail } from "@/features/discover/use-case/get-discover
 import { presentDiscoverCategory } from "@/features/discover/presenter/present-discover-category";
 import { colorTokens, brandTokens, categoryAccentHex } from "@vibehub/design-tokens";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = `${brandTokens.name} Radar`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

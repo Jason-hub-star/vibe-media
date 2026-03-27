@@ -69,6 +69,7 @@
   - pipeline fields: `pipeline_lane` (`editorial | tool_candidate`)
   - fetch fields: `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo`, `github_search_query`
   - tracking fields: `last_success_at`, `last_failure_at`, `failure_reason`
+  - `tool_candidate` lane 기본 source row는 migration으로 seed한다. 새 환경에서도 fallback id에 기대지 않고 UUID source row를 바로 사용할 수 있어야 한다.
 - `ingest_runs`는 개별 실행 단위를 기록한다.
   - core fields: `source_id`, `run_status`, `started_at`, `finished_at`, `error_message`
 - `ingested_items`는 source에서 들어온 개별 결과를 저장한다.
