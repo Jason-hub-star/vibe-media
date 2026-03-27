@@ -22,7 +22,7 @@
 | `google-ai-blog-rss` | Google AI Blog | RSS | article | `blog.google/.../ai/rss/` | auto-safe | ✅ 활성 |
 | `github-releases-openai-node` | GitHub Releases | GitHub API | repo | `api.github.com/.../releases` | auto-safe | ✅ 활성 |
 | `openai-api-changelog` | OpenAI API Changelog | RSS | article | `platform.openai.com/docs/changelog` | auto-safe | ❌ 비활성 — stable RSS endpoint 미확인 |
-| `anthropic-research` | Anthropic Research | RSS | doc | `anthropic.com/news/rss.xml` | auto-safe | ❌ 비활성 — live fetch 시 404 반환 |
+| `anthropic-research` | Anthropic Research | RSS | doc | `anthropic.com/news/rss.xml` | auto-safe | ❌ 영구 비활성 — 동적 Next.js 앱, RSS 피드 미제공 확인 (2026-03-27) |
 
 **maxItems**: 모든 소스 3건/회
 

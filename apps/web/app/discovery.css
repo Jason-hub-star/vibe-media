@@ -25,6 +25,7 @@
   display: flex;
   gap: 0.4rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 /* ── Category pills — color from design-tokens SSOT ───────────── */
@@ -90,6 +91,133 @@
   font-size: var(--type-small);
 }
 
+.discover-card {
+  gap: 1rem;
+}
+
+.discover-card-header {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.discover-card-status-group {
+  justify-content: flex-end;
+}
+
+.discover-card .category-pill,
+.discover-card .status {
+  border: 1px solid transparent;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+
+.discover-card .category-pill {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.discover-card .category-pill-mint {
+  background: rgba(var(--color-mint-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-mint-rgb), 0.18);
+}
+
+.discover-card .category-pill-sky {
+  background: rgba(var(--color-sky-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-sky-rgb), 0.18);
+}
+
+.discover-card .category-pill-purple {
+  background: rgba(var(--color-purple-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-purple-rgb), 0.18);
+}
+
+.discover-card .category-pill-yellow {
+  background: rgba(var(--color-yellow-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-yellow-rgb), 0.18);
+}
+
+.discover-card .category-pill-orange {
+  background: rgba(var(--color-orange-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-orange-rgb), 0.18);
+}
+
+.discover-card .category-pill-rose {
+  background: rgba(var(--color-rose-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.88);
+  border-color: rgba(var(--color-rose-rgb), 0.18);
+}
+
+.discover-card .status-featured {
+  background: rgba(var(--color-mint-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.82);
+  border-color: rgba(var(--color-mint-rgb), 0.16);
+}
+
+.discover-card .status-watching {
+  background: rgba(var(--color-yellow-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.82);
+  border-color: rgba(var(--color-yellow-rgb), 0.16);
+}
+
+.discover-card .status-new {
+  background: rgba(var(--color-orange-rgb), 0.1);
+  color: rgba(var(--color-cream-rgb), 0.84);
+  border-color: rgba(var(--color-orange-rgb), 0.18);
+  font-weight: 600;
+}
+
+.discover-card-title {
+  max-width: 26ch;
+  line-height: 1.28;
+}
+
+.discover-card-summary {
+  max-width: 34ch;
+  color: rgba(var(--color-cream-rgb), 0.68);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.discover-card-tags {
+  gap: 0.4rem;
+}
+
+.discover-card .tag-chip {
+  background: rgba(var(--color-cream-rgb), 0.04);
+  border-color: rgba(var(--color-cream-rgb), 0.08);
+  color: rgba(var(--color-cream-rgb), 0.62);
+  padding: 0.28rem 0.58rem;
+}
+
+.discover-card-tag-overflow {
+  background: transparent;
+  color: rgba(var(--color-cream-rgb), 0.48);
+}
+
+.discover-card-actions {
+  gap: 0.55rem;
+}
+
+.discover-card-action {
+  padding: 0.62rem 0.9rem;
+  border-color: rgba(var(--color-cream-rgb), 0.1);
+  background: rgba(var(--color-cream-rgb), 0.03);
+  color: rgba(var(--color-cream-rgb), 0.88);
+}
+
+.discover-card-action:hover {
+  background: rgba(var(--color-cream-rgb), 0.06);
+  border-color: rgba(var(--color-cream-rgb), 0.16);
+  color: var(--color-cream);
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -131,6 +259,15 @@
 
   .data-table td {
     padding: 0.7rem 0;
+  }
+
+  .discover-card-title,
+  .discover-card-summary {
+    max-width: none;
+  }
+
+  .discover-card-status-group {
+    justify-content: flex-start;
   }
 }
 

@@ -44,7 +44,7 @@ done
 # 2. 음성 끝나는 시점 자동 감지
 SILENCE_START=$($FFMPEG -i "/tmp/vhc_final.mp4" \
   -af "silencedetect=noise=${SILENCE_NOISE}:d=${SILENCE_MIN_DUR}" -f null - 2>&1 \
-  | grep "silence_start" | tail -1 | grep -oE '[0-9]+\.[0-9]+' || echo "")
+  | grep "silence_start" | tail -1 | sed 's/.*silence_start: //' | head -1 || echo "")
 
 MAIN_DUR=$(ffprobe -v quiet -show_format "/tmp/vhc_final.mp4" 2>&1 | grep duration | cut -d= -f2)
 

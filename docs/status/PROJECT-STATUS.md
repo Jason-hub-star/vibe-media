@@ -286,4 +286,13 @@
   - daily-media-publish.md 자동화 프롬프트 추가 (파이프라인 체인 연결)
   - E2E 최종 결과: final.mp4 (NLM 비디오 + 토킹 아바타 PIP + 자막) 생성 성공
   - 썸네일: Gemini 2.0 Flash 품질 불만족 — 웹 수동 생성으로 운영
-  - 미검증: Remotion 하이브리드 (NLM 비디오 + Remotion 인트로/아웃트로/장면 전환)
+  - Remotion 인트로/아웃트로: 검증 완료 (BrandIntro 3초 + BrandOutro 5초)
+  - compose-final.sh: silencedetect 자동 감지 + fade-out/fade-in (워터마크 0%) 확정
+  - 남자 아바타: assets/brand/vh-avatar-male.png 추가, male_solo 렌더 검증 완료
+  - 화자 감지: ZCR 기반 male_solo/female_solo/dual 자동 판별
+  - 듀얼 아바타 (2인): 남(좌하단)+여(우하단) 대칭 배치 렌더 성공, 화자 분리 정확도 개선 필요
+  - overlay-avatar.sh: avatar-meta.json 기반 모드별 자동 합성 확정
+  - 전체 자동화 체인 검증: pipeline→editorial→auto-approve→auto-publish→media-publish 9건 발행 성공
+  - approved+draft 상태 꼬임: DB 트리거(trg_fix_approved_draft)로 재발 방지
+  - 미구현 보류: pyannote-audio 화자 분리 (정확도 향상용, HuggingFace 토큰 필요, 무료)
+  - 미구현 보류: MimikaStudio 1인 나레이션 (주인님 목소리 복제), @remotion/captions 단어별 자막

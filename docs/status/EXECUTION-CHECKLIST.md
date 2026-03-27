@@ -174,13 +174,18 @@
   - ffmpeg-full 최종 합성 (아바타 PIP + 자막 burn-in)
   - final.mp4 생성 성공
 - [x] daily-media-publish.md 자동화 프롬프트 추가 + 코워크 설정값 강제 지침
-- [ ] Remotion 하이브리드 검증 — NLM 비디오 + Remotion 인트로/아웃트로/장면 전환/@remotion/captions 단어별 자막
-- [ ] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제)
+- [x] Remotion 인트로/아웃트로 검증 — BrandIntro(3초) + BrandOutro(5초) + compose-final.sh
+- [x] 남자 아바타 추가 + male_solo 렌더 검증 완료
+- [x] 화자 감지 (ZCR) + 자동 아바타 선택 (male_solo/female_solo 검증 완료)
+- [x] 듀얼 아바타 렌더 + overlay 동작 확인 (남좌+여우 대칭)
+- [x] compose-final.sh silencedetect 파싱 버그 수정
+- [x] overlay-avatar.sh 모드별 자동 합성 (1인/2인/아바타 없음)
+- [x] 전체 자동화 체인 실전 검증: 9건 published + 미디어 합성
+- [x] approved+draft 상태 꼬임 방지 DB 트리거 (trg_fix_approved_draft)
+- [ ] pyannote-audio 화자 분리 (ZCR 대비 정확도 향상, HuggingFace 토큰 필요, 무료) — 보류
+- [ ] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제) — 보류
+- [ ] @remotion/captions 단어별 자막 애니메이션 — 보류
 - [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
-- [x] Threads 토큰 갱신 + 만료일 추적 — 2026-05-25 만료, THREADS_TOKEN_EXPIRES 환경변수 추가
-- [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
-- [ ] 오디오/비디오 E2E 검증 (NotebookLM → Whisper STT → Remotion Audiogram)
-- [ ] MimikaStudio 설치 + 1인 나레이션 경로 검증 (Qwen3-TTS)
 
 ## Current Snapshot
 - [x] 공개 사이트 기본 shell

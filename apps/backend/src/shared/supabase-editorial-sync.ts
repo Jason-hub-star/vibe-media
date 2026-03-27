@@ -7,6 +7,7 @@ import type {
   SnapshotItemClassificationRow,
   SnapshotSourceRow
 } from "./live-ingest-snapshot";
+import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { toStableUuid } from "./supabase-id";
 import { createSupabaseSql } from "./supabase-postgres";
 
@@ -96,10 +97,21 @@ function getSummary(item: SnapshotIngestedItemRow) {
   return String(item.parsed_content.summary ?? item.title);
 }
 
+function getDiscoverCopy(item: SnapshotIngestedItemRow, source?: SnapshotSourceRow | null) {
+  return normalizeDiscoverCopy({
+    title: item.title,
+    summary: getSummary(item),
+    url: item.url,
+    sourceName: source?.name ?? null
+  });
+}
+
 function getTags(item: SnapshotIngestedItemRow) {
   const tags = item.parsed_content.tags;
   if (!Array.isArray(tags)) return [];
-  return tags.filter((tag): tag is string => typeof tag === "string");
+  return normalizeDiscoverTags({
+    tags: tags.filter((tag): tag is string => typeof tag === "string")
+  });
 }
 
 function getImageUrl(item: SnapshotIngestedItemRow): string | null {
@@ -264,6 +276,7 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
     const source = sourcesById.get(item.source_id);
     const slugBase = slugify(item.title) || "item";
     const briefSlug = `${slugBase}-${item.id.slice(0, 8)}`;
+    const discoverCopy = getDiscoverCopy(item, source);
 
     if (classification.target_surface === "brief" || classification.target_surface === "both") {
       const briefId = toStableUuid(`brief:${item.id}`)!;
@@ -309,9 +322,9 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         id: discoverId,
         source_item_id: toStableUuid(item.id)!,
         slug: `${slugBase}-${item.id.slice(0, 8)}`,
-        title: item.title,
+        title: discoverCopy.title,
         category: toDiscoverCategory(classification.category),
-        summary: getSummary(item),
+        summary: discoverCopy.summary,
         status: inferDiscoverStatus(classification),
         review_status: inferReviewStatus(classification),
         scheduled_at: null,

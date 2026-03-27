@@ -13,6 +13,64 @@ export interface DiscoverItemsResult {
   source: DiscoverItemsSource;
 }
 
+function normalizeHref(href: string) {
+  return href.trim().replace(/\/+$/, "").toLowerCase();
+}
+
+function getCanonicalDiscoverKey(item: DiscoverItem) {
+  const primaryExternalAction = item.actions.find(
+    (action) => action.kind !== "brief" && /^https?:\/\//i.test(action.href)
+  );
+  const fallbackAction = item.actions.find((action) => /^https?:\/\//i.test(action.href));
+  const href = primaryExternalAction?.href ?? fallbackAction?.href;
+
+  if (href) {
+    return `href:${normalizeHref(href)}`;
+  }
+
+  return `title:${item.category}:${item.title.trim().toLowerCase()}`;
+}
+
+function getPublishedAtTime(value: string | null) {
+  if (!value) return 0;
+  const time = new Date(value).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function shouldReplaceDiscoverCandidate(current: DiscoverItem, candidate: DiscoverItem) {
+  if (current.highlighted !== candidate.highlighted) return candidate.highlighted;
+
+  const currentPublishedAt = getPublishedAtTime(current.publishedAt);
+  const candidatePublishedAt = getPublishedAtTime(candidate.publishedAt);
+  if (currentPublishedAt !== candidatePublishedAt) {
+    return candidatePublishedAt > currentPublishedAt;
+  }
+
+  if (current.actions.length !== candidate.actions.length) {
+    return candidate.actions.length > current.actions.length;
+  }
+
+  if (current.tags.length !== candidate.tags.length) {
+    return candidate.tags.length > current.tags.length;
+  }
+
+  return candidate.id.localeCompare(current.id) < 0;
+}
+
+function dedupeDiscoverItems(items: DiscoverItem[]) {
+  const byKey = new Map<string, DiscoverItem>();
+
+  for (const item of items) {
+    const key = getCanonicalDiscoverKey(item);
+    const existing = byKey.get(key);
+    if (!existing || shouldReplaceDiscoverCandidate(existing, item)) {
+      byKey.set(key, item);
+    }
+  }
+
+  return Array.from(byKey.values());
+}
+
 function sortDiscoverItems(items: DiscoverItem[]) {
   return [...items].sort((left, right) => {
     if (left.highlighted !== right.highlighted) return left.highlighted ? -1 : 1;
@@ -53,15 +111,15 @@ function listSnapshotDiscoverItems() {
 export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult> {
   const supabaseItems = await listSupabaseDiscoverItems();
   if (supabaseItems && supabaseItems.length > 0) {
-    return { items: sortDiscoverItems(supabaseItems), source: "supabase" };
+    return { items: sortDiscoverItems(dedupeDiscoverItems(supabaseItems)), source: "supabase" };
   }
 
   const snapshotItems = listSnapshotDiscoverItems();
   if (snapshotItems.length > 0) {
-    return { items: sortDiscoverItems(snapshotItems), source: "snapshot" };
+    return { items: sortDiscoverItems(dedupeDiscoverItems(snapshotItems)), source: "snapshot" };
   }
 
-  return { items: sortDiscoverItems(discoverEntries.filter(isPublished)), source: "mock" };
+  return { items: sortDiscoverItems(dedupeDiscoverItems(discoverEntries.filter(isPublished))), source: "mock" };
 }
 
 export async function listDiscoverItems(): Promise<DiscoverItem[]> {

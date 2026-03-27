@@ -1,6 +1,7 @@
 import type { BriefDetail, BriefListItem, DiscoverAction, DiscoverItem, ReviewStatus } from "@vibehub/content-contracts";
 import { isPublished } from "@vibehub/content-contracts";
 
+import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { createSupabaseSql, getSupabaseDbUrl } from "./supabase-postgres";
 
 interface BriefRow {
@@ -112,20 +113,31 @@ async function fetchEditorialData() {
         sourceLinks: Array.isArray(row.source_links) ? row.source_links : [],
         coverImage: row.cover_image_url ?? undefined
       })),
-      discover: discoverRows.map((row) => ({
-        id: row.id,
-        slug: row.slug,
-        title: row.title,
-        category: row.category,
-        summary: row.summary,
-        status: row.status,
-        reviewStatus: row.review_status,
-        scheduledAt: row.scheduled_at,
-        publishedAt: row.published_at,
-        tags: row.tags,
-        highlighted: row.highlighted,
-        actions: actionMap.get(row.id) ?? []
-      })).filter(isPublished)
+      discover: discoverRows
+        .map((row) => {
+          const actions = actionMap.get(row.id) ?? [];
+          const copy = normalizeDiscoverCopy({
+            title: row.title,
+            summary: row.summary,
+            url: actions[0]?.href ?? null
+          });
+
+          return {
+            id: row.id,
+            slug: row.slug,
+            title: copy.title,
+            category: row.category,
+            summary: copy.summary,
+            status: row.status,
+            reviewStatus: row.review_status,
+            scheduledAt: row.scheduled_at,
+            publishedAt: row.published_at,
+            tags: normalizeDiscoverTags({ tags: Array.isArray(row.tags) ? row.tags : [] }),
+            highlighted: row.highlighted,
+            actions
+          };
+        })
+        .filter(isPublished)
     };
   } finally {
     await sql.end();

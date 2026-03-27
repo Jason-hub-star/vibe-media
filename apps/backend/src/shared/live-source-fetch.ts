@@ -5,6 +5,7 @@ import { parseHTML } from "linkedom";
 
 import type { IngestSourceFixture } from "./ingest-source-fixtures";
 import { runBriefDiscoverCycle, type BriefDiscoverCycleReport } from "./brief-discover-cycle";
+import { normalizeDiscoverCopy } from "./discover-copy-normalizer";
 import type { LiveSourceDefinition } from "./live-source-registry";
 import { liveSourceRegistry, loadSourcesFromDb } from "./live-source-registry";
 import { parseGitHubReleaseItems, parseRssItems } from "./live-source-parse";
@@ -205,6 +206,12 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
       let contentMarkdown: string | undefined;
       let parserName: LiveItemParserName = "rss-summary";
       let parseStatus: LiveItemParseStatus = "summary-only";
+      const copy = normalizeDiscoverCopy({
+        title: item.title,
+        summary: item.summary,
+        url: item.url,
+        sourceName: source.sourceName
+      });
 
       if (shouldEnrichArticle(source)) {
         try {
@@ -221,15 +228,15 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         sourceId: source.id,
         sourceName: source.sourceName,
         sourceTier: source.sourceTier,
-        title: item.title,
+        title: copy.title,
         url: item.url,
         publishedAt: item.publishedAt,
-        parsedSummary: summarizeText(item.summary),
+        parsedSummary: summarizeText(copy.summary),
         contentMarkdown,
         parserName,
         parseStatus,
         contentType: source.contentType,
-        tags: inferTags(source, item.title, item.summary),
+        tags: inferTags(source, copy.title, copy.summary),
         imageUrl: item.imageUrl ?? undefined
       });
     }
@@ -243,20 +250,29 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
   if (!response.ok) throw new Error(`github releases fetch failed: ${response.status}`);
   const payload = await response.text();
 
-  return parseGitHubReleaseItems(payload).slice(0, source.maxItems).map((item) => ({
-    id: createItemId(source.id, item.url),
-    sourceId: source.id,
-    sourceName: source.sourceName,
-    sourceTier: source.sourceTier,
-    title: item.title,
-    url: item.url,
-    publishedAt: item.publishedAt,
-    parsedSummary: summarizeText(item.summary),
-    parserName: "rss-summary" as const,
-    parseStatus: "summary-only" as const,
-    contentType: source.contentType,
-    tags: inferTags(source, item.title, item.summary)
-  }));
+  return parseGitHubReleaseItems(payload).slice(0, source.maxItems).map((item) => {
+    const copy = normalizeDiscoverCopy({
+      title: item.title,
+      summary: item.summary,
+      url: item.url,
+      sourceName: source.sourceName
+    });
+
+    return {
+      id: createItemId(source.id, item.url),
+      sourceId: source.id,
+      sourceName: source.sourceName,
+      sourceTier: source.sourceTier,
+      title: copy.title,
+      url: item.url,
+      publishedAt: item.publishedAt,
+      parsedSummary: summarizeText(copy.summary),
+      parserName: "rss-summary" as const,
+      parseStatus: "summary-only" as const,
+      contentType: source.contentType,
+      tags: inferTags(source, copy.title, copy.summary)
+    };
+  });
 }
 
 export async function runLiveSourceFetch(
