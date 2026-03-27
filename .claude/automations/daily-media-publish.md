@@ -348,6 +348,86 @@ npm run publish:channels <slug> --dry-run
 
 ---
 
+## 8-2. YouTube 맞춤 Description 생성 (Gemini)
+
+`publish:channels`가 생성하는 기본 guide.txt는 본문 복붙 수준이라 YouTube SEO에 부적합하다.
+Gemini API로 Brief 본문을 YouTube 최적 Description으로 재작성한다.
+
+```
+입력: Brief 제목 + 요약 + 본문 + 태그
+출력: youtube-upload-guide.txt 덮어쓰기
+```
+
+### Gemini 프롬프트 (그대로 사용할 것)
+
+```
+You are a YouTube SEO expert. Given this AI tech brief, write a YouTube video description.
+
+Rules:
+- 3 paragraphs: hook (1-2 sentences), key points (3-4 bullet points), call to action
+- Include these links at the end:
+  📄 Full Article: https://vibehub.com/brief/{slug}
+  🧵 Threads: https://www.threads.net/@vibehub1030
+  🌐 Website: https://vibehub.com
+- Add 8-12 relevant hashtags (no duplicates)
+- Add comma-separated tags line for YouTube Studio
+- Keep under 5000 characters
+- English only
+
+Brief title: {title}
+Brief summary: {summary}
+Brief body: {body}
+Tags: {tags}
+```
+
+### 실행
+
+```bash
+# Gemini API 호출 (GEMINI_API_KEY 필요)
+# 결과를 youtube-upload-guide.txt에 저장
+```
+
+⚠️ `GEMINI_API_KEY`가 없으면 이 단계를 skip — 기본 template guide 유지.
+
+---
+
+## 8-3. 썸네일 생성 안내
+
+현재 썸네일은 API 무료 티어에서 이미지 생성 불가 (IPM=0).
+Gemini로 썸네일 프롬프트만 자동 생성하고, 실제 이미지는 AI Studio 웹에서 수동 생성한다.
+
+### 썸네일 프롬프트 생성
+
+```
+You are a YouTube thumbnail designer. Given this AI tech brief title, generate a Gemini image generation prompt.
+
+Rules:
+- Style: bold, eye-catching, minimal text
+- Color scheme: dark background (#0A0A0A) with orange accent (#F97316) and purple (#7C3AED)
+- Include the main subject/icon related to the topic
+- Text on thumbnail: max 5 words, large bold font
+- 16:9 aspect ratio, 1280x720
+
+Brief title: {title}
+```
+
+### 출력
+
+`output/<slug>/thumbnail-prompt.txt`에 저장.
+
+### 수동 단계
+
+```
+📸 썸네일 생성:
+  1. https://aistudio.google.com 접속
+  2. thumbnail-prompt.txt의 프롬프트 복붙
+  3. 생성된 이미지 다운로드 → output/<slug>/thumbnail.jpg
+```
+
+⚠️ 썸네일 API 자동화는 유료 전환 시 추가 (Imagen 4 Fast $0.02/장).
+
+---
+
 ## 9. 결과 보고
 
 Telegram으로 전체 결과를 보고한다:
