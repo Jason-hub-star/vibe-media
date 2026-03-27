@@ -7,7 +7,7 @@
 | File | Purpose | Suggested cadence |
 | --- | --- | --- |
 | `daily-pipeline.md` | fetch -> ingest -> sync 실행 + Telegram 보고 | 매일 1회 |
-| `daily-editorial-review.md` | draft 브리프 자동 가공 + review 전송 | 매일 1회, 파이프라인 이후 |
+| `daily-editorial-review.md` | draft 브리프 자동 가공 + review 전송 + guardrail auto-approve | 매일 1회, 파이프라인 이후 |
 | `daily-drift-guard.md` | 파이프라인/오케스트레이션 드리프트 감시, 회귀 탐지 | 매일 1회, editorial review 이후 |
 | `daily-auto-publish.md` | approved 브리프 quality check + scheduled/published 전환 + pending discover 경량 quality check + approved/published 전환 (`publish:auto-dry` -> `publish:auto` → discover publish) | 매일 1회, drift guard 이후 |
 | `daily-dedup-guard.md` | brief 의미적 중복 감지 (Jaccard + 동일 소스) | 매일 1회, editorial review 전후 |
@@ -24,7 +24,7 @@ daily-pipeline → daily-dedup-guard → daily-editorial-review → daily-drift-
 ## Why These Automations
 
 - `daily-pipeline`은 운영 본체다.
-- `daily-editorial-review`는 RSS 요약 1줄짜리 draft를 레퍼런스 수준의 브리프로 가공한다.
+- `daily-editorial-review`는 RSS 요약 1줄짜리 draft를 레퍼런스 수준의 브리프로 가공하고, guardrail 기준을 통과한 brief는 자동 승인한다.
 - `daily-drift-guard`는 실패를 늦게 발견하지 않도록 한다.
 - `daily-auto-publish`는 approved 브리프를 quality gate 뒤에만 예약/발행하고, pending discover 항목도 경량 검증 후 자동 발행한다.
 - `daily-dedup-guard`는 같은 기사로 brief가 중복 생성되는 것을 방지한다.

@@ -19,6 +19,7 @@
     "pipeline:obsidian-export": "npm run pipeline:obsidian-export -w @vibehub/backend",
     "pipeline:watch-folder": "npm run pipeline:watch-folder -w @vibehub/backend",
     "review:decision": "npm run review:decision -w @vibehub/backend",
+    "review:auto-approve": "npm run review:auto-approve -w @vibehub/backend",
     "publish:action": "npm run publish:action -w @vibehub/backend",
     "publish:auto-dry": "npm run publish:auto-dry -w @vibehub/backend",
     "publish:auto": "npm run publish:auto -w @vibehub/backend",

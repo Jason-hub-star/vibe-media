@@ -47,18 +47,18 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - `brief`와 `discover` 초안은 초기에는 로컬과 Claude를 shadow 비교한다.
 
 ### 4) 검수
-- admin에서 사람이 최종 판단한다.
+- admin은 기본 승인 콘솔이 아니라 자동 승인에서 보류된 항목을 처리하는 예외 콘솔이다.
 - 검수 화면은 최소 3면을 함께 보여야 한다.
   - source 원문
   - 구조화된 중간 데이터
   - 실제 공개 미리보기
-- 사람 검수는 `REVIEW-POLICY.md`의 예외 조건에만 들어간다.
+- 기본값은 guardrail auto-approve이며, 사람 검수는 `REVIEW-POLICY.md`의 예외 조건에만 들어간다.
 - 예외: 미성년자 영상은 `parent review` 단계를 항상 거친다.
 
 ### 5) 배포
-- 검수 승인 후 private upload, scheduled publish, 즉시 publish 같은 정책을 적용한다.
+- guardrail auto-approve 또는 예외 검수 승인 후 private upload, scheduled publish, 즉시 publish 같은 정책을 적용한다.
 - 완전 자동 공개는 기본값이 아니다.
-- 기본 자동화 목표는 `scheduled/private publish queue`까지다.
+- 기본 자동화 목표는 brief/discover의 승인까지 자동화하고, 예외 항목만 사람이 본 뒤 `scheduled/private publish queue`까지 흘려보내는 것이다.
 
 ## Surface Routing
 - `brief`: 해설형 공개 콘텐츠

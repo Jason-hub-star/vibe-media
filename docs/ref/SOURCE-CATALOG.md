@@ -39,7 +39,7 @@
 | Google AI Blog | ✅ 활성 | |
 | Google DeepMind | 미구현 | |
 | Google Developers AI / Gemini | 미구현 | |
-| Hugging Face Blog | 미구현 | |
+| Hugging Face Blog | 미구현 | ✅ RSS 확인: `huggingface.co/blog/feed.xml` (500+ items, auto-safe) |
 | arXiv (P1 확장 후보) | 미구현 | SOURCE-EXPANSION-STRATEGY.md |
 | Hacker News (P1 확장 후보) | 미구현 | SOURCE-EXPANSION-STRATEGY.md |
 

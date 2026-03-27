@@ -1,7 +1,7 @@
 # VibeHub 일일 에디토리얼 자동 가공
 
 ## 목적
-draft 상태 브리프를 레퍼런스 수준으로 가공하고, 품질 기준을 통과하면 review 큐로 자동 전송한다.
+draft 상태 브리프를 레퍼런스 수준으로 가공하고, 품질 기준을 통과하면 review 큐로 자동 전송한 뒤 guardrail 기준을 만족하는 항목은 자동 승인까지 진행한다.
 이 프롬프트는 `daily-pipeline.md` 실행 이후 스케줄러에서 자동 실행된다.
 
 ---
@@ -152,6 +152,36 @@ VALUES ('brief', $id::uuid, 'pending')
 ON CONFLICT DO NOTHING
 ```
 
+주의:
+- 이 단계에서는 직접 `approved`로 바꾸지 않는다.
+- 자동 승인 여부는 아래 3-7의 `review:auto-approve` 워커가 결정한다.
+
+### 3-7. 자동 승인 가드 실행
+
+브리프 가공 루프가 끝나면 아래 워커를 실행한다:
+
+```bash
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
+npm run review:auto-approve -- --max=10 2>&1
+```
+
+자동 승인 기준:
+- quality gate 6/6 통과
+- `qualityScore >= 70` (B 이상 권장 구간)
+- classifier confidence `>= 0.85`
+- `duplicate_of IS NULL`
+- `exception_reason IS NULL`
+- `target_surface != 'both'`
+- source tier가 `manual-review-required`/`blocked`가 아님
+- 기존 published brief와 제목/요약 Jaccard 유사도가 중복 임계치를 넘지 않음
+
+기준을 만족하지 못하면:
+- `review_status = pending` 유지
+- `last_editor_note` / `admin_reviews.notes`에 hold 사유를 기록
+- admin의 예외 큐에서만 사람이 확인한다
+
 ---
 
 ## 4. 결과 보고
@@ -161,6 +191,8 @@ ON CONFLICT DO NOTHING
 
 - 대상: N건
 - 가공 완료: M건 (평균 스코어: XX점)
+- 자동 승인: A건
+- 자동 보류: H건
 - A등급 레퍼런스 태깅: N건
 - 건너뜀: K건 (사유: ...)
 - 품질 통과율: M/N

@@ -4,6 +4,16 @@
 
 ## Resolved
 
+### 2026-03-27 — Weekly Autoresearch: Hugging Face Blog RSS 소스 후보 확정
+- 상태: resolved
+- 결정:
+  - `huggingface.co/blog/feed.xml` → 유효한 RSS 2.0 피드 확인 (500+ 아이템, 2026 최신 콘텐츠)
+  - 기존 expansion roadmap Brief Sources의 `Hugging Face Blog (미구현)` 항목에 유효 endpoint 기재
+  - Anthropic Research (`anthropic.com/news/rss.xml`, `/rss.xml`) → 동적 Next.js 앱으로 RSS 피드 미제공 확인, 영구 disabled 처리
+  - OpenAI API Changelog (`platform.openai.com/docs/changelog`) → 403 지속, disabled 유지
+- 근거: 2026-03-27 autoresearch 루프에서 disabled source 재검토 실험 수행. Hugging Face Blog는 AI/ML 연구·도구 콘텐츠가 VibeHub brief 타깃과 직접 일치, 인증 없는 표준 RSS, 운영 복잡도 증가 없음. Anthropic는 피드 엔드포인트 자체가 없으므로 재검토 대상에서 제외
+- 영향: Hugging Face Blog를 `live-source-registry.ts`에 `auto-safe` brief source로 추가 시 coverage 확장 가능 (실제 코드 추가는 다음 구현 웨이브에서)
+
 ### 2026-03-27 — approved+draft 상태 꼬임 방지 트리거
 - 상태: resolved
 - 결정: `trg_fix_approved_draft` DB 트리거 추가 — `review_status = approved`이면서 `status = draft`인 경우 자동으로 `status = review`로 전환

@@ -268,6 +268,11 @@
   - `sitemap.ts`에서 정적 페이지와 publish timestamp 없는 항목의 `lastModified: new Date()` 제거 — 실제 콘텐츠 날짜가 있을 때만 `lastModified` 출력
   - `/admin` route tree에 `robots: { index: false, follow: false }` 추가 + `robots.ts`에서 `/admin` disallow
   - root metadata에 `NAVER_SITE_VERIFICATION` 조건부 구조 추가, Organization JSON-LD에 `sameAs` 지원 (GitHub 기본 + Threads/YouTube env 확장)
+- Editorial guardrail auto-approve (2026-03-27): done
+  - `review:auto-approve` 워커 추가 — `review + pending` brief 중 quality/dedup/confidence/source-tier guardrail을 통과한 항목만 자동 `approved`
+  - hold 사유는 `last_editor_note`와 `admin_reviews.notes`에 기록되고, 기준 미달 항목만 admin pending queue에 남음
+  - `daily-editorial-review.md`가 raw SQL approve 대신 `review:auto-approve` 워커를 호출하도록 수정
+  - 기준 문서 업데이트: `AUTO-PUBLISH-RULES.md`, `PIPELINE-OPERATING-MODEL.md`, 자동화 README
 - 오디오/비디오 파이프라인 E2E 검증 (2026-03-27): done
   - nlm CLI (NotebookLM): 설치 + 로그인 완료, 오디오/비디오 생성 성공
   - MimikaStudio: Python 3.11 venv 설치 완료 (faster-whisper 포함)
