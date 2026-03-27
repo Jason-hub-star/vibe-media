@@ -394,3 +394,17 @@ Brief: "<title>"
 - 아바타 이미지는 사전에 `output/<slug>/avartar.png`에 준비되어 있어야 함
 - 아바타 없으면 자막만 burn-in으로 대체 (graceful degradation)
 - 렌더 시간 예상: 2분 영상 기준 ~5분 (Apple Silicon MPS)
+
+---
+
+## 12. 중간 파일 자동 정리
+
+7일 이상 된 output 폴더의 중간 파일(avatar MOV, WAV, intro/outro 등)을 자동 삭제한다.
+`complete.mp4`, `subtitles-en.srt`, `youtube-upload-guide.txt`, `avatar-meta.json`만 보관.
+
+```bash
+bash tools/cleanup-media.sh --days 7
+```
+
+이 단계는 미디어 발행 완료 후 매일 자동 실행된다.
+`--dry-run`으로 삭제 대상 미리 확인 가능.
