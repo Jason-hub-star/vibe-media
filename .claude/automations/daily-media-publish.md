@@ -56,19 +56,72 @@ ls ~/MimikaStudio/venv/bin/python               # faster-whisper
 
 ### ⚠️ 일일 처리 상한: 최대 2건
 
-미디어 파이프라인은 brief 1건당 **순차 처리** 기준 약 20~25분이 소요된다.
-- NotebookLM 생성 대기: ~15분
-- Whisper STT + 아바타 렌더: ~5분
-- ffmpeg 합성: ~1분
+미디어 파이프라인은 brief 1건당 **순차 처리** 기준 약 19분이 소요된다. (2026-03-27 실측)
+- NotebookLM 생성 대기: ~10분 (클라우드, `-f brief` 포맷)
+- 다운로드 (Claude in Chrome): ~2분
+- Whisper STT: ~30초 (base 모델, CPU)
+- 아바타 렌더: ~5분 (separable_float, MPS ~10fps, 2분 영상 기준)
+- Remotion 인트로/아웃트로 + compose-final.sh: ~1분
+- Threads 발행: ~30초
 
-**하루 최대 2건만 처리한다.** 대상이 3건 이상이면 published_at 오래된 순으로 2건만 선택하고, 나머지는 다음 날 daily 루틴에서 자동 처리된다. 백로그가 누적되더라도 이 상한을 초과하지 않는다.
+**하루 최대 2건만 처리한다.** 선정 기준은 당일 발행분 중 quality score 높은 순이다. 오래된 백로그보다 오늘 가장 좋은 콘텐츠를 먼저 영상화한다.
 
 > 수동 모드에서 사용자가 특정 slug를 직접 지정한 경우에는 상한을 무시하고 지정된 건만 처리한다.
 
 ### 자동 모드 (기본)
-`daily-auto-publish`에서 새로 `published`된 brief slug를 대상으로 한다.
-대상이 0건이면 "미디어 발행 대상 없음"으로 종료.
-대상이 3건 이상이면 published_at 오름차순으로 정렬해 상위 2건만 처리한다.
+당일(`published_at >= KST 00:00`) 발행된 brief 중 quality score 내림차순으로 상위 2건을 선정한다.
+
+quality score는 `last_editor_note`의 두 가지 패턴에서 파싱한다:
+- `auto-approved by review guard (A 94)` → 숫자 94 추출
+- `[auto] score=94 grade=A` → 숫자 94 추출 (레거시)
+
+```sql
+SELECT id, slug, title, last_editor_note, published_at
+FROM public.brief_posts
+WHERE status = 'published'
+  AND published_at >= date_trunc('day', NOW() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
+  AND (
+    last_editor_note ~ '\([A-F] \d+\)'   -- auto-approve 형식
+    OR last_editor_note LIKE '%score=%'  -- 레거시 형식
+  )
+  AND NOT EXISTS (
+    SELECT 1 FROM public.channel_publish_results
+    WHERE brief_id = brief_posts.id
+      AND channel = 'youtube'
+      AND status = 'success'
+  )
+ORDER BY
+  COALESCE(
+    CAST(substring(last_editor_note FROM '\(([A-F]) (\d+)\)') AS text),  -- "(A 94)" → "94" 방향으로 직접 파싱 불가, 아래 방식 사용
+    '0'
+  ),
+  published_at DESC
+LIMIT 2;
+```
+
+실제로는 아래 패턴으로 파싱한다 (PostgreSQL regexp_replace):
+```sql
+SELECT id, slug, title, last_editor_note, published_at,
+  CAST(
+    COALESCE(
+      regexp_replace(last_editor_note, '^.*\([A-F] (\d+)\).*$', '\1'),
+      regexp_replace(last_editor_note, '^.*score=(\d+).*$', '\1'),
+      '0'
+    ) AS integer
+  ) AS quality_score
+FROM public.brief_posts
+WHERE status = 'published'
+  AND published_at >= date_trunc('day', NOW() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.channel_publish_results
+    WHERE brief_id = brief_posts.id AND channel = 'youtube' AND status = 'success'
+  )
+ORDER BY quality_score DESC, published_at DESC
+LIMIT 2;
+```
+
+당일 발행분이 0건이면 "미디어 발행 대상 없음"으로 종료.
+score 파싱이 안 되는 브리프는 quality_score = 0으로 처리해 하단 정렬된다.
 
 ### 수동 모드
 사용자가 slug를 직접 지정하면 해당 brief로 실행한다.
