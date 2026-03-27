@@ -155,7 +155,8 @@ npm run publish:channels <slug>
 - 투명 배경 PNG (RGBA)
 - **512x512 투명 패딩 필수** — `img.resize((512, 512))` 강제 리사이즈 금지 (찌그러짐+입 안 움직임)
 - 입 다문 표정이 입 벌린 표정보다 변화 폭이 더 클 수 있지만, 전신이면 벌린 표정도 OK
-- 현재 확정 아바타: `output/{slug}/avartar.png` (VH TECH 전신)
+- 공용 아바타: `assets/brand/vh-avatar.png` (VH TECH 전신, 모든 영상에서 재사용)
+- slug별 커스텀 아바타가 `output/{slug}/avartar.png`에 있으면 그걸 우선 사용
 
 ## ffmpeg 합성 규칙 (수정 금지)
 

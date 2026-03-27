@@ -260,7 +260,11 @@ EOF
   --fps 24 --model separable_float
 ```
 
-⚠️ 아바타 이미지가 없으면 이 단계를 skip한다.
+아바타 탐색 순서:
+1. `output/<slug>/avartar.png` (slug별 커스텀)
+2. `assets/brand/vh-avatar.png` (공용 기본값)
+
+⚠️ 아바타 이미지가 둘 다 없으면 이 단계를 skip한다.
 ⚠️ **전신 이미지만 사용** — 클로즈업은 입 변형이 안 됨.
 ⚠️ **512x512 강제 리사이즈 금지** — 반드시 투명 패딩 방식 사용.
 
