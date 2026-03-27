@@ -76,6 +76,7 @@
 - Defuddle article enrichment (Phase 1): done
 - fixture-backed shadow trial suite (`trial:all`): done
 - design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done
+- palette recalibration + asset/media brand sync: done — 저채도 보정 토큰, status/category pill 알파 조정, brand/placeholder/sprite/Remotion/thumbnail 기본색 동기화
 - mobile responsiveness hardening (missing breakpoints, touch targets, nav hamburger, table scroll, pipeline panel): done
 - brief detail page redesign (MetaBar, BriefBodySections, BriefInsight, BriefSourcePanel): done
 - admin brief quality checklist (6 criteria, advisory): done
@@ -88,6 +89,7 @@
 - discover 자동 발행 통합: done — `daily-auto-publish.md`에 discover 경량 quality check + auto-publish 섹션 추가
 - Source Registry DB 연결: done — `live-source-registry.ts`가 Supabase `sources` 테이블을 SSOT으로 읽도록 변경, 30→23개 활성화 (7개 404/403 비활성), 수집량 9→63건/실행 (7배 증가)
 - Brief Quality Score 확장: done — pass/fail → 0~100 점수 + A/B/C/D/F 등급. 6개 게이트 + 5개 확장 점수(titleAppeal/summaryStandalone/structureScore/sourceDiversity/readability). 레퍼런스 brief 90점(A), 부실 brief 60점(C) 검증 완료
+- Vercel 프로덕션 배포: done — `vibehub-media` 프로젝트, `vibehub.tech` 도메인 연결, Next.js 16 Turbopack 빌드, en/es 다국어 라우트 정상 동작
 - Full Cycle 검증 (2026-03-26): done
   - pipeline:daily: 23개 소스 → 63건 fetch → 191건 로컬 스냅샷 → 19건 Supabase sync (FK 버그 4건 수정: orphan source_id 연쇄 위반)
   - draft+approved 상태 꼬임 5건 리셋 → draft+pending
@@ -130,6 +132,9 @@
   - 채널 발행 Telegram 보고 연결 — E2E 수신 확인 완료
   - daily-auto-publish.md §9 채널 발행 단계 추가 (published brief → publish:channels 자동 연결)
   - SCHEMA.md에 신규 테이블 2개 문서화
+- dedup-guard 워커 구현: done — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
+- source-health 워커 구현: done — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
+- daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
@@ -145,6 +150,35 @@
 - `npm run pipeline:supabase-sync`: pass (`sources synced 5 / runs synced 3 / items synced 9 / classifications synced 9`)
 - `npm run pipeline:daily`: pass (`27 items / 0 errors / 8.1s`), Telegram report skipped without bot env
 
+## Known Issues — 2026-03-27 코드리뷰 스캔
+
+### 카드 가독성 (Card Readability) — M11로 대부분 해결
+| 심각도 | 문제 | 상태 | 비고 |
+|--------|------|------|------|
+| ✅ | Brief 제목 오버플로우 | **해결** | `max-width: 32ch` + `line-clamp: 2` 적용 |
+| ✅ | Brief 요약 절단 없음 | **해결** | `line-clamp: 2` + `line-height: 1.45` 적용 |
+| ✅ | Brief 카드 진입 장벽 | **해결** | stretch link overlay로 카드 전체 클릭 |
+| ✅ | Discover 제목 26ch 제약 | **해결** | `32ch`로 확장 |
+| ✅ | Discover 요약 line-height 미지정 | **해결** | `line-height: 1.45` 명시 |
+| ✅ | Brief 카드 정보 밀도 과다 | **해결** | 2-tier 위계 + 프리뷰/인사이트 제거 |
+| 🟢 보류 | Newsletter 폼 풀 너비 | 보류 | 페이지 교체 검토 중 |
+
+### 뉴스레터 (Newsletter UX) — 페이지 교체 검토 중
+| 문제 | 현재 | 비고 |
+|------|------|------|
+| 소셜 프루프 부재 | 정적 카피만 | 페이지 방향 확정 후 착수 |
+| 미리보기 없음 | 폼만 존재 | 동상 |
+| 폼 상태 전환 미흡 | idle/success/error 3상태 | 동상 |
+
+### 로고/브랜드 (Logo & Brand Assets) — 저채도 팔레트 동기화 완료
+| 항목 | 현재 상태 | 비고 |
+|------|-----------|------|
+| logo-mark.svg | 토큰 동기화 완료 (unstaged) | Remotion BrandIntroOutro에서도 참조 → 교체 시 리빌드 필요 |
+| logo-wordmark.svg | cream stroke 보더 추가 (unstaged) | 520×120 비율 + 모노스페이스 유지 필수 |
+| ribbon.svg | "OPERATOR READY" 리본 (unstaged) | admin 전용 상태 뱃지 |
+| favicon.svg | 토큰 동기화 (unstaged) | 128px 크기 유지 |
+| 플레이스홀더 5종 | 저채도 팔레트 보정 (unstaged) | 실 이미지 교체 후보: brief-hero, newsletter-hero |
+
 ## Open Follow-ups
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit --incremental false`; keep this as the canonical Next 16 flow on new machines
 - auto-publish quality failure는 이제 `draft + pending`으로 자동 복귀하지만, 반복 실패 브리프의 editorial prompt 보강은 여전히 운영 튜닝 과제다
@@ -152,6 +186,7 @@
 - discovery filters are now URL-synced (group + search), sort rules and advanced drill-down are still scaffold-level
 - `useFilterUrlSync` 공용 훅이 `features/shared/view/`에 추가됨 — 새 목록 페이지 필터 추가 시 이 훅을 재사용
 - OG 이미지는 모두 `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens)에서 색상/문자열을 읽음 — 브랜드 변경 시 design-tokens만 수정
+- 정적 브랜드 자산(`public/brand/*`, `public/placeholders/*`, `public/sprites/*`)과 media-engine 기본 브랜드색도 2026-03-27 기준 저채도 팔레트로 재동기화됨
 - `/seo-check` 스킬로 route별 SEO 완성도(metadata, JSON-LD, OG 이미지, sitemap, 내부 링크, 브랜드 하드코딩) 점검 가능
 - `/admin/pipeline`은 독립 페이지가 아닌 redirect→대시보드 구조. 파이프라인 모니터는 대시보드 하단 PipelineMonitorClient로 임베드됨
 - `admin/inbox`, `admin/runs`, `admin/review`, `admin/publish`, `admin/exceptions`, `admin/policies`, `admin/programs`는 scaffold 구현 완료
@@ -219,6 +254,7 @@
   - `tool_candidate` source registry를 migration으로 seed/upsert하도록 정리
   - GitHub imported search query 기본값을 `topic:developer-tools archived:false is:public stars:>10`로 고정
   - 새 DB에서도 fallback source id 없이 imported sidecar가 Supabase sync로 바로 올라갈 수 있게 정리
+- 카드 가독성 + 진입 UX 개선 (M11): done — Brief 텍스트 절단(32ch/2줄), stretch link 전체 클릭, Discover 32ch 확장, 2-tier 위계 정리. Newsletter Phase D는 페이지 교체 검토로 보류
 - 디자인 토큰 통일 완료: CSS 6개 파일(globals/components/status/discovery/admin/pipeline)에서 raw rgba/hex 141건을 `var()` 참조로 전환. `colorRgbTokens`, `purple`, `--radius-md/sm`, `--type-body/label` 추가.
 - design docs need route-by-route expansion for Claude-led frontend refinement
 - localized public route tree는 이제 `[locale]/(public)`만 관리하면 된다. 문서와 핸드오프에 legacy `(public)` 경로를 다시 쓰지 않는다.
@@ -331,3 +367,8 @@
   - `/sources`에 Imported Candidates 4번째 레인 추가, direct submission과 분리 노출
   - `/admin/imported-tools` 목록 + 상세 + promote/hide/reject 액션 추가
   - `pipeline:daily` 끝에 non-blocking imported-candidates sidecar 연결
+- Discover 노출 규칙 정리 (2026-03-27): done
+  - Admin discover: `listAllDiscoverItems()` 추가 — draft/pending 포함 전체 노출 (isPublished 필터 우회)
+  - Brief↔Discover 자동 연계: `relatedBriefSlugs` 태그/카테고리 기반 자동 매칭 (최대 3개)
+  - Action link 검증: `isValidActionHref()` 유틸 추가 + DiscoverCard/radar detail에서 깨진 링크 필터
+  - DISCOVERY-TAXONOMY.md에 Exposure Rules 섹션 추가 (status/highlighted/공개조건/admin조건/Brief연계/action규칙)

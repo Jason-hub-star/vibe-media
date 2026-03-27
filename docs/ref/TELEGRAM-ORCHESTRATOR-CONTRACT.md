@@ -3,6 +3,7 @@
 ## Purpose
 - `telegram-orchestrator`는 VibeHub의 LLM active/shadow/promote/rollback control plane으로 쓴다.
 - VibeHub는 자체 파이프라인을 유지하고, 모델 승격과 관찰은 `telegram-orchestrator`를 통해 수행한다.
+- 예외적으로 `YouTube URL 단독 메시지`, `연결/등록 의도가 분명한 YouTube URL 포함 메시지`, `/vh-youtube <brief-slug> <youtube-url>`는 VibeHub의 post-upload intake로 허용한다.
 
 ## Assumed Capabilities
 - SQLite model registry
@@ -29,6 +30,7 @@
 - shadow 시작/중단
 - promote / rollback 실행
 - drift 감시
+- 로컬 LLM이 안전한 YouTube intake로 분류한 메시지 또는 `/vh-youtube`를 받아 VibeHub workspace에서 `publish:link-youtube`를 호출
 
 ### `VibeHub` 책임
 - stage input generation
@@ -36,6 +38,7 @@
 - queue routing
 - human-on-exception policy
 - publish queue control
+- `/vh-youtube`가 호출한 brief-YouTube canonical link 저장과 Threads Pass 3 실행
 
 ## Stage Mapping
 ### `classifier`
@@ -103,6 +106,7 @@
 - 한 번에 여러 stage promote 금지
 - active 변경 후 최소 관찰 윈도우 없이 다음 promote 금지
 - VibeHub의 publish rule보다 orchestrator가 앞서지 않는다
+- 로컬 LLM은 `YouTube 링크 연결 완료` 의도만 분류할 수 있다. 그 외 자유 자연어는 상태를 바꾸지 않는다.
 
 ## Data Handshake
 - VibeHub는 stage별 비교 가능한 입력 세트를 유지해야 한다.

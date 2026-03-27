@@ -13,4 +13,4 @@ export const BRAND_NAME_UPPER = BRAND_NAME.toUpperCase();
 export const THREADS_HANDLE = process.env.THREADS_HANDLE ?? "vibehub";
 
 /** 사이트 URL */
-export const SITE_URL = process.env.SITE_URL ?? "https://vibehub.com";
+export const SITE_URL = process.env.SITE_URL ?? "https://vibehub.tech";

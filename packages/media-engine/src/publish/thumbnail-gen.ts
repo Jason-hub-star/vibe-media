@@ -82,13 +82,13 @@ async function generateThumbnailWithText(
   const svg = `<svg width="${THUMBNAIL_WIDTH}" height="${THUMBNAIL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0A0A0A"/>
-      <stop offset="100%" style="stop-color:#1A1A2E"/>
+      <stop offset="0%" style="stop-color:#151110"/>
+      <stop offset="100%" style="stop-color:#241D1A"/>
     </linearGradient>
   </defs>
   <rect width="100%" height="100%" fill="url(#bg)"/>
-  <rect x="40" y="40" width="1200" height="4" fill="#F97316" rx="2"/>
-  <text x="640" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" fill="#F97316" letter-spacing="4">${BRAND_NAME_UPPER}</text>
+  <rect x="40" y="40" width="1200" height="4" fill="#D9863A" rx="2"/>
+  <text x="640" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600" fill="#D9863A" letter-spacing="4">${BRAND_NAME_UPPER}</text>
   ${titleSvgLines}
   <text x="640" y="${340 + lines.length * 56}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" fill="#999999">${language.toUpperCase()}</text>
 </svg>`;

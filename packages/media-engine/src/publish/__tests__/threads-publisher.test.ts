@@ -156,7 +156,7 @@ describe("ThreadsPublisher", () => {
       [
         {
           targetChannel: "ghost",
-          url: "https://vibehub.com/article",
+          url: "https://vibehub.tech/article",
           text: "Read full article",
         },
       ],

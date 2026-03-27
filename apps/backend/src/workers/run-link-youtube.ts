@@ -1,24 +1,60 @@
 /**
- * CLI: npm run publish:link-youtube <brief-slug> <video-id>
- * YouTube video_id 등록 후 Pass 3 크로스프로모 실행.
+ * CLI:
+ *   npm run publish:link-youtube -- <brief-slug> <video-id-or-url>
+ *   npm run publish:link-youtube -- <video-id-or-url>
+ * YouTube public link 등록 후 Pass 3 크로스프로모 실행.
  *
- * brief-slug로 Supabase에서 기존 발행 URL을 조회한 뒤,
- * YouTube URL을 추가하여 기존 채널에 크로스프로모 주입.
+ * brief-slug가 없으면 업로드 대기 중인 YouTube metadata title과
+ * 실제 YouTube 제목(oEmbed)을 대조해 brief를 자동 매칭한다.
  */
 
 import {
-  linkYouTubeToChannels,
+  buildCrossPromoBlocks,
   createThreadsPublisher,
 } from "@vibehub/media-engine";
-import type { ChannelName, ChannelPublisher } from "@vibehub/media-engine";
+import type { ChannelName, ChannelPublisher, CrossPromoResult } from "@vibehub/media-engine";
 import { getSupabaseBriefDetail } from "../shared/supabase-editorial-read";
+import {
+  fetchYouTubeOEmbedTitle,
+  listLatestSuccessfulChannelUrlsByLocale,
+  listLatestSuccessfulChannelUrls,
+  parseYouTubeInput,
+  recordPublicYouTubePublishResult,
+  resolveBriefSlugForYouTubeInput,
+  updateBriefYouTubeLink,
+} from "../shared/youtube-linking";
 
-const [briefSlug, videoId] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const rawBriefSlug = args.length >= 2 ? args[0] : null;
+const rawYouTubeInput = args.length >= 2 ? args[1] : args[0];
 
-if (!briefSlug || !videoId) {
-  console.error("usage: tsx src/workers/run-link-youtube.ts <brief-slug> <video-id>");
+if (!rawYouTubeInput) {
+  console.error("usage: tsx src/workers/run-link-youtube.ts [brief-slug] <video-id-or-url>");
   process.exit(1);
 }
+
+let youtubeVideoId = "";
+let youtubeUrl = "";
+
+try {
+  ({ youtubeVideoId, youtubeUrl } = parseYouTubeInput(rawYouTubeInput));
+} catch (error) {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+}
+
+const resolvedLink = rawBriefSlug
+  ? {
+      briefSlug: rawBriefSlug,
+      resolvedBy: "explicit" as const,
+      matchedTitle: undefined,
+    }
+  : await resolveBriefSlugForYouTubeInput({
+      youtubeVideoId,
+      youtubeUrl,
+    });
+
+const briefSlug = resolvedLink.briefSlug;
 
 // Brief 조회
 const brief = await getSupabaseBriefDetail(briefSlug);
@@ -31,20 +67,52 @@ if (!brief) {
 const publishers = new Map<ChannelName, ChannelPublisher>();
 publishers.set("threads", createThreadsPublisher());
 
-// TODO: brief_channel_meta 테이블에서 기존 발행 URL 조회
-// 현재는 Supabase에 channel_results 스키마가 없으므로 빈 맵
-const existingUrls: Partial<Record<ChannelName, string>> = {};
-
-const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-
-console.log(`Linking YouTube ${videoId} to brief "${brief.title}" (${briefSlug})`);
-
-const results = await linkYouTubeToChannels({
+await updateBriefYouTubeLink({
+  briefSlug,
+  youtubeVideoId,
   youtubeUrl,
-  existingUrls,
-  publishers,
-  title: brief.title,
-  slug: brief.slug,
+});
+await recordPublicYouTubePublishResult({
+  briefSlug,
+  youtubeUrl,
+  locale: brief.canonicalLocale ?? brief.locale ?? "en",
 });
 
-console.log(JSON.stringify(results, null, 2));
+const existingUrls = await listLatestSuccessfulChannelUrls(briefSlug);
+const threadsUrls = await listLatestSuccessfulChannelUrlsByLocale(briefSlug, "threads");
+const promoBlocks = buildCrossPromoBlocks({
+  ...existingUrls,
+  youtube: youtubeUrl,
+});
+const youtubeTitle =
+  resolvedLink.resolvedBy === "pending-title-match"
+    ? resolvedLink.matchedTitle
+    : await fetchYouTubeOEmbedTitle(youtubeUrl).catch(() => null);
+
+console.log(`Linking YouTube ${youtubeVideoId} to brief "${brief.title}" (${briefSlug})`);
+
+const threadsPublisher = publishers.get("threads");
+const results: CrossPromoResult[] = [];
+
+if (threadsPublisher?.injectCrossPromo) {
+  for (const threadsUrl of threadsUrls) {
+    results.push(await threadsPublisher.injectCrossPromo(threadsUrl, promoBlocks));
+  }
+}
+
+console.log(
+  JSON.stringify(
+    {
+      briefSlug,
+      resolvedBy: resolvedLink.resolvedBy,
+      youtubeVideoId,
+      youtubeUrl,
+      youtubeTitle,
+      existingUrls,
+      threadsUrls,
+      crossPromoResults: results,
+    },
+    null,
+    2,
+  ),
+);

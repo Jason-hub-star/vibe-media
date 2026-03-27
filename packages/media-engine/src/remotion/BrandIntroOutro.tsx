@@ -17,8 +17,8 @@ import {
 // 공통 스타일
 // ---------------------------------------------------------------------------
 
-const BRAND_COLOR = "#0A0A0A";
-const ACCENT_COLOR = "#F97316";
+const BRAND_COLOR = "#151110";
+const ACCENT_COLOR = "#D9863A";
 const TEXT_COLOR = "#FFFFFF";
 
 // ---------------------------------------------------------------------------
@@ -127,7 +127,7 @@ export interface OutroProps {
 
 export const BrandOutro: React.FC<OutroProps> = ({
   channelName = "VibeHub",
-  websiteUrl = "vibehub.com",
+  websiteUrl = "vibehub.tech",
   threadsHandle = "@vibehub1030",
 }) => {
   const frame = useCurrentFrame();

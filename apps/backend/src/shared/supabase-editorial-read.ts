@@ -6,6 +6,7 @@ import {
   normalizeLocaleCodes,
 } from "@vibehub/content-contracts";
 
+import { ensureBriefYouTubeLinkSchema } from "./brief-youtube-schema";
 import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { createSupabaseSql, getSupabaseDbUrl } from "./supabase-postgres";
 
@@ -19,6 +20,9 @@ interface BriefRow {
   source_links: Array<{ label: string; href: string }>;
   source_count: number;
   cover_image_url: string | null;
+  youtube_video_id: string | null;
+  youtube_url: string | null;
+  youtube_linked_at: string | null;
 }
 
 interface DiscoverRow {
@@ -43,6 +47,13 @@ let cachedDiscover: DiscoverItem[] | null = null;
 let cachedAt = 0;
 let inFlight: Promise<{ briefs: BriefDetail[]; discover: DiscoverItem[] } | null> | null = null;
 
+export function resetEditorialCache() {
+  cachedBriefs = null;
+  cachedDiscover = null;
+  cachedAt = 0;
+  inFlight = null;
+}
+
 function buildDefaultLocaleMetadata() {
   const canonicalLocale = DEFAULT_CANONICAL_LOCALE;
   return {
@@ -63,6 +74,7 @@ function canReadSupabase() {
 }
 
 async function fetchEditorialData() {
+  await ensureBriefYouTubeLinkSchema();
   const sql = createSupabaseSql();
 
   try {
@@ -77,7 +89,10 @@ async function fetchEditorialData() {
           published_at,
           source_links,
           source_count,
-          cover_image_url
+          cover_image_url,
+          youtube_video_id,
+          youtube_url,
+          youtube_linked_at
         from public.brief_posts
         order by published_at desc nulls last, slug asc
       `,
@@ -129,6 +144,9 @@ async function fetchEditorialData() {
           body,
           sourceLinks: Array.isArray(row.source_links) ? row.source_links : [],
           coverImage: row.cover_image_url ?? undefined,
+          youtubeUrl: row.youtube_url ?? undefined,
+          youtubeVideoId: row.youtube_video_id ?? undefined,
+          youtubeLinkedAt: row.youtube_linked_at,
           translationStatus: "canonical" as const,
           variants: [
             {
@@ -172,7 +190,6 @@ async function fetchEditorialData() {
             ...buildDefaultLocaleMetadata(),
           };
         })
-        .filter(isPublished)
     };
   } finally {
     await sql.end();

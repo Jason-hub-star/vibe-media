@@ -12,29 +12,29 @@ export interface DesignAssetSlot {
 
 export const colorTokens = {
   ink: "#151110",
-  inkSoft: "#2a221f",
-  cream: "#f4eee2",
-  creamMuted: "#e5d9c5",
-  orange: "#f08a24",
-  mint: "#98f0e1",
-  yellow: "#f7d64a",
-  rose: "#d96b88",
-  sky: "#8ea8ff",
-  purple: "#bc9aff",
+  inkSoft: "#241d1a",
+  cream: "#f2ecdf",
+  creamMuted: "#ddd2bf",
+  orange: "#d9863a",
+  mint: "#8fcfbe",
+  yellow: "#d7bc62",
+  rose: "#c97a8d",
+  sky: "#92abd8",
+  purple: "#a88fd0",
   border: "#1e1a18"
 } as const;
 
 /** RGB channel triplets for alpha-variant usage: rgba(var(--color-X-rgb), alpha) */
 export const colorRgbTokens = {
   ink: "21, 17, 16",
-  inkSoft: "42, 34, 31",
-  cream: "244, 238, 226",
-  orange: "240, 138, 36",
-  mint: "152, 240, 225",
-  yellow: "247, 214, 74",
-  rose: "217, 107, 136",
-  sky: "142, 168, 255",
-  purple: "188, 154, 255"
+  inkSoft: "36, 29, 26",
+  cream: "242, 236, 223",
+  orange: "217, 134, 58",
+  mint: "143, 207, 190",
+  yellow: "215, 188, 98",
+  rose: "201, 122, 141",
+  sky: "146, 171, 216",
+  purple: "168, 143, 208"
 } as const;
 
 export const typographyTokens = {

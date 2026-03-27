@@ -1,7 +1,7 @@
 import type { DiscoverItem } from "@vibehub/content-contracts";
 import type { AdminCardProps } from "@/components/AdminCard";
 
-export function presentDiscoverCard(item: DiscoverItem): AdminCardProps {
+export function presentDiscoverCard(item: DiscoverItem, _opts?: { showReviewStatus?: boolean }): AdminCardProps {
   return {
     id: item.id,
     href: `/admin/discover/${item.id}`,

@@ -2,7 +2,48 @@
 
 이 문서는 `source`, `tool`, `orchestration` 관련 보류 결정을 한 곳에 모아두는 운영 로그다.
 
+## Pending
+
+### 2026-03-27 — dedup-guard 독립 워커 구현
+- 상태: decided
+- 배경: `daily-dedup-guard.md` 자동화 프롬프트는 있었지만 실행 가능한 코드가 없었음. `supabase-auto-approve.ts`에 Jaccard 로직이 있었으나 auto-approve guardrail 내부에서만 동작
+- 결정: Jaccard 알고리즘을 공유 모듈(`supabase-dedup-guard.ts`)로 추출하고, 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고를 독립 CLI(`dedup:guard`)로 구현
+- 근거: 수집량 7배 증가(63건/실행)로 중복 brief 누적 위험. auto-approve 내부 체크만으로는 draft 단계에서 사전 감지 불가
+
+### 2026-03-27 — source-health 백엔드 워커 구현
+- 상태: decided
+- 배경: `weekly-source-health.md` 프롬프트와 프론트엔드 `computeSourceHealth()`만 존재. 실패 소스 자동 비활성화, maxItems 조정, 신규 소스 발견 기능이 코드로 없었음
+- 결정: 백엔드 독립 CLI(`source:health`)로 구현 — 7일 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안(자동 적용 아님) + source_links 역추적 신규 후보 발견
+- 근거: 25개 활성 소스 규모에서 수동 모니터링은 비현실적. 자동 비활성화는 실패 소스만, 성과 기반 조정은 제안만(운영자 확인 후 적용)
+
+### 2026-03-27 — Discover isPublished 필터 위치 이동
+- 상태: decided
+- 배경: `supabase-editorial-read.ts`에서 `isPublished` 필터가 캐시 시점에 적용되어 admin이 draft/pending 항목을 볼 수 없었음
+- 결정: 필터를 feature 레벨(`list-discover-items.ts`)로 이동. `listBriefs`/`listAllBriefs` 패턴과 동일하게 `listDiscoverItems`(공개)와 `listAllDiscoverItems`(admin) 분리
+- 근거: 캐시는 원본 데이터를 보관하고, 소비처에서 필터링하는 것이 확장성 있음
+
+### 2026-03-27 — Brief↔Discover 자동 매칭 알고리즘
+- 상태: decided
+- 배경: `relatedBriefSlugs`가 항상 빈 배열이어서 /radar/[id] 상세의 Related Briefs 섹션이 비어있었음
+- 결정: discover의 tags와 brief의 title 토큰 교차로 자동 매칭 (tag↔title +2점, category↔title +1점, 최대 3개)
+- 근거: brief에 topic 컬럼이 아직 없으므로 title 토큰이 현재 사용 가능한 가장 신뢰성 있는 매칭 기준. 추후 topic 컬럼 추가 시 가중치 조정 가능
+
+### 2026-03-27 — Newsletter 페이지 Brief 미리보기 추가
+- 상태: pending
+- 배경: 뉴스레터 페이지에 폼만 있어 "구독하면 뭘 받는지" 알 수 없음
+- 결정: 최신 published Brief 3개를 미리보기 카드로 표시, 서버 컴포넌트에서 fetch
+- 영향: 기존 `listBriefs` API 재활용, 추가 엔드포인트 불필요
+
 ## Resolved
+
+### 2026-03-27 — Brief 카드 전체 클릭 영역화 + 정보 위계 재설계
+- 상태: resolved
+- 결정:
+  - A안 (stretch link overlay) 채택 — `<Link>::after { position: absolute; inset: 0 }` + 내부 인터랙티브 요소 `z-index: 1`
+  - 정보 위계 2-tier 재설계: 1차(배지+제목 2줄), 2차(요약 2줄+메타), 호버 프리뷰 삭제
+  - whyItMatters는 리드 카드에서만 표시
+- 근거: B안(Link 래핑)은 `<a>` 내부 `<a>` HTML 규격 위반, C안(JS onClick)은 prefetch 불가 + a11y 열등. A안은 HTML 규격 준수 + Next.js prefetch + 키보드/스크린리더 접근성 모두 확보
+- 영향: Brief 카드 클릭 경로가 "링크 텍스트 찾기→클릭"에서 "카드 아무 곳이나 클릭"으로 단축. Discover 카드는 이미 제목 링크로 진입 가능하므로 변경 불필요
 
 ### 2026-03-27 — Imported Candidate Source Registry seed를 migration으로 고정
 - 상태: resolved
@@ -58,6 +99,16 @@
   - favicon: ImageResponse 기반 동적 생성 (V 마크, ink 배경 + orange 텍스트)
 - 근거: JSON-LD Thing은 schema.org에서 가장 범용적이면서 discover 아이템의 다양한 카테고리를 포괄. URL 필터는 북마크/공유 가능성 확보를 위한 필수 SEO 요소. 관련 브리프는 내부 링크 강화 + 이탈율 감소 효과
 - 영향: SEO 크롤러가 discover 개별 아이템에 접근 가능, 필터 상태가 URL에 보존되어 공유/북마크 가능
+
+### 2026-03-27 — 브랜드 팔레트 저채도 재보정
+- 상태: resolved
+- 결정:
+  - `packages/design-tokens/src/index.ts`의 핵심 색상을 유지형 개선안으로 재보정
+  - 브랜드 축은 `ink + cream + orange` 유지, 보조색 `mint / sky / yellow / rose / purple`은 채도를 낮춘 값으로 교체
+  - `status.css`, `discovery.css`의 status badge / category pill은 강한 fill 위주에서 `옅은 배경 + 얇은 border` 조합으로 조정
+  - `public/brand/*`, `public/placeholders/*`, `public/sprites/*`, media-engine Remotion/thumbnail 기본색도 같은 팔레트로 동기화
+- 근거: 다크 테마에서 포화된 색을 넓게 쓰면 피로와 optical vibration이 커질 수 있어, 구현 팔레트를 저채도 방향으로 정리했다. 기존 대비는 이미 충분했으므로 가독성보다 장시간 사용 피로도와 자산 일관성을 우선 보정했다.
+- 영향: web UI, 정적 SVG 자산, 생성형 썸네일/영상 기본색이 하나의 브랜드 톤으로 수렴. 이후 브랜드 색상 변경은 design-tokens SSOT와 정적 자산 동기화 여부를 함께 확인해야 한다.
 
 ### 2026-03-27 — OG 이미지 브랜드 토큰화 + 필터 훅 공용화
 - 상태: resolved
@@ -164,7 +215,7 @@
   - Remotion BriefAudiogram: 웨이브폼(visualizeAudio) + 자막 오버레이 + 커버 이미지 Composition
   - 썸네일: Sharp SVG 브랜드 썸네일 + 커버 이미지 리사이즈 1280×720
   - Publish Dispatcher: Promise.allSettled 병렬 발행 + 실패 격리 + 크로스프로모 자동 실행
-  - Backend CLI: `publish:channels <brief-id> [--dry-run]`, `publish:link-youtube <brief-id> <video-id>`
+  - Backend CLI: `publish:channels <brief-id> [--dry-run]`, `publish:link-youtube -- [brief-id] <video-id>`
   - 테스트: 5개 파일, 25개 테스트 전부 통과
 - 미완: Ghost/Tistory 실제 API 연동(스텁), Threads 토큰 확보, Supabase channel_results 스키마
 

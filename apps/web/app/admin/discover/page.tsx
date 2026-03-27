@@ -1,10 +1,10 @@
 import { AdminShell } from "@/components/AdminShell";
 import { EmptyState } from "@/components/EmptyState";
-import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
+import { listAllDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 import { DiscoverCardGrid } from "@/features/discover/view/DiscoverCardGrid";
 
 export default async function AdminDiscoverPage() {
-  const items = await listDiscoverItems();
+  const items = await listAllDiscoverItems();
 
   return (
     <AdminShell
@@ -17,7 +17,7 @@ export default async function AdminDiscoverPage() {
           title="No discovery items tracked"
         />
       ) : (
-        <DiscoverCardGrid items={items} />
+        <DiscoverCardGrid items={items} showReviewStatus />
       )}
     </AdminShell>
   );

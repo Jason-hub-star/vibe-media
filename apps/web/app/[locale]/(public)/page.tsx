@@ -39,6 +39,13 @@ export default async function HomePage({
 }) {
   const locale = await getLocaleFromParams(params);
   const briefs = await listBriefs();
+  const latestVideoBrief = briefs
+    .filter((brief) => Boolean(brief.youtubeUrl && brief.youtubeLinkedAt))
+    .sort((a, b) => {
+      const left = new Date(a.youtubeLinkedAt ?? 0).getTime();
+      const right = new Date(b.youtubeLinkedAt ?? 0).getTime();
+      return right - left;
+    })[0];
   const showcaseEntries = await listShowcaseEntries();
   const homeShowcase = showcaseEntries.filter(
     (entry) => entry.featuredHome && isPublishedShowcaseEntry(entry)
@@ -85,6 +92,32 @@ export default async function HomePage({
         </div>
         <PlaceholderArt alt="Brief hero placeholder" src="/placeholders/brief-hero-placeholder.svg" />
       </section>
+
+      {latestVideoBrief && latestVideoBrief.youtubeUrl && (
+        <SectionBlock eyebrow="Latest video" title="Watch the newest connected brief on YouTube">
+          <article className="panel stack-tight">
+            <p className="eyebrow">Connected brief</p>
+            <h3>{latestVideoBrief.title}</h3>
+            <p className="muted">{latestVideoBrief.summary}</p>
+            <div className="button-row">
+              <Link
+                className="button-primary"
+                href={latestVideoBrief.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Watch on YouTube
+              </Link>
+              <Link
+                className="button-secondary"
+                href={`/${locale}/brief/${latestVideoBrief.slug}`}
+              >
+                Read the brief
+              </Link>
+            </div>
+          </article>
+        </SectionBlock>
+      )}
 
       <SectionBlock eyebrow="Selected briefs" title="Recent explainers with operational context">
         <div className="panel-grid">

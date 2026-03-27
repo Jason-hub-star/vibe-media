@@ -111,6 +111,11 @@
 - [x] Submit Tool 허브 (`/sources` → 3레인 허브 + `tool_submissions` + admin submissions)
 - [x] Imported Candidates sidecar lane (`tool_candidate_imports` + `/admin/imported-tools` + source registry lane 분리)
 - [x] imported candidate source seed hardening (`tool_candidate` source registry migration seed/upsert + GitHub query 기본값 교정)
+- [x] Vercel 프로덕션 배포 (`vibehub.tech` 도메인 연결, 빌드 에러 수정, 환경변수 설정)
+- [x] **M11-A**: Brief 카드 텍스트 절단 + 위계 정리 (max-width, line-clamp, 2-tier 구조)
+- [x] **M11-B**: Brief 카드 전체 클릭 영역화 (stretch link overlay + a11y)
+- [x] **M11-C**: Discover 카드 미세 조정 (26ch→32ch, line-height 통일)
+- [ ] ~~**M11-D**: Newsletter 폼 UX~~ — 보류 (페이지 교체 검토 중)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화
@@ -123,9 +128,9 @@
 - [x] Category SSOT (`DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일)
 - [x] radar 카테고리 그룹 UI (Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지)
 - [x] `radar` 카테고리 필터 URL 동기화 (`/radar?group=X&q=Y`)
-- [ ] `tracked / watching / featured` 노출 규칙 정리
-- [ ] `brief`와 `discover` 동시 노출 기준 고정
-- [ ] action link 검증 규칙 정리
+- [x] `tracked / watching / featured` 노출 규칙 정리 — DISCOVERY-TAXONOMY.md Exposure Rules 섹션 추가
+- [x] `brief`와 `discover` 동시 노출 기준 고정 — relatedBriefSlugs 자동 매칭 구현 (태그/카테고리 교차)
+- [x] action link 검증 규칙 정리 — isValidActionHref() 유틸 + DiscoverCard/radar detail 필터 적용
 
 ## P3 — Hardening
 - [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`) — approved 브리프 quality check → scheduled → published 자동 전환
@@ -145,12 +150,14 @@
 - [x] A-2: 레퍼런스 brief [REFERENCE] 태깅 (GPT-5.4 mini) — 추가 레퍼런스는 editorial-review 자동화가 A등급 자동 태깅
 - [x] Full Cycle 검증 — FK 버그 4건 수정, draft+approved 5건 리셋, 191건 로컬/19건 Supabase sync 확인
 - [ ] A-3: classifier/draft/critic 프롬프트 구체화 + few-shot 레퍼런스 투입
-- [ ] A-4: brief 간 의미적 유사도 중복 감지 (Gemini embedding)
-- [ ] A-5: 소스→brief 품질 상관분석 + maxItems 자동 조정
-- [ ] A-5: 주간 품질 리포트 → Telegram 발송
-- [ ] 소스 자동 발견 cron (기존 brief source_links 역추적 + HN/GitHub Trending)
+- [x] A-4a: brief Jaccard 중복 감지 워커 (`dedup:guard`) — title/summary Jaccard + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
+- [ ] A-4b: brief 간 의미적 유사도 중복 감지 (Gemini embedding) — Jaccard 위에 추가 레이어
+- [x] A-5a: 소스→brief 품질 상관분석 + maxItems 자동 조정 제안 (`source:health`) — 제안만, 자동 실행 아님
+- [x] A-5b: 주간 품질 리포트 → Telegram 발송 (`source:health` 워커에 통합)
+- [x] 소스 자동 발견 (`source:health`) — brief source_links 역추적으로 신규 도메인 후보 발견
+- [ ] 소스 자동 발견 cron 확장 (HN/GitHub Trending)
+- [x] 비활성 소스 자동 비활성화 (`source:health`) — 최근 7일 실패 소스 자동 비활성화
 - [ ] 비활성 소스 월 1회 재검증 (사이트 리뉴얼 후 URL 변경 대응)
-- [ ] 소스 자동 비활성화 (3회 연속 실패 → enabled=false)
 
 ## P3 — Channel Publish (v2 설계 완료 → 코드 구현 완료)
 - [x] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일, dryRun 지원

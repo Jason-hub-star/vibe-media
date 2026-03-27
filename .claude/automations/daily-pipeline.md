@@ -144,11 +144,11 @@ ls -lt "$ROOT_DIR"/logs/pipeline-*.log | head -1
 로그에서 실제 `items fetched:` 패턴이 존재하는지 직접 확인한다.
 
 ### 3-4. 현재 소스 현황
-`live-source-registry.ts` 기준:
-- **enabled (3개)**: `openai-news-rss`, `google-ai-blog-rss`, `github-releases-openai-node`
-- **disabled (2개)**: `openai-api-changelog`, `anthropic-research`
+Supabase `public.sources` 테이블이 SSOT다. 상세 목록은 `docs/ref/SOURCE-CATALOG.md` 참조.
+- **enabled 25개** (editorial 23 + tool_candidate 2)
+- **disabled 10개** (editorial 6 + tool_candidate 4)
 
-소스가 15개 이상으로 늘어나면 120초 timeout 초과 위험이 있다.
+소스가 30개 이상으로 늘어나면 120초 timeout 초과 위험이 있다.
 
 ---
 

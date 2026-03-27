@@ -34,9 +34,9 @@ export interface BriefAudiogramProps {
   subtitles: AudigramSubtitle[];
   /** 브리프 제목 */
   title: string;
-  /** 브랜드 색상 (기본: #0A0A0A) */
+  /** 브랜드 색상 (기본: #151110) */
   brandColor?: string;
-  /** 악센트 색상 (기본: #F97316) */
+  /** 악센트 색상 (기본: #D9863A) */
   accentColor?: string;
 }
 
@@ -134,8 +134,8 @@ export const BriefAudiogram: React.FC<BriefAudiogramProps> = ({
   coverImageSrc,
   subtitles,
   title,
-  brandColor = "#0A0A0A",
-  accentColor = "#F97316",
+  brandColor = "#151110",
+  accentColor = "#D9863A",
 }) => {
   return (
     <AbsoluteFill

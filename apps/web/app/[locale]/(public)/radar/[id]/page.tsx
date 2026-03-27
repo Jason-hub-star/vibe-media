@@ -10,6 +10,7 @@ import { getRelatedBriefs } from "@/features/brief/use-case/get-related-briefs";
 import { getDiscoverItemDetail } from "@/features/discover/use-case/get-discover-item-detail";
 import { presentDiscoverCategory } from "@/features/discover/presenter/present-discover-category";
 import { presentDiscoverStatus } from "@/features/discover/presenter/present-discover-status";
+import { isValidActionHref } from "@vibehub/content-contracts";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
 
@@ -115,9 +116,9 @@ export default async function RadarDetailPage({
             </div>
           )}
 
-          {item.actions.length > 0 && (
+          {item.actions.filter((a) => isValidActionHref(a.href)).length > 0 && (
             <div className="button-row">
-              {item.actions.map((action) => (
+              {item.actions.filter((a) => isValidActionHref(a.href)).map((action) => (
                 <Link
                   className="button-secondary"
                   href={action.href}

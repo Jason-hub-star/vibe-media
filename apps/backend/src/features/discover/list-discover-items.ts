@@ -105,23 +105,41 @@ function listSnapshotDiscoverItems() {
     tags: item.tags,
     highlighted: item.highlighted,
     actions: actionsByDiscoverId.get(item.id) ?? []
-  })).filter(isPublished);
+  }));
 }
 
-export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult> {
+async function resolveDiscoverSource(opts?: { includeUnpublished?: boolean }): Promise<DiscoverItemsResult> {
+  const filter = opts?.includeUnpublished ? (items: DiscoverItem[]) => items : (items: DiscoverItem[]) => items.filter(isPublished);
+
   const supabaseItems = await listSupabaseDiscoverItems();
   if (supabaseItems && supabaseItems.length > 0) {
-    return { items: sortDiscoverItems(dedupeDiscoverItems(supabaseItems)), source: "supabase" };
+    const filtered = filter(supabaseItems);
+    if (filtered.length > 0) {
+      return { items: sortDiscoverItems(dedupeDiscoverItems(filtered)), source: "supabase" };
+    }
   }
 
   const snapshotItems = listSnapshotDiscoverItems();
   if (snapshotItems.length > 0) {
-    return { items: sortDiscoverItems(dedupeDiscoverItems(snapshotItems)), source: "snapshot" };
+    const filtered = filter(snapshotItems);
+    if (filtered.length > 0) {
+      return { items: sortDiscoverItems(dedupeDiscoverItems(filtered)), source: "snapshot" };
+    }
   }
 
-  return { items: sortDiscoverItems(dedupeDiscoverItems(discoverEntries.filter(isPublished))), source: "mock" };
+  return { items: sortDiscoverItems(dedupeDiscoverItems(filter(discoverEntries))), source: "mock" };
 }
 
+export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult> {
+  return resolveDiscoverSource();
+}
+
+/** Public: only approved + published items */
 export async function listDiscoverItems(): Promise<DiscoverItem[]> {
-  return (await listDiscoverItemsWithSource()).items;
+  return (await resolveDiscoverSource()).items;
+}
+
+/** Admin: all items regardless of review/publish status */
+export async function listAllDiscoverItems(): Promise<DiscoverItem[]> {
+  return (await resolveDiscoverSource({ includeUnpublished: true })).items;
 }

@@ -45,6 +45,12 @@ export interface BriefListItem {
   targetLocales?: LocaleCode[];
   /** 현재 locale의 번역/변형 상태 */
   translationStatus?: BriefTranslationStatus;
+  /** Connected YouTube watch URL after manual upload completion */
+  youtubeUrl?: string;
+  /** Canonical YouTube video id */
+  youtubeVideoId?: string;
+  /** Timestamp when the YouTube link was officially connected */
+  youtubeLinkedAt?: string | null;
 }
 
 export interface BriefDetail extends BriefListItem {

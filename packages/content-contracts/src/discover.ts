@@ -66,6 +66,17 @@ export interface DiscoverAction {
   href: string;
 }
 
+/** URL 형식 검증 — 런타임 HTTP 체크 없이 형식만 확인 */
+export function isValidActionHref(href: string): boolean {
+  if (!href || !href.trim()) return false;
+  try {
+    const url = new URL(href);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 export interface DiscoverItem {
   id: string;
   slug: string;

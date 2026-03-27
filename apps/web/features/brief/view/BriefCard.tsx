@@ -26,12 +26,18 @@ export function BriefCard({ brief, isLead, locale }: BriefCardProps) {
     ? `status freshness-${freshness}`
     : `status status-${brief.status}`;
 
-  const panelClass = ["panel", "stack-tight", isLead && "brief-lead"]
+  const panelClass = [
+    "panel",
+    "stack-tight",
+    "brief-card",
+    isLead && "brief-lead",
+  ]
     .filter(Boolean)
     .join(" ");
 
   return (
     <article className={panelClass}>
+      {/* Tier 1 — instant scan */}
       <div className="row-between">
         <span className={badgeClass}>{dateLabel}</span>
         <span className="eyebrow">
@@ -41,14 +47,22 @@ export function BriefCard({ brief, isLead, locale }: BriefCardProps) {
           )}
         </span>
       </div>
-      <h3>{brief.title}</h3>
-      <p className="muted">{brief.summary}</p>
-      {brief.whyItMatters && (
+      <h3 className="brief-card-title">
+        <Link
+          className="brief-card-title-link"
+          href={`${briefPrefix}/${brief.slug}`}
+        >
+          {brief.title}
+        </Link>
+      </h3>
+
+      {/* Tier 2 — on interest */}
+      <p className="brief-card-summary">{brief.summary}</p>
+      {isLead && brief.whyItMatters && (
         <p className="brief-insight">{brief.whyItMatters}</p>
       )}
-      {brief.bodyPreview && (
-        <div className="brief-preview">{brief.bodyPreview}</div>
-      )}
+
+      {/* Tier 3 — meta (interactive, above overlay) */}
       {brief.sourceDomains && brief.sourceDomains.length > 0 && (
         <div className="tag-row">
           {brief.sourceDomains.map((domain) => (
@@ -56,9 +70,6 @@ export function BriefCard({ brief, isLead, locale }: BriefCardProps) {
           ))}
         </div>
       )}
-      <Link className="inline-link" href={`${briefPrefix}/${brief.slug}`}>
-        Read brief
-      </Link>
     </article>
   );
 }

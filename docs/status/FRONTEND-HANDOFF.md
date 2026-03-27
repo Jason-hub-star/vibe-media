@@ -1,4 +1,4 @@
-# Frontend Handoff — 2026-03-22
+# Frontend Handoff — 2026-03-27
 
 > 새 세션에서 프론트엔드 작업을 이어받기 위한 핸드오프 문서.
 > 이 문서 하나만 읽고 시작하면 된다.
@@ -22,7 +22,7 @@
 |------|------|
 | Framework | Next.js (App Router) |
 | CSS | Custom Properties + vanilla CSS (Tailwind 없음) |
-| Fonts | Press Start 2P (display), DungGeunMo (body) |
+| Fonts | Space Grotesk (display), Noto Sans KR (body) |
 | DB | Supabase |
 | Monorepo | npm workspaces |
 | Contracts | `packages/content-contracts` |
@@ -32,19 +32,19 @@
 ### CSS 토큰 (`:root` via layout.tsx)
 ```
 /* 색상 */
---color-ink: #151110          --color-ink-soft: #2a221f
---color-cream: #f4eee2        --color-cream-muted: #e5d9c5
---color-orange: #f08a24       --color-mint: #98f0e1
---color-yellow: #f7d64a       --color-rose: #d96b88
---color-sky: #8ea8ff          --color-purple: #bc9aff
+--color-ink: #151110          --color-ink-soft: #241d1a
+--color-cream: #f2ecdf        --color-cream-muted: #ddd2bf
+--color-orange: #d9863a       --color-mint: #8fcfbe
+--color-yellow: #d7bc62       --color-rose: #c97a8d
+--color-sky: #92abd8          --color-purple: #a88fd0
 --color-border: #1e1a18
 
 /* RGB 채널 (alpha 사용: rgba(var(--color-X-rgb), 0.12)) */
---color-ink-rgb: 21, 17, 16         --color-ink-soft-rgb: 42, 34, 31
---color-cream-rgb: 244, 238, 226    --color-orange-rgb: 240, 138, 36
---color-mint-rgb: 152, 240, 225     --color-yellow-rgb: 247, 214, 74
---color-rose-rgb: 217, 107, 136     --color-sky-rgb: 142, 168, 255
---color-purple-rgb: 188, 154, 255
+--color-ink-rgb: 21, 17, 16         --color-ink-soft-rgb: 36, 29, 26
+--color-cream-rgb: 242, 236, 223    --color-orange-rgb: 217, 134, 58
+--color-mint-rgb: 143, 207, 190     --color-yellow-rgb: 215, 188, 98
+--color-rose-rgb: 201, 122, 141     --color-sky-rgb: 146, 171, 216
+--color-purple-rgb: 168, 143, 208
 
 /* 스페이싱·라디우스 */
 --space-section: clamp(3rem, 6vw, 6rem)
@@ -61,6 +61,12 @@
 /* 폰트 */
 --font-display: SpaceGrotesk   --font-body: NotoSansKR
 ```
+
+### 2026-03-27 팔레트 보정 메모
+- 브랜드 축은 유지: `ink + cream + orange`
+- 보조색은 저채도 보정: `mint / sky / yellow / rose / purple`
+- status badge와 category pill은 더 옅은 alpha + 얇은 border 조합으로 조정
+- `public/brand/*`, `public/placeholders/*`, `public/sprites/*`, media-engine Remotion/thumbnail 기본색도 같은 팔레트로 동기화
 
 ### 디자인 SSOT 레이어
 ```
@@ -254,6 +260,32 @@ docs/design/
 - 새 admin CSS 클래스: `.quality-checklist`, `.quality-row`, `.quality-icon`, `.quality-criterion`, `.quality-message`, `.quality-pass`, `.quality-warn`, `.quality-fail`
 - review contract: `ReviewItemDetail.previewBody?: string[]` 추가
 - review backend: `previewTitle` → `brief_posts` title lookup으로 body enrichment
+
+### M11: 카드 가독성 + 진입 UX 개선 (2026-03-27) ✅
+> 코드리뷰 스캔 결과 — Brief/Discover 카드 텍스트 오버플로우, 정보 위계, 클릭 영역 개선
+
+**Phase A: Brief 카드 텍스트 절단 + 위계 정리** ✅
+- [x] `brief.css`: `.brief-card-title` 클래스 추가 — `max-width: 32ch`, `line-clamp: 2`, `line-height: 1.28`
+- [x] `brief.css`: `.brief-card-summary` 클래스 추가 — `line-clamp: 2`, `line-height: 1.45`, `color: cream 0.68`
+- [x] `BriefCard.tsx`: h3에 `.brief-card-title`, p에 `.brief-card-summary` 적용
+- [x] `BriefCard.tsx`: 정보 2-tier 구조 — 1차(배지+제목), 2차(요약+메타), 호버 프리뷰 제거
+
+**Phase B: Brief 카드 전체 클릭 영역화** ✅
+- [x] `BriefCard.tsx`: `<article>` 내부 `<Link>` stretch overlay 패턴 적용
+  - 방식: CSS `position: relative` (article) + `<Link>::after { position: absolute; inset: 0 }` (전체 덮개)
+  - source-chip, tag-row는 `position: relative; z-index: 1`로 클릭 유지
+  - "Read brief" 텍스트 링크 → 제목 자체가 링크 역할 (중복 링크 제거)
+- [x] 키보드 접근성: 카드 focus 시 `outline` + `:focus-visible` 스타일 (orange 아웃라인)
+- [x] hover 상태: 카드 전체 `border-color` 변화 (기존 `.panel:hover` 활용)
+
+**Phase C: Discover 카드 미세 조정** ✅
+- [x] `discovery.css`: `.discover-card-title` max-width `26ch → 32ch` 확장
+- [x] `discovery.css`: `.discover-card-summary` `line-height: 1.45` 명시
+- [x] 모바일에서도 일관성 확인 (기존 `max-width: none` 미디어쿼리 유지)
+
+**Phase D: Newsletter 폼 UX** — 보류 (페이지 교체 검토 중)
+
+**검증**: `npm run lint && npm run typecheck && npm run build && npm run test:e2e`
 
 ### M6: 문서 동기화 + 최종 검증 ✅
 - `docs/status/PROJECT-STATUS.md` 업데이트

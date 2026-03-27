@@ -16,8 +16,7 @@ import {
   createTistoryPublisher,
   createYouTubeLocalPublisher,
   generateYouTubeUploadGuide,
-  buildLocaleCrossPromoText,
-  appendLocaleLinksToDescription,
+  SITE_URL,
 } from "@vibehub/media-engine";
 import {
   DEFAULT_CANONICAL_LOCALE,
@@ -139,7 +138,7 @@ await generateYouTubeUploadGuide(
     category: undefined,
     language: briefMeta.defaultLocale ?? canonicalLocale,
     threadsUrl: threadsResult?.publishedUrl,
-    briefUrl: undefined, // 자동으로 SITE_URL/brief/{slug} 사용
+    briefUrl: `${SITE_URL}/${canonicalLocale}/brief/${brief.slug}`,
   },
   outputDir,
 );

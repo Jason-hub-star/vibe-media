@@ -1,6 +1,7 @@
 .status {
   display: inline-flex;
   align-items: center;
+  border: 1px solid transparent;
   border-radius: 999px;
   padding: 0.25rem 0.65rem;
   font-size: var(--type-caption);
@@ -13,18 +14,21 @@
 .status-parsed,
 .status-classified,
 .status-fetching {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .status-review {
-  background: rgba(var(--color-orange-rgb), 0.18);
+  background: rgba(var(--color-orange-rgb), 0.12);
+  border-color: rgba(var(--color-orange-rgb), 0.22);
   color: var(--color-orange);
 }
 
 .status-scheduled,
 .status-drafted {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
@@ -36,7 +40,8 @@
 .status-approved_for_listing,
 .status-passed,
 .status-promoted_to_showcase {
-  background: rgba(var(--color-mint-rgb), 0.18);
+  background: rgba(var(--color-mint-rgb), 0.12);
+  border-color: rgba(var(--color-mint-rgb), 0.22);
   color: var(--color-mint);
 }
 
@@ -48,112 +53,132 @@
 .status-spam_blocked,
 .status-duplicate,
 .status-duplicate_blocked {
-  background: rgba(var(--color-rose-rgb), 0.18);
+  background: rgba(var(--color-rose-rgb), 0.12);
+  border-color: rgba(var(--color-rose-rgb), 0.22);
   color: var(--color-rose);
 }
 
 .status-submitted,
 .status-pending,
 .status-imported {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .status-screened,
 .status-hidden_from_listing {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .status-brief {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .status-video {
-  background: rgba(var(--color-purple-rgb), 0.18);
+  background: rgba(var(--color-purple-rgb), 0.12);
+  border-color: rgba(var(--color-purple-rgb), 0.22);
   color: var(--color-purple);
 }
 
 .status-both {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .status-archive {
   background: rgba(var(--color-cream-rgb), 0.14);
+  border-color: rgba(var(--color-cream-rgb), 0.16);
   color: rgba(var(--color-cream-rgb), 0.8);
 }
 
 .status-policy_hold {
-  background: rgba(var(--color-rose-rgb), 0.18);
+  background: rgba(var(--color-rose-rgb), 0.12);
+  border-color: rgba(var(--color-rose-rgb), 0.22);
   color: var(--color-rose);
 }
 
 .status-analysis_running,
 .status-capcut_in_progress {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .status-capcut_pending,
 .status-parent_review,
 .status-uploaded_private {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .status-raw_received,
 .status-auto_cut_done,
 .status-highlight_candidates_ready {
-  background: rgba(var(--color-purple-rgb), 0.18);
+  background: rgba(var(--color-purple-rgb), 0.12);
+  border-color: rgba(var(--color-purple-rgb), 0.22);
   color: var(--color-purple);
 }
 
 .status-capcut_done,
 .status-upload_ready {
-  background: rgba(var(--color-mint-rgb), 0.18);
+  background: rgba(var(--color-mint-rgb), 0.12);
+  border-color: rgba(var(--color-mint-rgb), 0.22);
   color: var(--color-mint);
 }
 
 .status-blocked {
-  background: rgba(var(--color-rose-rgb), 0.18);
+  background: rgba(var(--color-rose-rgb), 0.12);
+  border-color: rgba(var(--color-rose-rgb), 0.22);
   color: var(--color-rose);
 }
 
 .status-complete,
 .status-approved {
-  background: rgba(var(--color-mint-rgb), 0.18);
+  background: rgba(var(--color-mint-rgb), 0.12);
+  border-color: rgba(var(--color-mint-rgb), 0.22);
   color: var(--color-mint);
 }
 
 .status-partial {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .status-missing {
-  background: rgba(var(--color-rose-rgb), 0.18);
+  background: rgba(var(--color-rose-rgb), 0.12);
+  border-color: rgba(var(--color-rose-rgb), 0.22);
   color: var(--color-rose);
 }
 
 /* ── Freshness badges ── */
 .freshness-today {
-  background: rgba(var(--color-mint-rgb), 0.18);
+  background: rgba(var(--color-mint-rgb), 0.12);
+  border-color: rgba(var(--color-mint-rgb), 0.22);
   color: var(--color-mint);
 }
 
 .freshness-recent {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .freshness-week {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .freshness-older {
   background: rgba(var(--color-cream-rgb), 0.1);
+  border-color: rgba(var(--color-cream-rgb), 0.14);
   color: rgba(var(--color-cream-rgb), 0.64);
 }

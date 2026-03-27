@@ -61,6 +61,58 @@
   border-radius: var(--radius-panel);
 }
 
+/* ── Card text hierarchy ── */
+
+.brief-card {
+  position: relative;
+}
+
+.brief-card-title {
+  max-width: 32ch;
+  line-height: 1.28;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.brief-card-summary {
+  max-width: 34ch;
+  line-height: 1.45;
+  color: rgba(var(--color-cream-rgb), 0.68);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* ── Stretch link overlay (card-wide click target) ── */
+
+.brief-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brief-card-title-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--radius-panel);
+}
+
+.brief-card-title-link:focus-visible::after {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+/* Keep interactive children above the overlay */
+.brief-card .source-chip,
+.brief-card .tag-row {
+  position: relative;
+  z-index: 1;
+}
+
 /* ── Lead card ── */
 .brief-lead {
   border-left: 3px solid var(--color-orange);
@@ -69,6 +121,10 @@
 
 .brief-lead h3 {
   font-size: var(--type-h2);
+}
+
+.brief-lead .brief-card-title {
+  max-width: 40ch;
 }
 
 /* ── Source domain chips ── */
@@ -82,28 +138,6 @@
   font-size: var(--type-label);
 }
 
-/* ── Hover preview ── */
-.brief-preview {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  color: rgba(var(--color-cream-rgb), 0.56);
-  font-size: var(--type-small);
-  line-height: 1.5;
-  transition: max-height 240ms ease, opacity 240ms ease;
-}
-
-.panel:hover .brief-preview {
-  max-height: 4em;
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .brief-preview {
-    max-height: 4em;
-    opacity: 1;
-  }
-}
 
 /* ── Detail page: meta bar ── */
 .brief-meta-bar {
@@ -192,6 +226,30 @@
   letter-spacing: 0.04em;
   color: var(--color-orange);
   margin-bottom: 0.3rem;
+}
+
+/* ── Detail page: linked YouTube video ── */
+.brief-video-callout {
+  border: 1px solid rgba(var(--color-orange-rgb), 0.22);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--color-orange-rgb), 0.08),
+    rgba(var(--color-ink-soft-rgb), 0.86)
+  );
+}
+
+.brief-video-frame {
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.08);
+  background: rgba(var(--color-ink-rgb), 0.92);
+  aspect-ratio: 16 / 9;
+}
+
+.brief-video-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 /* ── Skeleton loading ── */

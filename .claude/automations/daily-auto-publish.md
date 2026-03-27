@@ -200,6 +200,7 @@ npm run publish:channels <brief-slug>
 - `PUBLISH_CHANNELS` 환경변수로 활성 채널 제어 (기본: `threads,youtube`)
 - 각 brief별로 독립 실행 — 한 brief 실패가 다른 brief에 영향 없음
 - 결과는 자동으로 DB(`channel_publish_results`)에 저장 + Telegram 보고
+- YouTube는 이 단계에서 `업로드 준비`까지만 완료된다. public YouTube URL 연결과 Pass 3은 업로드 후 별도 완료 신호가 필요하다.
 
 ### 9-3. 안전장치
 
@@ -214,6 +215,7 @@ npm run publish:channels <brief-slug>
 - 발행 결과는 DB + Telegram 모두에 기록한다.
 - 실패한 채널은 다음 수동 실행 시 재시도 가능하다 (`npm run publish:channels <slug>`).
 - dry-run 모드(`--dry-run`)로 사전 검증이 가능하다.
+- YouTube 연결 완료는 `/vh-youtube <slug> <youtube-url>` 또는 `npm run publish:link-youtube <slug> <video-id-or-url>`를 별도 실행해야 한다.
 
 ---
 

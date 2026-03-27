@@ -91,6 +91,9 @@ export default async function BriefDetailPage({
     : "Brief";
 
   const canonical = `${SITE_URL}/${locale}/brief/${slug}`;
+  const youtubeEmbedUrl = brief.youtubeVideoId
+    ? `https://www.youtube.com/embed/${brief.youtubeVideoId}`
+    : null;
 
   return (
     <PageFrame>
@@ -115,6 +118,22 @@ export default async function BriefDetailPage({
           },
         }}
       />
+      {brief.youtubeUrl && youtubeEmbedUrl && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            name: displayTitle,
+            description: displaySummary,
+            url: brief.youtubeUrl,
+            embedUrl: youtubeEmbedUrl,
+            ...(brief.coverImage ? { thumbnailUrl: [brief.coverImage] } : {}),
+            ...(brief.youtubeLinkedAt ?? brief.publishedAt
+              ? { uploadDate: brief.youtubeLinkedAt ?? brief.publishedAt }
+              : {}),
+          }}
+        />
+      )}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -165,6 +184,37 @@ export default async function BriefDetailPage({
           <p className="brief-dek">{displaySummary}</p>
 
           {brief.whyItMatters && <BriefInsight text={brief.whyItMatters} />}
+
+          {brief.youtubeUrl && (
+            <section className="panel stack-tight brief-video-callout">
+              <p className="eyebrow">Watch</p>
+              <h3>Watch this brief on YouTube</h3>
+              <p className="muted">
+                Prefer the video version? This brief now has a connected YouTube upload.
+              </p>
+              <div className="button-row">
+                <a
+                  className="button-primary"
+                  href={brief.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Watch on YouTube
+                </a>
+              </div>
+              {youtubeEmbedUrl && (
+                <div className="brief-video-frame">
+                  <iframe
+                    src={youtubeEmbedUrl}
+                    title={`${displayTitle} — YouTube video`}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+            </section>
+          )}
 
           <article className="brief-detail-article stack-tight">
             <BriefBodySections body={displayBody} />

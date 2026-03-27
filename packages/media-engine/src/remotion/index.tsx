@@ -26,8 +26,8 @@ const RemotionRoot: React.FC = () => {
           audioSrc: "",
           subtitles: [],
           title: "VibeHub Brief",
-          brandColor: "#0A0A0A",
-          accentColor: "#F97316",
+          brandColor: "#151110",
+          accentColor: "#D9863A",
         }}
       />
       <Composition<NoSchema, IntroProps & Record<string, unknown>>

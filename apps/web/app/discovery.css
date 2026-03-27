@@ -1,22 +1,26 @@
 /* ── Status badges ─────────────────────────────────────────────── */
 
 .status-featured {
-  background: rgba(var(--color-mint-rgb), 0.18);
+  background: rgba(var(--color-mint-rgb), 0.12);
+  border-color: rgba(var(--color-mint-rgb), 0.22);
   color: var(--color-mint);
 }
 
 .status-tracked {
-  background: rgba(var(--color-sky-rgb), 0.18);
+  background: rgba(var(--color-sky-rgb), 0.12);
+  border-color: rgba(var(--color-sky-rgb), 0.22);
   color: var(--color-sky);
 }
 
 .status-watching {
-  background: rgba(var(--color-yellow-rgb), 0.18);
+  background: rgba(var(--color-yellow-rgb), 0.12);
+  border-color: rgba(var(--color-yellow-rgb), 0.22);
   color: var(--color-yellow);
 }
 
 .status-new {
-  background: rgba(var(--color-orange-rgb), 0.22);
+  background: rgba(var(--color-orange-rgb), 0.14);
+  border-color: rgba(var(--color-orange-rgb), 0.24);
   color: var(--color-orange);
   font-weight: 700;
 }
@@ -34,6 +38,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  border: 1px solid transparent;
   font-size: var(--type-small);
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -46,32 +51,38 @@
 }
 
 .category-pill-mint {
-  background: rgba(var(--color-mint-rgb), 0.14);
+  background: rgba(var(--color-mint-rgb), 0.1);
+  border-color: rgba(var(--color-mint-rgb), 0.2);
   color: var(--color-mint);
 }
 
 .category-pill-sky {
-  background: rgba(var(--color-sky-rgb), 0.14);
+  background: rgba(var(--color-sky-rgb), 0.1);
+  border-color: rgba(var(--color-sky-rgb), 0.2);
   color: var(--color-sky);
 }
 
 .category-pill-purple {
-  background: rgba(var(--color-purple-rgb), 0.14);
+  background: rgba(var(--color-purple-rgb), 0.1);
+  border-color: rgba(var(--color-purple-rgb), 0.2);
   color: var(--color-purple);
 }
 
 .category-pill-yellow {
-  background: rgba(var(--color-yellow-rgb), 0.14);
+  background: rgba(var(--color-yellow-rgb), 0.1);
+  border-color: rgba(var(--color-yellow-rgb), 0.2);
   color: var(--color-yellow);
 }
 
 .category-pill-orange {
-  background: rgba(var(--color-orange-rgb), 0.14);
+  background: rgba(var(--color-orange-rgb), 0.1);
+  border-color: rgba(var(--color-orange-rgb), 0.2);
   color: var(--color-orange);
 }
 
 .category-pill-rose {
-  background: rgba(var(--color-rose-rgb), 0.14);
+  background: rgba(var(--color-rose-rgb), 0.1);
+  border-color: rgba(var(--color-rose-rgb), 0.2);
   color: var(--color-rose);
 }
 
@@ -117,67 +128,68 @@
 }
 
 .discover-card .category-pill-mint {
-  background: rgba(var(--color-mint-rgb), 0.08);
+  background: rgba(var(--color-mint-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-mint-rgb), 0.18);
+  border-color: rgba(var(--color-mint-rgb), 0.14);
 }
 
 .discover-card .category-pill-sky {
-  background: rgba(var(--color-sky-rgb), 0.08);
+  background: rgba(var(--color-sky-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-sky-rgb), 0.18);
+  border-color: rgba(var(--color-sky-rgb), 0.14);
 }
 
 .discover-card .category-pill-purple {
-  background: rgba(var(--color-purple-rgb), 0.08);
+  background: rgba(var(--color-purple-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-purple-rgb), 0.18);
+  border-color: rgba(var(--color-purple-rgb), 0.14);
 }
 
 .discover-card .category-pill-yellow {
-  background: rgba(var(--color-yellow-rgb), 0.08);
+  background: rgba(var(--color-yellow-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-yellow-rgb), 0.18);
+  border-color: rgba(var(--color-yellow-rgb), 0.14);
 }
 
 .discover-card .category-pill-orange {
-  background: rgba(var(--color-orange-rgb), 0.08);
+  background: rgba(var(--color-orange-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-orange-rgb), 0.18);
+  border-color: rgba(var(--color-orange-rgb), 0.14);
 }
 
 .discover-card .category-pill-rose {
-  background: rgba(var(--color-rose-rgb), 0.08);
+  background: rgba(var(--color-rose-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.88);
-  border-color: rgba(var(--color-rose-rgb), 0.18);
+  border-color: rgba(var(--color-rose-rgb), 0.14);
 }
 
 .discover-card .status-featured {
-  background: rgba(var(--color-mint-rgb), 0.08);
+  background: rgba(var(--color-mint-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.82);
-  border-color: rgba(var(--color-mint-rgb), 0.16);
+  border-color: rgba(var(--color-mint-rgb), 0.14);
 }
 
 .discover-card .status-watching {
-  background: rgba(var(--color-yellow-rgb), 0.08);
+  background: rgba(var(--color-yellow-rgb), 0.06);
   color: rgba(var(--color-cream-rgb), 0.82);
-  border-color: rgba(var(--color-yellow-rgb), 0.16);
+  border-color: rgba(var(--color-yellow-rgb), 0.14);
 }
 
 .discover-card .status-new {
-  background: rgba(var(--color-orange-rgb), 0.1);
+  background: rgba(var(--color-orange-rgb), 0.08);
   color: rgba(var(--color-cream-rgb), 0.84);
-  border-color: rgba(var(--color-orange-rgb), 0.18);
+  border-color: rgba(var(--color-orange-rgb), 0.16);
   font-weight: 600;
 }
 
 .discover-card-title {
-  max-width: 26ch;
+  max-width: 32ch;
   line-height: 1.28;
 }
 
 .discover-card-summary {
   max-width: 34ch;
+  line-height: 1.45;
   color: rgba(var(--color-cream-rgb), 0.68);
   display: -webkit-box;
   -webkit-box-orient: vertical;

@@ -7,6 +7,7 @@
 - `item_classifications`
 - `brief_posts`
   - trigger: `trg_fix_approved_draft` — `review_status = approved` && `status = draft` → 자동 `status = review` 전환 (상태 꼬임 방지)
+  - YouTube canonical link fields: `youtube_video_id`, `youtube_url`, `youtube_linked_at`
 - `discover_items`
 - `discover_actions`
 - `source_entries`
@@ -81,6 +82,7 @@
   - content fields: `body` (jsonb), `source_links` (jsonb), `source_count` (integer), `cover_image_url` (text, nullable)
   - relation fields: `source_item_id` (uuid FK → ingested_items, nullable)
   - lifecycle fields: `status` (text: draft/review/scheduled/published), `review_status` (text: pending/approved/changes_requested/rejected), `scheduled_at` (timestamptz), `published_at` (timestamptz)
+  - channel-link fields: `youtube_video_id`, `youtube_url`, `youtube_linked_at`
   - editor fields: `last_editor_note` (text, nullable — quality fail 사유 등 기록)
 - `admin_reviews`는 review queue spine이다.
 - `ingest_run_attempts`와 `video_job_attempts`는 retry / failure history를 기록한다.

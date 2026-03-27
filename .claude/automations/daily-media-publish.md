@@ -23,6 +23,7 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
       5. ffmpeg 최종 합성
       6. YouTube 가이드 TXT
       7. Threads 발행 (publish:channels)
+      8. 운영자 수동 업로드 후 `/vh-youtube` 또는 `publish:link-youtube`
 ```
 
 ---
@@ -356,6 +357,7 @@ compose-final.sh가 자동으로:
 npm run publish:channels <slug>
 # → output/<slug>/youtube-upload-guide.txt 자동 생성
 # → Threads 자동 발행
+# → YouTube는 "업로드 준비 완료" 상태까지만 진행
 # → DB 저장 + Telegram 보고
 ```
 
@@ -368,46 +370,24 @@ npm run publish:channels <slug> --dry-run
 
 ---
 
-## 8-2. YouTube 맞춤 Description 생성 (Gemini)
+## 8-2. YouTube Description + 완료 명령
 
-`publish:channels`가 생성하는 기본 guide.txt는 본문 복붙 수준이라 YouTube SEO에 부적합하다.
-Gemini API로 Brief 본문을 YouTube 최적 Description으로 재작성한다.
+`publish:channels`가 생성하는 `youtube-upload-guide.txt`를 canonical guide로 사용한다.
+이 파일에는 아래가 모두 포함돼야 한다.
 
-```
-입력: Brief 제목 + 요약 + 본문 + 태그
-출력: youtube-upload-guide.txt 덮어쓰기
-```
+- 제목
+- 설명란
+- 브리프 URL
+- 메인 홈 URL
+- Threads URL
+- 고정 댓글 문구
+- 업로드 후 완료 명령
+  - Telegram에 `<youtube-url>` 단독 전송
+  - 자동 매칭 실패 시 `/vh-youtube <slug> <youtube-url>`
+  - `npm run publish:link-youtube -- <video-id-or-url>`
+  - 명시 연결 CLI: `npm run publish:link-youtube -- <slug> <video-id-or-url>`
 
-### Gemini 프롬프트 (그대로 사용할 것)
-
-```
-You are a YouTube SEO expert. Given this AI tech brief, write a YouTube video description.
-
-Rules:
-- 3 paragraphs: hook (1-2 sentences), key points (3-4 bullet points), call to action
-- Include these links at the end:
-  📄 Full Article: https://vibehub.com/brief/{slug}
-  🧵 Threads: https://www.threads.net/@vibehub1030
-  🌐 Website: https://vibehub.com
-- Add 8-12 relevant hashtags (no duplicates)
-- Add comma-separated tags line for YouTube Studio
-- Keep under 5000 characters
-- English only
-
-Brief title: {title}
-Brief summary: {summary}
-Brief body: {body}
-Tags: {tags}
-```
-
-### 실행
-
-```bash
-# Gemini API 호출 (GEMINI_API_KEY 필요)
-# 결과를 youtube-upload-guide.txt에 저장
-```
-
-⚠️ `GEMINI_API_KEY`가 없으면 이 단계를 skip — 기본 template guide 유지.
+Gemini를 쓰는 경우에도 `youtube-upload-guide.txt`를 덮어쓰지 말고, 별도 SEO 보조 파일만 생성한다.
 
 ---
 
@@ -460,9 +440,10 @@ Brief: "<title>"
 ✅ Download: completed
 ✅ Whisper STT: 48 segments
 ✅ Avatar: 2760 frames (5m render)
-✅ Compose: final.mp4 (5.8MB)
-✅ Threads: published
+  ✅ Compose: final.mp4 (5.8MB)
+  ✅ Threads: published
 ✅ YouTube guide: ready
+✅ Next step: upload manually → /vh-youtube 또는 publish:link-youtube
 
 📁 output/<slug>/
   final.mp4 — YouTube 업로드용
@@ -494,6 +475,7 @@ Brief: "<title>"
 - 아바타 이미지는 사전에 `output/<slug>/avartar.png`에 준비되어 있어야 함
 - 아바타 없으면 자막만 burn-in으로 대체 (graceful degradation)
 - 렌더 시간 예상: 2분 영상 기준 ~5분 (Apple Silicon MPS)
+- public YouTube 연결은 자동 polling하지 않는다. 운영자가 업로드 후 명시적으로 `/vh-youtube` 또는 `publish:link-youtube`를 실행한다.
 
 ---
 

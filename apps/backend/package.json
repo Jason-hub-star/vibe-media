@@ -37,7 +37,9 @@
     "publish:channels": "tsx src/workers/run-publish-channels.ts",
     "publish:link-youtube": "tsx src/workers/run-link-youtube.ts",
     "translate:variant": "tsx src/workers/run-translate-variant.ts",
-    "video:locale-fanout": "tsx src/workers/run-video-locale-fanout.ts"
+    "video:locale-fanout": "tsx src/workers/run-video-locale-fanout.ts",
+    "dedup:guard": "tsx src/workers/run-dedup-guard.ts",
+    "source:health": "tsx src/workers/run-source-health.ts"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",

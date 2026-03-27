@@ -63,10 +63,10 @@
 npm run pipeline:daily        ← 수집→가공→초안→critic
 npm run publish:auto          ← approved → scheduled → published
 npm run publish:channels      ← published brief → 채널별 렌더+배포 (신규)
-npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 등록 → Pass 3
+npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 또는 URL 등록 → Pass 3
 ```
 
-`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다.
+`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다. 이 단계는 YouTube 업로드 준비까지만 자동화하며, public YouTube 연결은 업로드 후 별도 완료 신호가 필요하다.
 
 ---
 
@@ -453,11 +453,18 @@ media-engine 책임:
 
 운영자 책임:
   ✅ YouTube Studio에서 직접 업로드
-  ✅ metadata.json의 제목/설명 복사-붙여넣기
-  ✅ 업로드 후 video_id를 시스템에 등록 (CLI 또는 admin UI)
+  ✅ youtube-upload-guide.txt의 제목/설명/고정댓글 복사-붙여넣기
+  ✅ 업로드 후 public YouTube URL을 시스템에 등록 (Telegram 또는 CLI)
 ```
 
-업로드 후 `npm run publish:link-youtube <brief-id> <video-id>` 실행 → Pass 3으로 나머지 채널에 YouTube 링크 추가.
+업로드 후 아래 둘 중 하나를 실행한다.
+
+- Telegram 기본: YouTube URL만 단독 전송
+- Telegram override: `/vh-youtube <brief-id> <youtube-url>`
+- CLI fallback: `npm run publish:link-youtube -- <video-id-or-url>`
+- CLI 명시 연결: `npm run publish:link-youtube -- <brief-id> <video-id-or-url>`
+
+등록이 끝나면 `brief_posts.youtube_url / youtube_video_id / youtube_linked_at`가 채워지고, Pass 3으로 Threads에 YouTube 링크가 다시 주입된다.
 
 ---
 
@@ -514,6 +521,7 @@ publish:channels <brief-id>
   │     └─ Remotion render  → mp4 → /output/youtube-ready/ (URL 없음)
   │
   ├─ 3. channel_results 저장 (Supabase)
+  │     └─ YouTube는 이 시점에 file:// metadata 결과만 저장됨
   │
   ├─ 4. Pass 2: 크로스 프로모션 주입 (수집된 URL로)
   │     ├─ Threads  → reply_to_id 답글로 링크 추가 (편집 API 없음)
@@ -524,9 +532,12 @@ publish:channels <brief-id>
   ├─ 5. cross_promo_synced = true
   │
   └─ 6. (비동기) 운영자 YouTube 업로드 후
-        → publish:link-youtube <brief-id> <video-id>
-        → Pass 3: youtube_url을 나머지 채널에 추가
-        → youtube_linked = true
+        → Telegram에 YouTube URL만 전송
+          또는 /vh-youtube <brief-id> <youtube-url>
+          또는 publish:link-youtube -- <video-id-or-url>
+        → brief_posts.youtube_* canonical 필드 갱신
+        → channel_publish_results에 public YouTube URL 기록
+        → Pass 3: youtube_url을 기존 채널에 추가
 ```
 
 ### brief → 채널별 콘텐츠 변환 규칙
@@ -627,7 +638,9 @@ interface BriefChannelMeta {
   channelResults: PublishResult[];
   crossPromo: CrossPromoBlock;
   crossPromoSynced: boolean;   // Pass 2 완료
-  youtubeLinked: boolean;      // Pass 3 완료
+  youtubeVideoId?: string;     // public YouTube 연결 후 채워짐
+  youtubeUrl?: string;         // public YouTube 연결 후 채워짐
+  youtubeLinkedAt?: string;    // Pass 3 완료 시각
   channelMetrics?: object;     // analytics-collector가 채움
 }
 ```
@@ -692,7 +705,7 @@ packages/media-engine/src/
 apps/backend/
   scripts/
     publish-channels.ts         ← CLI: npm run publish:channels <brief-id>
-    link-youtube.ts             ← CLI: npm run publish:link-youtube <brief-id> <video-id>
+    link-youtube.ts             ← CLI: npm run publish:link-youtube -- [brief-id] <video-id>
 
 tools/
   remotion/
@@ -783,7 +796,8 @@ ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS channel_results jsonb DEFAULT '
 ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS cross_promo jsonb DEFAULT '{}';
 ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS cross_promo_synced boolean DEFAULT false;
 ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_video_id text;
-ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_linked boolean DEFAULT false;
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_url text;
+ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS youtube_linked_at timestamptz;
 ALTER TABLE brief_posts ADD COLUMN IF NOT EXISTS channel_metrics jsonb DEFAULT '{}';
 ```
 

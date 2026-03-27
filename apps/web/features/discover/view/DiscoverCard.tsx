@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { DiscoverItem } from "@vibehub/content-contracts";
+import { isValidActionHref, type DiscoverItem } from "@vibehub/content-contracts";
 
 import { presentDiscoverCategory } from "../presenter/present-discover-category";
 import { presentDiscoverStatus, presentReviewStatus } from "../presenter/present-discover-status";
@@ -80,7 +80,7 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
         </div>
       )}
       <div className="button-row discover-card-actions">
-        {item.actions.map((action) => (
+        {item.actions.filter((action) => isValidActionHref(action.href)).map((action) => (
           <Link className="button-secondary discover-card-action" href={action.href} key={`${item.id}-${action.kind}`}>
             {action.label}
           </Link>

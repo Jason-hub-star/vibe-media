@@ -4,7 +4,7 @@ import type { ChannelName, CrossPromoBlock } from "../channel-types";
 
 const sampleBlocks: CrossPromoBlock[] = [
   { targetChannel: "threads", url: "https://threads.net/@vibehub/post/123", text: "Read on Threads" },
-  { targetChannel: "ghost", url: "https://vibehub.com/brief-1", text: "Full article on VibeHub" },
+  { targetChannel: "ghost", url: "https://vibehub.tech/en/brief-1", text: "Full article on VibeHub" },
   { targetChannel: "youtube", url: "https://youtube.com/watch?v=abc", text: "Watch on YouTube" },
 ];
 
@@ -13,7 +13,7 @@ const ctx = {
   slug: "ai-brief-1",
   publishedUrls: {
     threads: "https://threads.net/@vibehub/post/123",
-    ghost: "https://vibehub.com/brief-1",
+    ghost: "https://vibehub.tech/en/brief-1",
     youtube: "https://youtube.com/watch?v=abc",
   } as Partial<Record<ChannelName, string>>,
 };
@@ -51,7 +51,7 @@ describe("buildCrossPromoBlocks", () => {
   it("should create blocks from published URLs", () => {
     const blocks = buildCrossPromoBlocks({
       threads: "https://threads.net/123",
-      ghost: "https://vibehub.com/article",
+      ghost: "https://vibehub.tech/article",
     });
     expect(blocks).toHaveLength(2);
     expect(blocks[0].targetChannel).toBe("threads");
