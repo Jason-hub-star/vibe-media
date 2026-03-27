@@ -86,9 +86,9 @@ WHERE status = 'published'
   )
   AND NOT EXISTS (
     SELECT 1 FROM public.channel_publish_results
-    WHERE brief_id = brief_posts.id
-      AND channel = 'youtube'
-      AND status = 'success'
+    WHERE brief_slug = brief_posts.slug
+      AND channel_name = 'youtube'
+      AND success = true
   )
 ORDER BY
   COALESCE(
@@ -178,8 +178,26 @@ Chrome이 열려있고 Claude in Chrome 확장이 활성화된 상태라면:
 1. `mcp__Claude_in_Chrome__navigate` → `https://notebooklm.google.com/notebook/<id>`
 2. 스튜디오 패널에서 비디오 artifact에 호버
 3. ⋮ 버튼 클릭 → "다운로드" 클릭
-4. `~/Downloads/`에서 파일 확인
-5. `output/<slug>/video.mp4`로 이동
+4. `~/Downloads/`에서 최신 mp4 파일 확인 후 `output/<slug>/`로 이동:
+
+```bash
+# 다운로드 폴더에서 가장 최근 mp4 찾기
+LATEST=$(ls -t ~/Downloads/*.mp4 2>/dev/null | head -1)
+if [ -n "$LATEST" ]; then
+  mkdir -p output/<slug>
+  mv "$LATEST" output/<slug>/GPT-5.mp4
+  echo "✅ Moved: $LATEST → output/<slug>/GPT-5.mp4"
+else
+  echo "❌ No mp4 found in ~/Downloads/"
+fi
+```
+
+⚠️ 다운로드 완료까지 대기 후 이동할 것 — 파일 크기가 1MB 미만이면 아직 다운로드 중이거나 HTML 파일임.
+```bash
+# 파일 검증
+file output/<slug>/GPT-5.mp4  # "ISO Media, MP4" 포함 확인
+ls -lh output/<slug>/GPT-5.mp4  # 1MB 이상 확인
+```
 
 ### 수동 대체
 
