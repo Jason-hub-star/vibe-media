@@ -6,6 +6,7 @@
 - `ingested_items`
 - `item_classifications`
 - `brief_posts`
+  - trigger: `trg_fix_approved_draft` — `review_status = approved` && `status = draft` → 자동 `status = review` 전환 (상태 꼬임 방지)
 - `discover_items`
 - `discover_actions`
 - `source_entries`

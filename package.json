@@ -40,6 +40,11 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.53.2",
+    "@remotion/bundler": "^4.0.440",
+    "@remotion/captions": "^4.0.440",
+    "@remotion/cli": "^4.0.440",
+    "@remotion/renderer": "^4.0.440",
+    "@remotion/transitions": "^4.0.440",
     "@types/node": "^24.5.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2",

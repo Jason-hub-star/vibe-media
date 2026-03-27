@@ -4,6 +4,12 @@
 
 ## Resolved
 
+### 2026-03-27 — approved+draft 상태 꼬임 방지 트리거
+- 상태: resolved
+- 결정: `trg_fix_approved_draft` DB 트리거 추가 — `review_status = approved`이면서 `status = draft`인 경우 자동으로 `status = review`로 전환
+- 근거: 코워크가 editorial-review 프롬프트를 이탈하여 `review_status = approved`를 직접 설정하면서 `status = draft`를 그대로 둠 → auto-publish가 6건을 영원히 skip
+- 영향: 같은 문제 재발 시 DB 레벨에서 자동 교정. 프롬프트 이탈에도 안전
+
 ### 2026-03-27 — SEO & Public Surface 강화 설계 결정
 - 상태: resolved
 - 결정:
