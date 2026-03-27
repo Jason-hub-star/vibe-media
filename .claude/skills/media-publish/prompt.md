@@ -2,141 +2,107 @@
 
 Brief slug를 받아서 전체 미디어 파이프라인을 실행한다.
 
-## 검증된 성공 패턴 (2026-03-27)
+## 검증된 E2E 파이프라인 (2026-03-27)
 
 ```
 Brief → NotebookLM 비디오 생성 (nlm)
-  → 수동 다운로드 (NotebookLM 웹)
-    → Whisper STT 자막 생성 (faster-whisper)
-      → Talking Head 아바타 렌더 (talking-head-anime-3)
-        → ffmpeg 합성 (NLM 비디오 + 아바타 PIP + 자막)
-          → YouTube 업로드 가이드 TXT
+  → 다운로드 (Claude in Chrome 또는 수동)
+    → Whisper STT 자막 (faster-whisper)
+      → 화자 감지 → 아바타 자동 선택 (남/녀)
+        → Talking Head 아바타 렌더
+          → overlay-avatar.sh (아바타 + 자막 합성)
+            → Remotion 인트로/아웃트로
+              → compose-final.sh (최종 합성)
 ```
 
 ## 인자
 
 - `<slug>`: Brief slug (필수)
-- `--skip-nlm`: NotebookLM 생성 건너뛰기 (이미 다운로드한 경우)
-- `--avatar <path>`: 아바타 이미지 (기본: output/{slug}/avartar.png)
-- `--style <style>`: NLM 비디오 스타일 (classic, whiteboard, kawaii, anime 등) 기본: classic
+- `--skip-nlm`: NotebookLM 생성 건너뛰기
+- `--skip-threads`: Threads 발행 건너뛰기
 
 ## Steps
 
-### 1. NotebookLM 오디오/비디오 생성 (--skip-nlm이 아닐 때)
+### 1. NotebookLM 비디오 생성
 
 ```bash
-# 노트북 확인 또는 생성
-nlm notebook list
 nlm audio create <notebook-id> -f brief -l short --language en -y
 nlm video create <notebook-id> -f brief -s classic --language en -y
-
-# 완료 대기 (30초 간격 폴링)
-nlm studio status <notebook-id>
+nlm studio status <notebook-id>  # 완료 대기
 ```
 
-완료 후 다운로드 — **Claude in Chrome 자동화** 또는 수동:
+다운로드: Claude in Chrome 또는 수동 → `output/{slug}/video.mp4`
 
-**방법 A (자동): Claude in Chrome 확장 사용**
-`notebooklm-download.skill` 참조. Chrome이 열려있고 Claude in Chrome 확장이 활성화된 상태라면:
-1. `mcp__Claude_in_Chrome__navigate` → NotebookLM 노트북 URL 이동
-2. 스튜디오 패널에서 artifact에 호버 → ⋮ 클릭 → "다운로드" 클릭
-3. `~/Downloads/`에서 파일 확인 → `output/{slug}/`로 이동
-
-**방법 B (수동):**
-- NotebookLM 웹에서 직접 다운로드 → `output/{slug}/`에 저장 (2분)
-
-### 2. Whisper STT 자막 생성
+### 2. Whisper STT 자막
 
 ```bash
-# 비디오에서 오디오 추출
 /opt/homebrew/opt/ffmpeg-full/bin/ffmpeg -y \
-  -i output/{slug}/video.mp4 \
-  -vn -ar 16000 -ac 1 -c:a pcm_s16le \
+  -i output/{slug}/video.mp4 -vn -ar 16000 -ac 1 -c:a pcm_s16le \
   output/{slug}/audio-for-stt.wav
 ```
 
-```python
-# faster-whisper (MimikaStudio venv 활용)
-/Users/family/MimikaStudio/venv/bin/python << 'EOF'
+```bash
+~/MimikaStudio/venv/bin/python -c "
 from faster_whisper import WhisperModel
-model = WhisperModel("base", device="cpu", compute_type="int8")
-segments, info = model.transcribe("output/{slug}/audio-for-stt.wav", language="en", word_timestamps=True)
-# SRT 생성 → output/{slug}/subtitles-en.srt
-EOF
+model = WhisperModel('base', device='cpu', compute_type='int8')
+segments, info = model.transcribe('output/{slug}/audio-for-stt.wav', language='en', word_timestamps=True)
+# → output/{slug}/subtitles-en.srt
+"
 ```
 
-### 3. Talking Head 아바타 렌더
-
-**확정 설정:**
-- 모델: `separable_float` (MPS 6.5fps, 2분 영상 ~5분)
-- FPS: `24`
-- 이미지: `512x512` 강제 리사이즈 또는 투명 패딩 (전신 이미지 필수)
-- ⚠️ **전신 이미지에서만 입이 잘 움직임** — 클로즈업은 변화 미미
+### 3. 아바타 렌더 (화자 자동 감지)
 
 ```bash
-/Users/family/talking-head-anime-3-demo/venv/bin/python \
+~/talking-head-anime-3-demo/venv/bin/python \
   tools/talking-head-render.py \
-  output/{slug}/avartar.png \
-  output/{slug}/audio-full.wav \
-  output/{slug}/avatar.mp4 \
+  output/{slug}/audio-for-stt.wav \
+  output/{slug} \
   --fps 24 --model separable_float
 ```
 
-**포즈 파라미터 (최적값):**
-| 인덱스 | 파라미터 | 공식 |
-|--------|---------|------|
-| 26 | mouth_aaa | `vol * 0.8` |
-| 27 | mouth_iii | `vol * 0.3 * cos(t*4)` |
-| 30 | mouth_ooo | `vol * 0.4 * sin(t*5)` |
-| 16,17 | eye_surprised | `vol * 0.2` |
-| 12,13 | eye_wink (깜빡임) | 4초 주기, 3.8~4.0s 구간 |
-| 38 | head_x | `sin(t*0.5) * 0.1` |
-| 39 | head_y | `sin(t*0.3) * 0.06` |
-| 44 | breathing | `sin(t*0.8) * 0.3` |
+⚠️ 이 스크립트가 자동으로:
+1. 화자 감지 (male_solo / female_solo / dual)
+2. 해당 아바타 렌더
+3. `avatar-meta.json` + `avatar-*-alpha.mov` 생성
 
-### 4. ffmpeg 최종 합성
-
-**확정 레이아웃:**
-- 아바타: 500px, 위치 `W-350:H-275` (우하단, NotebookLM 워터마크 가림)
-- 자막: 하단 중앙 (Alignment=2)
-- 자막 하드코딩: `ffmpeg-full` 필요 (`/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg`)
+### 4. 아바타 overlay + 자막 burn-in
 
 ```bash
-/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg -y \
-  -i output/{slug}/video.mp4 \
-  -i output/{slug}/avatar-alpha.mov \
-  -filter_complex " \
-    [1:v]scale=500:-1[avatar]; \
-    [0:v][avatar]overlay=W-350:H-275:shortest=1[vid]; \
-    [vid]subtitles=output/{slug}/subtitles-en.srt:force_style='FontSize=20,FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=1,MarginV=20,Alignment=2'[out]" \
-  -map "[out]" -map 0:a \
-  -c:v libx264 -crf 20 -preset fast -c:a copy -shortest \
-  output/{slug}/final.mp4
+bash tools/overlay-avatar.sh {slug}
+# → output/{slug}/final.mp4
 ```
 
-### 5. YouTube 업로드 가이드 생성
+⚠️ `overlay-avatar.sh`를 직접 실행할 것 — ffmpeg 명령을 자체 생성하지 마라.
+
+### 5. Remotion 인트로/아웃트로 + 최종 합성
 
 ```bash
-npm run publish:channels <slug>
-# → output/{slug}/youtube-upload-guide.txt 자동 생성
-# → Threads 자동 발행 (PUBLISH_CHANNELS에 threads 포함 시)
+npx remotion render packages/media-engine/src/remotion/index.tsx BrandIntro \
+  output/{slug}/intro.mp4 --props='{"title":"<brief-title>"}'
+
+npx remotion render packages/media-engine/src/remotion/index.tsx BrandOutro \
+  output/{slug}/outro.mp4
+
+bash tools/compose-final.sh {slug}
+# → output/{slug}/complete.mp4
 ```
 
-### 6. 수동 업로드 안내
+⚠️ `compose-final.sh`를 직접 실행할 것 — ffmpeg 명령을 자체 생성하지 마라.
+
+### 6. YouTube 가이드 + Threads 발행
+
+```bash
+npm run publish:channels {slug}
+# → output/{slug}/youtube-upload-guide.txt + Threads 발행
+```
+
+### 7. YouTube 업로드 (수동)
 
 ```
 📁 output/{slug}/
-  ✅ final.mp4              — YouTube에 업로드할 최종 영상
-  ✅ subtitles-en.srt       — YouTube 자막 파일
-  ✅ youtube-upload-guide.txt — 제목/설명/태그 복붙 가이드
-  ✅ avatar-alpha.mov       — 아바타 영상 (알파 포함)
-  ✅ video.mp4              — NLM 원본 비디오
-
-🚀 YouTube Studio에서:
-  1. final.mp4 업로드
-  2. guide.txt 보면서 제목/설명/태그 복붙
-  3. subtitles-en.srt 자막 업로드
-  4. Unlisted → 확인 후 Public
+  ✅ complete.mp4           — YouTube 업로드용 최종 영상
+  ✅ subtitles-en.srt       — 자막 파일
+  ✅ youtube-upload-guide.txt — 복붙 가이드
 ```
 
 ## 도구 경로
@@ -144,39 +110,59 @@ npm run publish:channels <slug>
 | 도구 | 경로 |
 |------|------|
 | ffmpeg-full | `/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg` |
-| faster-whisper | `/Users/family/MimikaStudio/venv/bin/python` |
-| talking-head-anime-3 | `/Users/family/talking-head-anime-3-demo/venv/bin/python` |
+| faster-whisper | `~/MimikaStudio/venv/bin/python` |
+| talking-head-anime-3 | `~/talking-head-anime-3-demo/venv/bin/python` |
 | nlm CLI | `nlm` (uv tool) |
-| 렌더 스크립트 | `tools/talking-head-render.py` |
+| 아바타 렌더 | `tools/talking-head-render.py` |
+| 아바타 overlay | `tools/overlay-avatar.sh` |
+| 최종 합성 | `tools/compose-final.sh` |
+| 화자 감지 | `tools/detect-speakers.py` |
 
 ## 아바타 규칙 (수정 금지)
 
-- **전신 이미지만 사용** (클로즈업은 입 변형 안 됨)
+### 공용 아바타
+- 여자: `assets/brand/vh-avatar.png`
+- 남자: `assets/brand/vh-avatar-male.png`
+
+### 필수 조건
+- **전신 이미지만 사용** — 클로즈업은 입 변형 안 됨
 - 투명 배경 PNG (RGBA)
-- **512x512 투명 패딩 필수** — `img.resize((512, 512))` 강제 리사이즈 금지 (찌그러짐+입 안 움직임)
-- 입 다문 표정이 입 벌린 표정보다 변화 폭이 더 클 수 있지만, 전신이면 벌린 표정도 OK
-- 공용 아바타: `assets/brand/vh-avatar.png` (VH TECH 전신, 모든 영상에서 재사용)
-- slug별 커스텀 아바타가 `output/{slug}/avartar.png`에 있으면 그걸 우선 사용
+- **512x512 투명 패딩 필수** — `img.resize((512, 512))` 강제 리사이즈 금지
+
+### 화자별 아바타 선택 (자동)
+| 모드 | 조건 | 아바타 |
+|------|------|--------|
+| `male_solo` | 남자 > 80% | 남자만 (우하단) |
+| `female_solo` | 여자 > 80% | 여자만 (우하단) |
+| `dual` | 둘 다 20%+ | ⚠️ 실험적 — 남(좌하단) + 여(우하단) |
 
 ## ffmpeg 합성 규칙 (수정 금지)
 
 - 아바타 overlay: `scale=500:-1` / `overlay=W-350:H-275` / `Alignment=2` / `FontSize=20` / `crf 20`
 - 이 값들은 시행착오 끝에 확정됨 — 임의로 바꾸지 말 것
 
-## Remotion 인트로/아웃트로 + 최종 합성 규칙
+## Remotion + compose 규칙
 
-- 인트로: `npx remotion render ... BrandIntro intro.mp4 --props='{"title":"<제목>"}'`
-- 아웃트로: `npx remotion render ... BrandOutro outro.mp4`
-- 최종 합성: `bash tools/compose-final.sh <slug>`
-  · 인트로→본편: xfade 크로스페이드 (1초)
-  · 본편→아웃트로: silencedetect로 음성 끝 자동 감지 → fade-out/fade-in (0.5초)
-  · 워터마크 노출 0% (크로스페이드가 아닌 검정 경유 전환)
-  · 모든 값 동적 계산 — 하드코딩 없음
-  · 설정 오버라이드: `FADE_DUR=0.5 INTRO_XFADE_DUR=1 bash tools/compose-final.sh <slug>`
+- 인트로→본편: xfade 크로스페이드 (1초)
+- 본편→아웃트로: silencedetect 자동 감지 → fade-out/fade-in (0.5초, 워터마크 0%)
+- 설정 오버라이드: `FADE_DUR=0.5 INTRO_XFADE_DUR=1 bash tools/compose-final.sh {slug}`
+
+## 검증 상태
+
+| 항목 | 상태 |
+|------|------|
+| 여자 1인 아바타 (female_solo) | ✅ 검증 완료 |
+| 남자 1인 아바타 (male_solo) | ✅ 검증 완료 |
+| 화자 감지 자동 선택 | ✅ 검증 완료 |
+| overlay-avatar.sh (1인) | ✅ 검증 완료 |
+| compose-final.sh | ✅ 검증 완료 |
+| Remotion 인트로/아웃트로 | ✅ 검증 완료 |
+| **듀얼 아바타 (2인 동시)** | ⚠️ 실험적 — 코드 작성됨, 미검증 |
 
 ## 제약사항
 
-- NotebookLM 미디어 다운로드: **Claude in Chrome 확장으로 자동화 가능** (Python/httpx 직접 다운로드는 Google CDN 인증 루프로 불가)
-- talking-head-anime-3는 Apple Silicon MPS에서 ~10fps (2분 영상 ~5분)
-- 썸네일은 수동 (Gemini AI Studio 웹에서 생성)
-- Claude in Chrome 전제조건: Mac 켜짐 + Chrome 실행 + Claude 확장 활성화
+- NotebookLM 다운로드: Claude in Chrome 확장 필요 (Python 직접 다운로드 불가)
+- talking-head-anime-3: MPS ~10fps, 2분 영상 ~5분
+- 아바타 최대 크기: 500px (512 렌더 → 원본 한계)
+- 썸네일: 수동 (Gemini AI Studio 웹)
+- NotebookLM 화자 선택 불가 — 랜덤 배정
