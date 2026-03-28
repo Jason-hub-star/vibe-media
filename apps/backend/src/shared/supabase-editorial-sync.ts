@@ -97,6 +97,28 @@ function getSummary(item: SnapshotIngestedItemRow) {
   return String(item.parsed_content.summary ?? item.title);
 }
 
+/** contentMarkdown → body 문단 배열. 없거나 빈약하면 summary fallback */
+function getBodyParagraphs(item: SnapshotIngestedItemRow): string[] {
+  const md = item.parsed_content.contentMarkdown;
+  if (typeof md !== "string" || !md.trim()) {
+    return [getSummary(item)];
+  }
+
+  const cleaned = md
+    .replace(/!\[.*?\]\(.*?\)\n*/g, "")
+    .replace(/<(?:audio|video|source)[^>]*>.*?<\/(?:audio|video)>/gs, "")
+    .replace(/<p>.*?<\/p>/gs, "")
+    .trim();
+
+  const paragraphs = cleaned
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+
+  // 변환 결과가 3문단 미만이면 summary fallback
+  return paragraphs.length >= 3 ? paragraphs : [getSummary(item)];
+}
+
 function getDiscoverCopy(item: SnapshotIngestedItemRow, source?: SnapshotSourceRow | null) {
   return normalizeDiscoverCopy({
     title: item.title,
@@ -114,9 +136,34 @@ function getTags(item: SnapshotIngestedItemRow) {
   });
 }
 
+/** 소스 도메인 → fallback cover image (og:image 추출 실패 시 자동 적용) */
+const SOURCE_DOMAIN_FALLBACK_IMAGES: Record<string, string> = {
+  "openai.com":
+    "https://images.ctfassets.net/kftzwdyauwt9/6tvi0m9Z8P15gx4gd3ClmR/cfb5e925a1d3b2f9ac2ccbcd311c50cc/Frame__2_.png?w=1600&h=900&fit=fill",
+  "anthropic.com":
+    "https://www.anthropic.com/images/icons/apple-touch-icon.png",
+  "blog.google":
+    "https://blog.google/static/blogv2/images/google-1000x1000.png"
+};
+
+function getFallbackImageByDomain(itemUrl: string): string | null {
+  try {
+    const hostname = new URL(itemUrl).hostname.replace(/^www\./, "");
+    for (const [domain, fallback] of Object.entries(SOURCE_DOMAIN_FALLBACK_IMAGES)) {
+      if (hostname === domain || hostname.endsWith(`.${domain}`)) {
+        return fallback;
+      }
+    }
+  } catch { /* invalid URL — skip */ }
+  return null;
+}
+
 function getImageUrl(item: SnapshotIngestedItemRow): string | null {
   const url = item.parsed_content.imageUrl;
-  return typeof url === "string" && url.startsWith("http") ? url : null;
+  if (typeof url === "string" && url.startsWith("http")) return url;
+
+  // og:image 없으면 소스 도메인 fallback 자동 적용
+  return getFallbackImageByDomain(item.url);
 }
 
 function needsReview(classification: SnapshotItemClassificationRow) {
@@ -286,7 +333,7 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         slug: briefSlug,
         title: item.title,
         summary: getSummary(item),
-        body: [getSummary(item)],
+        body: getBodyParagraphs(item),
         status: inferBriefStatus(classification),
         review_status: inferReviewStatus(classification),
         scheduled_at: null,

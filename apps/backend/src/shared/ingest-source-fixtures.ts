@@ -10,6 +10,8 @@ export interface IngestSourceFixture {
   tags: string[];
   archiveOnly?: boolean;
   duplicateOf?: string;
+  /** content parsing 결과 — content-failed이면 본문 추출 실패 */
+  parseStatus?: "summary-only" | "content-enriched" | "content-failed";
 }
 
 export const ingestSourceFixtures: IngestSourceFixture[] = [

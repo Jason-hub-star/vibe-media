@@ -221,7 +221,8 @@ export function materializeLiveIngestSnapshot(
       imageUrl: item.imageUrl ?? null
     },
     dedupe_key: createHash("sha1").update(item.url.toLowerCase()).digest("hex"),
-    ingest_status: "parsed" as const,
+    // content-failed 항목은 "parsed"가 아닌 "failed"로 분류 — downstream에서 draft 생성 차단
+    ingest_status: (item.parseStatus === "content-failed" ? "failed" : "parsed") as SnapshotIngestedItemRow["ingest_status"],
     created_at: report.performedAt
   }));
 

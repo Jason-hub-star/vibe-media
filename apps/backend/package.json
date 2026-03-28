@@ -39,7 +39,9 @@
     "translate:variant": "tsx src/workers/run-translate-variant.ts",
     "video:locale-fanout": "tsx src/workers/run-video-locale-fanout.ts",
     "dedup:guard": "tsx src/workers/run-dedup-guard.ts",
-    "source:health": "tsx src/workers/run-source-health.ts"
+    "source:health": "tsx src/workers/run-source-health.ts",
+    "brief:enrich-backfill": "tsx src/workers/run-brief-enrich-backfill.ts",
+    "brief:enrich-backfill-dry": "tsx src/workers/run-brief-enrich-backfill.ts --dry-run"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",

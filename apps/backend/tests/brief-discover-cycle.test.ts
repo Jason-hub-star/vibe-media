@@ -7,11 +7,12 @@ describe("brief/discover dry-run cycle", () => {
     const report = runBriefDiscoverCycle();
 
     expect(report.inboxItems).toHaveLength(7);
-    expect(report.reviewItems).toHaveLength(2);
-    expect(report.publishItems).toHaveLength(3);
+    // thin-content 방어: Anthropic Research Note fixture (parsedSummary < 100자)가 review로 이동
+    expect(report.reviewItems).toHaveLength(3);
+    expect(report.publishItems).toHaveLength(2);
     expect(report.archiveItems).toHaveLength(1);
     expect(report.discardItems).toHaveLength(1);
-    expect(report.exceptionItems).toHaveLength(2);
+    expect(report.exceptionItems).toHaveLength(3);
   });
 
   it("keeps manual-review and dual-surface items out of direct publish", () => {

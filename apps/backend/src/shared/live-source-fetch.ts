@@ -134,7 +134,8 @@ function toFixture(item: LiveFetchedItem): IngestSourceFixture {
     title: item.title,
     contentType: item.contentType,
     parsedSummary: buildCycleSummary(item),
-    tags: item.tags
+    tags: item.tags,
+    parseStatus: item.parseStatus
   };
 }
 
@@ -146,7 +147,7 @@ function shouldEnrichArticle(source: LiveSourceDefinition) {
   return source.fetchKind === "rss" && source.contentType === "article";
 }
 
-async function enrichArticleContent(url: string) {
+export async function enrichArticleContent(url: string) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(ARTICLE_FETCH_TIMEOUT_MS),
     headers: {

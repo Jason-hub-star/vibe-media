@@ -31,6 +31,11 @@ export function getHumanExceptionReasons(item: InboxItem): string[] {
     reasons.push("source tier requires operator review");
   }
 
+  // thin-content 방어: summary 100자 미만이면 brief 발행 부적합
+  if (item.targetSurface === "brief" && item.parsedSummary.length < 100) {
+    reasons.push("thin content — summary too short for brief publication");
+  }
+
   return reasons;
 }
 

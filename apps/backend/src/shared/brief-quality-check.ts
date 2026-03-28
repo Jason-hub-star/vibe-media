@@ -138,6 +138,12 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
     failures.push(`non-https source URLs: ${badUrls.join(", ")}`);
   }
 
+  // --- 본문 없음 즉시 실패 (F등급 강제) ---
+  const bodyEmpty = bodyParagraphs === 0;
+  if (bodyEmpty) {
+    failures.push("body is empty — cannot publish without substantive content");
+  }
+
   // --- 확장 점수 계산 (0~100) ---
   const titleAppeal = scoreTitleAppeal(brief.title ?? "");
   const summaryStandalone = scoreSummaryStandalone(brief.summary ?? "");
@@ -157,7 +163,9 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   // 확장 점수 (50점 만점)
   const extendedScore = titleAppeal + summaryStandalone + structureScore + sourceDiversity + readability;
 
-  const qualityScore = clamp(gateScore + extendedScore, 0, 100);
+  // 본문 없으면 최대 25점 (F등급 확정) — summary만으로는 brief 발행 불가
+  const rawScore = gateScore + extendedScore;
+  const qualityScore = clamp(bodyEmpty ? Math.min(rawScore, 25) : rawScore, 0, 100);
   const grade = computeGrade(qualityScore);
 
   return {

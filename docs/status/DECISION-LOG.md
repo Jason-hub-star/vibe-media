@@ -4,6 +4,26 @@
 
 ## Pending
 
+### 2026-03-29 — brief body/image 자동 채움 + 소스 도메인 fallback
+- 상태: decided
+- 배경: `supabase-editorial-sync.ts`가 `contentMarkdown`을 무시하고 `body: [summary]` 한 줄만 넣고 있었음. 또한 OpenAI 등 Cloudflare 봇 차단 사이트는 og:image 자동 추출이 불가능
+- 결정: 3개 계층 수정
+  1. sync 단계에 `getBodyParagraphs()` — contentMarkdown → body 문단 자동 변환 (3문단 미만이면 summary fallback)
+  2. sync 단계에 `SOURCE_DOMAIN_FALLBACK_IMAGES` — og:image 없을 때 소스 도메인 기반 fallback 이미지 자동 적용
+  3. `brief:enrich-backfill` CLI — 기존 부실 brief 일괄 보강 워커 (markdown→body + og:image + domain fallback)
+- 근거: OpenAI 등 주요 소스가 Cloudflare JS 렌더링으로 서버사이드 og:image 추출 불가. 도메인 fallback은 이미지 없는 것보다 나은 UX 제공
+
+### 2026-03-29 — thin-content 방어 게이트 도입
+- 상태: decided
+- 배경: `content-failed` (본문 파싱 실패) 항목이 `ingest_status: "parsed"`로 전파되어 summary 2문장만으로 brief 발행 가능한 구멍 발견. OpenAI Safety Bug Bounty brief 등 26건 동일 문제 대기 중
+- 결정: 5개 파일 동시 수정으로 4중 방어벽 구축
+  1. `ingest-source-fixtures.ts` + `live-source-fetch.ts`: parseStatus를 fixture까지 전달
+  2. `brief-discover-cycle.ts`: content-failed → confidence 페널티 + review 강제
+  3. `pipeline-routing.ts`: parsedSummary < 100자 brief → thin-content 사유 추가
+  4. `live-ingest-snapshot.ts`: content-failed → ingest_status "failed"로 분류
+  5. `brief-quality-check.ts`: body 비어있으면 최대 25점(F등급) 캡
+- 근거: 수집 소스 25개+로 증가하면서 content 파싱 실패 비율 증가. summary만으로 brief 발행 시 독자 신뢰 하락
+
 ### 2026-03-27 — dedup-guard 독립 워커 구현
 - 상태: decided
 - 배경: `daily-dedup-guard.md` 자동화 프롬프트는 있었지만 실행 가능한 코드가 없었음. `supabase-auto-approve.ts`에 Jaccard 로직이 있었으나 auto-approve guardrail 내부에서만 동작

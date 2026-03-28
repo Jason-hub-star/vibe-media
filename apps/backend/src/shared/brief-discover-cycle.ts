@@ -76,9 +76,31 @@ function inferStage(targetSurface: InboxTargetSurface, reasons: string[]): Inbox
   return reasons.length > 0 ? "classified" : "drafted";
 }
 
+/** content-failed 또는 summary-only + 짧은 요약이면 review 강제 사유 반환 */
+function getContentQualityReasons(fixture: IngestSourceFixture): string[] {
+  const reasons: string[] = [];
+
+  if (fixture.parseStatus === "content-failed") {
+    reasons.push("body extraction failed — content too thin for publication");
+  }
+
+  if (fixture.parseStatus === "summary-only" && fixture.parsedSummary.length < 100) {
+    reasons.push("summary-only with insufficient detail for brief");
+  }
+
+  return reasons;
+}
+
 function createInboxItem(fixture: IngestSourceFixture): InboxItem {
   const targetSurface = inferTargetSurface(fixture);
   const confidence = inferConfidence(fixture, targetSurface);
+  const contentQualityReasons = getContentQualityReasons(fixture);
+
+  // content-failed이면 confidence 페널티 적용
+  const adjustedConfidence = contentQualityReasons.length > 0
+    ? clampConfidence(confidence - 0.1)
+    : confidence;
+
   const provisional: InboxItem = {
     id: fixture.id,
     sourceName: fixture.sourceName,
@@ -87,10 +109,10 @@ function createInboxItem(fixture: IngestSourceFixture): InboxItem {
     contentType: fixture.contentType,
     stage: "classified",
     targetSurface,
-    confidence,
+    confidence: adjustedConfidence,
     parsedSummary: fixture.parsedSummary
   };
-  const reasons = getHumanExceptionReasons(provisional);
+  const reasons = [...getHumanExceptionReasons(provisional), ...contentQualityReasons];
 
   return {
     ...provisional,

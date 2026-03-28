@@ -136,6 +136,8 @@
 - dedup-guard 워커 구현: done — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
 - source-health 워커 구현: done — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
 - daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
+- thin-content 방어 게이트: done — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
+- brief body/image 자동 채움: done — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
