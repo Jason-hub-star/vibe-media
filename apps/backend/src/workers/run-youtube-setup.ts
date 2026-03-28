@@ -81,23 +81,46 @@ console.log(`
 ═══════════════════════════════════════════════════
   YouTube OAuth2 Setup
 ═══════════════════════════════════════════════════
-
-사전 조건:
-  1. Google Cloud Console → 프로젝트 생성 (또는 기존 프로젝트)
-  2. YouTube Data API v3 활성화
-  3. OAuth 2.0 Client ID 생성 (유형: Desktop app)
-  4. Client ID + Client Secret 준비
 `);
 
-const clientId = await ask("🔑 YouTube Client ID: ");
-if (!clientId) {
-  console.error("Client ID가 필요합니다.");
-  process.exit(1);
+// CLI 인자: JSON 파일 경로 또는 --client-id / --client-secret
+const cliArgs = process.argv.slice(2);
+let clientId = "";
+let clientSecret = "";
+
+// 1) JSON 파일 경로가 주어진 경우 (Google Cloud 다운로드 파일)
+const jsonArg = cliArgs.find((a) => a.endsWith(".json"));
+if (jsonArg) {
+  try {
+    const raw = JSON.parse(readFileSync(jsonArg, "utf-8")) as {
+      installed?: { client_id?: string; client_secret?: string };
+      web?: { client_id?: string; client_secret?: string };
+    };
+    const creds = raw.installed ?? raw.web;
+    clientId = creds?.client_id ?? "";
+    clientSecret = creds?.client_secret ?? "";
+    console.log(`📄 JSON에서 credentials 로드: ${jsonArg}`);
+  } catch (err) {
+    console.error(`JSON 파일 읽기 실패: ${err instanceof Error ? err.message : err}`);
+    process.exit(1);
+  }
 }
 
-const clientSecret = await ask("🔒 YouTube Client Secret: ");
+// 2) 인터랙티브 입력 (JSON 없을 때)
+if (!clientId) {
+  console.log("사전 조건:");
+  console.log("  1. Google Cloud Console → YouTube Data API v3 활성화");
+  console.log("  2. OAuth 2.0 Client ID 생성 (Desktop app)");
+  console.log("  3. Client ID + Client Secret 준비\n");
+  clientId = await ask("🔑 YouTube Client ID: ");
+}
 if (!clientSecret) {
-  console.error("Client Secret이 필요합니다.");
+  clientSecret = await ask("🔒 YouTube Client Secret: ");
+}
+
+if (!clientId || !clientSecret) {
+  console.error("Client ID와 Client Secret이 모두 필요합니다.");
+  console.error("사용법: npm run youtube:setup -- /path/to/client_secret.json");
   process.exit(1);
 }
 
