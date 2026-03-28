@@ -138,6 +138,7 @@
 - daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
 - thin-content 방어 게이트: done — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
 - brief body/image 자동 채움: done — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
+- YouTube API 자동 업로드: done — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks

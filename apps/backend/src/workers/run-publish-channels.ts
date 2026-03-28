@@ -8,6 +8,8 @@
  *   THREADS_USER_ID, THREADS_ACCESS_TOKEN — Threads API 인증
  */
 
+import path from "path";
+import { fileURLToPath } from "url";
 import {
   dispatchPublish,
   registerPublisher,
@@ -15,9 +17,16 @@ import {
   createGhostPublisher,
   createTistoryPublisher,
   createYouTubeLocalPublisher,
+  createYouTubeApiPublisher,
+  isYouTubeApiConfigured,
   generateYouTubeUploadGuide,
   SITE_URL,
 } from "@vibehub/media-engine";
+
+// 프로젝트 루트 기준 output/ 폴더 (apps/backend에서 실행해도 루트로 잡힘)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, "../../../../");
 import {
   DEFAULT_CANONICAL_LOCALE,
   normalizeLocaleCodes,
@@ -26,6 +35,7 @@ import type { BriefChannelMeta, BriefChannelVariantMeta, ChannelConfig, ChannelN
 import { getSupabaseBriefDetail } from "../shared/supabase-editorial-read";
 import { reportChannelPublish } from "../shared/channel-publish-report";
 import { createSupabaseSql } from "../shared/supabase-postgres";
+import { updateBriefYouTubeLink, parseYouTubeInput, recordPublicYouTubePublishResult } from "../shared/youtube-linking";
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -84,12 +94,30 @@ const briefMeta: BriefChannelMeta = {
 // Publisher 등록
 // ---------------------------------------------------------------------------
 
-const outputDir = `output/${brief.slug}`;
+const outputDir = path.join(PROJECT_ROOT, "output", brief.slug);
 
 registerPublisher("threads", () => createThreadsPublisher());
 registerPublisher("ghost", () => createGhostPublisher());
 registerPublisher("tistory", () => createTistoryPublisher());
-registerPublisher("youtube", () => createYouTubeLocalPublisher(outputDir));
+
+// YouTube: API 환경변수 있으면 자동 업로드, 없으면 로컬 메타 저장
+const useYouTubeApi = isYouTubeApiConfigured();
+const videoFilePath = path.join(outputDir, "final.mp4");
+if (useYouTubeApi) {
+  console.log("YouTube: API mode (auto-upload as private)");
+  registerPublisher("youtube", () =>
+    createYouTubeApiPublisher({
+      videoFilePath,
+      thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
+      briefSlug: brief.slug,
+      briefUrl: `${SITE_URL}/${canonicalLocale}/brief/${brief.slug}`,
+      language: canonicalLocale,
+    }),
+  );
+} else {
+  console.log("YouTube: local mode (metadata only)");
+  registerPublisher("youtube", () => createYouTubeLocalPublisher(outputDir));
+}
 
 // ---------------------------------------------------------------------------
 // 채널 설정 (환경변수 기반)
@@ -143,6 +171,32 @@ await generateYouTubeUploadGuide(
   outputDir,
 );
 console.log(`YouTube upload guide saved to ${outputDir}/youtube-upload-guide.txt`);
+
+// ---------------------------------------------------------------------------
+// YouTube API 업로드 성공 시 → brief에 자동 링크 연결 (Pass 3 대체)
+// ---------------------------------------------------------------------------
+
+const youtubeResult = result.results.find((r) => r.channel === "youtube" && r.success);
+if (useYouTubeApi && youtubeResult?.publishedUrl && !youtubeResult.publishedUrl.startsWith("file://")) {
+  console.log(`\nYouTube API upload succeeded → auto-linking to brief...`);
+  try {
+    const parsed = parseYouTubeInput(youtubeResult.publishedUrl);
+    await updateBriefYouTubeLink({
+      briefSlug: brief.slug,
+      youtubeVideoId: parsed.youtubeVideoId,
+      youtubeUrl: parsed.youtubeUrl,
+    });
+    await recordPublicYouTubePublishResult({
+      briefSlug: brief.slug,
+      youtubeUrl: parsed.youtubeUrl,
+      locale: canonicalLocale,
+    });
+    console.log(`  ✅ Brief linked: ${parsed.youtubeUrl}`);
+  } catch (err) {
+    console.warn(`  ⚠️ Auto-link failed: ${err instanceof Error ? err.message : err}`);
+    console.log(`  → 수동 연결: npm run publish:link-youtube -- ${brief.slug} ${youtubeResult.publishedUrl}`);
+  }
+}
 
 // DB 저장 + Telegram 보고 (canonical locale)
 await reportChannelPublish({

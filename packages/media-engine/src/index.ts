@@ -24,6 +24,7 @@ export * from "./publish/ghost-publisher";
 export * from "./publish/tistory-publisher";
 export * from "./publish/spotify-metadata";
 export * from "./publish/youtube-local";
+export * from "./publish/youtube-api";
 export * from "./publish/thumbnail-gen";
 export * from "./publish/promo-templates";
 export * from "./publish/cross-promo-sync";

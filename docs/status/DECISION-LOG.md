@@ -4,6 +4,16 @@
 
 ## Pending
 
+### 2026-03-29 — YouTube Data API v3 자동 업로드 도입
+- 상태: decided
+- 배경: YouTube 영상 업로드가 수동(YouTube Studio) → Telegram → CLI 3단계로 진행되어 병목. 하루 1~2건 규모에서 자동화 ROI 높음
+- 결정: YouTube Data API v3 `videos.insert` (resumable upload) 구현
+  1. `youtube-api.ts` — OAuth2 refresh token 갱신 + 비공개 업로드 + 썸네일 업로드
+  2. `run-publish-channels.ts` — `YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN` 환경변수 유무로 API/Local 모드 자동 전환
+  3. API 업로드 성공 시 `updateBriefYouTubeLink()` 자동 실행 → Telegram 경유 불필요
+- 근거: 기본 할당량 10,000 유닛/일 (업로드 1건=1,600 유닛, ~6건/일), 무료. `privacyStatus: "private"` 업로드 → 운영자 확인 후 공개 전환으로 스팸 판정 리스크 최소화
+- 미설정 시: 기존 로컬 메타 모드 fallback (하위호환)
+
 ### 2026-03-29 — brief body/image 자동 채움 + 소스 도메인 fallback
 - 상태: decided
 - 배경: `supabase-editorial-sync.ts`가 `contentMarkdown`을 무시하고 `body: [summary]` 한 줄만 넣고 있었음. 또한 OpenAI 등 Cloudflare 봇 차단 사이트는 og:image 자동 추출이 불가능
