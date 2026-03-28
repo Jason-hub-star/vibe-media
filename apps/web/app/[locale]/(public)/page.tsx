@@ -6,7 +6,6 @@ import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
 
 import { PageFrame } from "@/components/PageFrame";
-import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { BriefCard } from "@/features/brief/view/BriefCard";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
@@ -23,7 +22,7 @@ export async function generateMetadata({
   return {
     title: "VibeHub — Daily AI Briefs",
     description:
-      "Curated AI news briefs from verified global sources, published daily.",
+      "Briefs, source links, and tool discovery in one place.",
     alternates: {
       canonical: `${SITE_URL}/${locale}`,
       languages: buildAlternates("", SITE_URL),
@@ -54,43 +53,24 @@ export default async function HomePage({
   return (
     <PageFrame>
       <section className="shell hero-grid">
-        <div className="stack-tight">
+        <div className="hero-copy-full stack-tight">
           <p className="eyebrow">AI Brief Hub</p>
-          <h1>AI news, distilled into daily briefs.</h1>
+          <h1>Track AI without the noise.</h1>
           <p className="muted">
-            We curate global AI sources every day and deliver only what matters.
+            Briefs, source links, and tool discovery in one place.
           </p>
           <div className="button-row">
             <Link className="button-primary" href={`/${locale}/brief`}>
               Browse briefs
             </Link>
-            <Link className="button-secondary" href={`/${locale}/radar`}>
-              Explore radar
-            </Link>
             <Link className="button-secondary" href={`/${locale}/sources`}>
               Submit tool
             </Link>
-          </div>
-          <div className="panel-grid">
-            <article className="panel stack-tight">
-              <p className="eyebrow">Daily updates</p>
-              <p>We handpick global AI news and publish concise briefs every day.</p>
-            </article>
-            <article className="panel stack-tight">
-              <p className="eyebrow">Transparent sources</p>
-              <p>Every brief includes original links and source attribution.</p>
-            </article>
-            <article className="panel stack-tight">
-              <p className="eyebrow">Discover tools &amp; events</p>
-              <p>Explore new tools, events, and open-source projects on Radar.</p>
-            </article>
-            <article className="panel stack-tight">
-              <p className="eyebrow">Quick action links</p>
-              <p>Jump straight to GitHub, official docs, or downloads.</p>
-            </article>
+            <Link className="button-secondary" href={`/${locale}/radar`}>
+              Explore radar
+            </Link>
           </div>
         </div>
-        <PlaceholderArt alt="Brief hero placeholder" src="/placeholders/brief-hero-placeholder.svg" />
       </section>
 
       {latestVideoBrief && latestVideoBrief.youtubeUrl && (

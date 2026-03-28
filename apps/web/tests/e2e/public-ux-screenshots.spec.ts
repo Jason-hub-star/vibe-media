@@ -40,8 +40,8 @@ test("public UX — header has no Admin link", async ({ page }) => {
 test("public UX — home hero shows user-facing copy", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("networkidle");
-  await expect(page.locator("h1")).toContainText("AI news, distilled into daily briefs");
-  await expect(page.locator(".hero-grid .muted")).toContainText("We curate global AI sources every day");
+  await expect(page.locator("h1")).toContainText("Track AI without the noise");
+  await expect(page.locator(".hero-grid .muted")).toContainText("Briefs, source links, and tool discovery in one place");
 });
 
 test("public UX — footer shows user tagline", async ({ page }) => {

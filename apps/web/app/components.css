@@ -42,6 +42,10 @@
   padding: var(--space-section) 0;
 }
 
+.hero-copy-full {
+  grid-column: 1 / -1;
+}
+
 .section-block {
   display: grid;
   gap: 1.5rem;
