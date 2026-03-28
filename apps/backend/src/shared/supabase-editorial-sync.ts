@@ -7,6 +7,7 @@ import type {
   SnapshotItemClassificationRow,
   SnapshotSourceRow
 } from "./live-ingest-snapshot";
+import { markdownToPlainBody } from "./markdown-to-plain-body";
 import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { toStableUuid } from "./supabase-id";
 import { createSupabaseSql } from "./supabase-postgres";
@@ -97,26 +98,15 @@ function getSummary(item: SnapshotIngestedItemRow) {
   return String(item.parsed_content.summary ?? item.title);
 }
 
-/** contentMarkdown → body 문단 배열. 없거나 빈약하면 summary fallback */
+/** contentMarkdown → plain text body 문단 배열. 없거나 빈약하면 summary fallback */
 function getBodyParagraphs(item: SnapshotIngestedItemRow): string[] {
   const md = item.parsed_content.contentMarkdown;
   if (typeof md !== "string" || !md.trim()) {
     return [getSummary(item)];
   }
 
-  const cleaned = md
-    .replace(/!\[.*?\]\(.*?\)\n*/g, "")
-    .replace(/<(?:audio|video|source)[^>]*>.*?<\/(?:audio|video)>/gs, "")
-    .replace(/<p>.*?<\/p>/gs, "")
-    .trim();
-
-  const paragraphs = cleaned
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter((p) => p.length > 0);
-
-  // 변환 결과가 3문단 미만이면 summary fallback
-  return paragraphs.length >= 3 ? paragraphs : [getSummary(item)];
+  const paragraphs = markdownToPlainBody(md);
+  return paragraphs.length > 0 ? paragraphs : [getSummary(item)];
 }
 
 function getDiscoverCopy(item: SnapshotIngestedItemRow, source?: SnapshotSourceRow | null) {

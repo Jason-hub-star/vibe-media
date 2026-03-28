@@ -1,5 +1,6 @@
 import { createSupabaseSql } from "./supabase-postgres";
 import { enrichArticleContent } from "./live-source-fetch";
+import { markdownToPlainBody } from "./markdown-to-plain-body";
 
 const MIN_BODY_PARAGRAPHS = 3;
 
@@ -21,22 +22,6 @@ interface EnrichResult {
   newBodyLen: number;
   newImageUrl: string | null;
   error: string | null;
-}
-
-/** markdown 문자열을 brief body 문단 배열로 변환 */
-function markdownToBodyParagraphs(md: string): string[] {
-  // 이미지 alt text, audio/video 태그, 빈 줄 제거
-  const cleaned = md
-    .replace(/!\[.*?\]\(.*?\)\n*/g, "")
-    .replace(/<(?:audio|video|source)[^>]*>.*?<\/(?:audio|video)>/gs, "")
-    .replace(/<p>.*?<\/p>/gs, "")
-    .trim();
-
-  // 더블 newline 기준 분할 → 빈 문단 제거
-  return cleaned
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter((p) => p.length > 0);
 }
 
 /** 소스 도메인 → fallback cover image */
@@ -102,6 +87,9 @@ export async function runBriefEnrichBackfill(dryRun = false) {
         AND (
           jsonb_array_length(bp.body) <= 1
           OR bp.cover_image_url IS NULL
+          -- markdown 문법 잔존 감지: [링크](url), **볼드**
+          OR bp.body::text ~ '\\[.+\\]\\(.+\\)'
+          OR bp.body::text ~ '\\*\\*.+\\*\\*'
         )
       ORDER BY bp.published_at DESC NULLS LAST
     `;
@@ -122,7 +110,9 @@ export async function runBriefEnrichBackfill(dryRun = false) {
       };
 
       try {
-        const needsBody = row.body.length <= 1;
+        const bodyText = JSON.stringify(row.body);
+        const hasRawMarkdown = /\[.+\]\(.+\)/.test(bodyText) || /\*\*.+\*\*/.test(bodyText);
+        const needsBody = row.body.length <= 1 || hasRawMarkdown;
         const needsImage = !row.cover_image_url;
 
         let newBody: string[] | null = null;
@@ -130,7 +120,7 @@ export async function runBriefEnrichBackfill(dryRun = false) {
 
         // Case A: 이미 markdown이 ingested_items에 있으면 그걸 사용
         if (needsBody && row.existing_markdown) {
-          newBody = markdownToBodyParagraphs(row.existing_markdown);
+          newBody = markdownToPlainBody(row.existing_markdown);
           if (newBody.length >= MIN_BODY_PARAGRAPHS) {
             result.bodyUpdated = true;
             result.newBodyLen = newBody.length;
@@ -146,7 +136,7 @@ export async function runBriefEnrichBackfill(dryRun = false) {
 
             // body 재추출
             if (!newBody && needsBody && enriched.contentMarkdown) {
-              newBody = markdownToBodyParagraphs(enriched.contentMarkdown);
+              newBody = markdownToPlainBody(enriched.contentMarkdown);
               if (newBody.length >= MIN_BODY_PARAGRAPHS) {
                 result.bodyUpdated = true;
                 result.newBodyLen = newBody.length;
