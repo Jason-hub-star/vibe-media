@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
@@ -11,6 +10,7 @@ import { BriefCard } from "@/features/brief/view/BriefCard";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
 import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
+import { NewsletterForm } from "@/features/newsletter/view/NewsletterForm";
 import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
 export async function generateMetadata({
@@ -37,7 +37,13 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const locale = await getLocaleFromParams(params);
-  const briefs = await listBriefs();
+  const rawBriefs = await listBriefs();
+  const seen = new Set<string>();
+  const briefs = rawBriefs.filter((b) => {
+    if (seen.has(b.slug)) return false;
+    seen.add(b.slug);
+    return true;
+  });
   const latestVideoBrief = briefs
     .filter((brief) => Boolean(brief.youtubeUrl && brief.youtubeLinkedAt))
     .sort((a, b) => {
@@ -55,7 +61,7 @@ export default async function HomePage({
       <section className="shell hero-grid">
         <div className="hero-copy-full stack-tight">
           <p className="eyebrow">AI Brief Hub</p>
-          <h1>Track AI without the noise.</h1>
+          <h1>Your daily AI brief, curated from 20+ sources.</h1>
           <p className="muted">
             Briefs, source links, and tool discovery in one place.
           </p>
@@ -74,7 +80,7 @@ export default async function HomePage({
       </section>
 
       {latestVideoBrief && latestVideoBrief.youtubeUrl && (
-        <SectionBlock eyebrow="Latest video" title="Watch the newest connected brief on YouTube">
+        <SectionBlock eyebrow="Latest video" title="Latest Video Brief">
           <article className="panel stack-tight">
             <p className="eyebrow">Connected brief</p>
             <h3>{latestVideoBrief.title}</h3>
@@ -99,64 +105,33 @@ export default async function HomePage({
         </SectionBlock>
       )}
 
-      <SectionBlock eyebrow="Selected briefs" title="Recent explainers with operational context">
-        <div className="panel-grid">
-          {briefs.map((brief) => (
-            <BriefCard brief={brief} key={brief.slug} locale={locale} />
+      <SectionBlock eyebrow="Selected briefs" title="Latest AI Briefs">
+        <div className="brief-grid">
+          {briefs.map((brief, i) => (
+            <BriefCard brief={brief} isLead={i === 0} key={brief.slug} locale={locale} />
           ))}
         </div>
       </SectionBlock>
 
-      <SectionBlock
-        eyebrow="Showcase lane"
-        sectionId="showcase-lane"
-        title="Handpicked vibe coding work, curated separately from briefs"
-      >
-        {homeShowcase.length === 0 ? (
-          <article className="panel stack-tight">
-            <p className="eyebrow">Showcase</p>
-            <p className="muted">
-              Showcase picks will appear here after the first manual curation pass.
-            </p>
-          </article>
-        ) : (
+      <SectionBlock eyebrow="Stay updated" title="Get briefs in your inbox">
+        <NewsletterForm />
+      </SectionBlock>
+
+      {homeShowcase.length > 0 && (
+        <SectionBlock
+          eyebrow="Showcase lane"
+          sectionId="showcase-lane"
+          title="Handpicked vibe coding work"
+        >
           <div className="showcase-grid">
             {homeShowcase.slice(0, 2).map((entry) => (
               <ShowcaseCard entry={entry} key={entry.id} />
             ))}
           </div>
-        )}
-        <article className="panel stack-tight">
-          <p className="eyebrow">Why it fits</p>
-          <p className="muted">
-            Showcase is curated independently — each pick is chosen by hand, separate from daily briefs and radar items.
-          </p>
-          <div className="button-row">
-            <Link className="button-secondary" href={`/${locale}/#showcase-lane`}>
-              Jump to showcase
-            </Link>
-          </div>
-        </article>
-      </SectionBlock>
+        </SectionBlock>
+      )}
 
-      <SectionBlock eyebrow="Custom assets" title="Brand-led visuals, not generic AI website gloss">
-        <div className="panel-grid">
-          <article className="panel stack-tight">
-            <Image alt="Logo ribbon" height={48} src="/brand/ribbon.svg" width={220} />
-            <p className="muted">Logo, ribbon, and section markers are first-class assets in the system.</p>
-          </article>
-          <article className="panel stack-tight">
-            <Image alt="Orbit sprite" height={84} src="/sprites/orbit-grid.svg" width={84} />
-            <p className="muted">Sprites and utility graphics keep the UI intentional without AI-art clutter.</p>
-          </article>
-          <article className="panel stack-tight">
-            <Image alt="Source strip" height={200} src="/placeholders/source-strip-placeholder.svg" width={300} />
-            <p className="muted">Content image slots stay explicit so generated assets can be swapped cleanly later.</p>
-          </article>
-        </div>
-      </SectionBlock>
-
-      <SectionBlock eyebrow="Discovery surface" title="A growing index for tools, events, and opportunities across the AI landscape">
+      <SectionBlock eyebrow="Discovery surface" title="AI Discovery Radar">
         <div className="summary-grid">
           <article className="panel stack-tight">
             <p className="eyebrow">Open source</p>

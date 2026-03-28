@@ -55,7 +55,7 @@ export const typeScale = {
   h1: "clamp(1.6rem, 3.2vw, 2.4rem)",
   h2: "clamp(1.1rem, 2vw, 1.5rem)",
   h3: "clamp(0.9rem, 1.4vw, 1.1rem)",
-  body: "0.92rem",
+  body: "1rem",
   small: "0.85rem",
   caption: "0.76rem",
   label: "0.65rem"

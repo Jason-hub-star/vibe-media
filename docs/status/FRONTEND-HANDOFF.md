@@ -55,7 +55,7 @@
 --type-h1: clamp(1.6rem, 3.2vw, 2.4rem)
 --type-h2: clamp(1.1rem, 2vw, 1.5rem)
 --type-h3: clamp(0.9rem, 1.4vw, 1.1rem)
---type-body: 0.92rem    --type-small: 0.85rem
+--type-body: 1rem       --type-small: 0.85rem
 --type-caption: 0.76rem --type-label: 0.65rem
 
 /* 폰트 */
@@ -85,6 +85,18 @@ Layer 3: presenters (자동 파생) → present-discover-category.ts, discovery.
 | knowledge | purple | research, dataset, benchmark, tutorial, newsletter, repo_list |
 | opportunity | yellow | job, grant, community |
 | asset | orange | asset |
+
+### 반응형 브레이크포인트
+| 기준 | 공개 그리드 | Admin 그리드 |
+|------|-----------|------------|
+| >900px | 3~4열 원본 | 원본 |
+| ≤900px | 2열 (panel-grid, brief-grid, summary-grid, showcase-grid) | 1열 |
+| ≤768px | 1열, brief lead span 해제, footer 1열 | (900px과 동일) |
+
+### 카드 인터랙션
+- `.panel` base: `box-shadow: 0 8px 24px rgba(0,0,0,0.16)` + `transition: … transform 180ms ease`
+- `.panel:hover`: `translateY(-2px)` + `box-shadow: 0 12px 32px rgba(0,0,0,0.22)`
+- `.brief-lead`: 홈페이지 첫 brief 카드에 적용 (orange left border + 큰 제목 + 2열 span)
 
 ### CSS 토큰 사용 규칙
 - 색상 alpha가 필요하면 반드시 `rgba(var(--color-X-rgb), alpha)` 사용 — raw rgba 금지

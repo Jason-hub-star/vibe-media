@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const productLinks = [
   { href: "/brief", label: "Brief" },
@@ -9,7 +12,7 @@ const productLinks = [
 
 const companyLinks = [
   { href: "/about", label: "About" },
-  { href: "mailto:contact@vibehub.tech", label: "Contact" }
+  { href: "mailto:contact@vibehub.tech", label: "Contact", external: true }
 ];
 
 const legalLinks = [
@@ -17,7 +20,19 @@ const legalLinks = [
   { href: "/terms", label: "Terms of Service" }
 ];
 
+function extractLocale(pathname: string): string {
+  const seg = pathname.split("/")[1];
+  return seg && /^[a-z]{2}$/.test(seg) ? seg : "en";
+}
+
+function localize(href: string, locale: string): string {
+  return `/${locale}${href}`;
+}
+
 export function SiteFooter() {
+  const pathname = usePathname();
+  const locale = extractLocale(pathname);
+
   return (
     <footer className="site-footer">
       <div className="shell footer-grid">
@@ -26,7 +41,7 @@ export function SiteFooter() {
           <ul className="footer-links">
             {productLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href}>{link.label}</Link>
+                <Link href={localize(link.href, locale)}>{link.label}</Link>
               </li>
             ))}
           </ul>
@@ -37,7 +52,11 @@ export function SiteFooter() {
           <ul className="footer-links">
             {companyLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href}>{link.label}</Link>
+                {link.external ? (
+                  <a href={link.href}>{link.label}</a>
+                ) : (
+                  <Link href={localize(link.href, locale)}>{link.label}</Link>
+                )}
               </li>
             ))}
           </ul>
@@ -48,7 +67,7 @@ export function SiteFooter() {
           <ul className="footer-links">
             {legalLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href}>{link.label}</Link>
+                <Link href={localize(link.href, locale)}>{link.label}</Link>
               </li>
             ))}
           </ul>

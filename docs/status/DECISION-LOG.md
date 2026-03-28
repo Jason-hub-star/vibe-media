@@ -34,6 +34,18 @@
 - 결정: 최신 published Brief 3개를 미리보기 카드로 표시, 서버 컴포넌트에서 fetch
 - 영향: 기존 `listBriefs` API 재활용, 추가 엔드포인트 불필요
 
+### 2026-03-29 — locale extraction via usePathname()
+- 상태: decided
+- 배경: SiteHeader/SiteFooter의 내부 링크에 locale prefix가 없어 `/brief`→`/en/brief` 전환이 누락됨
+- 결정: `usePathname()`으로 현재 경로에서 locale 세그먼트를 추출, 내부 링크에 prefix 적용. 외부 링크(mailto, github, feed.xml)는 제외
+- 근거: 서버 컴포넌트 props 전달 없이 클라이언트 훅으로 locale 접근 가능. Footer에 "use client" 추가 필요
+
+### 2026-03-29 — 2-step responsive collapse (900px→768px)
+- 상태: decided
+- 배경: 900px 단일 브레이크포인트에서 태블릿 구간(768~900px)이 1열로 바로 접혀서 공간 낭비
+- 결정: 900px에서 공개 그리드(panel-grid, brief-grid, summary-grid, showcase-grid)를 2열로, 768px에서 1열로 2단계 접힘. admin 레이아웃은 900px에서 기존대로 1열
+- 근거: 태블릿 사용자 경험 개선. admin은 데이터 밀도가 높아 일찍 접히는 게 유리
+
 ## Resolved
 
 ### 2026-03-27 — Brief 카드 전체 클릭 영역화 + 정보 위계 재설계

@@ -69,7 +69,7 @@
 
 .brief-card-title {
   max-width: 32ch;
-  line-height: 1.28;
+  line-height: 1.25;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -78,7 +78,7 @@
 
 .brief-card-summary {
   max-width: 34ch;
-  line-height: 1.45;
+  line-height: 1.5;
   color: rgba(var(--color-cream-rgb), 0.68);
   display: -webkit-box;
   -webkit-box-orient: vertical;

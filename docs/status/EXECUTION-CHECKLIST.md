@@ -75,7 +75,7 @@
 - [x] public UX 내부 용어 제거 + 사용자 언어 전환 (hero/패널/status/footer/newsletter)
 - [x] showcase sidecar lane foundation (`/` teaser + `/radar` picks + `/admin/showcase`)
 - [x] admin 사이드바 탭 통합 15→12개 (`/admin/rules`, `/admin/collection`, `/admin/pending` 신규; 기존 6개 route redirect)
-- [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, brief loading.tsx 추가, 나머지 page-level은 미완)
+- [~] page-level loading/empty/error 상태 강화 (route-group level 구현 완료, brief/radar/home loading.tsx 추가, 나머지 page-level은 미완)
 - [x] 디자인 토큰 통일 (RGB 채널, purple, radius/type-scale 확장, CSS hardcode 141건 제거)
 - [x] 모바일 반응성 강화 (누락 브레이크포인트, 터치 타겟 44px, 햄버거 메뉴, 테이블 스크롤, 파이프라인 패널)
 - [x] `brief` UI 개선 (freshness badge, lead card, skeleton loading, prev/next nav, source chips, read time, hover preview)
@@ -115,7 +115,8 @@
 - [x] **M11-A**: Brief 카드 텍스트 절단 + 위계 정리 (max-width, line-clamp, 2-tier 구조)
 - [x] **M11-B**: Brief 카드 전체 클릭 영역화 (stretch link overlay + a11y)
 - [x] **M11-C**: Discover 카드 미세 조정 (26ch→32ch, line-height 통일)
-- [ ] ~~**M11-D**: Newsletter 폼 UX~~ — 보류 (페이지 교체 검토 중)
+- [x] **M11-D**: Newsletter CTA 홈페이지 삽입 + slug dedup 방어
+- [x] public hub page overhaul (body 1rem, muted 0.82, button 600, card line-height, showcase/custom 빈 섹션 제거, 카피 리뉴얼, locale prefix, lead card, shadow 경감, skeleton loading, 2-step responsive 900→768)
 - [ ] admin 상태 UI 명확성 강화
 - [ ] design docs route-by-route 확장
 - [ ] placeholder asset -> real asset 교체 흐름 문서화

@@ -78,6 +78,7 @@
 - design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done
 - palette recalibration + asset/media brand sync: done — 저채도 보정 토큰, status/category pill 알파 조정, brand/placeholder/sprite/Remotion/thumbnail 기본색 동기화
 - mobile responsiveness hardening (missing breakpoints, touch targets, nav hamburger, table scroll, pipeline panel): done
+- public hub page overhaul (6-phase): done — body token 1rem, muted contrast 0.82, button weight 600, card line-height 1.25/1.5, showcase/custom-assets 빈 섹션 제거, hero/section 카피 리뉴얼, nav/footer locale prefix, brief-grid lead card, panel shadow 경감+hover lift, hero/radar/home skeleton loading, 2-step responsive collapse 900→768, newsletter CTA, slug dedup
 - brief detail page redesign (MetaBar, BriefBodySections, BriefInsight, BriefSourcePanel): done
 - admin brief quality checklist (6 criteria, advisory): done
 - review detail brief body preview (previewBody via title lookup): done

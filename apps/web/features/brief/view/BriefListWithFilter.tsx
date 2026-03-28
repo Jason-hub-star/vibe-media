@@ -46,7 +46,13 @@ export function BriefListWithFilter({ briefs, locale }: { briefs: BriefListItem[
           (b.topic?.toLowerCase().includes(q) ?? false)
       );
     }
-    return result;
+    // slug dedup — preserve original order
+    const seen = new Set<string>();
+    return result.filter((b) => {
+      if (seen.has(b.slug)) return false;
+      seen.add(b.slug);
+      return true;
+    });
   }, [briefs, filter]);
 
   const placeholderCount = Math.max(0, MIN_VISIBLE - filtered.length);

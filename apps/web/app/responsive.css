@@ -1,14 +1,10 @@
 @media (max-width: 900px) {
-  /* ── Grid collapse ── */
+  /* ── Grid collapse: 2-col for tablet ── */
   .hero-grid,
   .admin-layout,
   .admin-form-grid,
   .submission-grid,
-  .panel-grid,
   .showcase-card,
-  .summary-grid,
-  .showcase-grid,
-  .submission-card-grid,
   .admin-grid,
   .review-grid,
   .admin-card-grid,
@@ -17,12 +13,12 @@
     grid-template-columns: 1fr;
   }
 
-  .brief-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .brief-grid > :first-child {
-    grid-column: 1;
+  .panel-grid,
+  .brief-grid,
+  .summary-grid,
+  .showcase-grid,
+  .submission-card-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .source-row {
@@ -155,5 +151,24 @@
   .input,
   .note-input {
     font-size: max(1rem, var(--type-body));
+  }
+}
+
+@media (max-width: 768px) {
+  /* ── Full collapse: single column ── */
+  .panel-grid,
+  .brief-grid,
+  .summary-grid,
+  .showcase-grid,
+  .submission-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brief-grid > :first-child {
+    grid-column: 1;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
   }
 }
