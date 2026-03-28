@@ -11,7 +11,7 @@
 | 항목 | v1 (기존) | v2 (현재) | 변경 근거 |
 |------|----------|----------|----------|
 | TTS 엔진 | MimikaStudio (P1) | NotebookLM 2인 대화 (주) + Qwen3-TTS (백업) | MimikaStudio: alpha 단계, 단독 개발자, macOS only, API 스키마 비공개, 라이선스 혼란 (README BSL-1.1 vs LICENSE GPLv3). 실현성 5/10 |
-| YouTube 업로드 | Data API v3 자동 | 로컬 저장 → 운영자 직접 업로드 | OAuth 검증 2~6개월 병목, 미검증 시 private 잠금. 직접 업로드는 밴 리스크 0 |
+| YouTube 업로드 | Data API v3 자동 → v1 폐기 | Data API v3 비공개 자동 업로드 + 운영자 공개 전환 (fallback: 로컬 저장) | OAuth 미검증 → private 업로드로 우회. `youtube:setup` CLI로 토큰 1회 발급 |
 | Threads | 미포함 | 최우선 텍스트 채널 (P1) | 공식 무료 API, 250건/일, 텍스트+이미지+비디오+캐러셀. 실현성 9/10 |
 | 크로스 프로모션 | 미포함 | 2-pass 발행 + YouTube 비동기 3rd pass | 채널 간 트래픽 순환 없으면 각 채널이 고립된 섬 |
 | 피드백 루프 | 미포함 | YouTube Analytics 기반 자기개선 | 발행 후 성과 데이터가 파이프라인에 돌아오지 않으면 품질 개선 불가 |
@@ -41,10 +41,10 @@
 │    ├─ Threads:  공식 Publishing API (OAuth 2.0)                          │
 │    ├─ Ghost:    Admin API (REST)                                         │
 │    ├─ 티스토리: Playwright 브라우저 자동화 (보조)                         │
-│    └─ YouTube:  로컬 저장 → 운영자 직접 업로드                           │
+│    └─ YouTube:  Data API v3 비공개 자동 업로드 (또는 로컬 저장 fallback) │
 │                                                                          │
-│  [반자동 채널] (운영자 직접)                                              │
-│    ├─ YouTube:  /output/youtube-ready/ mp4 → YouTube Studio 업로드       │
+│  [반자동 채널] (운영자 확인 필요)                                         │
+│    ├─ YouTube:  API 비공개 업로드 → 운영자 공개 전환 (1클릭)             │
 │    └─ Spotify:  /output/podcast/ mp3 → Spotify for Creators 업로드       │
 │                 Spotify 자동 RSS → Apple Podcasts / YouTube 연동          │
 │                                                                          │
@@ -62,11 +62,12 @@
 ```
 npm run pipeline:daily        ← 수집→가공→초안→critic
 npm run publish:auto          ← approved → scheduled → published
-npm run publish:channels      ← published brief → 채널별 렌더+배포 (신규)
-npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 또는 URL 등록 → Pass 3
+npm run publish:channels      ← published brief → 채널별 렌더+배포 (YouTube API 자동 업로드 포함)
+npm run publish:link-youtube  ← YouTube 수동 업로드 시 video_id 또는 URL 등록 → Pass 3 (API 모드에서는 자동)
+npm run youtube:setup         ← YouTube OAuth2 토큰 발급 + .env.local 저장 (1회)
 ```
 
-`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다. 이 단계는 YouTube 업로드 준비까지만 자동화하며, public YouTube 연결은 업로드 후 별도 완료 신호가 필요하다.
+`publish:channels`는 `publish:auto`가 `published` 상태로 전환한 brief를 입력으로 받는다. YouTube API 환경변수(`YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN`)가 설정되면 비공개(private)로 자동 업로드 + brief 자동 링크 연결까지 수행한다. 미설정 시 기존 로컬 메타 모드로 fallback.
 
 ---
 
@@ -80,7 +81,7 @@ npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 또는 U
 | **Ghost/WP** | 공식 REST API | **8/10** | 없음 (셀프호스팅) | 서버 운영 |
 | **팟캐스트** | NotebookLM + RSS | **7/10** | NotebookLM 비공식 | Google 내부 API 변경 시 깨짐 |
 | **Remotion 영상** | CLI spawn | **7.5/10** | CPU 바운드 | 개인 무료 확정, 템플릿 품질 의존 |
-| **YouTube** | 운영자 직접 업로드 | **10/10** | 없음 | 수동 → 자동화 불완전 |
+| **YouTube** | Data API v3 비공개 자동 업로드 (fallback: 수동) | **9/10** | 10,000 유닛/일 (~6건) | OAuth 토큰 만료, AI 콘텐츠 정책 |
 | **티스토리** | Playwright 자동화 | **5/10** | ~5건/일 | API 종료, UI 변경, AI 감지 |
 
 ### 폐기된 경로
@@ -88,7 +89,7 @@ npm run publish:link-youtube  ← YouTube 수동 업로드 후 video_id 또는 U
 | 경로 | 폐기 사유 |
 |------|----------|
 | MimikaStudio TTS | Alpha, 단독 개발자(bus factor=1), macOS only, Docker 불가, API 스키마 비공개, 라이선스 불일치 |
-| YouTube Data API 자동 업로드 | OAuth 검증 2~6개월, 미검증 시 private 잠금, 2026.1 AI 콘텐츠 대량 단속 |
+| YouTube Data API 공개(public) 자동 업로드 | OAuth 미검증 시 private 잠금 → 비공개 업로드 + 운영자 공개 전환으로 우회 (현재 채택) |
 | Claude Cowork 마우스 조작 업로드 | 매 스텝 스크린샷+비전 분석 → 느리고 불안정 (3/10), OS 파일 다이얼로그 취약 |
 
 ---
@@ -440,24 +441,41 @@ interface PodcastEpisodeMeta {
 
 **초기 설정 (1회)**: Spotify RSS → Apple Podcasts 제출 (심사 3~5영업일) → YouTube Studio 연결 (오디오→영상 자동 변환).
 
-### 3-5. YouTube (운영자 직접 업로드)
+### 3-5. YouTube (API 자동 업로드 또는 수동 fallback)
 
-YouTube는 API를 통한 자동 업로드를 하지 않는다. media-engine이 영상 파일 + metadata.json을 로컬에 생성하고, 운영자가 직접 업로드한다.
+YouTube Data API v3 환경변수가 설정되면 **비공개(private)로 자동 업로드** + brief 자동 링크 연결까지 수행한다. 미설정 시 기존 로컬 메타 모드로 fallback.
+
+#### Mode A: API 자동 (권장)
+
+```
+사전 설정 (1회):
+  npm run youtube:setup -- /path/to/client_secret.json
+  → OAuth2 refresh token 발급 + .env.local 자동 저장
+
+publish:channels 실행 시 자동 처리:
+  ✅ mp4 → YouTube Data API v3 resumable upload (privacyStatus: "private")
+  ✅ 썸네일 업로드 (있으면)
+  ✅ brief_posts.youtube_* 자동 갱신 + cache 리셋
+  ✅ channel_publish_results 감사 기록
+  ✅ Threads Pass 3 크로스프로모 주입
+
+운영자 책임:
+  ✅ YouTube Studio에서 내용 확인 후 "공개" 전환 (1클릭)
+```
+
+환경변수: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`
+할당량: 업로드 1건 = 1,600 유닛 (일일 10,000 기본, ~6건/일)
+
+#### Mode B: 로컬 저장 fallback (API 미설정 시)
 
 ```
 media-engine 책임:
-  ✅ mp4 영상 렌더링 (16:9 + 9:16)
-  ✅ 썸네일 생성
-  ✅ metadata.json (제목/설명/태그, 크로스 프로모션 링크 포함)
-  ✅ /output/youtube-ready/ 에 완성품 저장
+  ✅ metadata.json (제목/설명/태그) + youtube-upload-guide.txt 로컬 생성
 
 운영자 책임:
   ✅ YouTube Studio에서 직접 업로드
-  ✅ youtube-upload-guide.txt의 제목/설명/고정댓글 복사-붙여넣기
-  ✅ 업로드 후 public YouTube URL을 시스템에 등록 (Telegram 또는 CLI)
+  ✅ 업로드 후 URL 등록 (아래 중 택 1)
 ```
-
-업로드 후 아래 둘 중 하나를 실행한다.
 
 - Telegram 기본: YouTube URL만 단독 전송
 - Telegram override: `/vh-youtube <brief-id> <youtube-url>`

@@ -172,7 +172,8 @@
 - [x] P6: 크로스 프로모션 2-pass + 3rd pass (`cross-promo-sync.ts`) — 완전 구현
 - [x] P7: 티스토리 스텁 (`tistory-publisher.ts`) — 인터페이스 구현, API 연동 미완
 - [x] Publish Dispatcher (`publish-dispatcher.ts`) — Promise.allSettled 병렬 + 실패 격리
-- [x] Backend CLI (`publish:channels`, `publish:link-youtube`)
+- [x] Backend CLI (`publish:channels`, `publish:link-youtube`, `youtube:setup`)
+- [x] YouTube Data API v3 자동 업로드 (`youtube-api.ts`) — OAuth2 비공개 업로드 + brief 자동 링크 + 로컬 fallback
 - [ ] P8: YouTube Analytics + GA4 피드백 수집기 (`analytics-collector.ts`)
 - [ ] P9: insight-generator 주간 리포트 (`insight-generator.ts`)
 - [x] Supabase 스키마 확장 — channel_publish_results + publish_dispatches 테이블 생성 (2026-03-26)
