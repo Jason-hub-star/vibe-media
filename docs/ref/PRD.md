@@ -2,7 +2,7 @@
 
 ## Product Definition
 - 공개 사이트는 AI Brief 허브다.
-- 공개 사이트는 `radar`를 통해 오픈소스, 스킬, 플러그인, OS, 웹사이트, 이벤트, 공모전도 큐레이션할 수 있다.
+- 공개 사이트는 `radar`를 통해 오픈소스, 스킬, 플러그인, 디자인 레퍼런스, OS, 웹사이트, 이벤트, 공모전도 큐레이션할 수 있다.
 - 공개 사이트의 라우트 SSOT는 `apps/web/app/[locale]/(public)/`다.
 - legacy `apps/web/app/(public)/` route group은 제거 완료다.
 - `video`는 공개 콘텐츠가 아니라 `/admin` 내부 운영 기능이다.
@@ -70,6 +70,7 @@
 - 공개 허브 기본 화면 구현 완료
 - localized public route tree 정리 완료: `[locale]/(public)` 18개 파일 (`17 tsx + 1 CLAUDE.md`)
 - discovery 확장을 위한 `radar` 공개 route와 `admin/discover` 운영 route 추가
+- `design_token` category와 design inspiration source 확장으로 radar가 디자인 레퍼런스 허브 역할도 수행
 - 홈 티저 + `radar` 전시 섹션 + `/admin/showcase`로 이어지는 showcase sidecar lane foundation 추가
 - admin 개요, inbox, runs, review, briefs, discover, publish, exceptions, policies, programs, video-jobs, sources, assets 화면 구현 완료
 - video는 운영 기능으로만 유지되고 public navigation에는 없음

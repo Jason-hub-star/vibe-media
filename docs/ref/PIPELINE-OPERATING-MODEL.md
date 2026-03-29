@@ -59,6 +59,9 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - guardrail auto-approve 또는 예외 검수 승인 후 private upload, scheduled publish, 즉시 publish 같은 정책을 적용한다.
 - 완전 자동 공개는 기본값이 아니다.
 - 기본 자동화 목표는 brief/discover의 승인까지 자동화하고, 예외 항목만 사람이 본 뒤 `scheduled/private publish queue`까지 흘려보내는 것이다.
+- 채널 발행은 core publish와 분리된 downstream step으로 본다.
+  - 예: Threads, YouTube, newsletter
+  - channel failure는 본선 editorial state를 되돌리지 않고 별도 보고/재시도로 다룬다.
 
 ## Surface Routing
 - `brief`: 해설형 공개 콘텐츠
@@ -73,9 +76,15 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - 현재 discover sidecar export는 `supabase sync` 직후 실행된다.
   - 입력: `discover_items` + `discover_actions`
   - 출력: Obsidian vault markdown note + Telegram export summary
-- export 기본 범위는 `open_source`, `skill`, `plugin`이며, `harness`는 독립 category가 아니라 tag로 유지한다.
+- export 기본 범위는 `open_source`, `skill`, `plugin`, `design_token`이며, `harness`는 독립 category가 아니라 tag로 유지한다.
+- `design_token` 항목은 Obsidian의 `Design Tokens` 폴더로 저장한다.
 - GitHub release 성격 항목은 `GitHub Releases`, repo 성격 항목은 `Repositories` 폴더로 저장한다.
 - sidecar failure는 본선 ingest/sync 데이터 의미를 바꾸지 않으며, 실패 내역은 별도 보고에서 다룬다.
+- 일일 자동화 체인에서는 아래를 non-blocking downstream sidecar로 둘 수 있다.
+  - Obsidian export
+  - imported candidate sync
+  - newsletter send
+- 이 단계들은 운영 보고에는 포함되지만 core fetch/ingest/sync 성공 의미를 바꾸지 않는다.
 
 ## Admin Modules
 - `Sources`
