@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import type {
   ExceptionQueueItem,
+  DiscoverCategory,
   InboxItem,
   IngestRun,
   PublishQueueItem,
@@ -12,6 +13,7 @@ import type {
   SourceEntry
 } from "@vibehub/content-contracts";
 
+import { inferDiscoverCategoryFromTags } from "./discover-category-routing";
 import { getHumanExceptionReasons } from "./pipeline-routing";
 import type { LiveSourceFetchReport } from "./live-source-fetch";
 import type { LiveSourceDefinition } from "./live-source-registry";
@@ -97,6 +99,14 @@ function makeId(prefix: string, value: string) {
   return `${prefix}-${createHash("sha1").update(value).digest("hex").slice(0, 12)}`;
 }
 
+function isUuidLike(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function toSnapshotSourceId(sourceId: string) {
+  return isUuidLike(sourceId) ? sourceId : makeId("source", sourceId);
+}
+
 function inferSourceCategory(source: LiveSourceDefinition): SourceEntry["category"] {
   if (source.fetchKind === "github-releases") return "release";
   if (source.sourceName.includes("Research")) return "research";
@@ -108,14 +118,12 @@ function inferSourceFreshness(source: LiveSourceDefinition): SourceEntry["freshn
 }
 
 function inferClassificationCategory(item: InboxItem, tags: string[]) {
-  const discoverTag = tags.find((tag) =>
-    ["open-source", "tool", "repo", "website", "event", "contest", "grant", "api", "sdk"].includes(tag)
-  );
+  const discoverCategory = inferDiscoverCategoryFromTags(tags);
 
-  if (discoverTag) return discoverTag;
+  if (discoverCategory) return discoverCategory;
   if (item.targetSurface === "brief") return "analysis";
   if (item.targetSurface === "archive") return "archive";
-  return tags[0] ?? "analysis";
+  return (tags[0] as DiscoverCategory | string) ?? "analysis";
 }
 
 function buildDuplicateMap(items: Array<Pick<SnapshotIngestedItemRow, "id" | "dedupe_key">>) {
@@ -151,7 +159,7 @@ export function writeLiveIngestSnapshot(snapshot: LiveIngestSnapshot) {
 
 export function materializeLiveIngestSnapshot(
   report: LiveSourceFetchReport,
-  registry: LiveSourceDefinition[] = liveSourceRegistry
+  registry: LiveSourceDefinition[] = report.sources ?? liveSourceRegistry
 ): LiveIngestSnapshot {
   const sourceStatuses = new Map(report.sourceStatuses.map((status) => [status.sourceId, status]));
   const projectedRunsByName = new Map(report.cycleReport.ingestRuns.map((run) => [run.sourceName, run]));
@@ -159,9 +167,10 @@ export function materializeLiveIngestSnapshot(
 
   const sources = registry.map((source) => {
     const status = sourceStatuses.get(source.id);
+    const snapshotSourceId = toSnapshotSourceId(source.id);
 
     return {
-      id: makeId("source", source.id),
+      id: snapshotSourceId,
       name: source.sourceName,
       kind: source.fetchKind,
       base_url: source.href,
@@ -184,7 +193,7 @@ export function materializeLiveIngestSnapshot(
     const projectedRun = projectedRunsByName.get(status.sourceName);
     ingestRuns.push({
       id: makeId("run", `${status.sourceId}:${report.performedAt}`),
-      source_id: sourceIdByName.get(status.sourceName) ?? makeId("source", status.sourceId),
+      source_id: sourceIdByName.get(status.sourceName) ?? toSnapshotSourceId(status.sourceId),
       run_status: projectedRun?.runStatus ?? (status.status === "failed" ? "failed" : "parsed"),
       started_at: report.performedAt,
       finished_at: report.performedAt,
@@ -202,7 +211,7 @@ export function materializeLiveIngestSnapshot(
 
   const ingestedItems = report.items.map((item) => ({
     id: item.id,
-    source_id: sourceIdByName.get(item.sourceName) ?? makeId("source", item.sourceId),
+    source_id: sourceIdByName.get(item.sourceName) ?? toSnapshotSourceId(item.sourceId),
     run_id: runIdBySourceName.get(item.sourceName) ?? null,
     title: item.title,
     url: item.url,

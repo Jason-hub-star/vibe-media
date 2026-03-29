@@ -40,6 +40,7 @@
   - worker: `run-obsidian-discover-export.ts`
   - default sink: Obsidian vault markdown files under `Radar/*`
   - report sink: Telegram export summary with saved paths
+  - source selection: Supabase approved discover items 우선, 내부 vault sync를 위해 unpublished approved row도 export 대상에 포함 가능
   - boundary: reads `discover_items` / `discover_actions`, never mutates ingest or classification state
 
 ## Showcase Sidecar Lane

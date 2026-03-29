@@ -136,6 +136,10 @@ function cleanReleaseLine(value: string) {
     .replace(/^\d+(?:\.\d+){1,3}\s*\(\d{4}-\d{2}-\d{2}\)\s*/i, "")
     .replace(/^v?\d+(?:\.\d+){1,3}\s*/i, "")
     .replace(/^full changelog:\s*/i, "")
+    .replace(
+      /^(features?|bug fixes?|fixes|improvements?|performance|chores?|docs?|documentation|patch changes|dependencies|refactors?|tests?)\s+/i,
+      ""
+    )
     .replace(new RegExp(`^${VERSION_COMPARE_RANGE.source}\\s*`, "i"), "")
     .replace(/^([a-z0-9_-]+):\s*/i, (_, scope: string) => `${formatReleaseScope(scope)}: `)
     .replace(/\s+/g, " ")

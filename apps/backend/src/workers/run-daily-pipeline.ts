@@ -30,6 +30,13 @@ const STEPS: StepDef[] = [
     itemPattern: /imports persisted:\s*(\d+)/,
     blocking: false,
   },
+  {
+    id: "newsletter",
+    label: "Newsletter Send",
+    command: "npm run newsletter:send -w @vibehub/backend",
+    itemPattern: /newsletters sent:\s*(\d+)/,
+    blocking: false,
+  },
 ];
 
 async function main() {

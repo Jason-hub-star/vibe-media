@@ -27,7 +27,7 @@ function createDiscoverItem(overrides: Partial<DiscoverItem>): DiscoverItem {
 }
 
 describe("obsidian discover export", () => {
-  it("routes open source, skill, and plugin items to the right folders", async () => {
+  it("routes open source, skill, plugin, and design token items to the right folders", async () => {
     const vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vibehub-obsidian-"));
     const report = await exportDiscoverItemsToObsidian(
       [
@@ -51,14 +51,23 @@ describe("obsidian discover export", () => {
           title: "Plugin kit",
           category: "plugin",
           actions: [{ kind: "visit", label: "Visit", href: "https://example.com/plugin" }]
+        }),
+        createDiscoverItem({
+          id: "discover-design-token",
+          slug: "design-token-reference",
+          title: "Design token reference",
+          category: "design_token",
+          tags: ["design", "token"],
+          actions: [{ kind: "visit", label: "Visit", href: "https://example.com/design-token" }]
         })
       ],
       { vaultRoot, source: "mock" }
     );
 
-    expect(report.savedCount).toBe(3);
+    expect(report.savedCount).toBe(4);
     expect(report.source).toBe("mock");
     expect(report.savedPaths).toEqual([
+      path.join("Radar", "Design Tokens", "design-token-reference.md"),
       path.join("Radar", "Open Source", "open-source-tool.md"),
       path.join("Radar", "Plugins", "plugin-kit.md"),
       path.join("Radar", "Skills", "skill-guide.md")

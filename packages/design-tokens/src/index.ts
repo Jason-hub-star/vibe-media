@@ -63,7 +63,7 @@ export const typeScale = {
 
 // ── Discover Category Visual Tokens ──────────────────────────────────────────
 // 카테고리 색상/아이콘 변경 = 여기 1줄 수정 → 프리젠터가 자동 반영
-// 6색 팔레트를 그룹별로 순환 배정: core=mint, builder=sky, knowledge=purple, opportunity=yellow, asset=orange
+// 6색 팔레트를 그룹별로 순환 배정: core=mint, builder=sky, knowledge=purple, opportunity=yellow, design=rose, asset=orange
 export type CategoryColorToken = "mint" | "sky" | "purple" | "yellow" | "orange" | "rose";
 
 export interface CategoryVisual {
@@ -99,6 +99,8 @@ export const discoverCategoryVisuals: Record<string, CategoryVisual> = {
   job: { color: "yellow", icon: "💼" },
   grant: { color: "yellow", icon: "💰" },
   community: { color: "yellow", icon: "👥" },
+  // Design — rose
+  design_token: { color: "rose", icon: "🎚️" },
   // Asset — orange
   asset: { color: "orange", icon: "🎨" },
 };
@@ -127,6 +129,7 @@ export const discoverGroupLabels: Record<string, string> = {
   builder: "Builder Stack",
   knowledge: "Knowledge",
   opportunity: "Opportunities",
+  design: "Design",
   asset: "Assets",
 };
 

@@ -174,6 +174,7 @@ export function readMigrationSql() {
     "supabase/migrations/20260327143000_add_tool_candidate_imports_and_source_lanes.sql",
     "supabase/migrations/20260327183000_seed_tool_candidate_sources.sql",
     "supabase/migrations/20260327193000_add_brief_youtube_link_fields.sql",
+    "supabase/migrations/20260329150000_seed_design_editorial_sources.sql",
   ];
 
   return files.map((relativePath) => ({

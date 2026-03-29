@@ -178,3 +178,45 @@ export async function sendDiscoverExportReport(report: DiscoverExportReport): Pr
   const text = buildDiscoverExportReportText(report);
   await sendTelegramMessage(chatId, text, botToken);
 }
+
+/* ── Newsletter reports ── */
+
+export interface NewsletterReportInput {
+  enCount: number;
+  esCount: number;
+  briefCount: number;
+  error?: string;
+}
+
+export function buildNewsletterReportText(input: NewsletterReportInput): string {
+  if (input.error) {
+    return `🚨 뉴스레터 실패: ${input.error}`;
+  }
+  if (input.briefCount === 0) {
+    return "📧 뉴스레터 스킵 — 오늘 발행 brief 없음";
+  }
+  return `📧 Daily Brief — EN ${input.enCount}명 / ES ${input.esCount}명 / ${input.briefCount}건 brief`;
+}
+
+export async function sendNewsletterReport(input: NewsletterReportInput): Promise<void> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_REPORT_CHAT_ID;
+
+  if (!botToken || !chatId) {
+    console.warn("[telegram-report] TELEGRAM_BOT_TOKEN or TELEGRAM_REPORT_CHAT_ID not set, skipping newsletter report");
+    return;
+  }
+
+  const text = buildNewsletterReportText(input);
+  await sendTelegramMessage(chatId, text, botToken);
+}
+
+export async function sendSubscriberAlert(maskedEmail: string, locale: string, totalCount: number): Promise<void> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_REPORT_CHAT_ID;
+
+  if (!botToken || !chatId) return;
+
+  const text = `📬 새 구독자: ${maskedEmail} (${locale.toUpperCase()} 총 ${totalCount}명)`;
+  await sendTelegramMessage(chatId, text, botToken);
+}

@@ -120,7 +120,7 @@ function buildHoldReasons(brief: PendingBriefRow, publishedBriefs: PublishedBrie
     reasons.push("missing classifier confidence");
   } else if (brief.confidence < AUTO_APPROVE_MIN_CONFIDENCE) {
     reasons.push(
-      `confidence ${brief.confidence.toFixed(2)} below ${AUTO_APPROVE_MIN_CONFIDENCE.toFixed(2)}`
+      `confidence ${Number(brief.confidence).toFixed(2)} below ${AUTO_APPROVE_MIN_CONFIDENCE.toFixed(2)}`
     );
   }
 

@@ -103,6 +103,10 @@
 - 영상 전략 확정: done — Audiogram 방식 (웨이브폼+자막+커버 1장), 섹션별 이미지는 후순위. 다국어 2트랙 (영어+스페인어) 자막 번역 동시 생성 (비용 $0). 자기개선은 YouTube Analytics 숫자만 읽음
 - Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
 - radar 카테고리 그룹 UI: done — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
+- design inspiration 확장: done — editorial RSS 8개 seed migration, `design_token` category + rose badge, `/radar?category=design_token` 필터, Obsidian `Design Tokens` 폴더 export
+  - live ingest snapshot이 `public.sources.id` UUID를 그대로 보존해 sync/export/source linkage가 replay 시에도 안정적으로 유지됨
+  - `supabase-editorial-sync`가 approved discover row에 `published_at`를 채워 public radar gate와 자동 sync 결과를 정렬함
+  - Featured 카드는 기본 radar index에서는 중복 제거를 유지하되 category/search 필터가 걸리면 결과 목록에 다시 포함됨
 - Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
   - MimikaStudio → NotebookLM 2인 대화(주) + Qwen3-TTS(백업)으로 교체
   - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환
@@ -133,12 +137,21 @@
   - 채널 발행 Telegram 보고 연결 — E2E 수신 확인 완료
   - daily-auto-publish.md §9 채널 발행 단계 추가 (published brief → publish:channels 자동 연결)
   - SCHEMA.md에 신규 테이블 2개 문서화
+- Shorts Pipeline (9:16, 50-58초): prototype done
+  - MimikaStudio Qwen3-TTS 목소리 클론 (owner-jason) 등록 + REST API 연동
+  - Gemini 60초 나레이션 스크립트 자동 요약
+  - Whisper STT word-level 타임스탬프 추출
+  - Remotion BriefShort V2: 씬별 배경(Ken Burns) + 워드바이워드 자막(spring) + 프로그레스 바 + CTA
+  - ffmpeg 합성 (loudnorm -16 LUFS)
+  - 프로토타입 결과: 51.8초, 풀 파이프라인 ~60초, 운영비 $0
+  - 미완: Pexels API 키, shorts:render CLI, daily pipeline 연결
 - dedup-guard 워커 구현: done — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
 - source-health 워커 구현: done — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
 - daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
 - thin-content 방어 게이트: done — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
 - brief body/image 자동 채움: done — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
 - YouTube API 자동 업로드: done — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
+- Newsletter Pipeline: done — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
@@ -187,7 +200,8 @@
 - `apps/web` typecheck now depends on `next typegen` before `tsc --noEmit --incremental false`; keep this as the canonical Next 16 flow on new machines
 - auto-publish quality failure는 이제 `draft + pending`으로 자동 복귀하지만, 반복 실패 브리프의 editorial prompt 보강은 여전히 운영 튜닝 과제다
 - page-level loading/empty/error states: implemented at route-group level ((public) + admin)
-- discovery filters are now URL-synced (group + search), sort rules and advanced drill-down are still scaffold-level
+- discovery filters are now URL-synced (category + search), sort rules and advanced drill-down are still scaffold-level
+- public radar gate는 여전히 `approved + published` 기준이지만, discover sync가 approved row의 `published_at`를 자동 보강해 ingest→sync 직후에도 공개 조건을 만족시킨다
 - `useFilterUrlSync` 공용 훅이 `features/shared/view/`에 추가됨 — 새 목록 페이지 필터 추가 시 이 훅을 재사용
 - OG 이미지는 모두 `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens)에서 색상/문자열을 읽음 — 브랜드 변경 시 design-tokens만 수정
 - 정적 브랜드 자산(`public/brand/*`, `public/placeholders/*`, `public/sprites/*`)과 media-engine 기본 브랜드색도 2026-03-27 기준 저채도 팔레트로 재동기화됨
@@ -311,7 +325,7 @@
 - SEO & Public Surface 강화 (2026-03-27): done
   - Phase A: `/radar/[id]` 공개 상세 페이지 (generateMetadata, JSON-LD Thing + BreadcrumbList, 동적 OG/Twitter 이미지 — 카테고리 색상 기반)
   - Phase A: DiscoverCard에 상세 링크 추가, Sitemap에 discover 아이템 동적 포함
-  - Phase B: URL 기반 필터 동기화 — `/brief?topic=X&q=Y`, `/radar?group=X&q=Y` (debounce 300ms, 새로고침 시 유지)
+  - Phase B: URL 기반 필터 동기화 — `/brief?topic=X&q=Y`, `/radar?category=X&q=Y` (debounce 300ms, 새로고침 시 유지)
   - Phase C: 관련 브리프 섹션 — brief 상세 하단에 같은 topic 브리프 최대 4개 표시
   - Phase D: favicon (32x32) + apple-touch-icon (180x180) ImageResponse 생성
   - 확장성 리팩터: OG 이미지 6파일 raw hex → `colorTokens`/`brandTokens` 통일, `categoryAccentHex` 중앙 매핑, `useFilterUrlSync` 공용 훅 추출 (Brief/Radar 중복 제거), `/seo-check` 스킬 추가

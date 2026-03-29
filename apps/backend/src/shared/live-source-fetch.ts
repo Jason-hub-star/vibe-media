@@ -41,6 +41,7 @@ export interface LiveSourceFetchStatus {
 
 export interface LiveSourceFetchReport {
   performedAt: string;
+  sources?: LiveSourceDefinition[];
   sourceStatuses: LiveSourceFetchStatus[];
   items: LiveFetchedItem[];
   fixtures: IngestSourceFixture[];
@@ -331,6 +332,7 @@ export async function runLiveSourceFetch(
 
   return {
     performedAt,
+    sources,
     sourceStatuses,
     items,
     fixtures,

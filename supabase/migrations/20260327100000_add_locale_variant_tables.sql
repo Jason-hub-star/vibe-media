@@ -5,7 +5,7 @@
 -- 1. brief_post_variants — brief 다국어 변형
 -- =========================================================================
 
-create table public.brief_post_variants (
+create table if not exists public.brief_post_variants (
   id                  uuid primary key default gen_random_uuid(),
   canonical_id        uuid not null references public.brief_posts(id) on delete cascade,
   locale              text not null,
@@ -28,17 +28,17 @@ create table public.brief_post_variants (
 comment on table public.brief_post_variants
   is 'brief_posts의 다국어 변형. canonical_id + locale 유니크.';
 
-create unique index idx_brief_variants_canonical_locale
+create unique index if not exists idx_brief_variants_canonical_locale
   on public.brief_post_variants (canonical_id, locale);
 
-create index idx_brief_variants_locale_status
+create index if not exists idx_brief_variants_locale_status
   on public.brief_post_variants (locale, translation_status);
 
 -- =========================================================================
 -- 2. discover_item_variants — discover 다국어 변형 (body 없음)
 -- =========================================================================
 
-create table public.discover_item_variants (
+create table if not exists public.discover_item_variants (
   id                  uuid primary key default gen_random_uuid(),
   canonical_id        uuid not null references public.discover_items(id) on delete cascade,
   locale              text not null,
@@ -60,10 +60,10 @@ create table public.discover_item_variants (
 comment on table public.discover_item_variants
   is 'discover_items의 다국어 변형. canonical_id + locale 유니크.';
 
-create unique index idx_discover_variants_canonical_locale
+create unique index if not exists idx_discover_variants_canonical_locale
   on public.discover_item_variants (canonical_id, locale);
 
-create index idx_discover_variants_locale_status
+create index if not exists idx_discover_variants_locale_status
   on public.discover_item_variants (locale, translation_status);
 
 -- =========================================================================
@@ -83,9 +83,11 @@ comment on column public.channel_publish_results.locale
 alter table public.brief_post_variants enable row level security;
 alter table public.discover_item_variants enable row level security;
 
+drop policy if exists "service_role_brief_variants" on public.brief_post_variants;
 create policy "service_role_brief_variants" on public.brief_post_variants
   for all using (true) with check (true);
 
+drop policy if exists "service_role_discover_variants" on public.discover_item_variants;
 create policy "service_role_discover_variants" on public.discover_item_variants
   for all using (true) with check (true);
 
@@ -101,10 +103,12 @@ begin
 end;
 $$ language plpgsql;
 
+drop trigger if exists trg_brief_variants_updated_at on public.brief_post_variants;
 create trigger trg_brief_variants_updated_at
   before update on public.brief_post_variants
   for each row execute function public.set_updated_at();
 
+drop trigger if exists trg_discover_variants_updated_at on public.discover_item_variants;
 create trigger trg_discover_variants_updated_at
   before update on public.discover_item_variants
   for each row execute function public.set_updated_at();

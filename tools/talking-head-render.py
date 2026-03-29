@@ -60,7 +60,9 @@ def detect_speakers(wav_path: str, fps: int = 24) -> dict:
         signs = np.sign(chunk)
         crossings = np.sum(np.abs(np.diff(signs)) > 0)
         zcr_freq = crossings * rate / (2 * len(chunk))
-        timeline.append("m" if zcr_freq < 2000 else "f")
+        # NLM 합성 여성음 분포 분석 결과: median ZCR=1385Hz, 2000Hz 경계 사용 시 77% male 오분류
+        # 1200Hz 경계 사용 시: 938 male / 1414 female → 60% female (정확하게 female_solo 분류)
+        timeline.append("m" if zcr_freq < 1200 else "f")
 
     # 스무딩
     smoothed = list(timeline)
@@ -75,9 +77,9 @@ def detect_speakers(wav_path: str, fps: int = 24) -> dict:
     v = m + f
     if v == 0:
         mode = "silence"
-    elif m > v * 0.8:
+    elif m > v * 0.65:
         mode = "male_solo"
-    elif f > v * 0.8:
+    elif f > v * 0.65:
         mode = "female_solo"
     else:
         mode = "dual"
@@ -202,10 +204,14 @@ def main():
     total = speaker_info["total"]
     print(f"Mode: {mode} | Frames: {total} ({total / args.fps:.0f}s)")
 
-    # 2. 볼륨 분석
+    # 2. 볼륨 분석 (프레임 수 기준 — detect_speakers보다 정확)
     vols = analyze_volume(os.path.abspath(args.audio), args.fps)
-    total = min(total, len(vols))
-    timeline = timeline[:total]
+    total = len(vols)  # Fix: volume 기준 사용 (min() 하면 최대 12프레임 짧아짐)
+    # timeline이 짧으면 침묵("s")으로 패딩
+    if len(timeline) < total:
+        timeline = timeline + ["s"] * (total - len(timeline))
+    else:
+        timeline = timeline[:total]
 
     # 3. 모델 로드
     os.chdir(THA3_PATH)

@@ -1,24 +1,28 @@
 # Source Catalog
 
 ## Decision Date
-- 2026-03-22 (초안), 2026-03-26 (DB SSOT 전환 + 검증), 2026-03-27 (DB 실측 동기화)
+- 2026-03-22 (초안), 2026-03-26 (DB SSOT 전환 + 검증), 2026-03-27 (DB 실측 동기화), 2026-03-29 (design inspiration RSS 확장)
 
-## 소스 현황 요약 (2026-03-27 DB 실측)
-- editorial: **23개 활성** / 6개 비활성
+## 소스 현황 요약 (2026-03-29 DB 실측 기준)
+- editorial: **31개 활성** / 7개 비활성
 - tool_candidate: **2개 활성** / 4개 비활성
-- 전체: **25개 활성** / 10개 비활성
+- 전체: **33개 활성** / 11개 비활성
 
 > ⚠️ 이 문서는 DB(`public.sources`)가 SSOT다. 코드 수정 없이 DB에서 직접 활성화/비활성화한다.
 
 ---
 
-## editorial 활성 소스 (23개)
+## editorial 활성 소스 (31개)
 
 | 소스명 | kind | feed_url / repo | tier | max_items |
 |--------|------|-----------------|------|-----------|
+| A List Apart | rss | alistapart.com/main/feed/ | auto-safe | 3 |
 | AI Times Korea | rss | aitimes.com/rss/allArticle.xml | render-required | 3 |
+| Awwwards Blog | rss | awwwards.com/blog/feed/ | auto-safe | 3 |
 | Apple Machine Learning | rss | machinelearning.apple.com/rss.xml | auto-safe | 3 |
 | Ars Technica AI | rss | feeds.arstechnica.com/arstechnica/technology-lab | auto-safe | 3 |
+| CSS-Tricks | rss | css-tricks.com/feed/ | auto-safe | 3 |
+| Codrops | rss | tympanus.net/codrops/feed/ | auto-safe | 3 |
 | DeepMind Blog | rss | deepmind.google/blog/rss.xml | auto-safe | 3 |
 | GitHub Releases (openai-node) | github-releases | openai/openai-node | auto-safe | 3 |
 | GitHub: anthropics/anthropic-sdk-python | github-releases | anthropics/anthropic-sdk-python | auto-safe | 3 |
@@ -30,11 +34,15 @@
 | Hugging Face Blog | rss | huggingface.co/blog/feed.xml | auto-safe | 3 |
 | IEEE Spectrum Robotics | rss | spectrum.ieee.org/feeds/topic/robotics.rss | auto-safe | 3 |
 | Import AI Newsletter | rss | import-ai.substack.com/feed | auto-safe | 3 |
+| Landing Love | rss | landing.love/index.xml | auto-safe | 3 |
 | LangChain Blog | rss | blog.langchain.dev/rss/ | auto-safe | 3 |
+| Logo Design Love | rss | logodesignlove.com/feed | auto-safe | 3 |
 | Microsoft AI Blog | rss | blogs.microsoft.com/ai/feed/ | auto-safe | 3 |
 | MIT Technology Review | rss | technologyreview.com/feed/ | auto-safe | 3 |
 | NVIDIA AI Blog | rss | blogs.nvidia.com/blog/category/deep-learning/feed/ | auto-safe | 3 |
+| Nielsen Norman Group | rss | nngroup.com/feed/rss/ | auto-safe | 3 |
 | OpenAI News | rss | openai.com/news/rss.xml | auto-safe | 3 |
+| Smashing Magazine | rss | smashingmagazine.com/feed/ | auto-safe | 3 |
 | Stability AI Blog | rss | stability.ai/news/rss.xml | auto-safe | 3 |
 | TechCrunch AI | rss | techcrunch.com/category/artificial-intelligence/feed/ | auto-safe | 3 |
 | The Verge AI | rss | theverge.com/rss/ai/index.xml | auto-safe | 3 |
@@ -42,7 +50,7 @@
 
 ---
 
-## editorial 비활성 소스 (6개)
+## editorial 비활성 소스 (7개)
 
 | 소스명 | 비활성 사유 |
 |--------|------------|
@@ -76,7 +84,7 @@
 
 ## OpenAI·Google 편중에 대하여
 
-소스 다양성 자체는 충분하다 (23개 활성). 편중이 발생하는 주요 원인:
+소스 다양성 자체는 충분하다 (31개 활성). 편중이 발생하는 주요 원인:
 
 1. **뉴스 사이클**: OpenAI·Google이 대형 발표를 집중적으로 낸 날은 편중이 자연스럽다.
 2. **dedup-guard**: TechCrunch·The Verge가 같은 OpenAI 소식을 다뤄도 원문 소스와 중복으로 제거된다.
@@ -96,5 +104,5 @@
 | Anthropic Research | — | RSS 없음, 스크래퍼 필요 |
 
 ### Surface Mapping
-- `brief`: editorial 소스 전체
-- `discover`: tool_candidate 소스 전체
+- `brief`: editorial 소스 중 해설/분석 성격으로 분류된 항목
+- `discover`: tool_candidate 소스 전체 + editorial 소스 중 직접 행동/큐레이션 성격으로 분류된 항목 (`design_token` 포함)

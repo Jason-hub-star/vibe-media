@@ -120,6 +120,7 @@
 - action link는 복수 허용이며 빠른 이동과 다운로드를 지원한다.
 - briefs로 승격되기 전 단계의 리소스도 `discover_items`에서 관리할 수 있어야 한다.
 - 공개 `/radar` 페이지는 `review_status = 'approved' AND published_at IS NOT NULL`인 항목만 노출한다 (`isPublished` 가드).
+- `supabase-editorial-sync`는 approved discover row를 저장할 때 snapshot 기준 `published_at`를 채워 공개 gate와 sync 결과가 어긋나지 않게 유지한다.
 
 ## Showcase Notes
 - showcase는 `target_surface` 자동 분류 결과가 아니다.

@@ -194,6 +194,22 @@ export const exceptionQueueEntries: ExceptionQueueItem[] = baseExceptionQueueEnt
 
 export const discoverEntries: DiscoverItem[] = [
   {
+    id: "discover-design-tokens-gradient-mesh",
+    slug: "gradient-mesh-token-reference",
+    title: "Gradient Mesh Token Reference",
+    category: "design_token",
+    summary: "A curated design token reference for gradients, spacing, and motion cues pulled into the radar for inspiration tracking.",
+    status: "featured",
+    reviewStatus: "approved",
+    scheduledAt: null,
+    publishedAt: "2026-03-22T08:50:00.000Z",
+    tags: ["design", "token", "inspiration"],
+    highlighted: true,
+    actions: [
+      { kind: "visit", label: "Reference", href: "https://www.landing.love/" }
+    ]
+  },
+  {
     id: "discover-stitch-sdk",
     slug: "stitch-sdk",
     title: "Stitch SDK",

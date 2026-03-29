@@ -41,6 +41,9 @@
     "video:locale-fanout": "npm run video:locale-fanout -w @vibehub/backend",
     "dedup:guard": "npm run dedup:guard -w @vibehub/backend",
     "source:health": "npm run source:health -w @vibehub/backend",
+    "newsletter:send": "npm run newsletter:send -w @vibehub/backend",
+    "newsletter:send-dry": "npm run newsletter:send-dry -w @vibehub/backend",
+    "presentation:project-intro": "node tools/presentation/generate-project-intro-ppt.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -56,6 +59,7 @@
     "@remotion/renderer": "^4.0.440",
     "@remotion/transitions": "^4.0.440",
     "@types/node": "^24.5.2",
+    "pptxgenjs": "^4.0.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

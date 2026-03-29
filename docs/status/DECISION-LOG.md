@@ -4,6 +4,22 @@
 
 ## Pending
 
+### 2026-03-29 — Shorts 파이프라인 도입: MimikaStudio + Remotion BriefShort V2
+- 상태: implemented (프로토타입 성공)
+- 배경: Long-form(17분) YouTube 조회수 부진. Shorts(60초 이하)는 구독자 무관 알고리즘 노출로 채널 성장 부스터 역할. 운영비 $0 유지 필수
+- 결정:
+  1. **TTS**: MimikaStudio Qwen3-TTS 재채택 — 목소리 클론(owner-jason) + REST API 자동화 + 로컬 무료
+  2. **스크립트**: Gemini 2.0 Flash로 Brief → 120-140단어(50-58초) 자동 요약
+  3. **자막**: Whisper STT word-level timestamps → 워드바이워드 하이라이트
+  4. **비주얼**: Remotion BriefShort V2 (1080×1920) — 씬별 배경 + Ken Burns + spring 자막 + 프로그레스 바
+  5. **배경**: Pexels API 무료 스톡 이미지 (portrait, 키워드 기반 4장)
+  6. **합성**: ffmpeg map 0:v + map 1:a + loudnorm -16 LUFS
+- 근거:
+  - MimikaStudio 재평가: v2026.03.11로 안정화, REST API 문서화, 50개+ MCP 도구, 23개 언어 지원. 이전 "Alpha/bus factor=1" 판단은 롱폼 주 경로 기준이었으며, Shorts 보조 TTS로는 리스크 허용 가능
+  - Pexels: 무료, 상업용 OK, portrait 필터, 200 req/hr
+  - 프로토타입 결과: 51.8초 MP4, 풀 파이프라인 ~60초 완료, 파일 크기 ~46MB
+- 미완: Pexels API 키 발급, shorts:render CLI 워커, daily pipeline 연결
+
 ### 2026-03-29 — YouTube Data API v3 자동 업로드 도입
 - 상태: decided
 - 배경: YouTube 영상 업로드가 수동(YouTube Studio) → Telegram → CLI 3단계로 진행되어 병목. 하루 1~2건 규모에서 자동화 ROI 높음
@@ -63,6 +79,15 @@
 - 배경: 뉴스레터 페이지에 폼만 있어 "구독하면 뭘 받는지" 알 수 없음
 - 결정: 최신 published Brief 3개를 미리보기 카드로 표시, 서버 컴포넌트에서 fetch
 - 영향: 기존 `listBriefs` API 재활용, 추가 엔드포인트 불필요
+
+### 2026-03-29 — Newsletter Pipeline: Resend Broadcasts + dual-locale HTML template
+- 상태: implemented
+- 배경: 뉴스레터 CTA는 홈페이지에 배치되어 있지만 실제 발송 파이프라인이 없었음. 구독자에게 published brief를 정기적으로 전달할 채널 필요
+- 결정: Resend Broadcasts API로 EN+ES dual-locale 뉴스레터 발행
+  1. Resend Broadcasts API — Audience(EN/ES) 분리, published brief 자동 수집 → HTML 생성 → Broadcast 발송
+  2. inline-CSS HTML 템플릿 — 이메일 클라이언트 호환성을 위해 외부 CSS 없이 inline style만 사용
+  3. dual-locale — EN(기본) + ES 각각 별도 Broadcast, locale별 번역된 brief variant 사용
+- 근거: Resend는 무료 티어 3,000건/월 + Broadcasts API 지원. Mailchimp/SendGrid 대비 개발자 친화적 API + React Email 호환. inline-CSS는 Gmail/Outlook 렌더링 호환 필수
 
 ### 2026-03-29 — locale extraction via usePathname()
 - 상태: decided
@@ -271,7 +296,7 @@
   - **피드백 루프**: YouTube Analytics + GA4 성과 수집 → 주간 insight → 프롬프트/템플릿 파라미터 조정 (자동 제안 + 운영자 승인)
   - **채널 우선순위**: Threads(P1) → NotebookLM(P2) → Remotion(P3) → Ghost(P4) → 팟캐스트 RSS(P5) → 크로스 프로모션(P6) → 티스토리(P7) → Analytics(P8~P9)
 - 근거 (리서치 기반, 2026-03-26 조사):
-  - MimikaStudio: Alpha 단계, 단독 개발자(bus factor=1), macOS only, Docker 불가, API 스키마 비공개, 라이선스 불일치(README BSL-1.1 vs LICENSE GPLv3). 실현성 5/10
+  - MimikaStudio: 당시 Alpha 판단으로 롱폼 주 경로에서 제외. 이후 v2026.03.11 안정화 + REST API 문서화 확인 → 2026-03-29 Shorts TTS 보조 경로로 재채택 (위 결정 참조)
   - YouTube OAuth 검증: 공식 4~6주, 실제 2~6개월. 미검증 시 private 잠금. 2026.1 AI 콘텐츠 대량 단속(47억 조회 채널 삭제)
   - Claude Cowork 마우스 조작: 매 스텝 스크린샷+비전 → 느리고 불안정 (3/10). OS 파일 다이얼로그 특히 취약
   - NotebookLM MCP CLI: 3,000+ stars, MCP 연동 지원, 2인 대화 품질 우수. 단 비공식 브라우저 자동화
@@ -793,6 +818,27 @@
   - Kakao SDK 공유
   - Cookie consent banner
 - 기준 문서: `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
+
+### 2026-03-29 — Design Inspiration Source Expansion + `design_token` Radar Lane
+- 상태: resolved
+- 결정:
+  - editorial lane에 design inspiration RSS 8개(`Landing Love`, `Codrops`, `Awwwards Blog`, `CSS-Tricks`, `Smashing Magazine`, `Nielsen Norman Group`, `A List Apart`, `Logo Design Love`)를 migration seed/upsert로 고정
+  - `design_token` category를 `DISCOVER_CATEGORIES` / `discoverCategoryVisuals` / radar filter에 추가하고 `rose` badge visual로 배정
+  - radar 필터 URL 파라미터를 `group`에서 `category`로 전환해 `/radar?category=design_token` deep-link를 지원
+  - Obsidian discover export에 `Design Tokens` 폴더를 추가해 `design_token` 항목을 자동 동기화
+  - snapshot/fallback 분류 라우팅에 design-tag 신호를 추가해 새 editorial design source가 brief로 새지 않고 discover `design_token`으로 흐르도록 보정
+  - live ingest snapshot이 DB source UUID를 그대로 유지하도록 보정해 editorial/discover row가 실제 `public.sources` row와 안정적으로 연결되게 함
+  - `supabase-editorial-sync`가 approved discover row에 snapshot 시각 기반 `published_at`를 채워 public radar gate와 discover sync 결과를 일치시킴
+  - radar index는 Featured 중복 제거를 유지하되, category/search 필터가 있을 때는 highlighted 항목도 다시 검색 결과에 포함되게 조정
+- 근거:
+  - 실제 `public.sources` 스키마 확인 결과 `id`는 uuid PK이고 `kind`는 NOT NULL이며 existing editorial RSS의 `max_items`는 3이 기본 운영값이었다. 따라서 일회성 INSERT보다 migration seed/upsert가 새 환경 재현성과 운영 일관성에 맞다.
+  - `Landing Love`, `Codrops`, `Awwwards Blog`, `CSS-Tricks`, `Smashing Magazine`, `NN/g`, `A List Apart`, `Logo Design Love`의 RSS endpoint는 2026-03-29 실측에서 모두 응답했다.
+  - 기존 radar는 group filter만 지원해 `design_token` 단일 탭 deep-link가 불가능했고, fallback 분류 로직도 design 계열 태그를 몰라 discover lane으로 보내지 못했다.
+- 영향:
+  - design inspiration source가 DB SSOT에 재현 가능하게 고정되고, radar/Obsidian 양쪽에서 `design_token` surface가 독립된 레인으로 노출된다.
+  - discover filter 공유 링크는 `/radar?group=...` 대신 `/radar?category=...`를 기준으로 갱신해야 한다.
+  - `pipeline:supabase-migrate`는 기존 정책/트리거/테이블이 이미 있는 환경에서도 재실행 가능해야 하므로 migration idempotency guard를 함께 유지해야 한다.
+  - 실측 검증 기준 2026-03-29 결과는 `live-fetch` 31 sources / 87 items, `discover_items.design_token` 20건, Obsidian `Radar/Design Tokens` 20건 export였다.
 
 ## Next Review Order
 1. ~~review / publish mutation 모델 확정~~ done — Server Action 버튼 구현 완료

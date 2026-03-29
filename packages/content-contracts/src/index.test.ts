@@ -64,6 +64,27 @@ describe("shared contract shapes", () => {
     expect(item.category).toBe("plugin");
   });
 
+  it("accepts the design_token discover category", () => {
+    const item: DiscoverItem = {
+      id: "discover-design-tokens",
+      slug: "design-token-reference",
+      title: "Design Token Reference",
+      category: "design_token",
+      summary: "A reference collection for gradients, motion, and layout primitives.",
+      status: "featured",
+      reviewStatus: "approved",
+      scheduledAt: null,
+      publishedAt: "2026-03-22T09:00:00.000Z",
+      tags: ["design", "token"],
+      highlighted: false,
+      actions: [
+        { kind: "visit", label: "Visit", href: "https://example.com/design-token-reference" }
+      ]
+    };
+
+    expect(item.category).toBe("design_token");
+  });
+
   it("accepts a valid publish queue item", () => {
     const item: PublishQueueItem = {
       id: "publish-1",

@@ -130,8 +130,10 @@ async function resolveDiscoverSource(opts?: { includeUnpublished?: boolean }): P
   return { items: sortDiscoverItems(dedupeDiscoverItems(filter(discoverEntries))), source: "mock" };
 }
 
-export async function listDiscoverItemsWithSource(): Promise<DiscoverItemsResult> {
-  return resolveDiscoverSource();
+export async function listDiscoverItemsWithSource(opts?: {
+  includeUnpublished?: boolean;
+}): Promise<DiscoverItemsResult> {
+  return resolveDiscoverSource(opts);
 }
 
 /** Public: only approved + published items */

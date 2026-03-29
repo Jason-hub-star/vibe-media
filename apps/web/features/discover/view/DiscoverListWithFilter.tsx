@@ -11,44 +11,40 @@ import { useFilterUrlSync } from "@/features/shared/view/use-filter-url-sync";
 import { DiscoverCard } from "./DiscoverCard";
 import { presentDiscoverCategory, groupByCategory } from "../presenter/present-discover-category";
 
-/** Build filter options from SSOT category groups (not individual categories). */
-function buildGroupFilters(): FilterOption[] {
-  const seen = new Set<string>();
-  return DISCOVER_CATEGORIES.reduce<FilterOption[]>((acc, cat) => {
-    if (!seen.has(cat.group)) {
-      seen.add(cat.group);
-      const pres = presentDiscoverCategory(cat.id as DiscoverCategory);
-      acc.push({
-        id: cat.group,
-        label: pres.groupLabel,
-        icon: pres.icon
-      });
-    }
-    return acc;
-  }, []);
+/** Build category-level tabs from the SSOT order so Radar can deep-link one category at a time. */
+function buildCategoryFilters(): FilterOption[] {
+  return DISCOVER_CATEGORIES.map((cat) => {
+    const pres = presentDiscoverCategory(cat.id as DiscoverCategory);
+    return {
+      id: cat.id,
+      label: pres.label,
+      icon: pres.icon
+    };
+  });
 }
 
 interface Props {
   items: DiscoverItem[];
+  excludeHighlightedWhenUnfiltered?: boolean;
 }
 
-export function DiscoverListWithFilter({ items }: Props) {
+export function DiscoverListWithFilter({ items, excludeHighlightedWhenUnfiltered = false }: Props) {
   const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
     basePath: "/radar",
-    filterParam: "group"
+    filterParam: "category",
+    legacyFilterParams: ["group"]
   });
 
-  const groupFilters = useMemo(() => buildGroupFilters(), []);
+  const categoryFilters = useMemo(() => buildCategoryFilters(), []);
 
   const filtered = useMemo(() => {
-    let result = items;
+    let result =
+      excludeHighlightedWhenUnfiltered && !filter.activeFilter && !filter.query
+        ? items.filter((item) => !item.highlighted)
+        : items;
+
     if (filter.activeFilter) {
-      const groupCats = new Set(
-        DISCOVER_CATEGORIES
-          .filter((c) => c.group === filter.activeFilter)
-          .map((c) => c.id)
-      );
-      result = result.filter((item) => groupCats.has(item.category));
+      result = result.filter((item) => item.category === filter.activeFilter);
     }
     if (filter.query) {
       const q = filter.query.toLowerCase();
@@ -60,15 +56,15 @@ export function DiscoverListWithFilter({ items }: Props) {
       );
     }
     return result;
-  }, [items, filter]);
+  }, [excludeHighlightedWhenUnfiltered, items, filter]);
 
   const grouped = groupByCategory(filtered);
 
   return (
     <>
       <FilterBar
-        filters={groupFilters}
-        searchPlaceholder="Search tools, events, repos..."
+        filters={categoryFilters}
+        searchPlaceholder="Search tools, design references, events..."
         initialFilter={initialFilter}
         initialQuery={initialQuery}
         onChange={handleChange}

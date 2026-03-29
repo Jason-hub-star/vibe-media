@@ -12,11 +12,21 @@ user_invocable: true
 ### Phase 0 — 탐색 & 플랜 수립
 1. **현황 탐색**: Explore 에이전트로 관련 코드/문서를 병렬 조사
 2. **공식 문서 확인**: 필요 시 WebSearch/WebFetch로 Next.js, Supabase 등 공식 문서 참조
-3. **플랜 작성**: EnterPlanMode로 마일스톤 구조화
+3. **변경 성격 분류**: 플랜 전에 이번 작업의 change class를 먼저 적는다
+   - route/surface
+   - schema/migration
+   - pipeline/agent flow
+   - automation/prompt
+   - source/editorial policy
+   - design/token/UX
+   - sidecar/lane/channel
+   - lane 분류가 애매하면 `plans/harnesses/sidecar-safety-harness-plan.md`를 먼저 읽는다
+4. **플랜 작성**: EnterPlanMode로 마일스톤 구조화
    - 각 마일스톤에 독립성 표시 (병렬 가능 여부)
    - 마일스톤별 예상 변경 파일 목록
    - 의존 관계 명시
-4. **사용자 확인**: 플랜을 보여주고 승인받은 후 진행
+   - 마일스톤별 companion check 후보도 같이 적는다
+5. **사용자 확인**: 플랜을 보여주고 승인받은 후 진행
 
 ### Phase 1~N — 마일스톤 실행
 각 마일스톤에 대해:
@@ -36,8 +46,17 @@ user_invocable: true
 1. **자기 리뷰**: `/self-review` 스킬의 체크리스트 수행
    - typecheck, 300줄 규칙, 보안, 미사용 코드, 문서 정합성
 2. **문서 동기화**: `/doc-sync` 스킬 수행
-3. **UI 검증** (프론트엔드 변경 시): `/ui-audit` 스킬 수행
-4. **변경 요약**: 비개발자도 이해할 수 있는 쉬운 설명 작성
+   - change class별 필수 문서
+   - missing docs
+   - section hint
+   - companion checks
+3. **추가 검증 연결**: `/doc-sync` 결과에 따라 companion check를 붙인다
+   - route/public/admin 변경: `/ui-audit`
+   - design token/CSS 변경: `/design-sync`
+   - pipeline/data path 변경: `/pipeline-check`
+   - automation 변경: `npm run automation:check`
+4. **문서 반영 또는 누락 보고**: 필요한 문서를 수정했는지, 아직 남은 문서가 있는지 명시한다
+5. **변경 요약**: 비개발자도 이해할 수 있는 쉬운 설명 작성
    - "무엇이 바뀌었나" — 사용자 관점 1-3줄
    - "왜 바꿨나" — 동기 1줄
    - "어떻게 확인하나" — 확인 방법 1-2줄
@@ -49,7 +68,10 @@ user_invocable: true
 | 코드 탐색 필요 | Explore 에이전트 (병렬) |
 | 외부 API/프레임워크 문법 확인 | WebSearch → WebFetch |
 | CSS/컴포넌트 변경 포함 | Phase Final에서 `/ui-audit` |
+| design token/category/CSS 변경 포함 | Phase Final에서 `/design-sync` |
 | route 추가/변경 포함 | Phase Final에서 `/doc-sync` |
+| pipeline/worker/data path 변경 포함 | Phase Final에서 `/pipeline-check` |
+| automation 문서/프롬프트 변경 포함 | `npm run automation:check` |
 | 마일스톤이 독립적 | Agent 도구로 병렬 실행 |
 | 마일스톤이 의존적 | 순차 실행, 이전 결과 전달 |
 
@@ -64,6 +86,10 @@ user_invocable: true
 ```
 ## Big Task Plan: {task name}
 
+### Change classes
+- route/surface
+- automation/prompt
+
 ### M1 — {title} [독립]
 - 변경: file1.ts, file2.tsx
 - 검증: typecheck + unit test
@@ -74,7 +100,7 @@ user_invocable: true
 
 ### M3 — {title} [독립, M1과 병렬 가능]
 - 변경: file4.css
-- 검증: ui-audit
+- 검증: ui-audit + design-sync
 
 예상 변경: N파일, 약 M줄
 ```
@@ -86,6 +112,11 @@ user_invocable: true
 **무엇이 바뀌었나**: ...
 **왜 바꿨나**: ...
 **어떻게 확인하나**: ...
+
+## Doc Sync Summary
+- change classes: ...
+- missing docs: none | ...
+- companion checks run: ...
 
 ## 기술 변경 상세
 | 마일스톤 | 상태 | 변경 파일 |

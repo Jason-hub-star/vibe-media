@@ -24,12 +24,17 @@ export async function generateMetadata({
   };
 }
 
-export default function NewsletterPage() {
+export default async function NewsletterPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = await getLocaleFromParams(params);
   return (
     <PageFrame>
       <SectionBlock eyebrow="Subscription" title="Stay updated when a brief is worth your time">
         <div className="hero-grid">
-          <NewsletterForm />
+          <NewsletterForm locale={locale} />
           <PlaceholderArt
             alt="Newsletter hero placeholder"
             src="/placeholders/newsletter-hero-placeholder.svg"

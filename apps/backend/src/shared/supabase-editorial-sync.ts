@@ -209,7 +209,7 @@ export function preserveDiscoverLifecycle(
     status: existing.status,
     review_status: existing.review_status,
     scheduled_at: existing.scheduled_at,
-    published_at: existing.published_at
+    published_at: existing.published_at ?? (existing.review_status === "approved" ? row.published_at : null)
   };
 }
 
@@ -261,6 +261,13 @@ function inferDiscoverStatus(classification: SnapshotItemClassificationRow): Dis
   if (classification.importance_score >= 90) return "featured";
   if (needsReview(classification)) return "watching";
   return "tracked";
+}
+
+function inferDiscoverPublishedAt(
+  classification: SnapshotItemClassificationRow,
+  generatedAt: string
+): string | null {
+  return inferReviewStatus(classification) === "approved" ? generatedAt : null;
 }
 
 function deriveDiscoverActions(
@@ -365,7 +372,7 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         status: inferDiscoverStatus(classification),
         review_status: inferReviewStatus(classification),
         scheduled_at: null,
-        published_at: null,
+        published_at: inferDiscoverPublishedAt(classification, snapshot.generatedAt),
         tags: getTags(item),
         highlighted: inferDiscoverStatus(classification) === "featured"
       };

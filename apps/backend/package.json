@@ -42,7 +42,9 @@
     "source:health": "tsx src/workers/run-source-health.ts",
     "brief:enrich-backfill": "tsx src/workers/run-brief-enrich-backfill.ts",
     "brief:enrich-backfill-dry": "tsx src/workers/run-brief-enrich-backfill.ts --dry-run",
-    "youtube:setup": "tsx src/workers/run-youtube-setup.ts"
+    "youtube:setup": "tsx src/workers/run-youtube-setup.ts",
+    "newsletter:send": "tsx src/workers/run-newsletter-send.ts",
+    "newsletter:send-dry": "tsx src/workers/run-newsletter-send.ts --dry-run"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",
@@ -50,7 +52,8 @@
     "@vibehub/media-engine": "0.1.0",
     "defuddle": "^0.14.0",
     "linkedom": "^0.18.12",
-    "postgres": "^3.4.8"
+    "postgres": "^3.4.8",
+    "resend": "^6.9.4"
   },
   "devDependencies": {
     "typescript": "^5.9.2"

@@ -10,8 +10,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "../../../..");
 const DEFAULT_OBSIDIAN_VAULT_ROOT = path.resolve(REPO_ROOT, "../jasonob");
 const DEFAULT_OBSIDIAN_DISCOVER_ROOT = "Radar";
-const EXPORTED_DISCOVER_CATEGORIES = new Set<DiscoverCategory>(["open_source", "skill", "plugin"]);
-const EXPORTED_DISCOVER_FOLDERS = ["Open Source", "Skills", "Plugins", "GitHub Releases", "Repositories"] as const;
+const EXPORTED_DISCOVER_CATEGORIES = new Set<DiscoverCategory>(["open_source", "skill", "plugin", "design_token"]);
+const EXPORTED_DISCOVER_FOLDERS = ["Open Source", "Skills", "Plugins", "Design Tokens", "GitHub Releases", "Repositories"] as const;
 const AUTO_SECTION_START = "<!-- AUTO-GENERATED:START -->";
 const AUTO_SECTION_END = "<!-- AUTO-GENERATED:END -->";
 const MANUAL_SECTION_START = "<!-- MANUAL-NOTES:START -->";
@@ -82,6 +82,7 @@ function isRepository(item: DiscoverItem) {
 }
 
 function getFolderName(item: DiscoverItem) {
+  if (item.category === "design_token") return "Design Tokens";
   if (item.category === "skill") return "Skills";
   if (item.category === "plugin") return "Plugins";
   if (isGitHubRelease(item)) return "GitHub Releases";

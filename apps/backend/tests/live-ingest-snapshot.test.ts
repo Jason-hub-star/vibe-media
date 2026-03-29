@@ -192,4 +192,91 @@ describe("live ingest snapshot", () => {
     expect(duplicate?.target_surface).toBe("archive");
     expect(duplicate?.policy_flags).toContain("duplicate");
   });
+
+  it("preserves DB source UUIDs when the fetch report includes loaded sources", () => {
+    const sourceId = "550e8400-e29b-41d4-a716-446655440000";
+    const report = {
+      performedAt: "2026-03-22T00:30:00.000Z",
+      sources: [
+        {
+          id: sourceId,
+          sourceName: "OpenAI News",
+          sourceTier: "auto-safe",
+          fetchKind: "rss",
+          href: "https://openai.com/news/",
+          feedUrl: "https://openai.com/news/rss.xml",
+          contentType: "article",
+          defaultTags: ["launch"],
+          maxItems: 3,
+          enabled: true,
+          pipelineLane: "editorial"
+        }
+      ],
+      sourceStatuses: [
+        {
+          sourceId,
+          sourceName: "OpenAI News",
+          status: "fetched",
+          itemCount: 1,
+          note: null
+        }
+      ],
+      items: [
+        {
+          id: "live-openai-one",
+          sourceId,
+          sourceName: "OpenAI News",
+          sourceTier: "auto-safe",
+          title: "OpenAI Agents SDK update",
+          url: "https://example.com/openai-agents-sdk",
+          publishedAt: "2026-03-22T00:00:00.000Z",
+          parsedSummary: "Useful summary",
+          contentMarkdown: "# Useful body",
+          parserName: "defuddle",
+          parseStatus: "content-enriched",
+          contentType: "article",
+          tags: ["sdk", "release"]
+        }
+      ],
+      fixtures: [],
+      cycleReport: {
+        cycleStartedAt: "2026-03-22T00:30:00.000Z",
+        sourcesTouched: 1,
+        inboxItems: [
+          {
+            id: "live-openai-one",
+            sourceName: "OpenAI News",
+            sourceTier: "auto-safe",
+            title: "OpenAI Agents SDK update",
+            contentType: "article",
+            stage: "drafted",
+            targetSurface: "both",
+            confidence: 0.93,
+            parsedSummary: "Useful summary"
+          }
+        ],
+        ingestRuns: [
+          {
+            id: "run-openai",
+            sourceName: "OpenAI News",
+            runStatus: "drafted",
+            startedAt: "2026-03-22T00:30:00.000Z",
+            finishedAt: "2026-03-22T00:30:00.000Z",
+            itemCount: 1,
+            errorMessage: null
+          }
+        ],
+        reviewItems: [],
+        publishItems: [],
+        exceptionItems: [],
+        archiveItems: [],
+        discardItems: []
+      }
+    } satisfies LiveSourceFetchReport;
+
+    const snapshot = materializeLiveIngestSnapshot(report);
+
+    expect(snapshot.tables.sources[0]?.id).toBe(sourceId);
+    expect(snapshot.tables.ingested_items[0]?.source_id).toBe(sourceId);
+  });
 });

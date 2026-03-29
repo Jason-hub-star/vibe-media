@@ -19,7 +19,7 @@ export async function generateMetadata({
   return {
     title: "Radar — AI Discovery Hub",
     description:
-      "Track emerging AI tools, research, and trends across 24 categories.",
+      "Track emerging AI tools, design references, research, and trends across 25 categories.",
     alternates: {
       canonical: `${SITE_URL}/${locale}/radar`,
       languages: buildAlternates("/radar", SITE_URL),
@@ -31,16 +31,15 @@ export async function generateMetadata({
 export default async function RadarPage() {
   const items = await listDiscoverItems();
   const featured = items.filter((item) => item.highlighted);
-  const rest = items.filter((item) => !item.highlighted);
 
   return (
     <PageFrame>
       <section className="shell hero-grid">
         <div className="stack-tight">
           <p className="eyebrow">Radar</p>
-          <h1>One place to spot tools, skills, events, and launches worth acting on.</h1>
+          <h1>One place to spot tools, design references, events, and launches worth acting on.</h1>
           <p className="muted">
-            A discovery hub for open-source projects, plugins, events, contests, and trending sites — browse and jump straight in.
+            A discovery hub for open-source projects, plugins, design-token inspiration, events, contests, and trending sites — browse and jump straight in.
           </p>
         </div>
         <PlaceholderArt alt="Radar hero placeholder" src="/placeholders/radar-hero-placeholder.svg" />
@@ -61,8 +60,8 @@ export default async function RadarPage() {
         )}
       </SectionBlock>
 
-      <SectionBlock eyebrow="Discovery index" title="Browse by category group or search across all items">
-        <DiscoverListWithFilter items={rest} />
+      <SectionBlock eyebrow="Discovery index" title="Browse by category or search across all items">
+        <DiscoverListWithFilter items={items} excludeHighlightedWhenUnfiltered />
       </SectionBlock>
     </PageFrame>
   );

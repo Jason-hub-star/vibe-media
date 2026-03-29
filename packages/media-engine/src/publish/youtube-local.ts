@@ -200,6 +200,10 @@ ${files.join("\n")}
   7. Visibility: Unlisted로 먼저 업로드
   8. 미리보기 확인 후 Public 전환
 
+🎨 THUMBNAIL IMAGE PROMPT (Gemini / AI Studio)
+───────────────────────────────────────────────────
+${buildThumbnailPrompt(title, summary)}
+
 ✅ AFTER UPLOAD (연결 완료)
 ───────────────────────────────────────────────────
   1. 공개 YouTube URL 복사
@@ -224,6 +228,56 @@ function extractFirstSentences(text: string, count: number): string {
     .split(/(?<=[.!?])\s+/)
     .filter((s) => s.trim().length > 10);
   return sentences.slice(0, count).join(" ");
+}
+
+/**
+ * 제목/요약 기반으로 Gemini 이미지 생성 프롬프트 자동 생성.
+ *
+ * 스타일: VibeHub 애니 캐릭터 + 토픽 연관 씬 + 클릭베이트 텍스트 레이아웃
+ * 레이아웃: 상단 대제목 / 중앙 캐릭터+씬 / 하단 티저 문구 / 우하단 VH 로고
+ */
+function buildThumbnailPrompt(title: string, summary?: string): string {
+  const t = title.toLowerCase();
+
+  // 토픽별 씬 + 제목/티저 결정
+  let scene: string;
+  let topText: string;
+  let bottomText: string;
+
+  if (t.includes("safety") || t.includes("bug") || t.includes("bounty") || t.includes("security")) {
+    scene = "dynamic server room background with glowing red error terminals. The VH anime girl is in an action pose holding a glowing blue capture gun, shooting a laser beam at a swirling dark vortex made of corrupted code and bug symbols. A green holographic panel beside her reads 'SUCCESS / [BUG CONTAINED]'. Cyan and red neon light effects, dramatic perspective";
+    topText = "OPENAI'S SAFETY BOUNTY!";
+    bottomText = "HERE'S HOW THEY CATCH AI BUGS";
+  } else if (t.includes("model spec") || t.includes("spec") || t.includes("approach") || t.includes("policy") || t.includes("rule")) {
+    scene = "glowing library of holographic rulebooks floating in a dark digital space. The VH anime girl stands confidently holding an open glowing tome, pages dissolving into neural network nodes. Purple and cyan energy swirls around her. A large holographic display behind her shows 'MODEL SPEC v1.0'";
+    topText = "THE AI RULEBOOK REVEALED!";
+    bottomText = "OPENAI'S MODEL SPEC EXPLAINED";
+  } else if (t.includes("launch") || t.includes("release") || t.includes("introduc") || t.includes("new") || t.includes("announc")) {
+    scene = "futuristic product launch stage with spotlights and confetti made of circuit board fragments. The VH anime girl stands in a heroic pose on a glowing platform, pointing dramatically at a giant holographic product reveal screen behind her. Orange and cyan launch beams";
+    topText = title.replace(/[^a-zA-Z0-9 !]/g, "").toUpperCase().split(" ").slice(0, 5).join(" ") + "!";
+    bottomText = "EVERYTHING YOU NEED TO KNOW";
+  } else if (t.includes("agent") || t.includes("automat") || t.includes("robot")) {
+    scene = "dark warehouse full of autonomous robot drones controlled by glowing AI threads. The VH anime girl stands in center commanding them with a holographic control gauntlet, purple energy emanating from her. Dramatic birds-eye perspective with neon orange grid floor";
+    topText = "AI AGENTS ARE TAKING OVER!";
+    bottomText = "AND HERE'S WHAT THAT MEANS";
+  } else if (t.includes("gpt") || t.includes("claude") || t.includes("gemini") || t.includes("model") || t.includes("llm")) {
+    scene = "epic battle arena where two giant holographic AI brain constructs face off, glowing orange vs purple. The VH anime girl stands in the foreground watching with arms crossed, smirking confidently. Massive energy shockwaves radiate outward. Cinematic wide-angle";
+    topText = title.toUpperCase().split(" ").slice(0, 4).join(" ") + "!";
+    bottomText = "THE FULL BREAKDOWN";
+  } else {
+    scene = "dramatic dark tech command center with multiple glowing holographic screens showing AI data streams. The VH anime girl sits at center in a high-tech chair, one hand on a glowing keyboard, looking at the viewer with a knowing expression. Purple and cyan neon lights reflect off her face";
+    topText = title.toUpperCase().split(" ").slice(0, 4).join(" ") + "!";
+    bottomText = "HERE'S WHAT'S HAPPENING";
+  }
+
+  // 공통 캐릭터 설명 (VibeHub 애니 마스코트)
+  const character = "The VH anime girl mascot: short silver-purple hair, wearing a dark cap with 'VH' logo, white tech jacket with purple accents, confident expression, anime illustration style";
+
+  const contextNote = summary ? `\n// Context for scene relevance: ${summary.slice(0, 100)}` : "";
+
+  return `YouTube thumbnail, 1280x720, anime illustration style, high detail.${contextNote}
+LAYOUT: Bold dramatic text "${topText}" at the very top (large, outlined white font with cyan/purple gradient). Center: ${scene}. Character: ${character}. Bottom of image: bold white outlined text "${bottomText}". Bottom-left corner: small "VH" logo badge. Bottom-center: small "vibehub.tech" text.
+Color palette: deep dark blue/black background, cyan (#00D4FF) and purple (#7C3AED) neon accents, orange (#F97316) highlight details. High contrast, vibrant, eye-catching. No watermark beyond VH branding.`;
 }
 
 

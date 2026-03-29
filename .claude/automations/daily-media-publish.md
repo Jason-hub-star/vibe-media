@@ -3,7 +3,10 @@
 ## 목적
 
 `daily-auto-publish`에서 새로 `published` 전환된 Brief에 대해 미디어 파이프라인을 실행한다.
-NotebookLM 비디오 생성 → 다운로드 → 자막 생성 → 토킹 아바타 렌더 → 최종 합성 → YouTube 가이드 생성.
+두 트랙으로 미디어를 생성한다 (같은 엔진 BriefShort V3 공유, 해상도만 다름):
+- **Shorts (9:16)**: Gemini 스크립트 → MimikaStudio 1.7B TTS → Pexels 배경 → Remotion BriefShort V3 → BGM 랜덤 + ffmpeg
+- **Longform (16:9)**: Gemini 스크립트 → MimikaStudio 1.7B TTS → Pexels 배경 → Remotion BriefLongform → BGM 랜덤 + ffmpeg
+- NotebookLM 팟캐스트 + 아바타 파이프라인은 **동결** (코드 유지, 실행 안 함)
 
 이 프롬프트는 `daily-auto-publish.md` 실행 이후 스케줄러에서 자동 실행된다.
 
@@ -15,15 +18,31 @@ NotebookLM 비디오 생성 → 다운로드 → 자막 생성 → 토킹 아바
 daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-publish
   └→ §10 번역 (translate:variant --locale=es)
   └→ daily-media-publish (이것)
-      1. NotebookLM 비디오 생성 (nlm CLI)
-      2. 다운로드 (Claude in Chrome)
-      3. Whisper STT 자막
-      3-1. 스페인어 SRT 번역 (video:locale-fanout, 선택)
-      4. Talking Head 아바타 렌더
-      5. ffmpeg 최종 합성
-      6. YouTube 가이드 TXT
-      7. Threads 발행 (publish:channels)
-      8. 운영자 수동 업로드 후 `/vh-youtube` 또는 `publish:link-youtube`
+      ┌─ Shorts Track (9:16) ───────────────────────────
+      │  S1. Gemini 스크립트 (120-140단어, 50-55초)
+      │  S2. MimikaStudio 1.7B TTS (owner-jason 클론)
+      │  S3. Whisper word-level 자막 (JSON)
+      │  S4. Pexels 키워드 배경 이미지 4장 (portrait)
+      │  S5. 문장 경계 기반 씬 자동분할 (4씬)
+      │  S6. Remotion BriefShort V3 렌더 (1080×1920)
+      │      → TransitionSeries 크로스페이드
+      │      → UPPERCASE Bold 72px + 금색 하이라이트
+      │      → 프로그레스 바 + 워터마크 + CTA
+      │  S7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
+      │
+      ├─ Longform Track (16:9) ─────────────────────────
+      │  L1. Gemini 스크립트 (300-350단어, ~2분)
+      │  L2. MimikaStudio 1.7B TTS (동일 클론)
+      │  L3. Whisper word-level 자막 (JSON)
+      │  L4. Pexels 키워드 배경 이미지 8장 (landscape)
+      │  L5. 문장 경계 기반 씬 자동분할 (8씬 + 챕터 카드)
+      │  L6. Remotion BriefLongform 렌더 (1920×1080)
+      │  L7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
+      │
+      └─ 발행 ────────────────────────────────────────
+         7. Threads 발행 (publish:channels)
+         8. YouTube 업로드 (Shorts + Longform)
+         9. 운영자 확인 후 public 전환
 ```
 
 ---
@@ -39,19 +58,30 @@ echo "GEMINI_API_KEY: ${GEMINI_API_KEY:+set}"
 echo "THREADS_ACCESS_TOKEN: ${THREADS_ACCESS_TOKEN:+set}"
 ```
 
-필수: `SUPABASE_DB_URL`, `THREADS_ACCESS_TOKEN`
-선택: `GEMINI_API_KEY` (자막 번역용)
+필수: `SUPABASE_DB_URL`, `THREADS_ACCESS_TOKEN`, `PEXELS_API_KEY`
+선택: `GEMINI_API_KEY` (스크립트 생성)
 
 ### 도구 확인
 
 ```bash
-nlm auth status                    # NotebookLM CLI 인증
-which /opt/homebrew/opt/ffmpeg-full/bin/ffmpeg  # ffmpeg-full (libass)
-ls ~/talking-head-anime-3-demo/venv/bin/python  # talking-head-anime
-ls ~/MimikaStudio/venv/bin/python               # faster-whisper
+which /opt/homebrew/opt/ffmpeg-full/bin/ffmpeg  # ffmpeg-full
+curl -s -o /dev/null -w "%{http_code}" http://localhost:7693/api/health  # MimikaStudio TTS
+ls assets/bgm/*.mp3 | wc -l                    # BGM 라이브러리 (10곡)
 ```
 
-하나라도 없으면 해당 단계를 skip하고 보고한다.
+MimikaStudio가 꺼져있으면: `/Users/family/MimikaStudio/bin/mimikactl backend start`
+BGM 없으면: 영상은 생성하되 BGM 없이 음성만 합성.
+
+### BGM 랜덤 선택
+
+```bash
+BGM=$(ls assets/bgm/*.mp3 | shuf -n 1)
+echo "Selected BGM: $BGM"
+```
+
+10곡 라이브러리에서 랜덤 선택. `assets/bgm/` 참조:
+- 01-calm-ambient, 02-dark-pulse, 03-warm-pad, 04-tension-build, 05-bright-tech
+- 06-deep-bass, 07-ethereal, 08-urgent, 09-dreamy, 10-cinematic
 
 ---
 
@@ -59,13 +89,15 @@ ls ~/MimikaStudio/venv/bin/python               # faster-whisper
 
 ### ⚠️ 일일 처리 상한: 최대 2건
 
-미디어 파이프라인은 brief 1건당 **순차 처리** 기준 약 19분이 소요된다. (2026-03-27 실측)
+미디어 파이프라인은 brief 1건당 **순차 처리** 기준 약 50분이 소요된다. (2026-03-29 실측)
 - NotebookLM 생성 대기: ~10분 (클라우드, `-f brief` 포맷)
 - 다운로드 (Claude in Chrome): ~2분
 - Whisper STT: ~30초 (base 모델, CPU)
-- 아바타 렌더: ~5분 (separable_float, MPS ~10fps, 2분 영상 기준)
-- Remotion 인트로/아웃트로 + compose-final.sh: ~1분
+- 아바타 렌더: **~15-32분** (separable_float, MPS, 영상 길이에 비례. 1분 영상 ≈ 15분, 2분 영상 ≈ 32분)
+- overlay-avatar.sh + compose-final.sh: ~1분
 - Threads 발행: ~30초
+
+> ⚠️ **렌더 시간 주의**: 기존 "~5분" 추정은 틀렸음. 107초 영상 기준 dual 모드(남+녀) 실측 32분 소요.
 
 **하루 최대 2건만 처리한다.** 선정 기준은 당일 발행분 중 quality score 높은 순이다. 오래된 백로그보다 오늘 가장 좋은 콘텐츠를 먼저 영상화한다.
 
@@ -257,115 +289,157 @@ npm run video:locale-fanout <slug> --locales=en,es
 
 ### ⚠️ 반드시 아래 설정을 그대로 사용할 것 — 값을 변경하지 마라
 
-### 확정 설정 (2026-03-27 검증 완료, 수정 금지)
+### 확정 설정 (2026-03-29 실전 검증 완료, 수정 금지)
 - 모델: `separable_float` (standard_float 사용 금지 — 2배 느림)
 - FPS: `24`
-- 이미지 전처리: **비율 유지 투명 패딩** (512x512 강제 리사이즈 금지 — 찌그러짐+입 안 움직임 원인)
-  ```python
-  # 올바른 방법 (패딩)
-  img = Image.open(avatar_path).convert("RGBA")
-  new_h = int(img.height * (512 / img.width))
-  img_resized = img.resize((512, new_h), Image.LANCZOS)
-  canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-  canvas.paste(img_resized, (0, 0))
+- 입력 오디오: **`audio-for-stt.wav`** (16kHz mono WAV) — `audio-full.wav` 사용 금지 (48kHz stereo → 화자 감지 오작동)
+- 아바타: `assets/brand/vh-avatar.png` (여성), `assets/brand/vh-avatar-male.png` (남성)
 
-  # 금지: img.resize((512, 512)) — 찌그러짐 발생
-  ```
+### 올바른 CLI (2026-03-29 확인)
 
 ```bash
-~/talking-head-anime-3-demo/venv/bin/python \
+cd /Users/family/jason/vibehub-media
+/Users/family/talking-head-anime-3-demo/venv/bin/python \
   tools/talking-head-render.py \
-  output/<slug>/avartar.png \
-  output/<slug>/audio-full.wav \
-  output/<slug>/avatar.mp4 \
+  output/<slug>/audio-for-stt.wav \
+  output/<slug> \
+  --female-avatar assets/brand/vh-avatar.png \
+  --male-avatar assets/brand/vh-avatar-male.png \
   --fps 24 --model separable_float
 ```
 
-아바타 탐색 순서:
-1. `output/<slug>/avartar.png` (slug별 커스텀)
-2. `assets/brand/vh-avatar.png` (공용 기본값)
+출력: `output/<slug>/avatar-female-alpha.mov`, `avatar-male-alpha.mov`, `avatar-meta.json`
 
-⚠️ 아바타 이미지가 둘 다 없으면 이 단계를 skip한다.
+### ⚠️ 반드시 순차 실행 — 동시 실행 절대 금지
+
+두 브리프를 **동시에** 렌더하면 `/tmp/tha3_dual_frames` 공유 폴더 충돌로 프레임이 섞인다.
+
+```
+❌ 금지: Brief A 렌더 + Brief B 렌더 동시 실행
+✅ 필수: Brief A 렌더 완료 확인 → Brief B 렌더 시작
+```
+
+완료 감지: `output/<slug>/avatar-meta.json` 파일 생성 여부로 확인.
+
+```bash
+# 완료 대기 루프 (30초 간격)
+while [ ! -f output/<slug>/avatar-meta.json ]; do
+  echo "렌더 진행 중..."; sleep 30
+done
+echo "렌더 완료"
+```
+
+### nohup 백그라운드 실행 시
+
+```bash
+cd /Users/family/jason/vibehub-media
+nohup /Users/family/talking-head-anime-3-demo/venv/bin/python \
+  tools/talking-head-render.py \
+  output/<slug>/audio-for-stt.wav \
+  output/<slug> \
+  --female-avatar assets/brand/vh-avatar.png \
+  --male-avatar assets/brand/vh-avatar-male.png \
+  --fps 24 --model separable_float \
+  > /tmp/render-<slug-short>.log 2>&1 &
+echo "PID: $!"
+```
+
+진행 확인: `ls /tmp/tha3_dual_frames/ | grep "^male" | wc -l` (총 프레임 수 대비 진행률)
+
+⚠️ 아바타 이미지가 없으면 이 단계를 skip하고 §7에서 자막만 burn-in.
 ⚠️ **전신 이미지만 사용** — 클로즈업은 입 변형이 안 됨.
-⚠️ **512x512 강제 리사이즈 금지** — 반드시 투명 패딩 방식 사용.
 
 ---
 
 ## 7. ffmpeg 최종 합성
 
-### ⚠️ 반드시 아래 명령어를 그대로 사용할 것 — 값을 변경하지 마라
+### ⚠️ 직접 ffmpeg 명령 작성 금지 — 반드시 스크립트를 사용할 것
 
-### 확정 레이아웃 (2026-03-27 검증 완료, 수정 금지)
-- 아바타: `scale=600:-1` (600px 폭, 비율 자동)
-- 위치: `overlay=W-420:H-330` (우하단, NLM 워터마크 가림)
-- 자막: `Alignment=2` (하단 중앙), `FontSize=20`, `MarginV=20`
-- 코덱: `libx264 -crf 20`
-- ffmpeg 경로: `/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg`
+### overlay-avatar.sh (아바타 + 자막 합성)
+
+`avatar-meta.json`을 읽어 모드(male_solo / female_solo / dual / none) 자동 판별.
 
 ```bash
-/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg -y \
-  -i output/<slug>/video.mp4 \
-  -i output/<slug>/avatar-alpha.mov \
-  -filter_complex " \
-    [1:v]scale=600:-1[avatar]; \
-    [0:v][avatar]overlay=W-420:H-330:shortest=1[vid]; \
-    [vid]subtitles=output/<slug>/subtitles-en.srt:force_style='FontSize=20,FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=1,MarginV=20,Alignment=2'[out]" \
-  -map "[out]" -map 0:a \
-  -c:v libx264 -crf 20 -preset fast -c:a copy -shortest \
-  output/<slug>/final.mp4
+cd /Users/family/jason/vibehub-media
+bash tools/overlay-avatar.sh <slug>
+# → output/<slug>/final.mp4
 ```
 
-아바타가 없으면 자막만 burn-in:
-```bash
-/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg -y \
-  -i output/<slug>/video.mp4 \
-  -vf "subtitles=output/<slug>/subtitles-en.srt:force_style='FontSize=20,FontName=Arial,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,Outline=2,Shadow=1,MarginV=20,Alignment=2'" \
-  -c:v libx264 -crf 20 -preset fast -c:a copy \
-  output/<slug>/final.mp4
-```
+**필요 파일:**
+- `output/<slug>/video.mp4` — NLM 다운로드 영상
+- `output/<slug>/subtitles-en.srt` — Whisper STT 자막
+- `output/<slug>/avatar-meta.json` — 렌더 모드 정보
+- `output/<slug>/avatar-female-alpha.mov` / `avatar-male-alpha.mov` — 아바타
+
+아바타가 없으면(mode=none) 자막만 burn-in으로 자동 처리됨.
 
 ---
 
-## 7-2. Remotion 인트로/아웃트로 + 최종 합성
+## 7-2. 아웃트로 + 최종 합성
 
-### 인트로/아웃트로 렌더
+### outro.mp4 준비 (필수)
+
+`compose-final.sh`는 `output/<slug>/outro.mp4`를 필요로 한다.
+**기존 완성된 브리프에서 복사**하면 된다:
+
 ```bash
-npx remotion render packages/media-engine/src/remotion/index.tsx BrandIntro output/<slug>/intro.mp4 --props='{"title":"<brief-title>","subtitle":"AI-curated tech insights"}'
+# 이미 완성된 브리프의 outro.mp4 재사용
+EXISTING=$(ls /Users/family/jason/vibehub-media/output/*/outro.mp4 2>/dev/null | head -1)
+cp "$EXISTING" output/<slug>/outro.mp4
+echo "outro.mp4 복사 완료: $EXISTING"
+```
+
+Remotion으로 새로 렌더할 경우 (선택):
+```bash
 npx remotion render packages/media-engine/src/remotion/index.tsx BrandOutro output/<slug>/outro.mp4
 ```
 
 ### 최종 합성
+
 ```bash
+cd /Users/family/jason/vibehub-media
 bash tools/compose-final.sh <slug>
 # → output/<slug>/complete.mp4
 ```
 
 compose-final.sh가 자동으로:
-1. 인트로→본편: xfade 크로스페이드 (1초)
-2. 음성 끝나는 시점 자동 감지 (silencedetect)
-3. 본편→아웃트로: fade-out/fade-in (0.5초, 워터마크 노출 0%)
-4. 모든 파일 규격 통일 (24fps, 48000Hz)
+1. 음성 끝나는 시점 자동 감지 (silencedetect, -30dB 기준)
+2. 본편 → 아웃트로: fade-out/fade-in (0.5초)
+3. 모든 파일 규격 통일 (24fps, 48000Hz stereo)
 
 ⚠️ compose-final.sh를 직접 실행할 것 — ffmpeg 명령을 자체 생성하지 마라.
+⚠️ `output/<slug>/outro.mp4`가 없으면 compose-final.sh가 실패한다. 반드시 위 복사 단계를 먼저 실행.
 
 ---
 
 ## 8. YouTube 가이드 + Threads 발행
 
-### 자동 모드
-```bash
-npm run publish:channels <slug>
-# → output/<slug>/youtube-upload-guide.txt 자동 생성
-# → Threads 자동 발행
-# → YouTube는 "업로드 준비 완료" 상태까지만 진행
-# → DB 저장 + Telegram 보고
+### ⚠️ 반드시 complete.mp4 생성 완료 후 실행할 것
+
+`publish:channels`는 영상을 생성하지 않는다. Threads 포스팅 + YouTube 메타데이터 TXT만 처리한다.
+**영상 없이 먼저 실행하면 Threads에 영상 없는 포스트가 발행된다** — 순서를 지킬 것.
+
+파이프라인 순서:
+```
+§3~§7 (NLM → 렌더 → overlay → compose) → complete.mp4 확인 → publish:channels
 ```
 
-### 수동 모드 (--skip-threads)
-이미 Threads에 발행된 brief면 중복 방지를 위해 가이드 TXT만 생성:
+### 자동 모드
 ```bash
-npm run publish:channels <slug> --dry-run
-# → youtube-upload-guide.txt 생성 (발행 안 함)
+cd /Users/family/jason/vibehub-media
+npm run publish:channels <slug>
+# → apps/backend/output/<slug>/youtube-upload-guide.txt 생성  ← root output/ 아님
+# → Threads 자동 발행
+# → DB channel_publish_results 기록
+```
+
+> ⚠️ 출력 경로 주의: `publish:channels`의 결과물은 `apps/backend/output/<slug>/`에 생성됨.
+> 영상 파일(`complete.mp4`)은 root `output/<slug>/`에 있음. 두 경로는 다르다.
+
+### 수동 모드 (이미 Threads 발행된 경우)
+Threads 재발행 방지 — 가이드 TXT만 재생성:
+```bash
+npm run publish:channels <slug> -- --skip-threads
 ```
 
 ---
@@ -439,7 +513,7 @@ Brief: "<title>"
 ✅ NotebookLM: video generated (1m 55s)
 ✅ Download: completed
 ✅ Whisper STT: 48 segments
-✅ Avatar: 2760 frames (5m render)
+✅ Avatar: 2568 frames (32m render, dual mode)
   ✅ Compose: final.mp4 (5.8MB)
   ✅ Threads: published
 ✅ YouTube guide: ready
@@ -463,6 +537,10 @@ Brief: "<title>"
 | 아바타 렌더 | skip (자막만 burn-in) |
 | ffmpeg 합성 | skip, 원본 비디오 유지 |
 | Threads 발행 | 에러 로그, 수동 재시도 안내 |
+| Gemini 스크립트 | skip Shorts 트랙, Long-form만 진행 |
+| MimikaStudio TTS | skip Shorts 트랙 (서버 미기동) |
+| Pexels API | fallback: Brief cover_image_url을 4씬 공통 배경으로 사용 |
+| Remotion Shorts | skip, 에러 보고 |
 
 **한 단계 실패가 전체를 중단시키지 않는다** — 가능한 단계까지 진행 후 결과 보고.
 
@@ -471,11 +549,15 @@ Brief: "<title>"
 ## 11. 행동 원칙
 
 - `published` 상태 brief만 대상 — draft/review는 절대 건드리지 않음
-- 동일 brief 중복 미디어 생성 방지: `output/<slug>/final.mp4`가 이미 존재하면 skip
-- 아바타 이미지는 사전에 `output/<slug>/avartar.png`에 준비되어 있어야 함
+- 동일 brief 중복 미디어 생성 방지: `output/<slug>/complete.mp4`(Long-form) 또는 `output/<slug>/shorts.mp4`(Shorts)가 이미 존재하면 해당 트랙 skip
+- 아바타 렌더는 **반드시 순차 실행** — 두 브리프 동시 렌더 금지 (`/tmp/tha3_dual_frames` 충돌)
 - 아바타 없으면 자막만 burn-in으로 대체 (graceful degradation)
-- 렌더 시간 예상: 2분 영상 기준 ~5분 (Apple Silicon MPS)
+- 렌더 시간 예상: 107초 영상 기준 dual 모드 ~32분 (Apple Silicon MPS, 2026-03-29 실측)
+- `publish:channels`는 **반드시 complete.mp4 생성 후** 실행 — 영상 없이 먼저 실행 금지
+- output 경로 구분: 영상 → `output/<slug>/`, publish:channels 결과 → `apps/backend/output/<slug>/`
+- NLM 다운로드는 **Claude in Chrome만** 가능 — Playwright/httpx 직접 다운로드는 Google 인증 루프로 실패
 - public YouTube 연결은 자동 polling하지 않는다. 운영자가 업로드 후 명시적으로 `/vh-youtube` 또는 `publish:link-youtube`를 실행한다.
+- **NLM 합성 여성음 ZCR 오분류 주의**: NLM female voice의 median ZCR은 약 1385Hz로, 기존 2000Hz 경계를 사용하면 77% 프레임이 male로 오분류되어 dual 아바타 또는 여성음에 남성 아바타가 표시됨. `talking-head-render.py`의 ZCR 경계를 1200Hz로 수정 완료 (2026-03-29). 만약 아바타 모드가 의심스러우면 `avatar-meta.json`을 직접 확인하고 필요시 `female_solo`로 수동 수정.
 
 ---
 

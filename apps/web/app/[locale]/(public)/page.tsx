@@ -114,7 +114,7 @@ export default async function HomePage({
       </SectionBlock>
 
       <SectionBlock eyebrow="Stay updated" title="Get briefs in your inbox">
-        <NewsletterForm />
+        <NewsletterForm locale={locale} />
       </SectionBlock>
 
       {homeShowcase.length > 0 && (

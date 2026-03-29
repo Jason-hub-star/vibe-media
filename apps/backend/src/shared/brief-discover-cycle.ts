@@ -14,6 +14,7 @@ import {
   deriveReviewEntriesFromInbox,
   getHumanExceptionReasons
 } from "./pipeline-routing";
+import { inferTargetSurfaceFromTags } from "./discover-category-routing";
 import type { IngestSourceFixture } from "./ingest-source-fixtures";
 import { ingestSourceFixtures } from "./ingest-source-fixtures";
 
@@ -42,15 +43,7 @@ function inferTargetSurface(fixture: IngestSourceFixture): InboxTargetSurface {
     return "archive";
   }
 
-  if (fixture.tags.some((tag) => ["sdk", "api", "integration"].includes(tag))) {
-    return "both";
-  }
-
-  if (fixture.tags.some((tag) => ["open-source", "tool", "repo", "website", "event", "contest", "grant"].includes(tag))) {
-    return "discover";
-  }
-
-  return "brief";
+  return inferTargetSurfaceFromTags(fixture.tags);
 }
 
 function inferConfidence(fixture: IngestSourceFixture, targetSurface: InboxTargetSurface) {

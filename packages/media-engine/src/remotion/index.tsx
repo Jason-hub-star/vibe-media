@@ -7,8 +7,10 @@ import type { AnyZodObject } from "remotion";
 import React from "react";
 import { BriefAudiogram } from "./BriefAudiogram";
 import type { BriefAudiogramProps } from "./BriefAudiogram";
-import { BrandIntro, BrandOutro } from "./BrandIntroOutro";
-import type { IntroProps, OutroProps } from "./BrandIntroOutro";
+import { BriefShort } from "./BriefShort";
+import type { BriefShortProps } from "./BriefShort";
+import { BrandOutro } from "./BrandIntroOutro";
+import type { OutroProps } from "./BrandIntroOutro";
 
 type NoSchema = AnyZodObject;
 
@@ -30,16 +32,35 @@ const RemotionRoot: React.FC = () => {
           accentColor: "#D9863A",
         }}
       />
-      <Composition<NoSchema, IntroProps & Record<string, unknown>>
-        id="BrandIntro"
-        component={BrandIntro}
-        durationInFrames={72}
-        fps={24}
-        width={1280}
-        height={720}
+      <Composition<NoSchema, BriefShortProps & Record<string, unknown>>
+        id="BriefShort"
+        component={BriefShort}
+        durationInFrames={30 * 60}
+        fps={30}
+        width={1080}
+        height={1920}
         defaultProps={{
+          scenes: [],
+          words: [],
+          title: "VibeHub Short",
+          brandColor: "#151110",
+          accentColor: "#D9863A",
+        }}
+      />
+      {/* 16:9 롱폼 — BriefShort V2 컴포넌트 재사용, 해상도만 가로 */}
+      <Composition<NoSchema, BriefShortProps & Record<string, unknown>>
+        id="BriefLongform"
+        component={BriefShort}
+        durationInFrames={30 * 60 * 5}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: [],
+          words: [],
           title: "VibeHub Brief",
-          subtitle: "AI-curated tech insights",
+          brandColor: "#151110",
+          accentColor: "#D9863A",
         }}
       />
       <Composition<NoSchema, OutroProps & Record<string, unknown>>

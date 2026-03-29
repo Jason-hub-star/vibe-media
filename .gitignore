@@ -14,4 +14,8 @@ supabase/.temp
 
 # media-engine output
 output/
+
+# Shorts test assets (Pexels/Unsplash downloads)
+public/shorts/
+packages/media-engine/public/
 .vercel

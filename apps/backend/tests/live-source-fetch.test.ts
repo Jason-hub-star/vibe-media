@@ -63,6 +63,7 @@ describe("live source parsers", () => {
         href: "https://example.com/news",
         feedUrl: "https://example.com/news/rss.xml",
         contentType: "article",
+        pipelineLane: "editorial",
         defaultTags: ["launch"],
         maxItems: 1,
         enabled: true
@@ -118,6 +119,7 @@ describe("live source parsers", () => {
         href: "https://example.com/news",
         feedUrl: "https://example.com/news/rss.xml",
         contentType: "article",
+        pipelineLane: "editorial",
         defaultTags: ["launch"],
         maxItems: 1,
         enabled: true

@@ -15,6 +15,8 @@ interface UseFilterUrlSyncOptions {
   basePath: string;
   /** URL param name for the filter value (e.g. "topic", "group") */
   filterParam: string;
+  /** Legacy URL param names that should still hydrate the initial filter state. */
+  legacyFilterParams?: string[];
   /** URL param name for the search query (default: "q") */
   queryParam?: string;
 }
@@ -26,13 +28,17 @@ interface UseFilterUrlSyncOptions {
 export function useFilterUrlSync({
   basePath,
   filterParam,
+  legacyFilterParams = [],
   queryParam = "q"
 }: UseFilterUrlSyncOptions) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const initialFilter = searchParams.get(filterParam) ?? null;
+  const initialFilter =
+    searchParams.get(filterParam) ??
+    legacyFilterParams.map((param) => searchParams.get(param)).find((value): value is string => Boolean(value)) ??
+    null;
   const initialQuery = searchParams.get(queryParam) ?? "";
 
   const [filter, setFilter] = useState<FilterState>({

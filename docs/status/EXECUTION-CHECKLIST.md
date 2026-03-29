@@ -94,7 +94,7 @@
 - [x] 레퍼런스 브리프 등록 (Quality Check 6/6 기준)
 - [x] SEO 기반 구축 (favicon, robots.ts, sitemap.ts, per-page metadata, JSON-LD 3종, GA4, RSS, 공유 버튼, Footer 확장, Privacy/Terms)
 - [x] 동적 OG 이미지 (opengraph-image.tsx + twitter-image.tsx, root + brief detail)
-- [x] 검색 + 카테고리 필터 (공용 FilterBar, brief topic 필터, radar group 필터)
+- [x] 검색 + 카테고리 필터 (공용 FilterBar, brief topic 필터, radar category 필터)
 - [x] `/radar/[id]` 공개 상세 페이지 (JSON-LD Thing, 동적 OG/Twitter 이미지, sitemap 확장)
 - [x] URL 기반 필터 동기화 (brief `topic`+`q`, radar `group`+`q`, debounce 300ms)
 - [x] 관련 브리프 섹션 (brief 상세 하단 topic 기반 매칭, discover 상세 relatedBriefSlugs 매칭)
@@ -128,7 +128,11 @@
 - [x] discover 자동 발행 (`daily-auto-publish`에 discover 경량 검증 + auto-publish 통합)
 - [x] Category SSOT (`DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일)
 - [x] radar 카테고리 그룹 UI (Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지)
-- [x] `radar` 카테고리 필터 URL 동기화 (`/radar?group=X&q=Y`)
+- [x] design inspiration 확장 (`design_token` category + Obsidian `Design Tokens` export + editorial RSS 8개 seed)
+- [x] live ingest snapshot source UUID 보존 (`public.sources.id` 유지로 sync/export/source linkage 안정화)
+- [x] discover sync publish hydration (approved discover row에 `published_at` 자동 채움, `/radar` 공개 gate와 일치)
+- [x] `radar` 카테고리 필터 URL 동기화 (`/radar?category=X&q=Y`)
+- [x] Featured discover 재노출 규칙 정리 (기본 index에서는 중복 제거, category/search 필터 시 결과 목록에 포함)
 - [x] `tracked / watching / featured` 노출 규칙 정리 — DISCOVERY-TAXONOMY.md Exposure Rules 섹션 추가
 - [x] `brief`와 `discover` 동시 노출 기준 고정 — relatedBriefSlugs 자동 매칭 구현 (태그/카테고리 교차)
 - [x] action link 검증 규칙 정리 — isValidActionHref() 유틸 + DiscoverCard/radar detail 필터 적용
@@ -136,6 +140,7 @@
 ## P3 — Hardening
 - [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`) — approved 브리프 quality check → scheduled → published 자동 전환
 - [x] auto-publish skip recovery + editorial integrity guard (`publish:repair-state`, `automation:check`, Supabase retry/backoff)
+- [x] Supabase migration replay 안전화 (`channel_publish_results`, `locale variant` migration에 idempotent guard 추가)
 - [x] Channel Publish Pipeline v2 설계 문서 — `CHANNEL-PUBLISH-PIPELINE.md` 전면 개편
 - [ ] admin 실제 인증/권한 모델 설계
 - [x] showcase submission intake flow (`tool_submissions` + 비로그인 폼 + 자동 심사 + promote/reject)
@@ -200,9 +205,41 @@
 - [x] 전체 자동화 체인 실전 검증: 9건 published + 미디어 합성
 - [x] approved+draft 상태 꼬임 방지 DB 트리거 (trg_fix_approved_draft)
 - [ ] pyannote-audio 화자 분리 (ZCR 대비 정확도 향상, HuggingFace 토큰 필요, 무료) — 보류
-- [ ] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제) — 보류
-- [ ] @remotion/captions 단어별 자막 애니메이션 — 보류
+- [x] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제) — 완료, Shorts TTS 엔진으로 채택
+- [x] @remotion/captions 워드바이워드 자막 애니메이션 — BriefShort V2에 spring 바운스 구현 완료
 - [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
+
+## P3 — Shorts Pipeline (9:16, 50-58초)
+- [x] MimikaStudio Qwen3-TTS 목소리 클론 등록 (owner-jason)
+- [x] Gemini 60초 나레이션 스크립트 자동 생성
+- [x] MimikaStudio REST API → 클론 음성 WAV 생성
+- [x] Whisper STT word-level 타임스탬프 추출
+- [x] Remotion BriefShort V2 Composition (1080×1920, 30fps)
+  - [x] 씬별 배경 이미지 + Ken Burns 줌/팬 (zoom-in, zoom-out, pan-left, pan-right)
+  - [x] 워드바이워드 하이라이트 자막 (spring 바운스 + 금색 active)
+  - [x] 프로그레스 바 (상단, 그라데이션)
+  - [x] 타이틀 카드 (첫 3초, spring 등장 + 페이드아웃)
+  - [x] CTA 엔딩 (마지막 4초, pulse 효과 + 서브텍스트)
+  - [x] 브랜드 워터마크 (상시 표시)
+- [x] ffmpeg 합성 (map 0:v + map 1:a, loudnorm -16 LUFS)
+- [x] 프로토타입 풀 파이프라인 성공 (51.8초, Brief → 최종 MP4)
+- [ ] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
+- [ ] shorts:render CLI 워커 자동화 (`npm run shorts:render`)
+- [ ] daily pipeline 자동 연결 (Long-form과 병렬)
+- [ ] YouTube Shorts 자동 업로드 (#Shorts 태그)
+
+## P3 — Newsletter Pipeline
+- [x] Resend API 키 발급 + 환경변수 설정 (`RESEND_API_KEY`)
+- [x] Resend Audience 생성 (EN / ES 분리)
+- [x] 뉴스레터 HTML 템플릿 구현 (inline-CSS, brief 카드 레이아웃)
+- [x] published brief 자동 수집 → Broadcast 본문 생성 워커
+- [x] Resend Broadcasts API 발송 (`newsletter:send` CLI)
+- [x] dual-locale 발송 (EN + ES 각각 별도 Broadcast)
+- [x] 홈페이지 CTA → Resend Contacts API 구독자 등록 연결
+- [x] 발송 결과 Telegram 보고 (발송 완료/실패/스킵 + 구독자 알림)
+- [x] unsubscribe 링크 + CAN-SPAM 준수 footer (`{{{RESEND_UNSUBSCRIBE_URL}}}`)
+- [x] daily pipeline 자동 연결 (`blocking: false`, 맨 끝 스텝)
+- [x] dry-run 지원 (`npm run newsletter:send-dry`)
 
 ## Current Snapshot
 - [x] 공개 사이트 기본 shell

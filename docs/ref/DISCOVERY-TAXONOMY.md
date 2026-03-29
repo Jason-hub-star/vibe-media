@@ -35,13 +35,16 @@
 - `grant`
 - `community`
 
+## Design Categories
+- `design_token`
+
 ## Asset Categories
 - `asset`
 
 ## Notes
 - 하나의 항목은 하나의 대표 category만 가진다.
 - 세부 분류는 `tags`로 보조한다.
-- category를 더 늘릴 때는 `packages/content-contracts/src/discover.ts`, presenter, admin filter 순서로 같이 수정한다.
+- category를 더 늘릴 때는 `packages/content-contracts/src/discover.ts`, presenter, radar filter, Obsidian export 순서로 같이 수정한다.
 
 ---
 

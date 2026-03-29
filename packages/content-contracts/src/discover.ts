@@ -9,7 +9,7 @@ export type DiscoverStatus = (typeof DISCOVER_STATUSES)[number];
 
 // ── Category SSOT ────────────────────────────────────────────────────────────
 // 카테고리 추가 = 이 배열에 1줄 추가하면 타입 + 허용목록 + 프리젠터 라벨이 자동 반영됨
-export type DiscoverCategoryGroup = "core" | "builder" | "knowledge" | "opportunity" | "asset";
+export type DiscoverCategoryGroup = "core" | "builder" | "knowledge" | "opportunity" | "design" | "asset";
 
 export const DISCOVER_CATEGORIES = [
   // Core
@@ -39,6 +39,8 @@ export const DISCOVER_CATEGORIES = [
   { id: "job", label: "Job", group: "opportunity" },
   { id: "grant", label: "Grant", group: "opportunity" },
   { id: "community", label: "Community", group: "opportunity" },
+  // Design
+  { id: "design_token", label: "Design Tokens", group: "design" },
   // Asset
   { id: "asset", label: "Asset", group: "asset" },
 ] as const;

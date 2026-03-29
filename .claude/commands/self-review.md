@@ -27,15 +27,21 @@
 - 새로 추가된 export 중 다른 파일에서 참조되지 않는 것 확인
 
 ### 6. 문서 정합성
-- route가 변경/추가된 경우 `docs/ref/ROUTE-SPECS.md` 동기화 여부
-- 스키마 변경이 있으면 `docs/ref/SCHEMA.md` 동기화 여부
-- `docs/status/PROJECT-STATUS.md` 업데이트 필요 여부 판단
+- 먼저 `/doc-sync` 기준으로 change class를 분류한다
+- `/doc-sync` 결과에서 `missing` 문서를 그대로 문서 정합성 이슈로 가져온다
+- route/surface 변경이면 `docs/ref/ROUTE-SPECS.md`와 `docs/status/PROJECT-STATUS.md`를 우선 확인한다
+- schema/migration 변경이면 `docs/ref/SCHEMA.md`와 `docs/status/PROJECT-STATUS.md`를 우선 확인한다
+- pipeline/agent flow 변경이면 `docs/ref/PIPELINE-OPERATING-MODEL.md`, `docs/ref/AGENT-OPERATING-MODEL.md`를 확인한다
+- automation/prompt 변경이면 `.claude/automations/README.md`, `docs/ref/AUTO-PUBLISH-RULES.md`, `docs/ref/REVIEW-POLICY.md`, `CLAUDE.md` 필요 여부를 확인한다
+- sidecar/channel 변경이면 `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`, `docs/ref/PIPELINE-OPERATING-MODEL.md` 필요 여부를 확인한다
+- 설계 경계가 바뀌었다면 `docs/status/DECISION-LOG.md`가 빠지지 않았는지 본다
+- `.claude/automations/**`가 바뀌었으면 `npm run automation:check` 결과도 함께 적는다
 
 ### 7. 테스트 실행
 - `npm run test` (unit tests)
 - 실패한 테스트가 있으면 pre-existing인지 신규인지 구분
 
-### 8.5. CSS 토큰 준수 점검
+### 8. CSS 토큰 준수 점검
 - 변경된 CSS 파일에 대해 `bash tools/token-lint.sh` 실행
 - 위반 0건이면 PASS, 1건 이상이면 목록 출력
 
@@ -61,10 +67,15 @@
 | 300줄 규칙 | ⚠️ 1건 | pipeline.css 418줄 (CSS, 허용) |
 | 보안 체크 | ✅ PASS | |
 | 미사용 코드 | ✅ PASS | |
-| 문서 정합성 | ✅ PASS | |
+| 문서 정합성 | ✅ PASS/⚠️ | `/doc-sync` 기준 |
 | Unit tests | ✅ 33/34 | 1건 pre-existing |
 | CSS 토큰 준수 | ✅/⚠️ | N건 |
 | 코드 품질 | ⚠️ 2건 | 아래 참조 |
+
+### Doc Sync Summary
+- change classes: ...
+- missing docs: ...
+- companion checks: ...
 
 ### 발견 사항
 1. [severity] 파일:줄 — 설명
@@ -79,3 +90,5 @@
 - pre-existing 이슈는 발견 사항에 포함하되 [pre-existing] 태그를 붙임
 - 추천 조치는 반드시 해야 하는 것(MUST)과 권장(SHOULD)을 구분
 - 리뷰는 사실 기반으로만 — 추측하지 않고 실제 코드를 읽고 판단
+- `/doc-sync` 결과를 추상적으로 요약하지 말고, 실제 missing 문서명을 적는다
+- 문서 정합성 항목은 단순 route/schema만이 아니라 automation, lane, channel 변경도 포함한다

@@ -22,6 +22,7 @@ describe("supabase editorial sync", () => {
             kind: "rss",
             base_url: "https://openai.com/news/",
             source_tier: "auto-safe",
+            pipeline_lane: "editorial",
             enabled: true,
             last_success_at: "2026-03-22T00:00:00.000Z",
             last_failure_at: null,
@@ -84,6 +85,7 @@ describe("supabase editorial sync", () => {
     expect(editorial.discoverItems).toHaveLength(1);
     expect(editorial.discoverItems[0]?.status).toBe("featured");
     expect(editorial.discoverItems[0]?.review_status).toBe("pending");
+    expect(editorial.discoverItems[0]?.published_at).toBeNull();
     expect(editorial.discoverActions.map((item) => item.action_kind)).toEqual(["github", "brief"]);
     expect(editorial.adminReviews).toHaveLength(2);
   });
@@ -99,6 +101,7 @@ describe("supabase editorial sync", () => {
             kind: "rss",
             base_url: "https://openai.com/news/",
             source_tier: "auto-safe",
+            pipeline_lane: "editorial",
             enabled: true,
             last_success_at: "2026-03-22T00:00:00.000Z",
             last_failure_at: null,
@@ -167,6 +170,7 @@ describe("supabase editorial sync", () => {
             kind: "github-releases",
             base_url: "https://github.com/openai/openai-node/releases",
             source_tier: "auto-safe",
+            pipeline_lane: "editorial",
             enabled: true,
             last_success_at: "2026-03-22T00:00:00.000Z",
             last_failure_at: null,
@@ -225,7 +229,8 @@ describe("supabase editorial sync", () => {
 
     expect(editorial.discoverItems[0]?.title).toBe("OpenAI Node v6.33.0");
     expect(editorial.discoverItems[0]?.summary).toContain("API: add keys field to computer actions.");
-    expect(editorial.discoverItems[0]?.tags).toEqual(["Repo", "Release", "API"]);
+    expect(editorial.discoverItems[0]?.tags).toEqual(["API"]);
+    expect(editorial.discoverItems[0]?.published_at).toBe("2026-03-22T00:00:00.000Z");
   });
 
   it("preserves manual brief lifecycle once an operator has touched it", () => {
@@ -289,6 +294,35 @@ describe("supabase editorial sync", () => {
 
     expect(merged.status).toBe("tracked");
     expect(merged.review_status).toBe("changes_requested");
+  });
+
+  it("hydrates published_at for approved discover rows that were previously unpublished", () => {
+    const merged = preserveDiscoverLifecycle(
+      {
+        id: "discover-1",
+        source_item_id: "source-item-1",
+        slug: "fresh-discover",
+        title: "Fresh title",
+        category: "design_token",
+        summary: "Fresh summary",
+        status: "featured",
+        review_status: "approved",
+        scheduled_at: null,
+        published_at: "2026-03-29T14:41:16.037Z",
+        tags: ["design"],
+        highlighted: true
+      },
+      {
+        source_item_id: "source-item-1",
+        status: "featured",
+        review_status: "approved",
+        scheduled_at: null,
+        published_at: null
+      }
+    );
+
+    expect(merged.review_status).toBe("approved");
+    expect(merged.published_at).toBe("2026-03-29T14:41:16.037Z");
   });
 
   it("keeps resolved admin review rows closed", () => {

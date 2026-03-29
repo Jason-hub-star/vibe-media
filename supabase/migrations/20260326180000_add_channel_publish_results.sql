@@ -45,8 +45,10 @@ alter table public.channel_publish_results enable row level security;
 alter table public.publish_dispatches enable row level security;
 
 -- service_role만 쓰기 가능
+drop policy if exists "service_role_channel_publish" on public.channel_publish_results;
 create policy "service_role_channel_publish" on public.channel_publish_results
   for all using (true) with check (true);
 
+drop policy if exists "service_role_publish_dispatches" on public.publish_dispatches;
 create policy "service_role_publish_dispatches" on public.publish_dispatches
   for all using (true) with check (true);
