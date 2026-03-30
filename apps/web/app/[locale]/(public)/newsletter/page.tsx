@@ -37,7 +37,7 @@ export default async function NewsletterPage({
           <NewsletterForm locale={locale} />
           <PlaceholderArt
             alt="Newsletter hero placeholder"
-            src="/placeholders/newsletter-hero-placeholder.svg"
+            src="/placeholders/newsletter-hero-placeholder.png"
           />
         </div>
       </SectionBlock>

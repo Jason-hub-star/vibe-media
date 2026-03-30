@@ -14,6 +14,7 @@
     "pipeline:live-ingest": "npm run pipeline:live-ingest -w @vibehub/backend",
     "pipeline:live-fetch": "npm run pipeline:live-fetch -w @vibehub/backend",
     "pipeline:supabase-cleanup": "npm run pipeline:supabase-cleanup -w @vibehub/backend",
+    "pipeline:supabase-retention": "npm run pipeline:supabase-retention -w @vibehub/backend",
     "pipeline:supabase-migrate": "npm run pipeline:supabase-migrate -w @vibehub/backend",
     "pipeline:supabase-sync": "npm run pipeline:supabase-sync -w @vibehub/backend",
     "pipeline:obsidian-export": "npm run pipeline:obsidian-export -w @vibehub/backend",

@@ -52,6 +52,7 @@ export interface SaveToolSubmissionInput extends SubmissionDraftInput {
 }
 
 const TOOL_SUBMISSIONS_CACHE_TTL_MS = 15_000;
+const DEFAULT_PUBLIC_TOOL_SUBMISSIONS_LIMIT = 24;
 const SUBMISSION_RATE_LIMIT_WINDOW_MINUTES = 10;
 const SUBMISSION_RATE_LIMIT_MAX = 3;
 
@@ -103,10 +104,55 @@ function mapToolSubmission(row: ToolSubmissionRow): ToolSubmission {
   };
 }
 
-async function fetchAllToolSubmissions() {
+function normalizeListLimit(limit?: number | null) {
+  if (typeof limit !== "number" || !Number.isFinite(limit)) return null;
+  return Math.max(0, Math.floor(limit));
+}
+
+async function queryToolSubmissionRows(limit?: number | null) {
   const sql = createSupabaseSql();
+  const normalizedLimit = normalizeListLimit(limit);
 
   try {
+    if (normalizedLimit === 0) {
+      return [] satisfies ToolSubmission[];
+    }
+
+    if (normalizedLimit !== null) {
+      const rows = await sql<ToolSubmissionRow[]>`
+        select
+          id,
+          slug,
+          title,
+          summary,
+          description,
+          website_url,
+          github_url,
+          demo_url,
+          docs_url,
+          tags,
+          submitter_email,
+          submitter_name,
+          status,
+          screening_status,
+          screening_score,
+          screening_notes,
+          origin_ip_hash,
+          user_agent_hash,
+          source_locale,
+          target_locales,
+          submitted_by_account_id,
+          promoted_showcase_entry_id,
+          created_at,
+          updated_at
+        from public.tool_submissions
+        order by created_at desc, title asc
+        limit ${normalizedLimit}
+      `;
+
+      return rows.map(mapToolSubmission);
+    }
+
     const rows = await sql<ToolSubmissionRow[]>`
       select
         id,
@@ -143,6 +189,97 @@ async function fetchAllToolSubmissions() {
   }
 }
 
+async function queryLatestToolSubmissionRows(limit: number) {
+  const sql = createSupabaseSql();
+
+  try {
+    if (limit === 0) {
+      return [] satisfies ToolSubmission[];
+    }
+
+    const rows = await sql<ToolSubmissionRow[]>`
+      select
+        id,
+        slug,
+        title,
+        summary,
+        description,
+        website_url,
+        github_url,
+        demo_url,
+        docs_url,
+        tags,
+        submitter_email,
+        submitter_name,
+        status,
+        screening_status,
+        screening_score,
+        screening_notes,
+        origin_ip_hash,
+        user_agent_hash,
+        source_locale,
+        target_locales,
+        submitted_by_account_id,
+        promoted_showcase_entry_id,
+        created_at,
+        updated_at
+      from public.tool_submissions
+      where status = 'approved_for_listing'
+      order by created_at desc, title asc
+      limit ${limit}
+    `;
+
+    return rows.map(mapToolSubmission);
+  } finally {
+    await sql.end();
+  }
+}
+
+async function queryToolSubmissionDetail(id: string) {
+  const sql = createSupabaseSql();
+
+  try {
+    const rows = await sql<ToolSubmissionRow[]>`
+      select
+        id,
+        slug,
+        title,
+        summary,
+        description,
+        website_url,
+        github_url,
+        demo_url,
+        docs_url,
+        tags,
+        submitter_email,
+        submitter_name,
+        status,
+        screening_status,
+        screening_score,
+        screening_notes,
+        origin_ip_hash,
+        user_agent_hash,
+        source_locale,
+        target_locales,
+        submitted_by_account_id,
+        promoted_showcase_entry_id,
+        created_at,
+        updated_at
+      from public.tool_submissions
+      where id = ${id}::uuid
+      limit 1
+    `;
+
+    return rows[0] ? mapToolSubmission(rows[0]) : null;
+  } finally {
+    await sql.end();
+  }
+}
+
+async function fetchAllToolSubmissions() {
+  return queryToolSubmissionRows();
+}
+
 async function readAllToolSubmissions() {
   if (!canReadSupabase()) return null;
 
@@ -168,24 +305,37 @@ async function readAllToolSubmissions() {
   return inFlight;
 }
 
-export async function listSupabaseToolSubmissions() {
+export async function listSupabaseToolSubmissions(options?: { limit?: number }) {
+  if (!canReadSupabase()) return null;
+
+  const limit = normalizeListLimit(options?.limit);
+  if (limit !== null) {
+    return queryToolSubmissionRows(limit);
+  }
+
   return readAllToolSubmissions();
 }
 
-export async function listSupabaseLatestToolSubmissions() {
+export async function listSupabaseLatestToolSubmissions(options?: { limit?: number }) {
   if (!canReadSupabase()) return null;
+  const limit =
+    normalizeListLimit(options?.limit) ?? DEFAULT_PUBLIC_TOOL_SUBMISSIONS_LIMIT;
 
   const now = Date.now();
   if (cachedLatestSubmissions && now - cachedAt < TOOL_SUBMISSIONS_CACHE_TTL_MS) {
-    return cachedLatestSubmissions;
+    return cachedLatestSubmissions.slice(0, limit);
   }
 
-  const rows = await readAllToolSubmissions();
-  return rows?.filter((item) => item.status === "approved_for_listing") ?? null;
+  return queryLatestToolSubmissionRows(limit);
 }
 
 export async function getSupabaseToolSubmissionDetail(id: string) {
-  return (await readAllToolSubmissions())?.find((item) => item.id === id) ?? null;
+  const now = Date.now();
+  if (cachedAdminSubmissions && now - cachedAt < TOOL_SUBMISSIONS_CACHE_TTL_MS) {
+    return cachedAdminSubmissions.find((item) => item.id === id) ?? null;
+  }
+
+  return queryToolSubmissionDetail(id);
 }
 
 async function assertSubmissionRateLimit(sql: ReturnType<typeof createSupabaseSql>, input: {
@@ -466,7 +616,7 @@ function toShowcaseInput(submission: ToolSubmission): SaveShowcaseEntryInput {
     body: submission.description
       ? submission.description.split(/\n+/).map((line) => line.trim()).filter(Boolean)
       : [submission.summary],
-    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    coverAsset: "/placeholders/source-strip-placeholder.jpg",
     tags: submission.tags,
     primaryLink,
     links,

@@ -16,15 +16,16 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: colorTokens.ink,
+          background: colorTokens.orange,
           borderRadius: "6px",
-          fontSize: "20px",
+          fontSize: "18px",
           fontWeight: 700,
           fontFamily: "sans-serif",
-          color: colorTokens.orange
+          letterSpacing: "-1px",
+          color: colorTokens.ink
         }}
       >
-        V
+        VH
       </div>
     ),
     { ...size }

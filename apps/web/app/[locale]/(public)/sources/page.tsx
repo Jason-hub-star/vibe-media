@@ -69,7 +69,7 @@ export default async function SourcesPage() {
         </div>
         <PlaceholderArt
           alt="Submit tool hero placeholder"
-          src="/placeholders/source-strip-placeholder.svg"
+          src="/placeholders/source-strip-placeholder.jpg"
         />
       </section>
 

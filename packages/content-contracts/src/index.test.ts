@@ -106,7 +106,7 @@ describe("shared contract shapes", () => {
       title: "Multi-agent editorial console",
       summary: "운영 파이프라인을 해치지 않고 전시 레인을 붙이는 관리형 프론트엔드 실험입니다.",
       body: ["첫 공개는 홈 티저와 Radar 전시 묶음부터 시작합니다."],
-      coverAsset: "/placeholders/source-strip-placeholder.svg",
+      coverAsset: "/placeholders/source-strip-placeholder.jpg",
       tags: ["showcase", "agents", "editorial"],
       primaryLink: {
         kind: "demo",

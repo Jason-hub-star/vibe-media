@@ -236,7 +236,7 @@ function toShowcaseInput(candidate: ToolCandidateImport): SaveShowcaseEntryInput
     body: candidate.description
       ? candidate.description.split(/\n+/).map((line) => line.trim()).filter(Boolean)
       : [candidate.summary],
-    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    coverAsset: "/placeholders/source-strip-placeholder.jpg",
     tags: [...candidate.tags, "imported"].slice(0, 6),
     primaryLink,
     links,

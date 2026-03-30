@@ -319,7 +319,7 @@ export const showcaseEntries: ShowcaseEntry[] = [
       "이 전시는 brief/discover 자동화 본선을 유지한 채, 수동 큐레이션만 담는 별도 showcase 레인을 실험합니다.",
       "핵심은 홈 티저와 Radar 전시 묶음이 브랜드 감각을 더하되 파이프라인 의미를 흐리지 않는지 검증하는 것입니다."
     ],
-    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    coverAsset: "/placeholders/source-strip-placeholder.jpg",
     tags: ["showcase", "operations", "editorial"],
     primaryLink: {
       kind: "demo",

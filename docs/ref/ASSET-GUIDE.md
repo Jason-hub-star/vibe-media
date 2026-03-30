@@ -2,8 +2,8 @@
 
 ## Asset Strategy
 - keep screenshots ephemeral
-- prefer `webp`, optional `avif` for hero/banner
-- use SVG for logo, ribbon, sprites, and utility icons
+- prefer `webp`, optional `avif` for hero/banner — `png`/`jpg`도 `next/image`가 자동 WebP 변환하므로 허용
+- logo-mark는 SVG `<text>` 기반 (Helvetica Neue Bold "VH"), ribbon/sprites는 SVG 유지
 - static brand assets should stay aligned with the current design-token palette
 
 ## Placeholder Slots
@@ -32,7 +32,13 @@
   - purple `#a88fd0`
 
 ## Current Asset Reality
-- 현재 자산은 placeholder + small brand/sprite 세트만 포함한다
-- 실제 생성 자산 교체 전까지 public page는 placeholder를 유지한다
-- `radar-hero-placeholder`는 향후 discovery 허브 대표 비주얼 또는 배너로 교체한다
+- 로고: `logo-mark.svg` + `favicon.svg` — SVG `<text>` 폰트 기반 "VH" (Helvetica Neue 700, orange 배경)
+- 워드마크: `logo-wordmark.svg` — 미니 VH 마크 + "VIBEHUB" 텍스트
+- dynamic icons: `icon.tsx` (32×32), `apple-icon.tsx` (180×180) — `colorTokens` 기반 "VH" 텍스트 렌더
+- 플레이스홀더 교체 현황 (2026-03-31):
+  - `radar-hero-placeholder.png` — AI 생성 레이더 비주얼 (동심원+데이터 노드)
+  - `newsletter-hero-placeholder.png` — AI 생성 봉투+회로 비주얼
+  - `source-strip-placeholder.jpg` — AI 생성 카드 모자이크 비주얼
+  - `brief-hero-placeholder.svg` — 미사용 (교체 불요)
+  - `admin-video-banner-placeholder.svg` — 내부 admin용 (교체 불요)
 - screenshot evidence is not a persistent asset category

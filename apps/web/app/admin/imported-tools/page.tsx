@@ -4,7 +4,7 @@ import { listImportedToolCandidates } from "@/features/tool-candidate-imports/us
 import { ToolCandidateImportCardGrid } from "@/features/tool-candidate-imports/view/ToolCandidateImportCardGrid";
 
 export default async function AdminImportedToolsPage() {
-  const items = await listImportedToolCandidates();
+  const items = await listImportedToolCandidates({ limit: 200 });
 
   return (
     <AdminShell

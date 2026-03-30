@@ -33,9 +33,9 @@ function mapLatest(entries: ToolSubmission[]) {
   return sortToolSubmissions(entries).filter((item) => item.status === "approved_for_listing");
 }
 
-export async function listToolSubmissions(): Promise<ToolSubmission[]> {
+export async function listToolSubmissions(options?: { limit?: number }): Promise<ToolSubmission[]> {
   if (canUseSupabase()) {
-    const rows = await listSupabaseToolSubmissions();
+    const rows = await listSupabaseToolSubmissions(options);
     if (rows) return sortToolSubmissions(rows);
   }
 
@@ -156,7 +156,7 @@ export async function promoteToolSubmissionToShowcase(submissionId: string) {
     title: submission.title,
     summary: submission.summary,
     body: submission.description ? [submission.description] : [submission.summary],
-    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    coverAsset: "/placeholders/source-strip-placeholder.jpg",
     tags: submission.tags,
     primaryLink: submission.demoUrl
       ? { kind: "demo", label: "Open demo", href: submission.demoUrl }

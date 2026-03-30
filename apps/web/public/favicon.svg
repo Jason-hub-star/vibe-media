@@ -1,5 +1,6 @@
 <svg width="32" height="32" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="128" height="128" rx="28" fill="#D9863A"/>
-  <path d="M28 88L52 40H68L44 88H28Z" fill="#151110"/>
-  <path d="M60 88L84 40H100L76 88H60Z" fill="#151110"/>
+  <text x="64" y="82" text-anchor="middle" fill="#151110"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="64" font-weight="700" letter-spacing="-2">VH</text>
 </svg>

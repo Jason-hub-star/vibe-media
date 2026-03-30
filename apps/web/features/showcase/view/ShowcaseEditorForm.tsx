@@ -75,7 +75,7 @@ export function ShowcaseEditorForm({
           <span className="eyebrow">Cover asset</span>
           <input
             className="input"
-            defaultValue={entry?.coverAsset ?? "/placeholders/source-strip-placeholder.svg"}
+            defaultValue={entry?.coverAsset ?? "/placeholders/source-strip-placeholder.jpg"}
             name="coverAsset"
           />
         </label>

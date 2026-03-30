@@ -4,7 +4,7 @@ import { listToolSubmissions } from "@/features/tool-submissions/use-case/list-t
 import { ToolSubmissionCardGrid } from "@/features/tool-submissions/view/ToolSubmissionCardGrid";
 
 export default async function AdminSubmissionsPage() {
-  const items = await listToolSubmissions();
+  const items = await listToolSubmissions({ limit: 200 });
 
   return (
     <AdminShell

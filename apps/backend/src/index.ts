@@ -51,6 +51,7 @@ export * from "./shared/supabase-id";
 export * from "./shared/supabase-ingest-sync";
 export * from "./shared/supabase-postgres";
 export * from "./shared/supabase-read-projections";
+export * from "./shared/supabase-retention";
 export * from "./shared/supabase-showcase-actions";
 export * from "./shared/supabase-showcase-read";
 export * from "./shared/supabase-tool-candidate-imports";

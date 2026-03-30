@@ -35,7 +35,7 @@ interface SupabaseItemRow {
   source_tier: InboxItem["sourceTier"];
   title: string;
   content_type: InboxItem["contentType"];
-  parsed_content: { summary?: unknown };
+  parsed_summary: string | null;
   ingest_status: "fetched" | "parsed" | "failed";
   target_surface: InboxItem["targetSurface"] | null;
   confidence: string | number | null;
@@ -265,7 +265,7 @@ export function buildProjectionBundleFromSupabaseRows(
     stage: inferStage(row),
     targetSurface: row.target_surface ?? "brief",
     confidence: coerceConfidence(row.confidence),
-    parsedSummary: String(row.parsed_content.summary ?? "")
+    parsedSummary: row.parsed_summary ?? ""
   }));
 
   return {
@@ -319,7 +319,7 @@ async function fetchProjectionBundleFromSupabase() {
           sources.source_tier,
           items.title,
           items.content_type,
-          items.parsed_content,
+          items.parsed_content->>'summary' as parsed_summary,
           items.ingest_status,
           classifications.target_surface,
           classifications.confidence,

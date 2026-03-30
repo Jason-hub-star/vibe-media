@@ -117,6 +117,12 @@
   - Podcast 자동화: WAV → MP3 → Supabase Storage → feed.xml → Spotify 자동 감지
   - Spotify 첫 에피소드 라이브: https://open.spotify.com/episode/4AkWIMEYU4UGJF9Zt18cVn
   - sources.brand 컬럼 추가 (멀티니치 복제 기반)
+- 브랜드 로고 + 플레이스홀더 교체: done (2026-03-31)
+  - logo-mark.svg / favicon.svg: 도형 기반 → SVG `<text>` 폰트("VH", Helvetica Neue Bold) 전환
+  - logo-wordmark.svg: 미니 마크 + "VIBEHUB MEDIA" 텍스트 리디자인
+  - icon.tsx / apple-icon.tsx: "V" → "VH" 텍스트, ink 배경 → orange 배경 전환
+  - 플레이스홀더 3개 AI 생성 이미지로 교체: radar(PNG), newsletter(PNG), source-strip(JPG)
+  - design-tokens assetSlots 경로 + 백엔드 폴백 경로 일괄 업데이트
 - Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
   - MimikaStudio → NotebookLM 2인 대화(주) + Qwen3-TTS(백업)으로 교체
   - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환

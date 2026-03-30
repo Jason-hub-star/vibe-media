@@ -25,7 +25,7 @@ function ActionLink({
 }
 
 export function ShowcaseCard({ entry }: { entry: ShowcaseEntry }) {
-  const coverAsset = entry.coverAsset || "/placeholders/source-strip-placeholder.svg";
+  const coverAsset = entry.coverAsset || "/placeholders/source-strip-placeholder.jpg";
   const secondaryLinks = entry.links.slice(0, 2);
 
   return (

@@ -42,7 +42,7 @@ export default async function RadarPage() {
             A discovery hub for open-source projects, plugins, design-token inspiration, events, contests, and trending sites — browse and jump straight in.
           </p>
         </div>
-        <PlaceholderArt alt="Radar hero placeholder" src="/placeholders/radar-hero-placeholder.svg" />
+        <PlaceholderArt alt="Radar hero placeholder" src="/placeholders/radar-hero-placeholder.png" />
       </section>
 
       <SectionBlock eyebrow="Featured picks" title="Fast paths into things worth opening, downloading, or tracking">

@@ -32,9 +32,7 @@ describe("supabase read projections", () => {
           source_tier: "auto-safe",
           title: "GPT release",
           content_type: "article",
-          parsed_content: {
-            summary: "A concise launch summary."
-          },
+          parsed_summary: "A concise launch summary.",
           ingest_status: "parsed",
           target_surface: "brief",
           confidence: "0.91",
@@ -107,9 +105,7 @@ describe("supabase read projections", () => {
           source_tier: "auto-safe",
           title: "Needs operator review",
           content_type: "article",
-          parsed_content: {
-            summary: "A summary that still needs human confirmation."
-          },
+          parsed_summary: "A summary that still needs human confirmation.",
           ingest_status: "parsed",
           target_surface: "both",
           confidence: "0.72",

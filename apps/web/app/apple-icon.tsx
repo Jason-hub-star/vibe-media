@@ -16,15 +16,16 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: colorTokens.ink,
+          background: colorTokens.orange,
           borderRadius: "36px",
-          fontSize: "108px",
+          fontSize: "84px",
           fontWeight: 700,
           fontFamily: "sans-serif",
-          color: colorTokens.orange
+          letterSpacing: "-4px",
+          color: colorTokens.ink
         }}
       >
-        V
+        VH
       </div>
     ),
     { ...size }

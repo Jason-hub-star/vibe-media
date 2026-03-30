@@ -154,14 +154,14 @@ export const assetSlots: DesignAssetSlot[] = [
     id: "radar-hero",
     name: "radar-hero-placeholder",
     type: "hero",
-    path: "/placeholders/radar-hero-placeholder.svg",
+    path: "/placeholders/radar-hero-placeholder.png",
     spec: { ratio: "16:10", minSize: "1680x1050", format: "webp" }
   },
   {
     id: "newsletter-hero",
     name: "newsletter-hero-placeholder",
     type: "banner",
-    path: "/placeholders/newsletter-hero-placeholder.svg",
+    path: "/placeholders/newsletter-hero-placeholder.png",
     spec: { ratio: "16:9", minSize: "1920x1080", format: "webp" }
   },
   {
@@ -175,7 +175,7 @@ export const assetSlots: DesignAssetSlot[] = [
     id: "source-strip",
     name: "source-strip-placeholder",
     type: "thumbnail",
-    path: "/placeholders/source-strip-placeholder.svg",
+    path: "/placeholders/source-strip-placeholder.jpg",
     spec: { ratio: "3:2", minSize: "1200x800", format: "webp" }
   }
 ];

@@ -45,9 +45,9 @@ function hasMockOnlyImportedState() {
   );
 }
 
-export async function listImportedToolCandidates(): Promise<ToolCandidateImport[]> {
+export async function listImportedToolCandidates(options?: { limit?: number }): Promise<ToolCandidateImport[]> {
   if (canUseSupabase()) {
-    const rows = await listSupabaseToolCandidateImports();
+    const rows = await listSupabaseToolCandidateImports(options);
     if (rows && rows.length > 0) return sortToolCandidateImports(rows);
     if (!hasMockOnlyImportedState()) return [];
   }
@@ -143,7 +143,7 @@ export async function promoteImportedToolCandidateToShowcase(candidateId: string
     title: candidate.title,
     summary: candidate.summary,
     body: candidate.description ? [candidate.description] : [candidate.summary],
-    coverAsset: "/placeholders/source-strip-placeholder.svg",
+    coverAsset: "/placeholders/source-strip-placeholder.jpg",
     tags: [...candidate.tags, "imported"].slice(0, 6),
     primaryLink: candidate.demoUrl
       ? { kind: "demo", label: "Open demo", href: candidate.demoUrl }
