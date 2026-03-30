@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Noto_Sans_KR } from "next/font/google";
 
 import { rootCssVariables } from "@vibehub/design-tokens";
@@ -27,6 +27,12 @@ const body = Noto_Sans_KR({
   weight: ["400", "500", "700"],
   variable: "--font-body"
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0a0a0a",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -63,7 +69,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${display.variable} ${body.variable}`}>
         <style>{rootCssVariables}</style>
         <JsonLd

@@ -20,7 +20,7 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
   └→ daily-media-publish (이것)
       ┌─ Shorts Track (9:16) ───────────────────────────
       │  S1. Gemini 스크립트 (120-140단어, 50-55초)
-      │  S2. MimikaStudio 1.7B TTS (owner-jason 클론)
+      │  S2. MimikaStudio 1.7B TTS (woman-es 클론, temp 0.3)
       │  S3. Whisper word-level 자막 (JSON)
       │  S4. Pexels 키워드 배경 이미지 4장 (portrait)
       │  S5. 문장 경계 기반 씬 자동분할 (4씬)
@@ -32,17 +32,23 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
       │
       ├─ Longform Track (16:9) ─────────────────────────
       │  L1. Gemini 스크립트 (300-350단어, ~2분)
-      │  L2. MimikaStudio 1.7B TTS (동일 클론)
+      │  L2. MimikaStudio 1.7B TTS (woman-es 동일 클론)
       │  L3. Whisper word-level 자막 (JSON)
       │  L4. Pexels 키워드 배경 이미지 8장 (landscape)
       │  L5. 문장 경계 기반 씬 자동분할 (8씬 + 챕터 카드)
       │  L6. Remotion BriefLongform 렌더 (1920×1080)
       │  L7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
       │
-      └─ 발행 ────────────────────────────────────────
-         7. Threads 발행 (publish:channels)
-         8. YouTube 업로드 (Shorts + Longform)
-         9. 운영자 확인 후 public 전환
+      └─ 발행 (EN 원본 + ES 확장) ──────────────────────
+         7. EN 발행: Threads EN + YouTube EN (publish:channels)
+            - YouTube: API 설정 + mp4 존재 시만 자동 업로드, 아니면 로컬 메타
+            - Podcast: EN 음성 WAV → MP3 → feed.xml (canonicalLocale 기준 1회)
+         8. ES 발행: brief_post_variants에서 ES variant 자동 조회 → 듀얼 dispatch
+            - Threads ES: variant title/body로 별도 게시
+            - YouTube ES: locale별 publisher 재등록 (language, briefUrl ES 반영)
+            - Podcast ES: ES 음성 WAV 감지 → feed-es.xml 별도 업로드
+            - Newsletter ES: publish:channels 범위 밖, 별도 newsletter:send 워커
+         9. 운영자 확인 후 YouTube public 전환
 ```
 
 ---
@@ -448,11 +454,20 @@ compose-final.sh가 자동으로:
 ```bash
 cd /Users/family/jason/vibehub-media
 npm run publish:channels <slug>
-# → Threads 자동 발행
-# → YouTube Longform 업로드 (unlisted) + brief 자동 연결
-# → YouTube Shorts 업로드 (unlisted, #Shorts 태그)
-# → DB channel_publish_results 기록 (youtube + youtube-shorts)
+# Pass 1: EN 원본 발행
+#   → Threads EN 자동 발행
+#   → YouTube Longform EN 업로드 (unlisted, API 설정 시) + brief 자동 연결
+#   → YouTube Shorts EN 업로드 (unlisted, longform과 별도 파일 존재 시)
+#   → Podcast: canonicalLocale 기준 WAV → MP3 → Supabase → feed.xml
+# Pass 2: ES variant 발행 (brief_post_variants에 ES 존재 시)
+#   → YouTube ES: publisher 재등록 (language=es, briefUrl=/es/brief/...)
+#   → Threads ES: variant title/body로 별도 게시
+#   → Podcast ES: ES 음성(longform-voice-es.wav) 감지 → feed-es.xml 업로드
+#     (ES 음성 파일 없으면 canonical voice fallback)
+# → DB channel_publish_results 기록 (locale별)
 # → Telegram 보고
+#
+# ⚠️ Newsletter는 별도 워커: npm run newsletter:send <slug>
 ```
 
 ### 수동 모드 (이미 Threads 발행된 경우)

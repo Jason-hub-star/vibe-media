@@ -324,7 +324,7 @@ NotebookLM M4A (영어 2인 대화, 1회 생성)
 ```
 Brief (Supabase)
   → Gemini 60초 스크립트 (120-140단어)
-    → MimikaStudio Qwen3-TTS 클론 (owner-jason, WAV)
+    → MimikaStudio Qwen3-TTS 클론 (woman-es, WAV, temp 0.3)
       → Whisper word-level 자막 (JSON)
         → Pexels 배경 이미지 4장 (portrait)
           → Remotion BriefShort V2 (1080×1920, 30fps)
@@ -353,7 +353,7 @@ interface BriefShortProps {
 ```
 
 **TTS 엔진:** MimikaStudio (localhost:7693)
-- REST API: `POST /api/qwen3/generate` (mode: "clone", voice_name: "owner-jason")
+- REST API: `POST /api/qwen3/generate` (mode: "clone", voice_name: "woman-es", temperature: 0.3, top_p: 0.7)
 - 로컬 전용, 비용 $0, 23개 언어 지원
 - 이전 "폐기" 판단 → Shorts 보조 경로로 재채택 (DECISION-LOG 참조)
 

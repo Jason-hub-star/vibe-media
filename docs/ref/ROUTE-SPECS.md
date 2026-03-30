@@ -80,10 +80,15 @@
 
 ## SEO Infrastructure
 - `robots.ts`: Next.js Metadata API, sitemap 경로 포함
-- `sitemap.ts`: 정적 7개 + 동적 brief slug + 동적 discover item 페이지
+- `sitemap.ts`: 정적 8개 + 동적 brief slug + 동적 discover item 페이지, `lastModified` 포함
 - JSON-LD: Organization (root), NewsArticle + BreadcrumbList (brief detail), Thing + BreadcrumbList (radar detail)
 - OG/Twitter 이미지: `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens) 기반 — raw hex 하드코딩 금지
+- hreflang: `buildAlternates()`로 en, es, x-default 3개 alternate 생성
+- `<html lang>`: `SetHtmlLang` 클라이언트 컴포넌트가 locale segment 기반 동적 설정
+- `viewport` export: root layout에서 `Viewport` 타입으로 분리 (width, initialScale, themeColor)
+- RSS feed: `/feed.xml` — brief 링크에 `/en/` locale prefix 포함
 - GA4: `NEXT_PUBLIC_GA_ID` 환경변수 기반, 미설정 시 비렌더링
+- SEO 자동화: `weekly-seo-audit.md` 주간 점검 프롬프트
 
 ## Shared Utilities
 - `useFilterUrlSync` (`features/shared/view/`): URL ↔ 필터 상태 동기화 훅 (basePath, filterParam, queryParam). Brief/Radar 공용

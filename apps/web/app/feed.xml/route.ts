@@ -12,8 +12,8 @@ export async function GET() {
       (brief) => `
     <item>
       <title><![CDATA[${cdata(brief.title)}]]></title>
-      <link>${SITE_URL}/brief/${brief.slug}</link>
-      <guid isPermaLink="true">${SITE_URL}/brief/${brief.slug}</guid>
+      <link>${SITE_URL}/en/brief/${brief.slug}</link>
+      <guid isPermaLink="true">${SITE_URL}/en/brief/${brief.slug}</guid>
       <description><![CDATA[${cdata(brief.summary)}]]></description>
       ${brief.publishedAt ? `<pubDate>${new Date(brief.publishedAt).toUTCString()}</pubDate>` : ""}
     </item>`

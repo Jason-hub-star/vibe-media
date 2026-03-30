@@ -4,16 +4,20 @@
 
 ## Pending
 
-### 2026-03-30 — 스페인어 올인 + 4채널 확정 ($0 운영)
+### 2026-03-30 — 발행 전략: EN 원본 유지 + ES 확장
 - 상태: resolved
 - 결정:
-  - 최종 발행 채널 4개 확정: YouTube (EN+ES 재생목록), Threads, Newsletter (Resend), Podcast (Spotify RSS)
+  - **EN 원본 유지**: Threads EN, Newsletter EN, 웹사이트 EN — 기존 영어 트래픽/구독자 보존
+  - **ES 확장 추가**: YouTube ES 영상, Threads ES 별도 게시, Newsletter ES audience, Podcast ES
+  - Brief 1건 → EN 원본 + ES 확장 동시 발행
+  - 최종 발행 채널: YouTube (EN+ES 재생목록), Threads (EN+ES), Newsletter (EN+ES 별도 워커), Podcast (Spotify RSS)
+  - 구현 상태: Threads ES ✅, YouTube ES ✅ (locale loop에서 publisher 재등록), Podcast ES ✅ (locale별 feed 업로드), Newsletter ES 별도 워커
   - X/Twitter 드롭: Free 티어에서 트윗 작성 불가, Basic $100/월 → $0 원칙 위반
   - Instagram Reels 드롭: Threads가 이미 Meta 생태계 커버. 별도 App Review + 공개 비디오 URL 호스팅 오버헤드 대비 가치 없음
   - LinkedIn 드롭: API 신청 1-2주 대기 + 토큰 60일 갱신. 수동 공유로 대체 가능
   - YouTube는 기존 채널에 ES 재생목록 추가 (별도 채널 불필요)
   - Podcast: Supabase Storage `podcast` bucket(public) → feed.xml 자동 갱신 → Spotify 자동 감지
-  - MimikaStudio `language: "Spanish"` + `owner-jason` TTS 검증 완료 (4.08초 WAV)
+  - MimikaStudio `language: "Spanish"` + `woman-es` TTS 기본 보이스 전환 (10초 클린 클립, temp 0.3, ffmpeg 후처리)
   - Edge TTS fallback 검증 완료 (`es-MX-DaliaNeural`, venv 필요)
   - Pexels Video API 연동 (portrait 1,060건, landscape 8,000건, HD h264)
   - BriefShort V4: `ShortScene.videoSrc` + Remotion `OffthreadVideo` 비디오 배경 지원
@@ -25,7 +29,7 @@
 - 상태: implemented (프로토타입 성공)
 - 배경: Long-form(17분) YouTube 조회수 부진. Shorts(60초 이하)는 구독자 무관 알고리즘 노출로 채널 성장 부스터 역할. 운영비 $0 유지 필수
 - 결정:
-  1. **TTS**: MimikaStudio Qwen3-TTS 재채택 — 목소리 클론(owner-jason) + REST API 자동화 + 로컬 무료
+  1. **TTS**: MimikaStudio Qwen3-TTS 재채택 — 목소리 클론(woman-es) + REST API 자동화 + 로컬 무료
   2. **스크립트**: Gemini 2.0 Flash로 Brief → 120-140단어(50-58초) 자동 요약
   3. **자막**: Whisper STT word-level timestamps → 워드바이워드 하이라이트
   4. **비주얼**: Remotion BriefShort V2 (1080×1920) — 씬별 배경 + Ken Burns + spring 자막 + 프로그레스 바

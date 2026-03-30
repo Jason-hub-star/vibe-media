@@ -60,6 +60,7 @@
 - `weekly-ingest-research.md` — parser/source/tool 조사
 - `weekly-autoresearch-loop.md` — 작은 keep/discard 실험 루프
 - `weekly-self-critique.md` — 발행 brief 회고 및 개선 제안
+- `weekly-seo-audit.md` — 공개 사이트 SEO 건강성 주간 점검
 - `youtube-link-intake.md` — YouTube URL을 brief에 수동 연결
 
 ### Skills

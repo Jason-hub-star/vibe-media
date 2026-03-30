@@ -32,12 +32,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const entries: MetadataRoute.Sitemap = [];
+  const now = new Date();
 
   // Static pages × locales
   for (const page of staticPaths) {
     for (const locale of SUPPORTED_LOCALES) {
       entries.push({
         url: `${SITE_URL}/${locale}${page.path}`,
+        lastModified: now,
         changeFrequency: page.freq,
         priority: page.priority,
         alternates: localeAlternates(page.path),

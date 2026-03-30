@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { SetHtmlLang } from "@/components/SetHtmlLang";
 import { isValidLocale, SUPPORTED_LOCALES } from "@/lib/i18n";
 
 export function generateStaticParams() {
@@ -16,5 +17,10 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
 
-  return <>{children}</>;
+  return (
+    <>
+      <SetHtmlLang locale={locale} />
+      {children}
+    </>
+  );
 }

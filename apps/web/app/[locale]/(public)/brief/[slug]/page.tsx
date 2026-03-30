@@ -50,8 +50,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: brief.title,
-      description: brief.summary,
+      title,
+      description: summary,
       ...(brief.coverImage ? { images: [brief.coverImage] } : {}),
     },
     alternates: {

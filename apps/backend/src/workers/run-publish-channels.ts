@@ -230,7 +230,7 @@ const VALID_CHANNELS: ChannelName[] = [
   "x", "instagram", "linkedin",
 ];
 
-const enabledChannels = (process.env.PUBLISH_CHANNELS ?? "threads,youtube")
+const enabledChannels = (process.env.PUBLISH_CHANNELS ?? "threads,youtube,podcast-rss")
   .split(",")
   .map((s) => s.trim())
   .filter((s): s is ChannelName => VALID_CHANNELS.includes(s as ChannelName));
@@ -377,6 +377,62 @@ await reportChannelPublish({
 });
 
 // ---------------------------------------------------------------------------
+// Locale-aware publisher 재등록 헬퍼
+// ---------------------------------------------------------------------------
+
+async function reregisterLocalePublishers(
+  locale: string,
+  variant: { title: string; summary: string },
+  dry: boolean,
+) {
+  if (useYouTubeApi && (hasShorts || hasLongform)) {
+    registerPublisher("youtube", () =>
+      createYouTubeApiPublisher({
+        videoFilePath: primaryVideoPath,
+        thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
+        briefSlug: brief!.slug,
+        briefUrl: `${SITE_URL}/${locale}/brief/${brief!.slug}`,
+        language: locale,
+      }, { privacyStatus: "unlisted" }),
+    );
+  }
+
+  const localeVoice = existsSync(path.join(outputDir, `longform-voice-${locale}.wav`))
+    ? path.join(outputDir, `longform-voice-${locale}.wav`)
+    : existsSync(path.join(outputDir, `shorts-voice-${locale}.wav`))
+      ? path.join(outputDir, `shorts-voice-${locale}.wav`)
+      : podcastVoicePath;
+  if (!localeVoice || !process.env.SUPABASE_SERVICE_ROLE_KEY) return;
+
+  const feedDir = path.join(outputDir, "podcast");
+  const feedUrl = `https://hzxsropbcjfywmospobb.supabase.co/storage/v1/object/public/podcast/feed-${locale}.xml`;
+  if (!dry) {
+    try {
+      console.log(`  Podcast ${locale}: uploading ${path.basename(localeVoice)}...`);
+      const r = await uploadPodcastEpisode({
+        wavPath: localeVoice, slug: brief!.slug,
+        title: variant.title, description: variant.summary ?? "",
+        language: locale, feedDir,
+      });
+      console.log(`  Podcast ${locale}: ready → ${r.mp3Url}`);
+      process.env.PODCAST_AUDIO_URL = r.mp3Url;
+      process.env.PODCAST_AUDIO_SIZE = String(r.fileSizeBytes);
+      process.env.PODCAST_DURATION = formatDuration(r.durationSec);
+    } catch (err) {
+      console.warn(`  Podcast ${locale}: failed: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+  registerPublisher("podcast-rss", () =>
+    createPodcastRssPublisher({
+      audioPublicUrl: process.env.PODCAST_AUDIO_URL ?? "",
+      audioFileSize: Number(process.env.PODCAST_AUDIO_SIZE ?? "0"),
+      duration: process.env.PODCAST_DURATION ?? "00:02:00",
+      feedDir, feedUrl, language: locale,
+    }),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Locale variant 발행 (canonical 이외의 locale)
 // ---------------------------------------------------------------------------
 
@@ -433,6 +489,9 @@ for (const locale of publishLocales) {
       },
     },
   };
+
+  // YouTube/Podcast publisher를 locale에 맞게 재등록
+  await reregisterLocalePublishers(locale, variant, dryRun);
 
   const localeResult = await dispatchPublish({
     briefMeta: localeMeta,

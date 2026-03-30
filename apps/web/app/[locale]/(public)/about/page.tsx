@@ -24,7 +24,12 @@ export async function generateMetadata({
   };
 }
 
-export default function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = await getLocaleFromParams(params);
   return (
     <PageFrame>
       <SectionBlock eyebrow="About" title="AI news, distilled into daily briefs.">
@@ -69,7 +74,7 @@ export default function AboutPage() {
 
       <SectionBlock eyebrow="Stay updated" title="Get briefs delivered to your inbox">
         <div className="hero-grid">
-          <NewsletterForm />
+          <NewsletterForm locale={locale} />
         </div>
       </SectionBlock>
     </PageFrame>

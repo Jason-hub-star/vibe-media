@@ -31,7 +31,7 @@ export function getOgLocale(locale: string): string {
   return map[locale] ?? "en_US";
 }
 
-/** hreflang alternates 객체 빌드 */
+/** hreflang alternates 객체 빌드 (x-default 포함) */
 export function buildAlternates(
   path: string,
   siteUrl: string,
@@ -40,5 +40,7 @@ export function buildAlternates(
   for (const locale of SUPPORTED_LOCALES) {
     alternates[locale] = `${siteUrl}/${locale}${path}`;
   }
+  // x-default → canonical locale (en) fallback
+  alternates["x-default"] = `${siteUrl}/${DEFAULT_LOCALE}${path}`;
   return alternates;
 }

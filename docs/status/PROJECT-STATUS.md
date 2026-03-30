@@ -110,7 +110,7 @@
 - 스페인어 올인 + 4채널 확정: done (2026-03-30)
   - 최종 채널: YouTube(EN+ES 재생목록) + Threads + Newsletter + Podcast(Spotify RSS)
   - X/Twitter 드롭($100/월), Instagram Reels 드롭(Threads가 커버), LinkedIn 드롭(오버헤드)
-  - MimikaStudio Spanish TTS 검증 완료 (language: "Spanish" + owner-jason, 4.08초)
+  - MimikaStudio Spanish TTS 검증 완료 (language: "Spanish" + woman-es, temp 0.3 + ffmpeg 후처리)
   - Edge TTS fallback 검증 완료 (es-MX-DaliaNeural, venv)
   - Pexels Video API 연동 (portrait/landscape HD h264 mp4)
   - BriefShort V4: videoSrc + OffthreadVideo 비디오 배경
@@ -148,7 +148,7 @@
   - daily-auto-publish.md §9 채널 발행 단계 추가 (published brief → publish:channels 자동 연결)
   - SCHEMA.md에 신규 테이블 2개 문서화
 - Shorts Pipeline (9:16, 50-58초): prototype done
-  - MimikaStudio Qwen3-TTS 목소리 클론 (owner-jason) 등록 + REST API 연동
+  - MimikaStudio Qwen3-TTS 목소리 클론 (woman-es) 등록 + REST API 연동
   - Gemini 60초 나레이션 스크립트 자동 요약
   - Whisper STT word-level 타임스탬프 추출
   - Remotion BriefShort V2: 씬별 배경(Ken Burns) + 워드바이워드 자막(spring) + 프로그레스 바 + CTA

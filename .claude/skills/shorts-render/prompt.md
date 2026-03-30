@@ -8,7 +8,7 @@ Brief slug를 받아서 Shorts(9:16) + Longform(16:9) 풀 파이프라인을 실
 ```
 Brief (Supabase)
   → Gemini 스크립트 (Shorts: 120-140단어/52초, Longform: 300-350단어/2분)
-    → MimikaStudio Qwen3-TTS 1.7B 클론 (owner-jason, WAV)
+    → MimikaStudio Qwen3-TTS 1.7B 클론 (woman-es, WAV)
       → Whisper STT word-level 자막 (JSON)
         → Pexels 키워드 기반 배경 이미지 (portrait/landscape)
           → 문장 경계 기반 씬 자동분할
@@ -66,11 +66,15 @@ curl -X POST http://localhost:7693/api/qwen3/generate \
   -d '{
     "text": "<script>",
     "mode": "clone",
-    "voice_name": "owner-jason",
+    "voice_name": "woman-es",
     "language": "English",
     "speed": 1.0,
     "model_size": "1.7B",
-    "model_quantization": "bf16"
+    "model_quantization": "bf16",
+    "temperature": 0.3,
+    "top_p": 0.7,
+    "top_k": 20,
+    "repetition_penalty": 1.1
   }'
 ```
 
@@ -83,16 +87,22 @@ curl -X POST http://localhost:7693/api/qwen3/generate \
   -d '{
     "text": "<es-script>",
     "mode": "clone",
-    "voice_name": "owner-jason-es",
+    "voice_name": "woman-es",
     "language": "Spanish",
     "speed": 1.0,
     "model_size": "1.7B",
-    "model_quantization": "bf16"
+    "model_quantization": "bf16",
+    "temperature": 0.3,
+    "top_p": 0.7,
+    "top_k": 20,
+    "repetition_penalty": 1.1
   }'
 ```
 
-**검증 결과 (2026-03-30):** MimikaStudio `language: "Spanish"` + `owner-jason` 성공 (4.08초 WAV, 24kHz mono PCM).
-별도 ES 보이스 프리셋 불필요 — owner-jason은 범용 클론이므로 language 파라미터만 변경.
+**검증 결과 (2026-03-30):** MimikaStudio `language: "Spanish"` + `woman-es` 성공 (12.88초 WAV, 24kHz mono PCM).
+`woman-es`는 Woman.m4a에서 10초 클린 클립으로 등록한 여성 보이스 클론.
+음질 최적화: temperature 0.3 + top_p 0.7 + top_k 20 + repetition_penalty 1.1.
+후처리: ffmpeg highpass 80Hz + lowpass 12kHz + acompressor + loudnorm -16 LUFS.
 
 **Fallback:** Edge TTS (완전 무료, venv 필요)
 ```bash

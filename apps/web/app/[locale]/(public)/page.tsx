@@ -61,7 +61,7 @@ export default async function HomePage({
       <section className="shell hero-grid">
         <div className="hero-copy-full stack-tight">
           <p className="eyebrow">AI Brief Hub</p>
-          <h1>Your daily AI brief, curated from 20+ sources.</h1>
+          <h1>Your daily AI brief, curated from 30+ sources.</h1>
           <p className="muted">
             Briefs, source links, and tool discovery in one place.
           </p>

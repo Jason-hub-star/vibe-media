@@ -15,6 +15,7 @@
 | `weekly-source-health.md` | 소스 건강성 점검 + 품질 피드백 + 신규 소스 발견 | 주 1회 |
 | `weekly-ingest-research.md` | 새 source/tool 조사와 parser stack 후보 추적 | 주 1회 |
 | `weekly-autoresearch-loop.md` | 작은 실험을 반복하며 keep/discard 판정 | 주 2-3회 |
+| `weekly-seo-audit.md` | 공개 사이트 SEO 건강성 점검 (메타/sitemap/JSON-LD/hreflang/OG) | 주 1회 |
 | `daily-media-publish.md` | Shorts+Longform 미디어 생성 → Threads + YouTube API 자동 업로드 (unlisted) | 매일 1회, auto-publish 이후 |
 
 ## Execution Order (Daily)
@@ -36,6 +37,7 @@ daily-pipeline → daily-dedup-guard → daily-editorial-review → daily-drift-
 - `weekly-source-health`는 소스 건강성 점검, 성과 기반 maxItems 조정 제안, 새 소스 후보 발견을 수행한다.
 - `weekly-ingest-research`는 source catalog와 parser/tool 선택을 계속 최신화한다.
 - `weekly-autoresearch-loop`는 Karpathy의 `autoresearch` 패턴처럼 고정 시간 실험 -> 메트릭 비교 -> keep/discard를 VibeHub 운영에 맞게 적용한다.
+- `weekly-seo-audit`는 메타데이터/sitemap/JSON-LD/hreflang/OG 이미지의 정합성을 주간 단위로 점검해 SEO 회귀를 방지한다.
 - `daily-media-publish`는 published brief에서 Long-form(16:9) + Shorts(9:16) 두 트랙으로 영상을 생성하고 YouTube에 업로드한다.
 
 ## Handoff Rule

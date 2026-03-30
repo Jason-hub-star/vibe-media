@@ -210,7 +210,7 @@
 - [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
 
 ## P3 — Shorts Pipeline (9:16, 50-58초)
-- [x] MimikaStudio Qwen3-TTS 목소리 클론 등록 (owner-jason)
+- [x] MimikaStudio Qwen3-TTS 목소리 클론 등록 (woman-es, 10초 클린 클립)
 - [x] Gemini 60초 나레이션 스크립트 자동 생성
 - [x] MimikaStudio REST API → 클론 음성 WAV 생성
 - [x] Whisper STT word-level 타임스탬프 추출
@@ -230,7 +230,7 @@
 
 ## P3 — 스페인어 올인 + 7채널 확장 (2026-03-30)
 ### Phase 1: 스페인어 기반 전환
-- [x] M1: MimikaStudio 스페인어 TTS 검증 — `language: "Spanish"` + `owner-jason` 4.08초 WAV 성공
+- [x] M1: MimikaStudio 스페인어 TTS 검증 — `language: "Spanish"` + `woman-es` 12.88초 WAV 성공 (temp 0.3)
 - [x] M1-fallback: Edge TTS 스페인어 검증 — `es-MX-DaliaNeural` 7.97초 MP3 성공
 - [x] M2: Pexels Video API 연동 — portrait 1,060건/landscape 8,000건, HD h264 1080x1920 확인
 - [x] M2: BriefShort V4 (`videoSrc` + `OffthreadVideo`) Remotion 비디오 배경 지원
