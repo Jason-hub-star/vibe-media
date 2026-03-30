@@ -13,6 +13,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Img,
+  OffthreadVideo,
   Sequence,
   interpolate,
   spring,
@@ -42,6 +43,8 @@ export interface ShortScene {
   kenBurns?: "zoom-in" | "zoom-out" | "pan-left" | "pan-right";
   /** 롱폼 챕터 제목 (선택) */
   chapterTitle?: string;
+  /** Pexels Video mp4 URL — 있으면 이미지 대신 비디오 배경 사용 (V4) */
+  videoSrc?: string;
 }
 
 export interface BriefShortProps {
@@ -92,15 +95,28 @@ const SceneBackground: React.FC<{
 
   return (
     <AbsoluteFill>
-      <Img
-        src={scene.backgroundSrc}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          transform: `scale(${scale}) translate3d(${tx}px, 0, 0)`,
-        }}
-      />
+      {scene.videoSrc ? (
+        <OffthreadVideo
+          src={scene.videoSrc}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: `scale(${scale}) translate3d(${tx}px, 0, 0)`,
+          }}
+          muted
+        />
+      ) : (
+        <Img
+          src={scene.backgroundSrc}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: `scale(${scale}) translate3d(${tx}px, 0, 0)`,
+          }}
+        />
+      )}
       {/* 다크 오버레이 */}
       <div
         style={{

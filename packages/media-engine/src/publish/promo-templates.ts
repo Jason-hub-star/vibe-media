@@ -16,6 +16,9 @@ const CHANNEL_LIMITS: Record<ChannelName, number> = {
   spotify: 4000,
   youtube: 5000,
   "podcast-rss": 4000,
+  x: 280,
+  instagram: 2200,
+  linkedin: 3000,
 };
 
 // ---------------------------------------------------------------------------
@@ -77,6 +80,9 @@ function channelEmoji(channel: ChannelName): string {
     spotify: "🎧",
     youtube: "🎬",
     "podcast-rss": "🎙️",
+    x: "𝕏",
+    instagram: "📸",
+    linkedin: "💼",
   };
   return map[channel] ?? "🔗";
 }
@@ -140,6 +146,9 @@ function channelLabel(channel: ChannelName, locale?: string): string {
       spotify: "Escuchar en Spotify",
       youtube: "Ver en YouTube",
       "podcast-rss": "Suscribirse al Podcast",
+      x: "Leer en X",
+      instagram: "Ver en Instagram",
+      linkedin: "Leer en LinkedIn",
     };
     return esMap[channel] ?? channel;
   }
@@ -150,6 +159,9 @@ function channelLabel(channel: ChannelName, locale?: string): string {
     spotify: "Listen on Spotify",
     youtube: "Watch on YouTube",
     "podcast-rss": "Subscribe to Podcast",
+    x: "Read on X",
+    instagram: "Watch on Instagram",
+    linkedin: "Read on LinkedIn",
   };
   return map[channel] ?? channel;
 }

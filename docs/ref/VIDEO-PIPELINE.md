@@ -88,3 +88,11 @@
 ## Safety Rule
 - 미성년자 영상은 `human-on-exception`보다 더 강한 보호를 적용한다.
 - 최종 공개 전 부모 검수는 항상 남긴다.
+
+## Brief Shorts/Longform Pipeline (별도 파이프라인)
+- Brief 기반 Shorts(9:16)/Longform(16:9) 렌더는 이 문서가 아닌 `.claude/skills/shorts-render/prompt.md`가 SSOT.
+- BriefShort V4 (2026-03-30): `ShortScene.videoSrc`로 Pexels Video 배경 지원 (`<OffthreadVideo>`).
+  - 이미지/비디오 혼용 가능: `videoSrc` 있으면 비디오, 없으면 `backgroundSrc` 이미지.
+- MimikaStudio Qwen3-TTS 1.7B: `language: "Spanish"` 검증 완료 (4.08초 WAV, 24kHz).
+- Edge TTS fallback: `es-MX-DaliaNeural` (여성), `es-MX-JorgeNeural` (남성) 가용.
+- Pexels Video API: portrait 1,060건, landscape 8,000건 결과 확인. HD h264 1080x1920 mp4.

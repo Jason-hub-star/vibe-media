@@ -23,6 +23,8 @@ Brief (Supabase)
 - `--shorts-only`: Shorts만 생성
 - `--longform-only`: Longform만 생성
 - `--dry-run`: 렌더만 하고 업로드 스킵
+- `--locale=es`: 스페인어 파이프라인 (ES 스크립트 + TTS + 자막)
+- `--video-bg`: Pexels Video 배경 사용 (이미지 대신 비디오 클립)
 
 ## 사전 조건
 
@@ -45,6 +47,17 @@ Gemini 2.0 Flash API
 - 끝: "Follow VibeHub for daily AI briefs"
 ```
 
+**스페인어 모드 (`--locale=es`):**
+```
+Gemini 2.0 Flash API
+- 프롬프트: "Write a YouTube Shorts script in SPANISH (Latin American)..."
+- Shorts: 120-140 단어 (50-55초), 3초 훅 + 핵심 + CTA
+- Longform: 300-350 단어 (2분), 도입 + 본론 + 결론 + CTA
+- CTA: "Sigue a VibeHub para briefings diarios de IA"
+- 고유명사/기술 용어는 영어 유지 (GPT, OpenAI, Apple 등)
+- 라틴 아메리카 스페인어 ("computadora" 아닌 "ordenador" 사용 금지)
+```
+
 ### 3. MimikaStudio TTS (1.7B)
 
 ```bash
@@ -63,6 +76,32 @@ curl -X POST http://localhost:7693/api/qwen3/generate \
 
 **필수:** `model_size: "1.7B"` (0.6B 대비 음질 현저히 향상)
 
+**스페인어 모드 (`--locale=es`):**
+```bash
+curl -X POST http://localhost:7693/api/qwen3/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "<es-script>",
+    "mode": "clone",
+    "voice_name": "owner-jason-es",
+    "language": "Spanish",
+    "speed": 1.0,
+    "model_size": "1.7B",
+    "model_quantization": "bf16"
+  }'
+```
+
+**검증 결과 (2026-03-30):** MimikaStudio `language: "Spanish"` + `owner-jason` 성공 (4.08초 WAV, 24kHz mono PCM).
+별도 ES 보이스 프리셋 불필요 — owner-jason은 범용 클론이므로 language 파라미터만 변경.
+
+**Fallback:** Edge TTS (완전 무료, venv 필요)
+```bash
+/tmp/edge-tts-env/bin/edge-tts --voice es-MX-DaliaNeural --text "<es-script>" --write-media output.mp3
+# 또는 남성: es-MX-JorgeNeural
+# 설치: python3 -m venv /tmp/edge-tts-env && /tmp/edge-tts-env/bin/pip install edge-tts
+# 검증 완료: DaliaNeural 7.97초 MP3, 48kbps, 24kHz mono
+```
+
 서버 미기동 시: `mimikactl backend start`
 모델 미다운로드 시: `huggingface_hub.snapshot_download('mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16')`
 
@@ -75,17 +114,39 @@ result = model.transcribe(wav_path, word_timestamps=True, language="en")
 # → [{ "text": "word", "startFrame": N, "endFrame": N }, ...]
 ```
 
-### 5. Pexels 키워드 배경 이미지
+**스페인어 모드:**
+```python
+result = model.transcribe(wav_path, word_timestamps=True, language="es")
+# Whisper는 스페인어 word-level 타임스탬프를 기본 지원
+```
 
+### 5. Pexels 배경 (이미지 또는 비디오)
+
+**이미지 모드 (기본):**
 ```bash
 # Brief title에서 키워드 2-3개 추출 → Pexels 검색
 curl -s "https://api.pexels.com/v1/search?query=<keyword>&per_page=1&orientation=portrait" \
   -H "Authorization: $PEXELS_API_KEY"
 ```
 
-- Shorts: `orientation=portrait`, 4장
-- Longform: `orientation=landscape`, 8장
-- 키워드별 1장씩 검색 → 내용에 맞는 이미지 매칭
+**비디오 모드 (`--video-bg`, V4):**
+```bash
+# Pexels Video API — 이미지 대신 비디오 클립 배경
+curl -s "https://api.pexels.com/videos/search?query=<keyword>&per_page=1&orientation=portrait" \
+  -H "Authorization: $PEXELS_API_KEY"
+# → video_files[].link (HD mp4) 추출
+```
+
+- `searchPexelsVideos(keyword, orientation, count)` 사용 (`pexels-video-client.ts`)
+- Shorts: `orientation=portrait`, 4개 비디오 클립
+- Longform: `orientation=landscape`, 8개 비디오 클립
+- `ShortScene.videoSrc`에 비디오 URL 세팅 → `<OffthreadVideo>` 렌더
+- 이미지/비디오 혼용 가능: `videoSrc` 있으면 비디오, 없으면 `backgroundSrc` 이미지
+
+**공통:**
+- Shorts: `orientation=portrait`, 4개 씬
+- Longform: `orientation=landscape`, 8개 씬
+- 키워드별 1개씩 검색 → 내용에 맞는 배경 매칭
 
 ### 6. 문장 경계 기반 씬 분할
 

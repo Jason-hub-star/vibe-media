@@ -432,9 +432,17 @@ compose-final.sh가 자동으로:
   ├─ Threads 자동 발행
   ├─ YouTube Longform 자동 업로드 (unlisted)
   ├─ YouTube Shorts 자동 업로드 (unlisted, #Shorts 태그)
+  ├─ Podcast: WAV → MP3 → Supabase Storage → feed.xml 갱신 → Spotify 자동 감지
   ├─ brief_posts.youtube_video_id 자동 연결
   └─ channel_publish_results DB 기록 + Telegram 보고
 ```
+
+**Podcast 자동화 (2026-03-30 추가):**
+- `output/<slug>/longform-voice.wav` (또는 `shorts-voice.wav`) 감지 시 자동 실행
+- WAV → ffmpeg MP3 (192kbps, loudnorm -16 LUFS) → Supabase Storage `podcast` bucket 업로드
+- feed.xml 갱신 + 업로드 → Spotify가 1-2시간 내 자동 감지
+- 환경변수: `SUPABASE_SERVICE_ROLE_KEY` (이미 설정됨)
+- Spotify RSS URL: `https://hzxsropbcjfywmospobb.supabase.co/storage/v1/object/public/podcast/feed-es.xml`
 
 ### 자동 모드
 ```bash

@@ -223,10 +223,34 @@
   - [x] 브랜드 워터마크 (상시 표시)
 - [x] ffmpeg 합성 (map 0:v + map 1:a, loudnorm -16 LUFS)
 - [x] 프로토타입 풀 파이프라인 성공 (51.8초, Brief → 최종 MP4)
-- [ ] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
+- [x] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
 - [ ] shorts:render CLI 워커 자동화 (`npm run shorts:render`)
 - [ ] daily pipeline 자동 연결 (Long-form과 병렬)
 - [x] YouTube 자동 업로드 — publish:channels가 shorts/longform.mp4 자동 감지 → YouTube API v3 (unlisted) + brief 자동 연결 + Shorts #Shorts 태그
+
+## P3 — 스페인어 올인 + 7채널 확장 (2026-03-30)
+### Phase 1: 스페인어 기반 전환
+- [x] M1: MimikaStudio 스페인어 TTS 검증 — `language: "Spanish"` + `owner-jason` 4.08초 WAV 성공
+- [x] M1-fallback: Edge TTS 스페인어 검증 — `es-MX-DaliaNeural` 7.97초 MP3 성공
+- [x] M2: Pexels Video API 연동 — portrait 1,060건/landscape 8,000건, HD h264 1080x1920 확인
+- [x] M2: BriefShort V4 (`videoSrc` + `OffthreadVideo`) Remotion 비디오 배경 지원
+- [x] M3: shorts-render 스킬 프롬프트 스페인어 모드 추가
+
+### Phase 2: 7채널 확장
+- [ ] M4: YouTube ES 채널 생성 + OAuth 토큰 발급
+- [x] M5: X/Twitter Publisher (`x-publisher.ts`) — OAuth 1.0a + API v2 스레드 + Media Upload
+- [x] M6: Instagram Reels Publisher (`instagram-publisher.ts`) — Graph API Container → Publish
+- [x] M7: Podcast RSS Publisher (`podcast-rss-publisher.ts`) — RSS XML 자동 생성/갱신
+- [x] M8: LinkedIn Publisher (`linkedin-publisher.ts`) — ugcPosts + REST API fallback
+- [x] run-publish-channels.ts 7채널 등록 + VALID_CHANNELS 확장
+
+### Phase 3: 멀티니치 기반
+- [x] M9: `sources.brand` 필드 추가 + `loadSourcesFromDb(lane, brand)` 필터
+- [ ] M10: 스페인어 RSS 소스 추가 (Xataka, Hipertextual, Genbeta 등)
+
+### Phase 4: 썸네일 + 수익화
+- [x] M11: 썸네일 자동화 — ffmpeg 비디오 프레임 추출 + Sharp 텍스트 오버레이
+- [ ] M12: 스폰서 슬롯 자동 삽입 (구독자 1,000명 달성 후)
 
 ## P3 — Newsletter Pipeline
 - [x] Resend API 키 발급 + 환경변수 설정 (`RESEND_API_KEY`)

@@ -3,8 +3,12 @@
  * 참고: gemini-client.ts + normalize.ts 조합
  */
 
+import { execFile } from "child_process";
+import { promisify } from "util";
 import sharp from "sharp";
 import { BRAND_NAME_UPPER } from "../brand";
+
+const execFileAsync = promisify(execFile);
 
 export interface ThumbnailGenOptions {
   /** 브리프 제목 */
@@ -13,6 +17,8 @@ export interface ThumbnailGenOptions {
   language: string;
   /** 커버 이미지 Buffer (있으면 리사이즈만, 없으면 Gemini 생성) */
   coverImageBuffer?: Buffer;
+  /** 비디오 파일 경로 (있으면 중간 프레임 추출 → 텍스트 오버레이) */
+  videoFilePath?: string;
   /** 커스텀 프롬프트 (Gemini 이미지 생성용) */
   customPrompt?: string;
 }
@@ -109,8 +115,68 @@ function escapeXml(str: string): string {
 }
 
 /**
+ * 비디오 파일에서 중간 프레임 추출 (ffmpeg).
+ * frame 75 (2.5초 지점@30fps) 추출 후 1280x720 리사이즈.
+ */
+async function extractVideoFrame(videoPath: string): Promise<Buffer> {
+  const { stdout } = await execFileAsync("ffmpeg", [
+    "-i", videoPath,
+    "-vf", "select=eq(n\\,75)",
+    "-frames:v", "1",
+    "-f", "image2pipe",
+    "-vcodec", "png",
+    "-",
+  ], { encoding: "buffer", maxBuffer: 10 * 1024 * 1024 });
+  return stdout;
+}
+
+/**
+ * 프레임 이미지 위에 제목 + 브랜드 배지 합성.
+ */
+async function compositeTextOverlay(
+  frameBuffer: Buffer,
+  title: string,
+): Promise<Buffer> {
+  const displayTitle = title.length > 50 ? title.slice(0, 47) + "..." : title;
+
+  // 제목을 여러 줄로 분할
+  const words = displayTitle.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+  for (const word of words) {
+    if ((currentLine + " " + word).trim().length > 25 && currentLine) {
+      lines.push(currentLine.trim());
+      currentLine = word;
+    } else {
+      currentLine = currentLine ? currentLine + " " + word : word;
+    }
+  }
+  if (currentLine) lines.push(currentLine.trim());
+
+  const titleSvgLines = lines
+    .map(
+      (line, i) =>
+        `<text x="640" y="${560 + i * 60}" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#FFFFFF" stroke="#000000" stroke-width="3">${escapeXml(line)}</text>`,
+    )
+    .join("\n");
+
+  const overlaySvg = `<svg width="${THUMBNAIL_WIDTH}" height="${THUMBNAIL_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="transparent"/>
+  <rect width="100%" height="100%" fill="rgba(0,0,0,0.35)"/>
+  <text x="50" y="50" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#D9863A" letter-spacing="3">${BRAND_NAME_UPPER}</text>
+  ${titleSvgLines}
+</svg>`;
+
+  return sharp(frameBuffer)
+    .resize({ width: THUMBNAIL_WIDTH, height: THUMBNAIL_HEIGHT, fit: "cover" })
+    .composite([{ input: Buffer.from(overlaySvg), top: 0, left: 0 }])
+    .jpeg({ quality: 90 })
+    .toBuffer();
+}
+
+/**
  * 썸네일 생성 메인 함수.
- * coverImageBuffer가 있으면 리사이즈, 없으면 SVG 브랜드 썸네일 생성.
+ * 우선순위: videoFilePath → coverImageBuffer → SVG 브랜드 썸네일.
  */
 export async function generateThumbnail(
   options: ThumbnailGenOptions,
@@ -118,7 +184,16 @@ export async function generateThumbnail(
   try {
     let buffer: Buffer;
 
-    if (options.coverImageBuffer) {
+    if (options.videoFilePath) {
+      // Phase 4 M11: 비디오 프레임 추출 + 텍스트 오버레이
+      try {
+        const frameBuffer = await extractVideoFrame(options.videoFilePath);
+        buffer = await compositeTextOverlay(frameBuffer, options.title);
+      } catch (err) {
+        console.warn(`Thumbnail: video frame extraction failed, using SVG fallback: ${err instanceof Error ? err.message : err}`);
+        buffer = await generateThumbnailWithText(options.title, options.language);
+      }
+    } else if (options.coverImageBuffer) {
       buffer = await resizeToThumbnail(options.coverImageBuffer);
     } else {
       buffer = await generateThumbnailWithText(

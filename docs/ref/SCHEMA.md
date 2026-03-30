@@ -30,6 +30,7 @@
 - `channel_publish_results`
   - 채널별 발행 결과 이력. brief_slug + channel_name + created_at으로 추적.
   - core fields: `brief_slug`, `channel_name`, `success`, `published_url`, `error_message`, `locale`
+  - channel_name 지원: threads, ghost, tistory, youtube, youtube-shorts, spotify, podcast-rss, x, instagram, linkedin
   - meta fields: `dry_run`, `duration_ms`, `created_at`
   - 인덱스: brief_slug+created_at desc, channel_name+success+created_at desc
 - `publish_dispatches`
@@ -69,6 +70,7 @@
   - core fields: `name`, `kind`, `base_url`, `source_tier`, `enabled`
   - pipeline fields: `pipeline_lane` (`editorial | tool_candidate`)
   - fetch fields: `feed_url`, `content_type`, `default_tags`, `max_items`, `fetch_kind`, `github_owner`, `github_repo`, `github_search_query`
+  - brand field: `brand` (text, DEFAULT 'vibehub') — 멀티니치 복제용. `loadSourcesFromDb(lane, brand)` 필터 지원
   - tracking fields: `last_success_at`, `last_failure_at`, `failure_reason`
   - `tool_candidate` lane 기본 source row는 migration으로 seed한다. 새 환경에서도 fallback id에 기대지 않고 UUID source row를 바로 사용할 수 있어야 한다.
 - `ingest_runs`는 개별 실행 단위를 기록한다.
@@ -107,6 +109,9 @@
   - attribution fields: `source_name_snapshot`, `source_entry_external_id`
   - tracking fields: `source_locale`, `target_locales`, `first_seen_at`, `last_seen_at`, `imported_at`
   - future-linking fields: `promoted_showcase_entry_id`, `linked_submission_id`
+- Supabase Storage buckets:
+  - `podcast` (public, 50MB limit, audio/mpeg + application/rss+xml) — 팟캐스트 MP3 에피소드 + feed.xml 호스팅
+  - `avatar`, `gear-review-media`, `news_images`, `project-images` — 기존 public buckets
 - `public` schema에는 위 allowlist만 유지한다. legacy public tables는 SQL backup 후 cleanup 대상이다.
 - `item_classifications`에는 아래 개념이 필요하다.
   - `target_surface`

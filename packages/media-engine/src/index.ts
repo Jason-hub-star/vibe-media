@@ -30,6 +30,14 @@ export * from "./publish/promo-templates";
 export * from "./publish/cross-promo-sync";
 export * from "./publish/publish-dispatcher";
 export * from "./publish/locale-publish-helpers";
+export * from "./publish/x-publisher";
+export * from "./publish/instagram-publisher";
+export * from "./publish/linkedin-publisher";
+export * from "./publish/podcast-rss-publisher";
+export * from "./publish/podcast-upload";
+
+// --- Image / Video ---
+export * from "./image/pexels-video-client";
 
 // --- TTS ---
 export * from "./tts/tts-types";

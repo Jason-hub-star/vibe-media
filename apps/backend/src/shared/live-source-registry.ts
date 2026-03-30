@@ -17,6 +17,8 @@ interface LiveSourceBase {
   maxItems: number;
   enabled: boolean;
   disableReason?: string;
+  /** 소스가 속한 브랜드 (기본: "vibehub"). 멀티니치 복제용. */
+  brand?: string;
 }
 
 export interface LiveRssSource extends LiveSourceBase {
@@ -94,6 +96,7 @@ interface SupabaseFetchSourceRow {
   fetch_kind: string;
   github_owner: string | null;
   github_repo: string | null;
+  brand: string | null;
 }
 
 function mapRowToDefinition(row: SupabaseFetchSourceRow): LiveSourceDefinition | null {
@@ -106,7 +109,8 @@ function mapRowToDefinition(row: SupabaseFetchSourceRow): LiveSourceDefinition |
     contentType: row.content_type as InboxItemContentType,
     defaultTags: row.default_tags ?? [],
     maxItems: row.max_items,
-    enabled: row.enabled
+    enabled: row.enabled,
+    brand: row.brand ?? "vibehub",
   };
 
   if (row.fetch_kind === "github-releases" && row.github_owner && row.github_repo) {
@@ -125,7 +129,10 @@ function mapRowToDefinition(row: SupabaseFetchSourceRow): LiveSourceDefinition |
  * Supabase sources 테이블에서 live-fetch 대상 소스를 읽는다.
  * DB 연결 실패 시 하드코딩 fallback을 반환한다.
  */
-export async function loadSourcesFromDb(pipelineLane: PipelineLane = "editorial"): Promise<LiveSourceDefinition[]> {
+export async function loadSourcesFromDb(
+  pipelineLane: PipelineLane = "editorial",
+  brand?: string,
+): Promise<LiveSourceDefinition[]> {
   if (!getSupabaseDbUrl()) {
     console.log("[source-registry] SUPABASE_DB_URL 없음 → 하드코딩 fallback 사용 (3개)");
     return hardcodedFallback.filter((source) => source.pipelineLane === pipelineLane);
@@ -136,10 +143,11 @@ export async function loadSourcesFromDb(pipelineLane: PipelineLane = "editorial"
     const rows = await sql<SupabaseFetchSourceRow[]>`
       SELECT id, name, kind, base_url, source_tier, enabled,
              pipeline_lane, feed_url, content_type, default_tags, max_items, fetch_kind,
-             github_owner, github_repo
+             github_owner, github_repo, brand
       FROM public.sources
       WHERE enabled = true
         AND pipeline_lane = ${pipelineLane}
+        ${brand ? sql`AND (brand = ${brand} OR brand IS NULL)` : sql``}
       ORDER BY name ASC
     `;
 

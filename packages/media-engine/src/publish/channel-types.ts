@@ -19,7 +19,10 @@ export type ChannelName =
   | "tistory"
   | "spotify"
   | "youtube"
-  | "podcast-rss";
+  | "podcast-rss"
+  | "x"
+  | "instagram"
+  | "linkedin";
 
 /** 채널 활성화 상태 */
 export interface ChannelConfig {

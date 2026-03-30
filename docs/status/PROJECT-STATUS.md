@@ -107,6 +107,16 @@
   - live ingest snapshot이 `public.sources.id` UUID를 그대로 보존해 sync/export/source linkage가 replay 시에도 안정적으로 유지됨
   - `supabase-editorial-sync`가 approved discover row에 `published_at`를 채워 public radar gate와 자동 sync 결과를 정렬함
   - Featured 카드는 기본 radar index에서는 중복 제거를 유지하되 category/search 필터가 걸리면 결과 목록에 다시 포함됨
+- 스페인어 올인 + 4채널 확정: done (2026-03-30)
+  - 최종 채널: YouTube(EN+ES 재생목록) + Threads + Newsletter + Podcast(Spotify RSS)
+  - X/Twitter 드롭($100/월), Instagram Reels 드롭(Threads가 커버), LinkedIn 드롭(오버헤드)
+  - MimikaStudio Spanish TTS 검증 완료 (language: "Spanish" + owner-jason, 4.08초)
+  - Edge TTS fallback 검증 완료 (es-MX-DaliaNeural, venv)
+  - Pexels Video API 연동 (portrait/landscape HD h264 mp4)
+  - BriefShort V4: videoSrc + OffthreadVideo 비디오 배경
+  - Podcast 자동화: WAV → MP3 → Supabase Storage → feed.xml → Spotify 자동 감지
+  - Spotify 첫 에피소드 라이브: https://open.spotify.com/episode/4AkWIMEYU4UGJF9Zt18cVn
+  - sources.brand 컬럼 추가 (멀티니치 복제 기반)
 - Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
   - MimikaStudio → NotebookLM 2인 대화(주) + Qwen3-TTS(백업)으로 교체
   - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환

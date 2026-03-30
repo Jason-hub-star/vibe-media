@@ -21,6 +21,12 @@ import {
   createYouTubeApiPublisher,
   isYouTubeApiConfigured,
   generateYouTubeUploadGuide,
+  createXPublisher,
+  createInstagramPublisher,
+  createLinkedInPublisher,
+  createPodcastRssPublisher,
+  uploadPodcastEpisode,
+  formatDuration,
   SITE_URL,
 } from "@vibehub/media-engine";
 
@@ -101,6 +107,88 @@ registerPublisher("threads", () => createThreadsPublisher());
 registerPublisher("ghost", () => createGhostPublisher());
 registerPublisher("tistory", () => createTistoryPublisher());
 
+// X/Twitter: shorts.mp4 첨부 (Free 티어 1,500/월)
+if (process.env.X_API_KEY) {
+  registerPublisher("x", () =>
+    createXPublisher({
+      videoFilePath: hasShorts ? shortsPath : undefined,
+    }),
+  );
+}
+
+// Instagram Reels: shorts.mp4 공개 URL 필요
+if (process.env.INSTAGRAM_ACCESS_TOKEN && process.env.INSTAGRAM_VIDEO_URL) {
+  registerPublisher("instagram", () =>
+    createInstagramPublisher({
+      publicVideoUrl: process.env.INSTAGRAM_VIDEO_URL!,
+    }),
+  );
+}
+
+// LinkedIn: 텍스트 포스트 (캐러셀은 Phase 2.5)
+if (process.env.LINKEDIN_ACCESS_TOKEN) {
+  registerPublisher("linkedin", () => createLinkedInPublisher());
+}
+
+// Podcast RSS: longform 음성 → MP3 → Supabase Storage → feed.xml 자동 갱신
+const longformVoicePath = path.join(outputDir, "longform-voice.wav");
+const shortsVoicePath = path.join(outputDir, "shorts-voice.wav");
+const podcastVoicePath = existsSync(longformVoicePath)
+  ? longformVoicePath
+  : existsSync(shortsVoicePath)
+    ? shortsVoicePath
+    : null;
+
+if (podcastVoicePath && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  const podcastFeedDir = path.join(outputDir, "podcast");
+  const podcastLang = canonicalLocale === "en" ? "en" : "es";
+  const podcastFeedUrl = `https://hzxsropbcjfywmospobb.supabase.co/storage/v1/object/public/podcast/feed-${podcastLang}.xml`;
+
+  // 발행 전에 업로드 실행 → 환경변수에 결과 저장 → publisher가 읽음
+  if (!dryRun) {
+    try {
+      console.log(`\nPodcast: auto-uploading ${path.basename(podcastVoicePath)}...`);
+      const podcastResult = await uploadPodcastEpisode({
+        wavPath: podcastVoicePath,
+        slug: brief.slug,
+        title: brief.title,
+        description: brief.summary ?? "",
+        language: podcastLang,
+        feedDir: podcastFeedDir,
+      });
+      console.log(`  Podcast: episode ready → ${podcastResult.mp3Url}`);
+      process.env.PODCAST_AUDIO_URL = podcastResult.mp3Url;
+      process.env.PODCAST_AUDIO_SIZE = String(podcastResult.fileSizeBytes);
+      process.env.PODCAST_DURATION = formatDuration(podcastResult.durationSec);
+    } catch (err) {
+      console.warn(`  Podcast: upload failed, skipping: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+
+  registerPublisher("podcast-rss", () =>
+    createPodcastRssPublisher({
+      audioPublicUrl: process.env.PODCAST_AUDIO_URL ?? "",
+      audioFileSize: Number(process.env.PODCAST_AUDIO_SIZE ?? "0"),
+      duration: process.env.PODCAST_DURATION ?? "00:02:00",
+      feedDir: podcastFeedDir,
+      feedUrl: podcastFeedUrl,
+      language: podcastLang,
+    }),
+  );
+} else if (process.env.PODCAST_AUDIO_URL) {
+  // fallback: 수동으로 환경변수 지정된 경우
+  registerPublisher("podcast-rss", () =>
+    createPodcastRssPublisher({
+      audioPublicUrl: process.env.PODCAST_AUDIO_URL!,
+      audioFileSize: Number(process.env.PODCAST_AUDIO_SIZE ?? "0"),
+      duration: process.env.PODCAST_DURATION ?? "00:02:00",
+      feedDir: path.join(outputDir, "podcast"),
+      feedUrl: process.env.PODCAST_FEED_URL ?? `${SITE_URL}/podcast/feed.xml`,
+      language: canonicalLocale,
+    }),
+  );
+}
+
 // YouTube: API 환경변수 있으면 자동 업로드, 없으면 로컬 메타 저장
 const useYouTubeApi = isYouTubeApiConfigured();
 
@@ -137,7 +225,10 @@ if (useYouTubeApi && (hasShorts || hasLongform)) {
 // 채널 설정 (환경변수 기반)
 // ---------------------------------------------------------------------------
 
-const VALID_CHANNELS: ChannelName[] = ["threads", "ghost", "tistory", "youtube", "spotify", "podcast-rss"];
+const VALID_CHANNELS: ChannelName[] = [
+  "threads", "ghost", "tistory", "youtube", "spotify", "podcast-rss",
+  "x", "instagram", "linkedin",
+];
 
 const enabledChannels = (process.env.PUBLISH_CHANNELS ?? "threads,youtube")
   .split(",")
