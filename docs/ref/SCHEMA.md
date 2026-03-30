@@ -4,6 +4,7 @@
 - `sources`
 - `ingest_runs`
 - `ingested_items`
+  - archive/discard로 분류되고 `brief_posts` / `discover_items`에 연결되지 않은 오래된 row는 retention worker가 summary 중심 payload로 압축할 수 있다.
 - `item_classifications`
 - `brief_posts`
   - trigger: `trg_fix_approved_draft` — `review_status = approved` && `status = draft` → 자동 `status = review` 전환 (상태 꼬임 방지)
@@ -24,7 +25,9 @@
 - `showcase_entries`
 - `showcase_links`
 - `tool_submissions`
+  - promoted row는 보존하고, terminal rejected/spam/screening-failed 상태의 오래된 row는 retention worker 정리 대상이 될 수 있다.
 - `tool_candidate_imports`
+  - promoted/linked row는 보존하고, hidden/duplicate/rejected/spam 상태의 오래된 row는 retention worker 정리 대상이 될 수 있다.
 - `ingest_run_attempts`
 - `video_job_attempts`
 - `channel_publish_results`
@@ -33,9 +36,11 @@
   - channel_name 지원: threads, ghost, tistory, youtube, youtube-shorts, spotify, podcast-rss, x, instagram, linkedin
   - meta fields: `dry_run`, `duration_ms`, `created_at`
   - 인덱스: brief_slug+created_at desc, channel_name+success+created_at desc
+  - hot DB 운영 로그로 보고 retention worker가 오래된 row를 batch prune한다.
 - `publish_dispatches`
   - 발행 배치 단위 기록. 한 번의 publish:channels 실행 = 1개 dispatch.
   - core fields: `brief_slug`, `channels` (text[]), `all_success`, `dry_run`, `duration_ms`
+  - hot DB 운영 로그로 보고 retention worker가 오래된 row를 batch prune한다.
 - `brief_post_variants`
   - brief_posts의 다국어 변형. canonical_id + locale 유니크.
   - core fields: `canonical_id` (uuid FK → brief_posts), `locale`, `title`, `summary`, `body` (jsonb)
@@ -75,8 +80,12 @@
   - `tool_candidate` lane 기본 source row는 migration으로 seed한다. 새 환경에서도 fallback id에 기대지 않고 UUID source row를 바로 사용할 수 있어야 한다.
 - `ingest_runs`는 개별 실행 단위를 기록한다.
   - core fields: `source_id`, `run_status`, `started_at`, `finished_at`, `error_message`
+  - 오래된 row는 retention worker가 batch prune하는 hot-path 운영 로그로 취급한다.
 - `ingested_items`는 source에서 들어온 개별 결과를 저장한다.
   - core fields: `source_id`, `run_id`, `title`, `url`, `content_type`, `dedupe_key`
+  - `raw_content`, `parsed_content`에는 source 원문/파서 결과가 담길 수 있다.
+  - inbox projection은 full `parsed_content`를 읽지 않고 summary만 읽는다.
+  - 오래된 `archive` / `discard` row 중 downstream editorial row가 없는 항목은 summary 중심 payload로 압축 가능하다.
 - `item_classifications`는 `brief | discover | both | archive | discard` 판정을 가진다.
   - core fields: `item_id`, `category`, `importance_score`, `novelty_score`, `target_surface`
 - `brief_posts`와 `discover_items`는 공개 surface와 admin review/publish control surface가 함께 보는 editorial spine이다.
@@ -88,6 +97,7 @@
   - editor fields: `last_editor_note` (text, nullable — quality fail 사유 등 기록)
 - `admin_reviews`는 review queue spine이다.
 - `ingest_run_attempts`와 `video_job_attempts`는 retry / failure history를 기록한다.
+- `ingest_run_attempts`, `video_job_attempts`, `channel_publish_results`, `publish_dispatches`는 운영 추적용 hot log이므로 retention worker가 장기 보관 대신 일정 기간 이후 정리한다.
 - `video_jobs`는 공개 surface가 아니라 내부 `watch folder -> auto analysis -> CapCut -> parent review -> private upload` 흐름을 관리한다.
 - `showcase_entries`와 `showcase_links`는 자동 ingest spine이 아니라 수동 큐레이션 sidecar lane을 위한 별도 저장소다.
 - `showcase_entries` core fields:
@@ -102,6 +112,7 @@
   - screening fields: `status`, `screening_status`, `screening_score`, `screening_notes`
   - tracking fields: `origin_ip_hash`, `user_agent_hash`, `source_locale`, `target_locales`
   - future-auth fields: `submitted_by_account_id`, `promoted_showcase_entry_id`
+  - public latest / admin list는 전체 스캔 대신 limited query를 우선 사용한다.
 - `tool_candidate_imports`는 외부 소스에서 자동 수집한 후보 저장소다.
   - identity fields: `id`, `slug`, `title`, `source_id`, `source_entry_url`
   - content fields: `summary`, `description`, `website_url`, `github_url`, `demo_url`, `docs_url`, `tags`
@@ -109,6 +120,7 @@
   - attribution fields: `source_name_snapshot`, `source_entry_external_id`
   - tracking fields: `source_locale`, `target_locales`, `first_seen_at`, `last_seen_at`, `imported_at`
   - future-linking fields: `promoted_showcase_entry_id`, `linked_submission_id`
+  - public listing / admin list는 전체 스캔 대신 limited query를 우선 사용한다.
 - Supabase Storage buckets:
   - `podcast` (public, 50MB limit, audio/mpeg + application/rss+xml) — 팟캐스트 MP3 에피소드 + feed.xml 호스팅
   - `avatar`, `gear-review-media`, `news_images`, `project-images` — 기존 public buckets

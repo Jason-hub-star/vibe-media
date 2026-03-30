@@ -124,6 +124,17 @@
 
 ## Resolved
 
+### 2026-03-31 — Supabase retention + read-path slimming
+- 상태: resolved
+- 배경: 저장 비용 자체보다 `append-only` 운영 로그, 큰 `jsonb` payload, 일부 admin/public 화면의 넓은 읽기 경로가 먼저 병목이 되기 시작했다. 특히 inbox projection이 `parsed_content` 전체를 읽고 있었고, 오래된 publish/retry 로그를 hot DB에 무기한 쌓아둘 이유가 약했다.
+- 결정:
+  - `pipeline:supabase-retention` 워커를 추가해 오래된 `channel_publish_results`, `publish_dispatches`, `ingest_run_attempts`, `video_job_attempts`, `ingest_runs`를 batch prune한다
+  - `tool_submissions`, `tool_candidate_imports`는 promoted/linked row는 보존하고 terminal rejected/spam/duplicate/hidden 상태만 retention 대상으로 삼는다
+  - 오래된 `archive` / `discard` 계열 `ingested_items`는 원문 markdown을 계속 들고 있지 않고 summary 중심 payload로 압축한다
+  - inbox projection은 `parsed_content` 전체 대신 summary만 읽고, public latest / admin list 화면은 limited query와 detail query를 분리한다
+- 근거: `ingested_items`는 stable id upsert 구조라 URL 하나가 매일 새 row로 불어나는 문제는 아니었고, 실제 비용 리스크는 오래 남는 로그와 과한 읽기 경로였다. hot-path slimming과 retention을 함께 넣는 편이 storage와 query cost를 동시에 줄인다.
+- 영향: hot DB 증가 속도를 늦추고, `/admin/submissions` / `/admin/imported-tools`의 조회 폭을 고정하며, archive/discard 원문 payload가 장기적으로 DB를 무겁게 만드는 문제를 줄인다
+
 ### 2026-03-27 — Brief 카드 전체 클릭 영역화 + 정보 위계 재설계
 - 상태: resolved
 - 결정:

@@ -141,6 +141,8 @@
 - [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`) — approved 브리프 quality check → scheduled → published 자동 전환
 - [x] auto-publish skip recovery + editorial integrity guard (`publish:repair-state`, `automation:check`, Supabase retry/backoff)
 - [x] Supabase migration replay 안전화 (`channel_publish_results`, `locale variant` migration에 idempotent guard 추가)
+- [x] Supabase retention worker (`pipeline:supabase-retention`) — 오래된 publish/retry/run log prune + `archive` / `discard` ingest payload compaction
+- [x] Supabase read-path slimming — inbox summary-only projection, public latest limited query, `/admin/submissions` + `/admin/imported-tools` 200건 cap
 - [x] Channel Publish Pipeline v2 설계 문서 — `CHANNEL-PUBLISH-PIPELINE.md` 전면 개편
 - [ ] admin 실제 인증/권한 모델 설계
 - [x] showcase submission intake flow (`tool_submissions` + 비로그인 폼 + 자동 심사 + promote/reject)

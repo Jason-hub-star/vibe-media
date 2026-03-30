@@ -32,6 +32,7 @@
 - Supabase review/publish/exceptions read path realignment: done
 - Supabase RLS + lifecycle/retry/video metadata migration: done
 - Supabase legacy public cleanup backup + worker: done
+- Supabase retention worker + read-path slimming: done — hot log TTL, archive/discard ingest payload compaction, inbox summary-only projection, admin/public list caps
 - watch folder worker (`fs.watch` + polling fallback): done
 - review decision / publish transition action handlers: done
 - exception retry action (retryable run/video → re-queue): done
@@ -178,6 +179,7 @@
 - `npm run test:unit`: 38/38 pass
 - `npm run test:e2e`: 28/28 pass
 - `npm run trial:all`: baseline-pass
+- `npm run pipeline:supabase-retention -w @vibehub/backend -- --dry-run`: pass (`affected rows 0`)
 - `npm run pipeline:live-fetch`: pass (`sources attempted 5 / items fetched 9 / pipeline items 9`)
 - `npm run pipeline:live-ingest`: pass (`sources 5 / runs 3 / items 9 / classifications 9`)
 - `npm run pipeline:supabase-sync`: pass (`sources synced 5 / runs synced 3 / items synced 9 / classifications synced 9`)
@@ -232,6 +234,9 @@
 - `npm run pipeline:live-fetch`는 `OpenAI News`, `Google AI Blog`, `GitHub Releases`를 실제로 fetch하고, article RSS source에는 `Defuddle` 기반 markdown enrichment를 시도한다
 - `npm run pipeline:live-ingest`로 live fetch 결과를 로컬 snapshot의 `sources / ingest_runs / ingested_items / item_classifications` 구조로 저장할 수 있다
 - live fetch 결과의 `parsed_content`에는 `summary`, `contentMarkdown`, `parserName`, `parseStatus`, `tags`가 함께 저장된다
+- `pipeline:supabase-retention`이 오래된 `channel_publish_results` / `publish_dispatches` / `ingest_run_attempts` / `video_job_attempts` / `ingest_runs`를 hot DB에서 정리하고, 오래된 `archive` / `discard`용 `ingested_items`는 summary 중심 payload로 압축한다
+- inbox projection은 이제 `parsed_content` 전체 대신 summary만 읽고, `/admin/submissions`와 `/admin/imported-tools`는 최근 200건만 조회한다
+- admin 대시보드 일부 카운트는 아직 배열 전체를 읽어 계산하므로, 다음 hardening wave에서는 `COUNT(*)` 전용 쿼리로 추가 경량화가 필요하다
 - `npm run pipeline:supabase-migrate`, `npm run pipeline:supabase-sync`를 실제 Supabase에 실행했고 ingest/editorial spine이 새 lifecycle 스키마 기준으로 동기화됐다
 - `npm run pipeline:supabase-cleanup`이 legacy public 테이블/트리거/함수 백업을 생성했고, cleanup commit 후 allowlist 외 public legacy table이 제거됐다
 - Supabase sync는 schema-qualified upsert와 stable UUID mapping을 사용해 로컬 snapshot id를 원격 UUID 스키마에 맞춰 저장한다
