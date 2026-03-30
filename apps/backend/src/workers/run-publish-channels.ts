@@ -9,6 +9,7 @@
  */
 
 import path from "path";
+import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import {
   dispatchPublish,
@@ -104,7 +105,6 @@ registerPublisher("tistory", () => createTistoryPublisher());
 const useYouTubeApi = isYouTubeApiConfigured();
 
 // 영상 파일 자동 감지: shorts.mp4 → longform.mp4 → final.mp4 (레거시)
-import { existsSync } from "fs";
 const shortsPath = path.join(outputDir, "shorts.mp4");
 const longformPath = path.join(outputDir, "longform.mp4");
 const legacyPath = path.join(outputDir, "final.mp4");
