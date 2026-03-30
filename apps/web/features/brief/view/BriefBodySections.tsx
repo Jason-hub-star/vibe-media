@@ -14,8 +14,8 @@ export function BriefBodySections({ body }: BriefBodySectionsProps) {
           {section.heading && (
             <h3 className="brief-section-heading">{section.heading}</h3>
           )}
-          {section.paragraphs.map((p) => (
-            <p key={p}>{p}</p>
+          {section.paragraphs.map((p, paragraphIndex) => (
+            <p key={`brief-section-${i}-paragraph-${paragraphIndex}`}>{p}</p>
           ))}
         </div>
       ))}

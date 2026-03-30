@@ -15,8 +15,8 @@ export function ShowcaseDetailContent({ entry }: { entry: ShowcaseEntry }) {
         {entry.body.length === 0 && (
           <p className="muted">본문이 아직 없습니다.</p>
         )}
-        {entry.body.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
+        {entry.body.map((paragraph, paragraphIndex) => (
+          <p key={`showcase-paragraph-${paragraphIndex}`}>{paragraph}</p>
         ))}
       </div>
 
