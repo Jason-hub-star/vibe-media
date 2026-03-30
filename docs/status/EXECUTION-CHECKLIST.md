@@ -226,7 +226,7 @@
 - [ ] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
 - [ ] shorts:render CLI 워커 자동화 (`npm run shorts:render`)
 - [ ] daily pipeline 자동 연결 (Long-form과 병렬)
-- [ ] YouTube Shorts 자동 업로드 (#Shorts 태그)
+- [x] YouTube 자동 업로드 — publish:channels가 shorts/longform.mp4 자동 감지 → YouTube API v3 (unlisted) + brief 자동 연결 + Shorts #Shorts 태그
 
 ## P3 — Newsletter Pipeline
 - [x] Resend API 키 발급 + 환경변수 설정 (`RESEND_API_KEY`)

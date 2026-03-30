@@ -412,56 +412,56 @@ compose-final.sh가 자동으로:
 
 ---
 
-## 8. YouTube 가이드 + Threads 발행
+## 8. YouTube 자동 업로드 + Threads 발행
 
-### ⚠️ 반드시 complete.mp4 생성 완료 후 실행할 것
+### ⚠️ 반드시 영상 렌더 완료 후 실행할 것
 
-`publish:channels`는 영상을 생성하지 않는다. Threads 포스팅 + YouTube 메타데이터 TXT만 처리한다.
-**영상 없이 먼저 실행하면 Threads에 영상 없는 포스트가 발행된다** — 순서를 지킬 것.
+`publish:channels`가 `output/<slug>/` 폴더에서 영상 파일을 자동 감지하여 YouTube Data API v3로 업로드한다.
+
+**영상 파일 감지 순서:**
+1. `shorts.mp4` → YouTube Shorts (9:16, #Shorts 태그)
+2. `longform.mp4` → YouTube 일반 영상 (16:9)
+3. `final.mp4` → 레거시 (아바타 파이프라인)
+
+**업로드 모드 자동 전환:**
+- `YOUTUBE_CLIENT_ID` + `YOUTUBE_CLIENT_SECRET` + `YOUTUBE_REFRESH_TOKEN` 설정됨 → **API 자동 업로드** (unlisted)
+- 환경변수 미설정 → 로컬 메타데이터 JSON 저장 (수동 업로드)
 
 파이프라인 순서:
 ```
-§3~§7 (NLM → 렌더 → overlay → compose) → complete.mp4 확인 → publish:channels
+영상 렌더 (Shorts + Longform) → publish:channels
+  ├─ Threads 자동 발행
+  ├─ YouTube Longform 자동 업로드 (unlisted)
+  ├─ YouTube Shorts 자동 업로드 (unlisted, #Shorts 태그)
+  ├─ brief_posts.youtube_video_id 자동 연결
+  └─ channel_publish_results DB 기록 + Telegram 보고
 ```
 
 ### 자동 모드
 ```bash
 cd /Users/family/jason/vibehub-media
 npm run publish:channels <slug>
-# → apps/backend/output/<slug>/youtube-upload-guide.txt 생성  ← root output/ 아님
 # → Threads 자동 발행
-# → DB channel_publish_results 기록
+# → YouTube Longform 업로드 (unlisted) + brief 자동 연결
+# → YouTube Shorts 업로드 (unlisted, #Shorts 태그)
+# → DB channel_publish_results 기록 (youtube + youtube-shorts)
+# → Telegram 보고
 ```
 
-> ⚠️ 출력 경로 주의: `publish:channels`의 결과물은 `apps/backend/output/<slug>/`에 생성됨.
-> 영상 파일(`complete.mp4`)은 root `output/<slug>/`에 있음. 두 경로는 다르다.
-
 ### 수동 모드 (이미 Threads 발행된 경우)
-Threads 재발행 방지 — 가이드 TXT만 재생성:
 ```bash
 npm run publish:channels <slug> -- --skip-threads
 ```
 
----
+### YouTube OAuth2 설정 (최초 1회)
+```bash
+npm run youtube:setup -- /path/to/client_secret.json
+# → 브라우저에서 Google 로그인 → .env.local에 토큰 자동 저장
+```
 
-## 8-2. YouTube Description + 완료 명령
-
-`publish:channels`가 생성하는 `youtube-upload-guide.txt`를 canonical guide로 사용한다.
-이 파일에는 아래가 모두 포함돼야 한다.
-
-- 제목
-- 설명란
-- 브리프 URL
-- 메인 홈 URL
-- Threads URL
-- 고정 댓글 문구
-- 업로드 후 완료 명령
-  - Telegram에 `<youtube-url>` 단독 전송
-  - 자동 매칭 실패 시 `/vh-youtube <slug> <youtube-url>`
-  - `npm run publish:link-youtube -- <video-id-or-url>`
-  - 명시 연결 CLI: `npm run publish:link-youtube -- <slug> <video-id-or-url>`
-
-Gemini를 쓰는 경우에도 `youtube-upload-guide.txt`를 덮어쓰지 말고, 별도 SEO 보조 파일만 생성한다.
+### 운영자 확인 후 공개 전환
+업로드된 영상은 `unlisted` 상태. YouTube Studio에서 확인 후 `public`으로 전환.
+자동 전환은 의도적으로 제외 — 품질 확인 후 수동 공개.
 
 ---
 

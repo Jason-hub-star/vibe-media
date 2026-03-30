@@ -284,11 +284,13 @@ Telegram 보고는 별도로 하지 않는다 (번역 워커 자체는 console �
 ```
 daily-auto-publish (§9 채널 발행 → §10 번역)
   ├→ daily-media-publish
-  │    ├─ Long-form: NotebookLM → 아바타 → Remotion Audiogram → YouTube
-  │    └─ Shorts: Gemini 스크립트 → MimikaStudio TTS → Remotion BriefShort → YouTube Shorts
+  │    ├─ Shorts: Gemini → MimikaStudio TTS → Remotion BriefShort → YouTube API (unlisted)
+  │    ├─ Longform: Gemini → MimikaStudio TTS → Remotion BriefLongform → YouTube API (unlisted)
+  │    └─ publish:channels → Threads + YouTube 자동 업로드 + brief 자동 연결
   └→ newsletter:send (EN + ES Resend Broadcasts, blocking: false)
 ```
 
-- **미디어**: `daily-media-publish.md` — 두 트랙(Long-form + Shorts) 병렬 실행
-- **뉴스레터**: `npm run newsletter:send` — daily pipeline 마지막 단계에서 자동 실행 (run-daily-pipeline.ts에 연결됨)
+- **미디어**: `daily-media-publish.md` — Shorts + Longform 두 트랙 → `publish:channels`가 YouTube API로 자동 업로드
+- **YouTube 업로드**: `YOUTUBE_*` 환경변수 설정 시 자동, 미설정 시 메타데이터만 저장 (수동 업로드)
+- **뉴스레터**: `npm run newsletter:send` — daily pipeline 마지막 단계에서 자동 실행
 - Shorts 트랙은 MimikaStudio 서버(localhost:7693) 기동 여부로 자동 on/off
