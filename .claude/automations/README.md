@@ -15,7 +15,7 @@
 | `weekly-source-health.md` | 소스 건강성 점검 + 품질 피드백 + 신규 소스 발견 | 주 1회 |
 | `weekly-ingest-research.md` | 새 source/tool 조사와 parser stack 후보 추적 | 주 1회 |
 | `weekly-autoresearch-loop.md` | 작은 실험을 반복하며 keep/discard 판정 | 주 2-3회 |
-| `daily-media-publish.md` | Long-form(아바타+Audiogram) + Shorts(MimikaStudio+BriefShort) 미디어 생성 | 매일 1회, auto-publish 이후 |
+| `daily-media-publish.md` | Shorts+Longform 미디어 생성 → Threads + YouTube API 자동 업로드 (unlisted) | 매일 1회, auto-publish 이후 |
 
 ## Execution Order (Daily)
 

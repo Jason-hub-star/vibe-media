@@ -21,7 +21,7 @@
 - 미완: Pexels API 키 발급, shorts:render CLI 워커, daily pipeline 연결
 
 ### 2026-03-29 — YouTube Data API v3 자동 업로드 도입
-- 상태: decided
+- 상태: implemented (2026-03-30 실전 검증 완료)
 - 배경: YouTube 영상 업로드가 수동(YouTube Studio) → Telegram → CLI 3단계로 진행되어 병목. 하루 1~2건 규모에서 자동화 ROI 높음
 - 결정: YouTube Data API v3 `videos.insert` (resumable upload) 구현
   1. `youtube-api.ts` — OAuth2 refresh token 갱신 + 비공개 업로드 + 썸네일 업로드

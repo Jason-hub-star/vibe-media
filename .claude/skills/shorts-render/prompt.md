@@ -167,9 +167,21 @@ ffmpeg -y \
 | 09-dreamy | 부드러움 | 연구, 학술, 장기 전망 |
 | 10-cinematic | 장엄 | 대형 발표, 역사적 사건 |
 
-### 9. YouTube 업로드 (선택)
+### 9. YouTube 자동 업로드 (`publish:channels` 통합)
 
-YouTube Data API v3 — privacyStatus: unlisted → 확인 후 public
+영상 생성 후 `publish:channels`를 실행하면 자동으로 처리된다:
+
+```bash
+npm run publish:channels <slug>
+```
+
+- `shorts.mp4` → YouTube Shorts (unlisted, #Shorts 태그)
+- `longform.mp4` → YouTube Longform (unlisted)
+- `final.mp4` → 레거시 fallback
+- API 업로드 성공 시 `brief_posts.youtube_video_id` 자동 연결
+- `YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN` 미설정 시 → 로컬 메타데이터만 저장
+
+운영자는 YouTube Studio에서 unlisted → public 전환만 하면 된다.
 
 ## 알려진 문제 + 해결 패턴
 
