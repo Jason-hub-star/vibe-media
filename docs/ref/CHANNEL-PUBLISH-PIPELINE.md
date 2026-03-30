@@ -4,7 +4,7 @@
 - critic 통과 후 published brief를 **Threads, Ghost/블로그, 티스토리, YouTube, 팟캐스트** 등 외부 채널로 자동/반자동 배포한다.
 - 오디오는 **NotebookLM 2인 대화 팟캐스트**(주 경로) 또는 **Qwen3-TTS 1인 나레이션**(백업 경로)으로 생성한다.
 - YouTube 영상은 **YouTube Data API v3로 자동 업로드**(unlisted) 후 운영자가 공개 전환한다. 환경변수 미설정 시 로컬 메타 저장 fallback.
-- `publish:channels`가 `shorts.mp4` / `longform.mp4` / `final.mp4`를 자동 감지하여 각각 업로드한다. Shorts는 `#Shorts` 태그 자동 추가.
+- `publish:channels`가 `shorts.mp4` / `longform.mp4`를 자동 감지하여 각각 업로드한다. Shorts는 `#Shorts` 태그 자동 추가.
 - 모든 채널은 **크로스 프로모션 링크**로 서로를 연결해 트래픽을 순환시킨다.
 
 ## v1 → v2 변경 사유

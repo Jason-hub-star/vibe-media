@@ -418,10 +418,9 @@ compose-final.sh가 자동으로:
 
 `publish:channels`가 `output/<slug>/` 폴더에서 영상 파일을 자동 감지하여 YouTube Data API v3로 업로드한다.
 
-**영상 파일 감지 순서:**
-1. `shorts.mp4` → YouTube Shorts (9:16, #Shorts 태그)
-2. `longform.mp4` → YouTube 일반 영상 (16:9)
-3. `final.mp4` → 레거시 (아바타 파이프라인)
+**영상 파일 감지:**
+- `shorts.mp4` → YouTube Shorts (9:16, #Shorts 태그)
+- `longform.mp4` → YouTube 일반 영상 (16:9)
 
 **업로드 모드 자동 전환:**
 - `YOUTUBE_CLIENT_ID` + `YOUTUBE_CLIENT_SECRET` + `YOUTUBE_REFRESH_TOKEN` 설정됨 → **API 자동 업로드** (unlisted)

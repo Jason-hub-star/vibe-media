@@ -104,20 +104,18 @@ registerPublisher("tistory", () => createTistoryPublisher());
 // YouTube: API 환경변수 있으면 자동 업로드, 없으면 로컬 메타 저장
 const useYouTubeApi = isYouTubeApiConfigured();
 
-// 영상 파일 자동 감지: shorts.mp4 → longform.mp4 → final.mp4 (레거시)
+// 영상 파일 자동 감지: shorts.mp4 / longform.mp4
 const shortsPath = path.join(outputDir, "shorts.mp4");
 const longformPath = path.join(outputDir, "longform.mp4");
-const legacyPath = path.join(outputDir, "final.mp4");
 
 const hasShorts = existsSync(shortsPath);
 const hasLongform = existsSync(longformPath);
-const hasLegacy = existsSync(legacyPath);
 
-// 메인 YouTube publisher는 longform 또는 legacy를 업로드
-const primaryVideoPath = hasLongform ? longformPath : hasLegacy ? legacyPath : shortsPath;
+// 메인 YouTube publisher는 longform 우선, 없으면 shorts
+const primaryVideoPath = hasLongform ? longformPath : shortsPath;
 
-if (useYouTubeApi && (hasShorts || hasLongform || hasLegacy)) {
-  console.log(`YouTube: API mode — shorts:${hasShorts} longform:${hasLongform} legacy:${hasLegacy}`);
+if (useYouTubeApi && (hasShorts || hasLongform)) {
+  console.log(`YouTube: API mode — shorts:${hasShorts} longform:${hasLongform}`);
   registerPublisher("youtube", () =>
     createYouTubeApiPublisher({
       videoFilePath: primaryVideoPath,

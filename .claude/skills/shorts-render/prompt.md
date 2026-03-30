@@ -177,7 +177,6 @@ npm run publish:channels <slug>
 
 - `shorts.mp4` → YouTube Shorts (unlisted, #Shorts 태그)
 - `longform.mp4` → YouTube Longform (unlisted)
-- `final.mp4` → 레거시 fallback
 - API 업로드 성공 시 `brief_posts.youtube_video_id` 자동 연결
 - `YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN` 미설정 시 → 로컬 메타데이터만 저장
 
