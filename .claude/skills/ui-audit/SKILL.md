@@ -9,6 +9,23 @@ user_invocable: true
 
 Playwright 기반 프론트엔드 품질 검증. overflow, 가독성, 반응성을 한번에 점검한다.
 
+## Quick Triage
+
+공용 레이아웃, 전역 CSS, shared component가 얽힌 반응형 문제면 먼저 `code-review-graph`로 범위를 줄인다.
+
+```bash
+code-review-graph status
+code-review-graph update
+rg -n "100vw|100dvw|overflow-x|grid-template-columns|white-space: nowrap|position: sticky" apps/web
+```
+
+모바일 좌우 스크롤 이슈는 보통 다음 순서로 좁힌다:
+- 전역 폭 계산 (`100vw`, `calc(100vw - ...)`)
+- footer/header/nav 같은 shared shell
+- media query 오버라이드 순서
+- grid/flex 자식의 min-content overflow
+- 특정 페이지 카드/표/table wrapper
+
 ## Arguments
 - `admin` (기본값): admin 페이지만
 - `public`: public 페이지만
@@ -71,6 +88,42 @@ if (await loginInput.isVisible({ timeout: 3000 }).catch(() => false)) {
 - 터치 타겟 44px 준수: 클릭 가능 요소(`a`, `button`)의 최소 높이/폭 ≥ 44px
 - 카드 그리드가 1열로 전환되었는지
 
+모바일 overflow가 발견되면 숫자로 먼저 확정한다:
+
+```js
+({
+  innerWidth: window.innerWidth,
+  clientWidth: document.documentElement.clientWidth,
+  scrollWidth: document.documentElement.scrollWidth,
+  bodyScrollWidth: document.body.scrollWidth,
+  hasOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+})
+```
+
+그 다음 화면 밖으로 튀는 요소를 추출한다:
+
+```js
+const vw = document.documentElement.clientWidth;
+Array.from(document.querySelectorAll('*'))
+  .map((el) => {
+    const r = el.getBoundingClientRect();
+    return {
+      tag: el.tagName.toLowerCase(),
+      className: String(el.className || '').slice(0, 120),
+      left: Math.round(r.left),
+      right: Math.round(r.right),
+      width: Math.round(r.width),
+      text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80),
+    };
+  })
+  .filter((x) => x.right > vw + 1 || x.left < -1)
+```
+
+이번 레포에서 실제로 잘 먹힌 점검 포인트:
+- `.shell`이 `100vw` 기반이면 모바일에서 예상보다 넓어질 수 있다
+- `.footer-grid` 같은 shared grid는 `responsive.css` override가 전역 rule보다 먼저 로드되면 mobile rule이 져서 overflow를 만든다
+- 수정 후에는 `390px viewport -> scrollWidth 390`처럼 수치로 재검증한다
+
 #### D. 스크린샷 캡처
 각 페이지를 `/tmp/ui-audit-{pagename}.png`로 저장한다.
 Read 도구로 열어 시각 확인한다.
@@ -106,3 +159,4 @@ bash tools/token-lint.sh
 - 스크린샷은 `/tmp/`에 저장하며 영구 보존하지 않는다
 - overflow 1px 이하는 서브픽셀 렌더링으로 무시한다
 - 발견된 문제는 파일 경로와 CSS 클래스를 함께 보고한다
+- 공용 layout bug면 먼저 shared shell에서 해결하고 페이지별 예외는 나중에 본다

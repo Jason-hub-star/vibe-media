@@ -45,7 +45,15 @@
 - 변경된 CSS 파일에 대해 `bash tools/token-lint.sh` 실행
 - 위반 0건이면 PASS, 1건 이상이면 목록 출력
 
-### 9. 코드 품질 스팟체크
+### 9. 모바일 반응형 점검
+- public layout, shared component, CSS 파일이 바뀌었으면 `ui-audit public --mobile` 기준으로 모바일 overflow를 확인
+- 최소 확인:
+  - `document.documentElement.scrollWidth === document.documentElement.clientWidth`
+  - 햄버거 메뉴 open 상태에서도 좌우 스크롤이 생기지 않는지
+  - footer/header/shared shell이 mobile media query로 실제 접히는지
+- 공용 CSS 이슈면 `100vw`, media query 순서, shared grid/footer/nav부터 본다
+
+### 10. 코드 품질 스팟체크
 - 변경된 파일을 실제로 읽고 다음을 확인:
   - 에러 핸들링 누락 (try/catch 없는 async, unchecked null)
   - 하드코딩된 매직 넘버/스트링
@@ -70,6 +78,7 @@
 | 문서 정합성 | ✅ PASS/⚠️ | `/doc-sync` 기준 |
 | Unit tests | ✅ 33/34 | 1건 pre-existing |
 | CSS 토큰 준수 | ✅/⚠️ | N건 |
+| 모바일 반응형 | ✅/⚠️ | ui-audit public --mobile |
 | 코드 품질 | ⚠️ 2건 | 아래 참조 |
 
 ### Doc Sync Summary
