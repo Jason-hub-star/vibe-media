@@ -54,7 +54,7 @@ git status --porcelain
 - 필수 문서:
   - `docs/ref/ROUTE-SPECS.md`
   - `docs/status/PROJECT-STATUS.md`
-  - `docs/status/EXECUTION-CHECKLIST.md`
+  - `docs/status/PROJECT-STATUS.md` (Execution Checklist 섹션 포함)
 - 추가 문서:
   - public 목적/가치 변경이면 `docs/ref/PRD.md`
   - 구조 변경이면 `docs/ref/ARCHITECTURE.md`
@@ -125,7 +125,7 @@ git status --porcelain
 - 예시: `packages/design-tokens/**`, CSS, presentational component, card layout, filter UX
 - 필수 문서:
   - `docs/status/PROJECT-STATUS.md`
-  - `docs/status/EXECUTION-CHECKLIST.md`
+  - `docs/status/PROJECT-STATUS.md` (Execution Checklist 섹션 포함)
 - 추가 문서:
   - route 목적/핵심 섹션 변화면 `docs/ref/ROUTE-SPECS.md`
 - companion checks:
@@ -214,7 +214,7 @@ git status --porcelain
 ## 규칙
 - `docs/status/*`는 구현과 충돌하면 구현을 먼저 확인하고 맞춘다
 - `PROJECT-STATUS.md`는 기능/동작 변화가 있으면 거의 항상 후보에 넣는다
-- `EXECUTION-CHECKLIST.md`는 milestone 상태 변화가 있을 때만 요구한다
+- `EXECUTION-CHECKLIST`는 `PROJECT-STATUS.md`에 통합됨 — 별도 파일 수정 불필요
 - `DECISION-LOG.md`는 경계/원칙/상태 의미가 바뀌었을 때만 요구한다
 - `ROUTE-SPECS.md`는 route 파일만이 아니라 route 목적/핵심 섹션이 바뀌어도 후보가 된다
 - `PIPELINE-OPERATING-MODEL.md`는 lane, blocking semantics, step order가 바뀌면 본다

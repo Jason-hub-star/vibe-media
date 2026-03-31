@@ -91,6 +91,7 @@
 - `skills/screenshot-check/SKILL.md` — Playwright 기반 시각 점검
 
 ### Commands
+- `commands/doc-update.md` — 코드 변경 후 문서 자동 갱신 (`/doc-update`)
 - `commands/self-review.md` — 현재 변경사항 자기 리뷰
 - `commands/seo-check.md` — route별 SEO 점검
 - `commands/token-lint.md` — CSS/token 하드코딩 탐지
