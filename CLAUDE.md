@@ -91,6 +91,7 @@
 - `skills/screenshot-check/SKILL.md` — Playwright 기반 시각 점검
 
 ### Commands
+- `commands/learn.md` — 교정 사항을 feedback memory로 저장 (`/learn`)
 - `commands/doc-update.md` — 코드 변경 후 문서 자동 갱신 (`/doc-update`)
 - `commands/self-review.md` — 현재 변경사항 자기 리뷰
 - `commands/seo-check.md` — route별 SEO 점검
