@@ -7,6 +7,7 @@ import type {
   SnapshotItemClassificationRow,
   SnapshotSourceRow
 } from "./live-ingest-snapshot";
+import { runDiscoverQualityCheck } from "./discover-quality-check";
 import { markdownToPlainBody } from "./markdown-to-plain-body";
 import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
 import { toStableUuid } from "./supabase-id";
@@ -98,6 +99,28 @@ function getSummary(item: SnapshotIngestedItemRow) {
   return String(item.parsed_content.summary ?? item.title);
 }
 
+/** contentMarkdown에서 첫 2문장을 추출하여 enriched summary 반환 */
+function getEnrichedSummary(item: SnapshotIngestedItemRow): string | null {
+  const md = item.parsed_content.contentMarkdown;
+  if (typeof md !== "string" || !md.trim()) return null;
+
+  const plain = markdownToPlainBody(md).join(" ");
+  if (!plain || plain.length < 40) return null;
+
+  // 첫 2문장 추출
+  const sentences = plain.match(/[^.!?]+[.!?]+/g);
+  if (!sentences || sentences.length === 0) {
+    // 문장 구분이 안 되면 첫 180자
+    return plain.length > 180 ? `${plain.slice(0, 179).trim()}...` : plain;
+  }
+
+  const twoSentences = sentences.slice(0, 2).join("").trim();
+  if (twoSentences.length > 180) {
+    return `${twoSentences.slice(0, 179).trim()}...`;
+  }
+  return twoSentences;
+}
+
 /** contentMarkdown → plain text body 문단 배열. 없거나 빈약하면 summary fallback */
 function getBodyParagraphs(item: SnapshotIngestedItemRow): string[] {
   const md = item.parsed_content.contentMarkdown;
@@ -110,9 +133,13 @@ function getBodyParagraphs(item: SnapshotIngestedItemRow): string[] {
 }
 
 function getDiscoverCopy(item: SnapshotIngestedItemRow, source?: SnapshotSourceRow | null) {
+  // enriched content가 있으면 discover summary를 본문 기반으로 업그레이드
+  const enrichedSummary = getEnrichedSummary(item);
+  const baseSummary = enrichedSummary ?? getSummary(item);
+
   return normalizeDiscoverCopy({
     title: item.title,
-    summary: getSummary(item),
+    summary: baseSummary,
     url: item.url,
     sourceName: source?.name ?? null
   });
@@ -265,8 +292,10 @@ function inferDiscoverStatus(classification: SnapshotItemClassificationRow): Dis
 
 function inferDiscoverPublishedAt(
   classification: SnapshotItemClassificationRow,
-  generatedAt: string
+  generatedAt: string,
+  qualityPassed: boolean
 ): string | null {
+  if (!qualityPassed) return null;
   return inferReviewStatus(classification) === "approved" ? generatedAt : null;
 }
 
@@ -362,6 +391,16 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
 
     if (classification.target_surface === "discover" || classification.target_surface === "both") {
       const discoverId = toStableUuid(`discover:${item.id}`)!;
+
+      const discoverQuality = runDiscoverQualityCheck({
+        title: discoverCopy.title,
+        summary: discoverCopy.summary,
+        category: toDiscoverCategory(classification.category)
+      });
+
+      const qualityHold = !discoverQuality.passed;
+      const reviewRequired = needsReview(classification) || qualityHold;
+
       const row: DiscoverItemRow = {
         id: discoverId,
         source_item_id: toStableUuid(item.id)!,
@@ -369,12 +408,12 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         title: discoverCopy.title,
         category: toDiscoverCategory(classification.category),
         summary: discoverCopy.summary,
-        status: inferDiscoverStatus(classification),
-        review_status: inferReviewStatus(classification),
+        status: qualityHold ? "watching" : inferDiscoverStatus(classification),
+        review_status: qualityHold ? "pending" : inferReviewStatus(classification),
         scheduled_at: null,
-        published_at: inferDiscoverPublishedAt(classification, snapshot.generatedAt),
+        published_at: inferDiscoverPublishedAt(classification, snapshot.generatedAt, discoverQuality.passed),
         tags: getTags(item),
-        highlighted: inferDiscoverStatus(classification) === "featured"
+        highlighted: !qualityHold && inferDiscoverStatus(classification) === "featured"
       };
 
       discoverItems.push(row);
@@ -392,13 +431,16 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         }
       );
 
-      if (needsReview(classification)) {
+      if (reviewRequired) {
+        const qualityNote = qualityHold
+          ? `discover quality gate failed: ${discoverQuality.failures.join("; ")}`
+          : null;
         adminReviews.push({
           id: toStableUuid(`review:discover:${discoverId}`)!,
           target_type: "discover",
           target_id: discoverId,
           review_status: "pending",
-          notes: classification.exception_reason ?? "operator review required before surface release",
+          notes: qualityNote ?? classification.exception_reason ?? "operator review required before surface release",
           reviewed_at: null
         });
       }

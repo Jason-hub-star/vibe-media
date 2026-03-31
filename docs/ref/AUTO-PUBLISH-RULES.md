@@ -37,7 +37,7 @@
 ## Auto Publish Actions
 - `review + approved`는 auto-publish 실행 시 `scheduled`로 전환된다.
 - `scheduled + approved`는 `scheduled_at <= NOW()`일 때 `published`로 전환된다.
-- 한 번에 최대 10개 브리프만 처리한다.
+- 한 번에 최대 5개 브리프만 처리한다.
 
 ## Quality Failure Recovery
 - quality gate 실패 브리프는 발행을 진행하지 않는다.
@@ -56,6 +56,22 @@
 - quality gate 반복 실패가 누적되는 경우
 - source provenance 또는 policy ambiguity가 남는 경우
 - dual-surface/duplicate/manual-review source처럼 의도적으로 operator review를 요구하는 경우
+
+## Discover Quality Gate
+- Discover는 Brief와 달리 body가 없으므로 title + summary만으로 판단한다.
+- ingest 시점에 `runDiscoverQualityCheck()`가 실행되며, 실패 시 `watching + pending`으로 hold된다.
+- 통과 조건:
+  - title length `10-120`
+  - summary length `>= 60`
+  - summary가 `...` 또는 `…`로 끝나면서 120자 미만일 것 (짧은 RSS description 잘림 방지; 120자+ 이면 clampText 산출물이므로 허용)
+  - summary가 인용구(`"`)로 시작하면서 실질 설명이 40자 미만이 아닐 것
+  - internal terms `pipeline`, `ingest`, `classify`, `orchestrat` absent
+- enrichment 강화 (2026-03-31):
+  - HN RSS 등 summary가 30자 미만이거나 `"Comments"`만 있으면 Defuddle enrichment를 시도하여 원문 본문에서 summary를 추출한다.
+  - GitHub Release는 changelog 항목이 2개 이상이면 결합하여 60자+ summary를 생성한다.
+  - Discover 아이템에도 enriched contentMarkdown이 있으면 본문 첫 2문장을 summary로 사용한다.
+- 실패 시 `admin_reviews`에 사유가 기록되며 operator review 후 수동 approve 가능하다.
+- 구현: `apps/backend/src/shared/discover-quality-check.ts`
 
 ## Immediate Publish
 - 기본 우선순위는 `scheduled` 경유다.

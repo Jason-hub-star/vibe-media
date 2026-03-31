@@ -61,6 +61,21 @@ describe("discover copy normalizer", () => {
     );
   });
 
+  it("combines multiple release highlights to reach 60+ chars", () => {
+    const copy = normalizeDiscoverCopy({
+      title: "v6.33.0",
+      url: "https://github.com/openai/openai-node/releases/tag/v6.33.0",
+      sourceName: "GitHub Releases",
+      summary:
+        "## 6.33.0 (2026-03-25)\n### Features\n* **api:** add keys field to computer actions\n* **api:** add in/nin filter types to ComparisonFilter"
+    });
+
+    expect(copy.summary.length).toBeGreaterThanOrEqual(60);
+    expect(copy.summary).toContain("add keys field to computer actions");
+    expect(copy.summary).toContain("Also:");
+    expect(copy.summary).not.toContain("Full Changelog");
+  });
+
   it("formats discover tags into readable labels", () => {
     expect(normalizeDiscoverTags({ tags: ["open-source", "api", "open_source", ""] })).toEqual(["Open Source", "API"]);
     expect(normalizeDiscoverTags({ tags: ["repo", "release", "api"] })).toEqual(["API"]);

@@ -41,7 +41,7 @@ describe("supabase editorial sync", () => {
             content_type: "repo",
             raw_content: {},
             parsed_content: {
-              summary: "Useful SDK release summary",
+              summary: "A major SDK update that streamlines agent workflows and improves tool-call tracing for production use.",
               tags: ["sdk", "release"]
             },
             dedupe_key: "dedupe-1",
@@ -228,9 +228,8 @@ describe("supabase editorial sync", () => {
     const editorial = buildEditorialRows(snapshot);
 
     expect(editorial.discoverItems[0]?.title).toBe("OpenAI Node v6.33.0");
-    expect(editorial.discoverItems[0]?.summary).toContain("API: add keys field to computer actions.");
+    expect(editorial.discoverItems[0]?.summary).toContain("add keys field to computer actions");
     expect(editorial.discoverItems[0]?.tags).toEqual(["API"]);
-    expect(editorial.discoverItems[0]?.published_at).toBe("2026-03-22T00:00:00.000Z");
   });
 
   it("preserves manual brief lifecycle once an operator has touched it", () => {

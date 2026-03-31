@@ -121,7 +121,7 @@ function polishReleasePhrase(value: string) {
   return value
     .replace(/\(\[[0-9a-f]{7,}\].*$/i, "")
     .replace(/\[[0-9a-f]{7,}\].*$/i, "")
-    .replace(/^internal:\s*tweak ci branches$/i, "CI branch updates")
+    .replace(/^internal:\s*tweak ci branches\s*$/i, "CI branch updates")
     .replace(/^internal:\s*/i, "Internal update: ")
     .replace(/^chore:\s*/i, "Maintenance: ")
     .replace(/^docs:\s*/i, "Docs: ")
@@ -205,7 +205,26 @@ function normalizeTitle({ title, url, sourceName }: NormalizeDiscoverCopyInput) 
   return `${repoLabel} ${cleanedTitle}`;
 }
 
+function extractMultipleHighlights(summary: string, maxItems = 3): string[] {
+  const lines = decodeHtmlEntities(summary)
+    .split(/\n+/)
+    .map((line) => cleanReleaseLine(line))
+    .filter((line) => !isIgnorableReleaseLine(line));
+
+  return lines.slice(0, maxItems);
+}
+
 function normalizeReleaseSummary(input: NormalizeDiscoverCopyInput, normalizedTitle: string) {
+  // 여러 항목을 결합하여 60자+ summary 생성 시도 (M3)
+  const highlights = extractMultipleHighlights(input.summary);
+  if (highlights.length >= 2) {
+    const combined = `${ensureSentence(highlights[0])} Also: ${highlights.slice(1).join("; ")}.`;
+    if (combined.length >= 60) {
+      return clampText(combined);
+    }
+  }
+
+  // 기존 단일 하이라이트 경로 (기존 동작 보존)
   const highlight = extractReleaseHighlight(input.summary);
   if (highlight) {
     return clampText(ensureSentence(highlight));

@@ -148,6 +148,12 @@ function shouldEnrichArticle(source: LiveSourceDefinition) {
   return source.fetchKind === "rss" && source.contentType === "article";
 }
 
+/** summary가 부실한지 판단 — "Comments" 한 단어이거나 30자 미만 */
+function isThinSummary(summary: string) {
+  const trimmed = summary.trim();
+  return trimmed.length < 30 || /^comments\.?$/i.test(trimmed);
+}
+
 export async function enrichArticleContent(url: string) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(ARTICLE_FETCH_TIMEOUT_MS),
@@ -220,7 +226,9 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
       });
 
       let ogImageUrl: string | null = null;
-      if (shouldEnrichArticle(source)) {
+      // HN 등 RSS description이 부실한 소스도 enrichment 대상에 포함
+      const needsEnrich = shouldEnrichArticle(source) || isThinSummary(copy.summary);
+      if (needsEnrich) {
         try {
           const enriched = await enrichArticleContent(item.url);
           contentMarkdown = enriched.contentMarkdown;
@@ -232,6 +240,11 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         }
       }
 
+      // enriched markdown이 있으면 summary를 본문 첫 부분으로 대체
+      const enrichedSummary = contentMarkdown && isThinSummary(copy.summary)
+        ? summarizeText(normalizeMarkdownPreview(contentMarkdown), 180)
+        : null;
+
       items.push({
         id: createItemId(source.id, item.url),
         sourceId: source.id,
@@ -240,7 +253,7 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         title: copy.title,
         url: item.url,
         publishedAt: item.publishedAt,
-        parsedSummary: summarizeText(copy.summary),
+        parsedSummary: enrichedSummary || summarizeText(copy.summary),
         contentMarkdown,
         parserName,
         parseStatus,
