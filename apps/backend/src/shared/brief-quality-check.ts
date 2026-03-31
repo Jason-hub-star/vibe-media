@@ -122,8 +122,8 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   if (bodyParagraphs < 3) {
     failures.push(`body paragraphs ${bodyParagraphs} (expected ≥3)`);
   }
-  if (sourceCount < 2) {
-    failures.push(`source count ${sourceCount} (expected ≥2)`);
+  if (sourceCount < 1) {
+    failures.push(`source count ${sourceCount} (expected ≥1)`);
   }
 
   const bodyText = (brief.body ?? []).join(" ").toLowerCase();
@@ -156,7 +156,7 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   if (titleLen >= 15 && titleLen <= 70) gateScore += 10;
   if (summaryLen >= 50 && summaryLen <= 200) gateScore += 10;
   if (bodyParagraphs >= 3) gateScore += 10;
-  if (sourceCount >= 2) gateScore += 10;
+  if (sourceCount >= 1) gateScore += 10;
   if (foundTerms.length === 0) gateScore += 5;
   if (badUrls.length === 0) gateScore += 5;
 

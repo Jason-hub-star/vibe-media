@@ -2,7 +2,7 @@ import { runAutoPublish } from "../shared/supabase-auto-publish";
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
-const maxBriefs = parseInt(args.find((a) => a.startsWith("--max="))?.split("=")[1] ?? "10", 10);
+const maxBriefs = parseInt(args.find((a) => a.startsWith("--max="))?.split("=")[1] ?? "5", 10);
 
 if (dryRun) {
   console.log("[auto-publish] dry-run mode — DB 업데이트 없음");
