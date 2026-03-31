@@ -4,38 +4,49 @@
 이 문서는 진입점 인덱스이며, 세부 규칙은 각 SSOT와 `.claude` 하위 문서를 따른다.
 
 ## Loading Order
+
+### Tier 1: Always Read (매 세션 필수)
 1. `CLAUDE.md`
-2. `docs/ref/PRD.md`
-3. `docs/ref/SCHEMA.md`
-4. `docs/ref/ARCHITECTURE.md`
-5. `docs/ref/ASSET-GUIDE.md`
-6. `docs/ref/DISCOVERY-TAXONOMY.md`
+2. `docs/status/PROJECT-STATUS.md`
+3. `docs/ref/ARCHITECTURE.md`
+
+### Tier 2: On-Demand (해당 영역 작업 시)
+4. `docs/ref/SCHEMA.md`
+5. `docs/ref/ROUTE-SPECS.md`
+6. `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
 7. `docs/ref/PIPELINE-OPERATING-MODEL.md`
-8. `docs/ref/AGENT-OPERATING-MODEL.md`
-9. `docs/ref/REVIEW-POLICY.md`
-10. `docs/ref/AUTO-PUBLISH-RULES.md`
-11. `docs/ref/SOURCE-TIER-POLICY.md`
-12. `docs/ref/ORCHESTRATION-EVALUATION.md`
-13. `docs/ref/SOURCE-RESEARCH-METHOD.md`
-14. `docs/ref/INGEST-STACK-DECISION.md`
-15. `docs/ref/SOURCE-CATALOG.md`
-16. `docs/ref/LLM-ORCHESTRATION-MAP.md`
-17. `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
-18. `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
-19. `docs/ref/VIDEO-PIPELINE.md`
-20. `docs/ref/VIDEO-WORKER-CONTRACT.md`
-21. `docs/ref/STITCH-WORKFLOW.md`
-22. `docs/ref/ROUTE-SPECS.md`
-23. `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
-24. `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
-25. `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
-26. `docs/status/PROJECT-STATUS.md`
-27. `docs/status/EXECUTION-CHECKLIST.md`
-28. `docs/status/DECISION-LOG.md`
-29. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
-30. `docs/status/PAGE-UPGRADE-BOARD.md`
-31. `docs/status/PIPELINE-DIAGRAM.md`
-32. `docs/status/SELF-CRITIQUE-LOG.md`
+8. `docs/ref/ASSET-GUIDE.md`
+9. `docs/ref/VIDEO-PIPELINE.md`
+10. `docs/ref/PRD.md`
+
+### Tier 3: Reference (필요 시 검색)
+- `docs/ref/DISCOVERY-TAXONOMY.md`
+- `docs/ref/AGENT-OPERATING-MODEL.md`
+- `docs/ref/REVIEW-POLICY.md`
+- `docs/ref/AUTO-PUBLISH-RULES.md`
+- `docs/ref/SOURCE-TIER-POLICY.md`
+- `docs/ref/ORCHESTRATION-EVALUATION.md`
+- `docs/ref/SOURCE-RESEARCH-METHOD.md`
+- `docs/ref/INGEST-STACK-DECISION.md`
+- `docs/ref/SOURCE-CATALOG.md`
+- `docs/ref/LLM-ORCHESTRATION-MAP.md`
+- `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
+- `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
+- `docs/ref/VIDEO-WORKER-CONTRACT.md`
+- `docs/ref/STITCH-WORKFLOW.md`
+- `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
+- `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
+- `docs/status/DECISION-LOG.md`
+- `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+- `docs/status/PAGE-UPGRADE-BOARD.md`
+- `docs/status/PIPELINE-DIAGRAM.md`
+- `docs/status/SELF-CRITIQUE-LOG.md`
+
+## Doc Update Principle
+- **정본 1곳 원칙**: 하나의 사실은 한 문서에만 기록한다. 나머지는 링크로 참조.
+- 코드 변경 시 필수 갱신: `PROJECT-STATUS.md` (상태 반영) + 해당 Tier 2 문서 (있으면)
+- 결정 변경 시: `DECISION-LOG.md`에 기록, resolved되면 archive로 이동
+- EXECUTION-CHECKLIST는 PROJECT-STATUS.md에 통합됨
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.

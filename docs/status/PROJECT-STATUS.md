@@ -182,6 +182,238 @@
 - 채널 크로스프로모 활성화: done — skipCrossPromo=false 전환, YouTube 설명 Podcast 링크 추가 + ES 스페인어 레이블, Podcast 에피소드 크로스프로모 링크, Newsletter 소셜 링크 섹션, brand.ts 상수화 (YOUTUBE_CHANNEL, PODCAST_URL)
 - Vercel 배포 정적 에셋 수정: done — 루트 public/에 누락된 PNG/JPG 플레이스홀더 + favicon 복사 (Vercel이 monorepo 루트 public/ 서빙)
 
+## Execution Checklist
+
+### P0 — Immediate Blockers
+- [x] JS 런타임 기준 확정 + `apps/web` typecheck 안정화
+- [x] `PROJECT-STATUS.md`와 실제 검증 상태 다시 동기화
+- [x] git 초기화 및 원격 연결 전략 확정
+- [x] source/tool/orchestration research pending 상태를 decision log로 분리
+
+### P1 — Pipeline Core
+- [x] `sources` / `ingest_runs` / `ingested_items` / `item_classifications` SQL 초안 작성
+- [x] `/admin/inbox` 스캐폴드 구현
+- [x] `/admin/runs` 스캐폴드 구현
+- [x] `/admin/review` 스캐폴드 구현
+- [x] `/admin/publish` 스캐폴드 구현
+- [x] `/admin/exceptions` 스캐폴드 구현
+- [x] `/admin/policies` 스캐폴드 구현
+- [x] `/admin/programs` 스캐폴드 구현
+- [x] `video_jobs` 상태 모델을 `auto analysis -> CapCut -> parent review -> private upload` 흐름으로 확장
+- [x] `target_surface = brief | discover | both | archive | discard` 흐름을 UI와 데이터에 연결
+- [x] `human-on-exception` 큐 조건을 실제 상태값으로 반영
+- [x] `watch folder -> auto analysis -> CapCut -> parent review` 워커 계약 문서화
+- [x] `video_jobs`를 publish queue / exceptions와 연결
+- [x] `Brief + Discover` dry-run worker를 실제 실행 가능한 스크립트로 추가
+- [x] `auto-safe` live source fetch worker 추가
+- [x] live fetch 결과를 로컬 ingest spine snapshot에 저장
+- [x] Supabase remote migrate/sync 스크립트 준비
+- [x] brief/discover editorial draft 테이블 스키마 추가
+- [x] ingest 결과를 brief/discover/admin review 원격 테이블로 확장 저장
+- [x] editorial lifecycle 컬럼과 retry/failure attempt 테이블 추가
+- [x] media public tables RLS enable
+- [x] legacy public table SQL backup + cleanup worker 추가
+- [x] `admin_reviews` / editorial lifecycle / blocked video 기준 Supabase read projection 전환
+- [x] `watch folder` 워커 실제 구현 (`fs.watch` + `fs.watchFile` fallback)
+- [x] review decision / publish transition backend action handler 추가
+- [x] pipeline → UI end-to-end 검증 (pipeline-to-ui.spec.ts 8 tests)
+- [x] Supabase query timeout 보호 (connect_timeout + Promise.race 15s)
+
+### P1 — LLM / Orchestration
+- [x] `LLM-ORCHESTRATION-MAP.md` 기준으로 단계별 실험표 작성
+- [x] `classifier` shadow 비교 규칙 문서화
+- [x] `brief draft` shadow 비교 규칙 문서화
+- [x] `discover draft` shadow 비교 규칙 문서화
+- [x] `critic` shadow 비교 규칙 문서화
+- [x] `telegram-orchestrator`와 VibeHub 연동 계약 정리
+- [x] `telegram-orchestrator` activation 경계를 role/stage로 분리
+- [x] 로컬/Claude/hybrid 실험 로그 포맷 정의
+- [x] `classifier` fixture-backed shadow trial 실행기 추가
+- [x] `brief draft` fixture-backed shadow trial 실행기 추가
+- [x] `discover draft` fixture-backed shadow trial 실행기 추가
+- [x] `critic` fixture-backed shadow trial 실행기 추가
+- [x] 첫 stage shadow trial 실행
+- [x] first promote / keep-active decision 기록
+- [x] classifier stage pointer activate
+- [x] `brief draft` / `discover draft` / `critic` stage pointer activate
+- [x] orchestration 기본값을 `hybrid`로 확정
+
+### P1 — Source Research
+- [x] 수집기 후보 조사
+- [x] parser/PDF 후보 조사
+- [x] source catalog 1차 배치 선정
+- [x] source tier 분류표 작성
+- [x] fallback 정책 확정
+- [x] Phase 1 `Defuddle` article enrichment 연결
+- [x] fixture-backed `trial:all` 운영 요약 추가
+
+### P2 — Frontend / UX
+- [x] public UX 내부 용어 제거 + 사용자 언어 전환
+- [x] showcase sidecar lane foundation
+- [x] admin 사이드바 탭 통합 15→12개
+- [~] page-level loading/empty/error 상태 강화 (route-group level 완료, 나머지 미완)
+- [x] 디자인 토큰 통일 (RGB 채널, purple, radius/type-scale 확장, CSS hardcode 141건 제거)
+- [x] 모바일 반응성 강화 (누락 브레이크포인트, 터치 타겟 44px, 햄버거 메뉴, 테이블 스크롤)
+- [x] `brief` UI 개선 (freshness badge, lead card, skeleton loading, prev/next nav, source chips)
+- [x] brief detail page redesign (MetaBar, section parsing, source panel, insight callout)
+- [x] admin brief quality checklist (6항목)
+- [x] review detail brief body preview
+- [x] admin dashboard AutomationTrail infinite loop fix
+- [x] Supabase connection pool deadlock fix + timestamp string parse
+- [x] review / publish mutation 버튼 (Server Actions)
+- [x] exception retry action
+- [x] admin 카드 가독성 개선
+- [x] admin 탭 데이터 분리 (발행 필터, 수신함 필터, 브리프 상태 필터)
+- [x] brief cover image 파이프라인 (RSS → DB → 프론트)
+- [x] 레퍼런스 브리프 등록 (Quality Check 6/6 기준)
+- [x] SEO 기반 구축 (favicon, robots.ts, sitemap.ts, per-page metadata, JSON-LD 3종, GA4, RSS)
+- [x] 동적 OG 이미지 (opengraph-image.tsx + twitter-image.tsx)
+- [x] 검색 + 카테고리 필터 (공용 FilterBar)
+- [x] `/radar/[id]` 공개 상세 페이지
+- [x] URL 기반 필터 동기화 (brief `topic`+`q`, radar `group`+`q`, debounce 300ms)
+- [x] 관련 브리프 섹션
+- [x] OG 이미지 브랜드 하드코딩 제거 (6파일 → colorTokens + brandTokens)
+- [x] URL 필터 공용 훅 추출 (`useFilterUrlSync`)
+- [x] SEO 하드닝 (sitemap `lastModified` 안정화, `/admin` noindex/disallow, Naver verification)
+- [x] Editorial guardrail auto-approve
+- [x] i18n 다국어 라우트 재구성 (`[locale]/(public)/` prefix)
+- [x] 구 `(public)/` 라우트 제거
+- [x] i18n Translation Worker + Quality Gates + Video Fan-out + Channel Publish per Locale
+- [x] `/admin/translations` 번역 대시보드
+- [x] Submit Tool 허브 (`/sources` → 3레인 허브)
+- [x] Imported Candidates sidecar lane
+- [x] Vercel 프로덕션 배포 (`vibehub.tech` 도메인 연결)
+- [x] **M11-A**: Brief 카드 텍스트 절단 + 위계 정리
+- [x] **M11-B**: Brief 카드 전체 클릭 영역화
+- [x] **M11-C**: Discover 카드 미세 조정
+- [x] **M11-D**: Newsletter CTA 홈페이지 삽입 + slug dedup 방어
+- [x] public hub page overhaul
+- [ ] admin 상태 UI 명확성 강화
+- [ ] design docs route-by-route 확장
+- [ ] placeholder asset -> real asset 교체 흐름 문서화
+- [ ] `admin/video-jobs`를 CapCut handoff와 parent review 체크리스트 기준으로 고도화
+
+### P2 — Discover / Brief Surface
+- [x] discover 공개 발행 게이트 (`isPublished` 가드)
+- [x] brief quality gate CLI 적용
+- [x] discover 자동 발행 (`daily-auto-publish`에 통합)
+- [x] Category SSOT (`DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일)
+- [x] radar 카테고리 그룹 UI
+- [x] design inspiration 확장 (`design_token` category + Obsidian export + editorial RSS 8개 seed)
+- [x] live ingest snapshot source UUID 보존
+- [x] discover sync publish hydration
+- [x] `radar` 카테고리 필터 URL 동기화
+- [x] Featured discover 재노출 규칙 정리
+- [x] `tracked / watching / featured` 노출 규칙 정리
+- [x] `brief`와 `discover` 동시 노출 기준 고정
+- [x] action link 검증 규칙 정리
+
+### P3 — Hardening
+- [x] auto-publish 워커 구현 (`publish:auto`, `publish:auto-dry`)
+- [x] auto-publish skip recovery + editorial integrity guard
+- [x] Supabase migration replay 안전화
+- [x] Supabase retention worker (`pipeline:supabase-retention`)
+- [x] Supabase read-path slimming
+- [x] Channel Publish Pipeline v2 설계 문서
+- [ ] admin 실제 인증/권한 모델 설계
+- [x] showcase submission intake flow
+- [ ] showcase submission auth flow 설계
+- [ ] observability / failure alert 설계
+- [ ] retry / rollback / blocked 승격 정책 구체화
+- [ ] 운영 주간 점검 루틴 문서화
+
+### P3 — Pipeline Self-Improvement (Phase A)
+- [x] A-1: 30개 소스 feed_url 검증 → 23개 활성 / 7개 비활성화
+- [x] A-1: Source Registry DB SSOT 전환 (`loadSourcesFromDb()`) — 수집량 9→63건
+- [x] A-2: Brief Quality Score 확장 (pass/fail → 0~100 + A/B/C/D/F)
+- [x] A-2: 레퍼런스 brief [REFERENCE] 태깅
+- [x] Full Cycle 검증 — FK 버그 4건 수정, draft+approved 5건 리셋
+- [ ] A-3: classifier/draft/critic 프롬프트 구체화 + few-shot 레퍼런스 투입
+- [x] A-4a: brief Jaccard 중복 감지 워커 (`dedup:guard`)
+- [ ] A-4b: brief 간 의미적 유사도 중복 감지 (Gemini embedding)
+- [x] A-5a: 소스→brief 품질 상관분석 + maxItems 자동 조정 제안 (`source:health`)
+- [x] A-5b: 주간 품질 리포트 → Telegram 발송
+- [x] 소스 자동 발견 (`source:health`)
+- [ ] 소스 자동 발견 cron 확장 (HN/GitHub Trending)
+- [x] 비활성 소스 자동 비활성화 (`source:health`)
+- [ ] 비활성 소스 월 1회 재검증
+
+### P3 — Channel Publish
+- [x] P1: Threads API 연동 (`threads-publisher.ts`)
+- [x] ~~P2: NotebookLM CLI~~ — 레거시 (삭제)
+- [x] P3a: Whisper STT + Gemini 번역
+- [x] P3b: Remotion BriefAudiogram
+- [x] P3c: 썸네일 생성 (`thumbnail-gen.ts`)
+- [ ] P3d: 섹션별 AI 이미지 (후순위)
+- [x] P4: Ghost/WP API 스텁
+- [x] P5: 팟캐스트 메타데이터 (`spotify-metadata.ts`)
+- [x] P6: 크로스 프로모션 2-pass + 3rd pass
+- [x] P7: 티스토리 스텁
+- [x] Publish Dispatcher (`publish-dispatcher.ts`)
+- [x] Backend CLI (`publish:channels`, `publish:link-youtube`, `youtube:setup`)
+- [x] YouTube Data API v3 자동 업로드 (`youtube-api.ts`)
+- [ ] P8: YouTube Analytics + GA4 피드백 수집기
+- [ ] P9: insight-generator 주간 리포트
+- [x] Supabase 스키마 확장 — channel_publish_results + publish_dispatches
+- [x] 채널 발행 DB 저장 + Telegram 보고 연결
+- [x] daily-auto-publish.md §9 채널 발행 단계 추가
+- [ ] channel_metrics 테이블
+- [ ] Ghost/Tistory 실제 API 연동
+- [x] Threads 실제 토큰 확보 + 라이브 테스트
+- [x] Threads 토큰 갱신 + 만료일 추적 (2026-05-25 만료)
+- [x] 오디오/비디오 E2E 검증 완료 — Shorts + Longform 메인 트랙
+- [x] daily-media-publish.md 갱신
+- [x] Shorts/Longform 통합 렌더 워커 (`video:render <slug>`)
+- [x] Remotion 인트로/아웃트로 검증
+- [x] 전체 자동화 체인 실전 검증: 9건 published + 미디어 합성
+- [x] approved+draft 상태 꼬임 방지 DB 트리거
+- [x] MimikaStudio 1인 나레이션 경로 검증
+- [x] @remotion/captions 워드바이워드 자막 애니메이션
+- [ ] Threads 토큰 자동 갱신 워커
+
+### P3 — Shorts Pipeline (9:16, 50-58초)
+- [x] MimikaStudio Chatterbox TTS 음성 클론 (woman-es)
+- [x] Gemini 60초 나레이션 스크립트 자동 생성
+- [x] MimikaStudio REST API → 클론 음성 WAV 생성
+- [x] Whisper STT word-level 타임스탬프 추출
+- [x] Remotion BriefShort V3 Composition (1080×1920, 30fps)
+- [x] ffmpeg 합성 (map 0:v + map 1:a, loudnorm -16 LUFS)
+- [x] 프로토타입 풀 파이프라인 성공
+- [x] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
+- [x] `video:render <slug>` 통합 렌더 워커 구현
+- [x] daily pipeline 자동 연결
+- [x] YouTube 자동 업로드
+
+### P3 — 스페인어 올인 + 채널 확장 (2026-03-30)
+- [x] M1: MimikaStudio 스페인어 TTS 검증
+- [x] M1-fallback: Edge TTS 스페인어 검증
+- [x] M2: Pexels Video API 연동
+- [x] M2: BriefShort V4 (`videoSrc` + `OffthreadVideo`)
+- [x] M3: shorts-render 스킬 프롬프트 스페인어 모드 추가
+- [N/A] M4: YouTube ES 채널 생성 — 기존 채널에 ES 재생목록 추가로 결정
+- [x] M5: X/Twitter Publisher (`x-publisher.ts`)
+- [x] M6: Instagram Reels Publisher (`instagram-publisher.ts`)
+- [x] M7: Podcast RSS Publisher (`podcast-rss-publisher.ts`)
+- [x] M8: LinkedIn Publisher (`linkedin-publisher.ts`)
+- [x] run-publish-channels.ts 7채널 등록 + VALID_CHANNELS 확장
+- [x] M9: `sources.brand` 필드 추가 + `loadSourcesFromDb(lane, brand)` 필터
+- [ ] M10: 스페인어 RSS 소스 추가 (Xataka, Hipertextual, Genbeta 등)
+- [x] M11: 썸네일 자동화
+- [ ] M12: 스폰서 슬롯 자동 삽입 (구독자 1,000명 달성 후)
+
+### P3 — Newsletter Pipeline
+- [x] Resend API 키 발급 + 환경변수 설정
+- [x] Resend Audience 생성 (EN / ES 분리)
+- [x] 뉴스레터 HTML 템플릿 구현
+- [x] published brief 자동 수집 → Broadcast 본문 생성 워커
+- [x] Resend Broadcasts API 발송 (`newsletter:send` CLI)
+- [x] dual-locale 발송 (EN + ES 각각 별도 Broadcast)
+- [x] 홈페이지 CTA → Resend Contacts API 구독자 등록 연결
+- [x] 발송 결과 Telegram 보고
+- [x] unsubscribe 링크 + CAN-SPAM 준수 footer
+- [x] daily pipeline 자동 연결 (`blocking: false`)
+- [x] dry-run 지원 (`npm run newsletter:send-dry`)
+
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks
 - `npm run automation:check`: pass
