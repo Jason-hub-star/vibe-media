@@ -51,6 +51,24 @@ git status --porcelain
 - DECISION-LOG.md: — (결정 변경 없음)
 ```
 
+## 서브에이전트 모델 배분
+
+문서 작업은 Opus가 필요 없다. 토큰 절약을 위해 서브에이전트 모델을 지정한다:
+
+| 작업 | 모델 | 이유 |
+|------|------|------|
+| 상태 한 줄 추가/체크 | `haiku` | 템플릿 단순 삽입 |
+| 섹션 수정/통합 | `sonnet` | 맥락 파악 + 편집 |
+| drift 감지/판별 | `sonnet` | change class 분류 |
+| 아키텍처 결정 문서화 | `opus` (예외) | 근거/영향 분석 필요할 때만 |
+
+병렬 실행 예시:
+```
+Agent({ model: "sonnet", prompt: "Update PROJECT-STATUS..." })
+Agent({ model: "sonnet", prompt: "Update CHANNEL-PUBLISH-PIPELINE..." })
+Agent({ model: "haiku",  prompt: "Move resolved decisions to archive..." })
+```
+
 ## 규칙
 
 - `docs/status/*`는 구현과 충돌하면 구현을 먼저 확인하고 맞춘다
