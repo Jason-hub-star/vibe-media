@@ -360,28 +360,17 @@
   - `daily-editorial-review.md`가 raw SQL approve 대신 `review:auto-approve` 워커를 호출하도록 수정
   - 기준 문서 업데이트: `AUTO-PUBLISH-RULES.md`, `PIPELINE-OPERATING-MODEL.md`, 자동화 README
 - 오디오/비디오 파이프라인 E2E 검증 (2026-03-27): done
-  - nlm CLI (NotebookLM): 설치 + 로그인 완료, 오디오/비디오 생성 성공
   - MimikaStudio: Python 3.11 venv 설치 완료 (faster-whisper 포함)
   - Whisper STT: faster-whisper base 모델, 48세그먼트 자막 생성 성공
-  - talking-head-anime-3: 설치 + 모델 다운로드 완료, Apple Silicon MPS ~10fps
-  - SadTalker: 제거 (애니 캐릭터 호환 안 됨 → talking-head-anime-3 채택)
   - ffmpeg-full: brew 설치 완료 (libass 포함, 자막 burn-in 가능)
-  - NotebookLM 다운로드: Claude in Chrome 확장으로 자동화 성공
-  - 아바타 규칙 확정: 전신 이미지 + 512x512 투명 패딩 (강제 리사이즈 금지)
-  - 합성 레이아웃 확정: 500px, W-350:H-275, 자막 하단 중앙
-  - daily-media-publish.md 자동화 프롬프트 추가 (파이프라인 체인 연결)
-  - E2E 최종 결과: final.mp4 (NLM 비디오 + 토킹 아바타 PIP + 자막) 생성 성공
-  - 썸네일: Gemini 2.0 Flash 품질 불만족 — 웹 수동 생성으로 운영
   - Remotion 인트로/아웃트로: 검증 완료 (BrandIntro 3초 + BrandOutro 5초)
-  - compose-final.sh: silencedetect 자동 감지 + fade-out/fade-in (워터마크 0%) 확정
-  - 남자 아바타: assets/brand/vh-avatar-male.png 추가, male_solo 렌더 검증 완료
-  - 화자 감지: ZCR 기반 male_solo/female_solo/dual 자동 판별
-  - 듀얼 아바타 (2인): 남(좌하단)+여(우하단) 대칭 배치 렌더 성공, 화자 분리 정확도 개선 필요
-  - overlay-avatar.sh: avatar-meta.json 기반 모드별 자동 합성 확정
   - 전체 자동화 체인 검증: pipeline→editorial→auto-approve→auto-publish→media-publish 9건 발행 성공
   - approved+draft 상태 꼬임: DB 트리거(trg_fix_approved_draft)로 재발 방지
-  - 미구현 보류: pyannote-audio 화자 분리 (정확도 향상용, HuggingFace 토큰 필요, 무료)
-  - 미구현 보류: MimikaStudio 1인 나레이션 (주인님 목소리 복제), @remotion/captions 단어별 자막
+  - 현재 메인 트랙: Shorts (Pexels+MimikaStudio+Remotion BriefShort V3) + Longform (동일 엔진, 16:9)
+  - **레거시 제거 (2026-03-31)**: NLM 팟캐스트 + talking-head-anime-3 아바타 파이프라인 전체 삭제
+    - 삭제: talking-head-render.py, overlay-avatar.sh, compose-final.sh, detect-speakers.py, nlm-download.ts, nlm-download-direct.py
+    - 삭제: vh-avatar.png, vh-avatar-male.png, talking-head-config.ts
+    - 사유: NLM 수동 트리거 필요 + 아바타 렌더 32분/건 병목 → Shorts 트랙으로 전환
 - i18n 다국어 확장 — EN→ES (2026-03-27): done
   - Phase 1: DB 스키마 — `brief_post_variants`, `discover_item_variants` 테이블 생성 + `channel_publish_results`에 locale 컬럼 추가
   - Phase 2: Translation Worker — Gemini JSON Schema 번역 (고유명사/URL/마크다운 보존), CLI `translate:variant`

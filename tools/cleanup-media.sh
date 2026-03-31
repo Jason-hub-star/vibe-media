@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # 미디어 출력물 정리 — 오래된 중간 파일 자동 삭제
 #
-# 보관: complete.mp4, subtitles-en.srt, youtube-upload-guide.txt, avatar-meta.json
-# 삭제: avatar-*-alpha.mov, audio-*.wav, intro.mp4, outro.mp4, final.mp4, video.mp4, brief-body.txt
+# 보관: shorts.mp4, longform.mp4, subtitles-en.srt, youtube-upload-guide.txt
+# 삭제: audio-*.wav, intro.mp4, outro.mp4, final.mp4, video.mp4, brief-body.txt
 #
 # Usage: bash tools/cleanup-media.sh [--days 7] [--dry-run]
 
@@ -38,7 +38,7 @@ for slug_dir in output/*/; do
   echo "📁 ${slug}"
 
   # 삭제 대상
-  for pattern in "avatar-*-alpha.mov" "audio-*.wav" "intro.mp4" "outro.mp4" "final.mp4" "video.mp4" "brief-body.txt" "*.png"; do
+  for pattern in "audio-*.wav" "intro.mp4" "outro.mp4" "final.mp4" "video.mp4" "brief-body.txt" "*.png"; do
     for f in ${slug_dir}${pattern}; do
       [ -f "$f" ] || continue
       size=$(ls -lh "$f" | awk '{print $5}')
@@ -54,4 +54,4 @@ done
 
 echo ""
 echo "=== Done ==="
-echo "보관됨: complete.mp4, subtitles-en.srt, youtube-upload-guide.txt, avatar-meta.json"
+echo "보관됨: shorts.mp4, longform.mp4, subtitles-en.srt, youtube-upload-guide.txt"

@@ -169,7 +169,7 @@
 
 ## P3 — Channel Publish (v2 설계 완료 → 코드 구현 완료)
 - [x] P1: Threads API 연동 (`threads-publisher.ts`) — 공식 API, 250건/일, dryRun 지원
-- [x] P2: NotebookLM CLI → 팟캐스트 M4A 생성 (`notebooklm-bridge.ts`) — nlm CLI spawn + ffmpeg loudnorm
+- [x] ~~P2: NotebookLM CLI → 팟캐스트 M4A 생성~~ — 레거시 (2026-03-31 동결, 코드 삭제)
 - [x] P3a: Whisper STT + Gemini 번역 (`whisper-stt.ts`, `srt-utils.ts`) — SRT 파싱/생성/번역
 - [x] P3b: Remotion BriefAudiogram (`BriefAudiogram.tsx`, `render-audiogram.ts`) — 웨이브폼+자막+커버 Composition
 - [x] P3c: 썸네일 생성 (`thumbnail-gen.ts`) — Sharp SVG 브랜드 + 커버 리사이즈 1280×720
@@ -191,22 +191,12 @@
 - [ ] Ghost/Tistory 실제 API 연동 — 티스토리 API 2023-11 폐쇄 (신규 불가), Ghost는 셀프호스팅 시 연동 가능
 - [x] Threads 실제 토큰 확보 + 라이브 테스트 — @vibehub1030 발행 성공 (2026-03-26)
 - [x] Threads 토큰 갱신 + 만료일 추적 — 2026-05-25 만료, THREADS_TOKEN_EXPIRES 환경변수 추가
-- [x] 오디오/비디오 E2E 검증 완료 (2026-03-27)
-  - NotebookLM 비디오 생성 + Claude in Chrome 다운로드 자동화
-  - faster-whisper STT 자막 생성 (48세그먼트)
-  - talking-head-anime-3 토킹 아바타 렌더 (separable_float, MPS ~10fps)
-  - ffmpeg-full 최종 합성 (아바타 PIP + 자막 burn-in)
-  - final.mp4 생성 성공
-- [x] daily-media-publish.md 자동화 프롬프트 추가 + 코워크 설정값 강제 지침
-- [x] Remotion 인트로/아웃트로 검증 — BrandIntro(3초) + BrandOutro(5초) + compose-final.sh
-- [x] 남자 아바타 추가 + male_solo 렌더 검증 완료
-- [x] 화자 감지 (ZCR) + 자동 아바타 선택 (male_solo/female_solo 검증 완료)
-- [x] 듀얼 아바타 렌더 + overlay 동작 확인 (남좌+여우 대칭)
-- [x] compose-final.sh silencedetect 파싱 버그 수정
-- [x] overlay-avatar.sh 모드별 자동 합성 (1인/2인/아바타 없음)
+- [x] 오디오/비디오 E2E 검증 완료 (2026-03-27) — ~~NLM+아바타 경로 레거시 (2026-03-31 삭제)~~
+  - 현재 메인: Shorts (Pexels+MimikaStudio+Remotion BriefShort V3) + Longform (동일 엔진, 16:9)
+- [x] daily-media-publish.md 자동화 프롬프트 — Shorts/Longform 트랙으로 갱신 (2026-03-31)
+- [x] Remotion 인트로/아웃트로 검증 — BrandIntro(3초) + BrandOutro(5초)
 - [x] 전체 자동화 체인 실전 검증: 9건 published + 미디어 합성
 - [x] approved+draft 상태 꼬임 방지 DB 트리거 (trg_fix_approved_draft)
-- [ ] pyannote-audio 화자 분리 (ZCR 대비 정확도 향상, HuggingFace 토큰 필요, 무료) — 보류
 - [x] MimikaStudio 1인 나레이션 경로 검증 (Qwen3-TTS + 주인님 목소리 복제) — 완료, Shorts TTS 엔진으로 채택
 - [x] @remotion/captions 워드바이워드 자막 애니메이션 — BriefShort V2에 spring 바운스 구현 완료
 - [ ] Threads 토큰 자동 갱신 워커 (만료 7일 전 Telegram 경고 + refresh API 호출)
@@ -302,7 +292,7 @@
 2. ~~Source Registry DB SSOT + Quality Score 확장~~ done (23개 활성, 63건/실행, 0~100 스코어)
 3. **Pipeline Self-Improvement Phase A 나머지** — 레퍼런스 brief 선정(A-2) → 프롬프트 구체화(A-3) → 중복 감지(A-4) → 소스 피드백 루프(A-5) → 소스 자동 발견/비활성화
 4. **Channel Publish Phase B (텍스트 채널)** — Threads(P1) 라이브 완료. Ghost는 셀프호스팅 결정 후 연동. 티스토리 API 폐쇄로 보류. 네이버는 반자동만 현실적
-5. **Channel Publish Phase C (미디어 채널)** — nlm CLI 설치 완료, MimikaStudio 클론 완료 → NotebookLM 로그인 → Whisper STT → Remotion Audiogram E2E 검증 → 크로스 프로모션(P6) → 피드백 루프(P8~P9)
+5. **Channel Publish Phase C (미디어 채널)** — Shorts/Longform (Pexels+MimikaStudio+Remotion) 메인 트랙 전환 완료. NLM+아바타 레거시 삭제 (2026-03-31). 크로스 프로모션(P6) → 피드백 루프(P8~P9)
 6. `Defuddle`로 저장된 `contentMarkdown`을 classifier/draft 품질 규칙에 더 직접 반영할지 결정한다.
 7. watch folder worker 뒤의 auto-analysis / proxy / transcript / highlight 단계를 실제 작업기로 연결한다.
 8. admin auth + admin role gating을 Supabase SSR auth로 교체한다.
