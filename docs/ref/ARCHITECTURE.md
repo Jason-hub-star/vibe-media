@@ -5,9 +5,10 @@
 - `apps/backend`: backend naming skeleton and future services
 - `packages/content-contracts`: shared types and status values
 - `packages/design-tokens`: visual tokens and asset specs
-- `packages/media-engine`: 도메인 무관 미디어 처리 엔진
+- `packages/media-engine`: 도메인 무관 미디어 처리 엔진 (TTS, STT, 영상 렌더, 채널 발행)
 - `supabase`: schema and lightweight functions
 - `tools/stitch`: design prompt and variant generation helpers
+- `public/`: Vercel 배포용 정적 에셋 (루트). `apps/web/public/`의 동기화 복사본 — 상세는 `ASSET-GUIDE.md` 참조
 
 ## Pipeline Spine
 - pipeline reference: `docs/ref/PIPELINE-OPERATING-MODEL.md`

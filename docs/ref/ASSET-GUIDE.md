@@ -13,6 +13,16 @@
 - `admin-video-banner-placeholder`
 - `source-strip-placeholder`
 
+## Monorepo public/ 이중 구조 (Vercel 배포)
+
+Vercel 배포 시 정적 에셋은 **monorepo 루트 `public/`** 에서 서빙된다 (`apps/web/public/` 아님).
+로컬 dev에서는 Next.js가 `apps/web/public/`을 직접 참조하므로 차이가 발생할 수 있다.
+
+- **정본**: `apps/web/public/` — 에셋 추가/수정은 여기서 먼저
+- **배포용 복사본**: 루트 `public/` — `apps/web/public/`과 동기화 필수
+- **에셋 추가 시**: 양쪽 모두에 파일 배치. 한쪽만 넣으면 dev 또는 prod에서 404 발생
+- **검증**: `diff <(cd apps/web/public && find . -type f | sort) <(cd public && find . -type f | sort)`
+
 ## Replacement Rule
 - every slot documents ratio, minimum size, and preferred format
 

@@ -125,7 +125,7 @@
   - 플레이스홀더 3개 AI 생성 이미지로 교체: radar(PNG), newsletter(PNG), source-strip(JPG)
   - design-tokens assetSlots 경로 + 백엔드 폴백 경로 일괄 업데이트
 - Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
-  - MimikaStudio → NotebookLM 2인 대화(주) + Qwen3-TTS(백업)으로 교체
+  - MimikaStudio → NLM 레거시 삭제 (b855935), Chatterbox TTS 전환 완료
   - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환
   - Threads 공식 API 최우선 텍스트 채널로 추가 (9/10 실현성)
   - 2-pass 크로스 프로모션 + YouTube 비동기 3rd pass 설계
@@ -133,7 +133,7 @@
 - Channel Publish Pipeline v2 구현: done — 23개 신규 파일, ~2,800줄
   - Phase 0: 공통 타입 (channel-types.ts, fetch-with-retry.ts)
   - Phase 1: Threads Publisher (createContainer → publish 2단계 + 크로스프로모 답글)
-  - Phase 2: NotebookLM Bridge (nlm CLI spawn + ffmpeg loudnorm)
+  - Phase 2: NotebookLM Bridge — 삭제됨 (Chatterbox TTS로 전환)
   - Phase 3a: Whisper STT (whisper-cpp spawn + SRT 파싱/생성/번역)
   - Phase 3b: Remotion BriefAudiogram (웨이브폼+자막+커버 Composition)
   - Phase 3c: 썸네일 생성 (Sharp SVG 브랜드 썸네일 + 커버 리사이즈)
@@ -179,6 +179,8 @@
 - YouTube API 자동 업로드: done — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
 - Shorts YouTube locale-aware 업로드: done — render-meta.json에서 Shorts 실제 locale 감지 → canonical(EN)과 다르면 DB variant 제목/요약 자동 조회 → YouTube 제목·설명·language·briefUrl 모두 해당 locale로 발행
 - Newsletter Pipeline: done — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
+- 채널 크로스프로모 활성화: done — skipCrossPromo=false 전환, YouTube 설명 Podcast 링크 추가 + ES 스페인어 레이블, Podcast 에피소드 크로스프로모 링크, Newsletter 소셜 링크 섹션, brand.ts 상수화 (YOUTUBE_CHANNEL, PODCAST_URL)
+- Vercel 배포 정적 에셋 수정: done — 루트 public/에 누락된 PNG/JPG 플레이스홀더 + favicon 복사 (Vercel이 monorepo 루트 public/ 서빙)
 
 ## Validation
 - Validation precondition: confirm `node`, `npm` (or team package manager), and root workspace scripts are available before running checks

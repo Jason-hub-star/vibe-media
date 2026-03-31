@@ -217,8 +217,8 @@
 - [x] ffmpeg 합성 (map 0:v + map 1:a, loudnorm -16 LUFS)
 - [x] 프로토타입 풀 파이프라인 성공 (51.8초, Brief → 최종 MP4)
 - [x] Pexels API 키 발급 + 키워드 기반 자동 배경 수집
-- [ ] shorts:render CLI 워커 자동화 (`npm run shorts:render`)
-- [ ] daily pipeline 자동 연결 (Long-form과 병렬)
+- [x] `video:render <slug>` 통합 렌더 워커 구현 (Shorts/Longform 통합, 2026-03-31)
+- [x] daily pipeline 자동 연결 (Long-form과 병렬, daily-media-publish automation 연결 완료)
 - [x] YouTube 자동 업로드 — publish:channels가 shorts/longform.mp4 자동 감지 → YouTube API v3 (unlisted) + brief 자동 연결 + Shorts #Shorts 태그
 
 ## P3 — 스페인어 올인 + 7채널 확장 (2026-03-30)
@@ -230,7 +230,7 @@
 - [x] M3: shorts-render 스킬 프롬프트 스페인어 모드 추가
 
 ### Phase 2: 7채널 확장
-- [ ] M4: YouTube ES 채널 생성 + OAuth 토큰 발급
+- [N/A] M4: YouTube ES 채널 생성 — 기존 채널에 ES 재생목록 추가로 결정 (2026-03-30)
 - [x] M5: X/Twitter Publisher (`x-publisher.ts`) — OAuth 1.0a + API v2 스레드 + Media Upload
 - [x] M6: Instagram Reels Publisher (`instagram-publisher.ts`) — Graph API Container → Publish
 - [x] M7: Podcast RSS Publisher (`podcast-rss-publisher.ts`) — RSS XML 자동 생성/갱신

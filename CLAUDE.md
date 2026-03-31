@@ -27,10 +27,15 @@
 21. `docs/ref/STITCH-WORKFLOW.md`
 22. `docs/ref/ROUTE-SPECS.md`
 23. `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
-24. `docs/status/PROJECT-STATUS.md`
-25. `docs/status/EXECUTION-CHECKLIST.md`
-26. `docs/status/DECISION-LOG.md`
-27. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+24. `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
+25. `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
+26. `docs/status/PROJECT-STATUS.md`
+27. `docs/status/EXECUTION-CHECKLIST.md`
+28. `docs/status/DECISION-LOG.md`
+29. `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+30. `docs/status/PAGE-UPGRADE-BOARD.md`
+31. `docs/status/PIPELINE-DIAGRAM.md`
+32. `docs/status/SELF-CRITIQUE-LOG.md`
 
 ## Execution Rules
 1. 추측하지 말고 실제 파일과 비교하며 작업한다.
@@ -172,7 +177,12 @@
 - `docs/ref/STITCH-WORKFLOW.md`
 - `docs/ref/ROUTE-SPECS.md`
 - `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
+- `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
+- `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
+- `docs/status/PROJECT-STATUS.md`
 - `docs/status/EXECUTION-CHECKLIST.md`
 - `docs/status/PAGE-UPGRADE-BOARD.md`
 - `docs/status/DECISION-LOG.md`
 - `docs/status/ORCHESTRATION-TRIAL-LOG.md`
+- `docs/status/PIPELINE-DIAGRAM.md`
+- `docs/status/SELF-CRITIQUE-LOG.md`

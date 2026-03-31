@@ -4,8 +4,22 @@
 
 ## Pending
 
+### 2026-03-31 — Chatterbox TTS 전환 + NLM 팟캐스트 레거시 삭제
+- 상태: resolved
+- 배경: Qwen3 TTS가 hallucination/OOM/서버 크래시 반복 → Chatterbox 2문장 청크로 안정화. NLM 팟캐스트는 수동 다운로드 의존 + 더 이상 사용하지 않아 전체 삭제
+- 결정: MimikaStudio Chatterbox 엔진을 Shorts/Longform TTS 기본으로 채택. NLM 관련 코드 전량 삭제 (커밋 b855935)
+- 근거: Chatterbox 12/12 청크 성공, 크래시 0. Qwen3 1.7B OOM, 0.6B hallucinate(163초), 서버 크래시(6/12)
+- 영향: tts/qwen3-client.ts가 Chatterbox 엔진 기본 사용. notebooklm-bridge.ts 삭제됨
+
+### 2026-03-31 — 채널 크로스프로모 활성화 + locale-aware 발행
+- 상태: resolved
+- 배경: skipCrossPromo=true 하드코딩으로 Threads 답글 크로스프로모 미실행. YouTube/Podcast/Newsletter에 상호 링크 부재. Shorts YouTube 업로드 시 EN 메타데이터로 ES 영상 발행
+- 결정: Pass 2 크로스프로모 활성화 (skipCrossPromo: false). YouTube 설명에 Podcast 링크 추가 + ES 레이블. Podcast 에피소드에 사이트/Threads/YouTube 링크. Newsletter 푸터에 소셜 링크. Shorts 업로드 시 render-meta.json locale 감지 → variant 메타데이터 적용
+- 근거: 채널간 트래픽 순환이 발행 전략의 핵심인데, 크로스프로모가 전혀 작동하지 않았음
+- 영향: publish:channels 실행 시 Threads에 크로스프로모 답글 자동 생성. brand.ts에 YOUTUBE_CHANNEL, PODCAST_URL 상수 추가
+
 ### 2026-03-31 — Shorts YouTube 업로드 locale 자동 감지
-- 상태: implemented
+- 상태: resolved
 - 배경: Shorts 영상은 ES로 생성되지만 Brief canonical locale은 EN → YouTube 제목/설명이 영어로 올라가는 미스매치
 - 결정: `render-meta.json`의 `shorts.locale`을 읽어 canonical과 다르면 `brief_post_variants`에서 해당 locale의 제목/요약 조회 → YouTube 메타데이터(title, language, briefUrl, DB locale)에 반영
 - 근거: 영상 내용과 메타데이터 언어가 일치해야 YouTube 추천 알고리즘이 올바른 시청자에게 노출함. variant 미존재 시 영어 fallback으로 안전
@@ -33,7 +47,7 @@
 - 영향: publish:channels 실행 시 YouTube + Threads + Newsletter + Podcast 4채널 자동 발행. X/Instagram/LinkedIn publisher 코드는 유지하되 기본 비활성
 
 ### 2026-03-29 — Shorts 파이프라인 도입: MimikaStudio + Remotion BriefShort V2
-- 상태: implemented (프로토타입 성공)
+- 상태: resolved (production done 2026-03-31)
 - 배경: Long-form(17분) YouTube 조회수 부진. Shorts(60초 이하)는 구독자 무관 알고리즘 노출로 채널 성장 부스터 역할. 운영비 $0 유지 필수
 - 결정:
   1. **TTS**: MimikaStudio Qwen3-TTS 재채택 — 목소리 클론(woman-es) + REST API 자동화 + 로컬 무료
@@ -46,7 +60,7 @@
   - MimikaStudio 재평가: v2026.03.11로 안정화, REST API 문서화, 50개+ MCP 도구, 23개 언어 지원. 이전 "Alpha/bus factor=1" 판단은 롱폼 주 경로 기준이었으며, Shorts 보조 TTS로는 리스크 허용 가능
   - Pexels: 무료, 상업용 OK, portrait 필터, 200 req/hr
   - 프로토타입 결과: 51.8초 MP4, 풀 파이프라인 ~60초 완료, 파일 크기 ~46MB
-- 미완: Pexels API 키 발급, shorts:render CLI 워커, daily pipeline 연결
+- 미완: 모두 완료. Chatterbox TTS 전환, video:render CLI 구현, daily-media-publish 자동화 연결
 
 ### 2026-03-29 — YouTube Data API v3 자동 업로드 도입
 - 상태: implemented (2026-03-30 실전 검증 완료)
