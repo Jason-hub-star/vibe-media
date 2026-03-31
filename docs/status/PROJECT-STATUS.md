@@ -154,20 +154,30 @@
   - 채널 발행 Telegram 보고 연결 — E2E 수신 확인 완료
   - daily-auto-publish.md §9 채널 발행 단계 추가 (published brief → publish:channels 자동 연결)
   - SCHEMA.md에 신규 테이블 2개 문서화
-- Shorts Pipeline (9:16, 50-58초): prototype done
-  - MimikaStudio Qwen3-TTS 목소리 클론 (woman-es) 등록 + REST API 연동
-  - Gemini 60초 나레이션 스크립트 자동 요약
-  - Whisper STT word-level 타임스탬프 추출
-  - Remotion BriefShort V2: 씬별 배경(Ken Burns) + 워드바이워드 자막(spring) + 프로그레스 바 + CTA
-  - ffmpeg 합성 (loudnorm -16 LUFS)
-  - 프로토타입 결과: 51.8초, 풀 파이프라인 ~60초, 운영비 $0
-  - 미완: Pexels API 키, shorts:render CLI, daily pipeline 연결
+- Shorts Pipeline (9:16, 50-58초): prototype done → **production done (2026-03-31)**
+  - MimikaStudio **Chatterbox** TTS 음성 클론 (woman-es) — Qwen3는 hallucinate/크래시로 폐기
+  - Gemini 80-100단어 스페인어 스크립트 (Chatterbox 읽기 속도 최적)
+  - whisper-cpp `--output-json-full` word-level + 구두점 병합
+  - Remotion BriefShort V3: 타이틀 카드(2.5초, 썸네일 겸용) → 자막 → CTA(2.5초) 타이밍 분리
+  - 2문장 청크 분할 + hallucination 가드 (duration > 단어수×1.2 → 재시도)
+  - 프레임 균등 씬 분할 + Pexels 비디오 중복 제거
+  - ffmpeg 합성 (loudnorm + 동적 BGM fadeOut)
+  - production 결과: ~50초, 크래시 0, 운영비 $0
+- Shorts/Longform 영상 렌더 워커: done — `video:render <slug>` CLI, 6개 신규 모듈
+  - Phase 1: Chatterbox/Qwen3 TTS Client (2문장 청크 + hallucination 가드 + 자동 재시작)
+  - Phase 2: whisper-cpp word-level (`--output-json-full` → 구두점 병합 → ShortWord[])
+  - Phase 3: Scene Splitter (프레임 균등 분배 + kenBurns 4패턴 순환 + Pexels 비디오 중복 제거)
+  - Phase 4: ffmpeg Composer (Remotion 비주얼 + 음성 + BGM amix + 동적 fadeOut)
+  - Phase 5: Script Generator (Gemini JSON Schema, 80-100w ES) + 통합 오케스트레이션
+  - Phase 6: CLI Worker (run-shorts-render.ts, --shorts-only/--longform-only/--dry-run/--force/--locale)
+  - 테스트: 83개 전부 통과
 - dedup-guard 워커 구현: done — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
 - source-health 워커 구현: done — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
 - daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
 - thin-content 방어 게이트: done — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
 - brief body/image 자동 채움: done — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
 - YouTube API 자동 업로드: done — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
+- Shorts YouTube locale-aware 업로드: done — render-meta.json에서 Shorts 실제 locale 감지 → canonical(EN)과 다르면 DB variant 제목/요약 자동 조회 → YouTube 제목·설명·language·briefUrl 모두 해당 locale로 발행
 - Newsletter Pipeline: done — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
 
 ## Validation
@@ -176,7 +186,7 @@
 - `npm run lint`: pass
 - `npm run typecheck`: pass
 - `npm run build`: pass
-- `npm run test:unit`: 38/38 pass
+- `npm run test:unit`: 83/83 pass (media-engine 50개 신규 포함)
 - `npm run test:e2e`: 28/28 pass
 - `npm run trial:all`: baseline-pass
 - `npm run pipeline:supabase-retention -w @vibehub/backend -- --dry-run`: pass (`affected rows 0`)

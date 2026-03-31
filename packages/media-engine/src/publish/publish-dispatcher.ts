@@ -54,6 +54,7 @@ function toPublishPayload(
   const variant = getVariantForLocale(meta, locale);
   return {
     title: variant?.title ?? meta.title,
+    slug: meta.slug,
     markdownBody: variant?.markdownBody ?? meta.markdownBody,
     htmlBody: variant?.htmlBody ?? meta.htmlBody,
     tags: variant?.tags ?? meta.tags,

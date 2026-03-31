@@ -54,6 +54,8 @@ export interface BriefShortProps {
   brandColor?: string;
   accentColor?: string;
   ctaText?: string;
+  /** 실제 영상 프레임 수 (CTA 타이밍 계산용) */
+  durationInFrames?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -177,11 +179,16 @@ const SceneTransitionLayer: React.FC<{
 // phrase 단위 3-5 워드 윈도우
 // ---------------------------------------------------------------------------
 
+const TITLE_CARD_DURATION_SEC = 2.5;
+
 const WordByWordCaptions: React.FC<{
   words: ShortWord[];
 }> = ({ words }) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
+
+  // 타이틀 카드가 사라진 뒤부터 자막 표시 (겹침 방지)
+  if (frame < fps * TITLE_CARD_DURATION_SEC) return null;
 
   const currentWordIdx = words.findIndex(
     (w) => frame >= w.startFrame && frame <= w.endFrame,
@@ -391,12 +398,13 @@ const BrandWatermark: React.FC<{ accentColor: string }> = ({
 const TitleCard: React.FC<{
   title: string;
   accentColor: string;
-}> = ({ title, accentColor }) => {
+  brandColor: string;
+}> = ({ title, accentColor, brandColor }) => {
   const frame = useCurrentFrame();
   const { fps, height } = useVideoConfig();
   const isPortrait = height > 1000;
 
-  if (frame > fps * 2) return null;
+  if (frame > fps * 2.5) return null;
 
   const scaleIn = spring({
     frame,
@@ -404,48 +412,94 @@ const TitleCard: React.FC<{
     config: { damping: 15, mass: 0.8 },
   });
 
-  const fadeOut = interpolate(frame, [fps * 1.2, fps * 2], [1, 0], {
+  const fadeOut = interpolate(frame, [fps * 1.5, fps * 2.5], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // frame 0 근처: 불투명 배경 (YouTube 썸네일용)
+  // → YouTube가 첫 프레임에서 썸네일을 추출하므로 꽉 찬 디자인 필요
+  const bgOpacity = interpolate(frame, [0, fps * 0.5], [0.95, 0.6], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <div
+    <AbsoluteFill
       style={{
-        position: "absolute",
-        top: isPortrait ? 180 : 80,
-        left: 60,
-        right: 60,
-        textAlign: "center",
         opacity: fadeOut,
-        transform: `scale(${scaleIn})`,
+        background: `linear-gradient(180deg, ${brandColor}${Math.round(bgOpacity * 255).toString(16).padStart(2, "0")} 0%, transparent 100%)`,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: isPortrait ? "120px 40px" : "60px 80px",
       }}
     >
       <div
         style={{
-          width: 50,
-          height: 4,
-          backgroundColor: accentColor,
-          borderRadius: 2,
-          margin: "0 auto 16px",
-        }}
-      />
-      <h1
-        style={{
-          color: "#FFFFFF",
-          fontSize: isPortrait ? 44 : 38,
-          fontFamily: "'Montserrat', 'Inter', sans-serif",
-          fontWeight: 900,
-          lineHeight: 1.2,
-          margin: 0,
-          textTransform: "uppercase" as const,
-          WebkitTextStroke: "1px rgba(0,0,0,0.3)",
-          textShadow: "0 4px 20px rgba(0,0,0,0.8)",
+          transform: `scale(${scaleIn})`,
+          textAlign: "center",
+          maxWidth: isPortrait ? "90%" : "70%",
         }}
       >
-        {title}
-      </h1>
-    </div>
+        {/* VIBEHUB 브랜드 */}
+        <div
+          style={{
+            fontSize: isPortrait ? 28 : 22,
+            fontFamily: "'Montserrat', 'Inter', sans-serif",
+            fontWeight: 800,
+            letterSpacing: 8,
+            color: accentColor,
+            marginBottom: 20,
+            textShadow: "0 2px 12px rgba(0,0,0,0.8)",
+          }}
+        >
+          VIBEHUB
+        </div>
+
+        {/* 액센트 라인 */}
+        <div
+          style={{
+            width: 80,
+            height: 4,
+            background: `linear-gradient(90deg, ${accentColor}, ${HIGHLIGHT_BG})`,
+            borderRadius: 2,
+            margin: "0 auto 24px",
+          }}
+        />
+
+        {/* 제목 — 크고 굵게 */}
+        <h1
+          style={{
+            color: "#FFFFFF",
+            fontSize: isPortrait ? 54 : 44,
+            fontFamily: "'Montserrat', 'Inter', sans-serif",
+            fontWeight: 900,
+            lineHeight: 1.15,
+            margin: 0,
+            textTransform: "uppercase" as const,
+            WebkitTextStroke: "1.5px rgba(0,0,0,0.4)",
+            textShadow: "0 4px 24px rgba(0,0,0,0.9), 0 1px 4px rgba(0,0,0,0.6)",
+          }}
+        >
+          {title}
+        </h1>
+
+        {/* 하단 태그라인 */}
+        <div
+          style={{
+            marginTop: 28,
+            fontSize: isPortrait ? 18 : 16,
+            fontFamily: "'Montserrat', 'Inter', sans-serif",
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.7)",
+            letterSpacing: 3,
+            textTransform: "uppercase" as const,
+          }}
+        >
+          TECH BRIEFING
+        </div>
+      </div>
+    </AbsoluteFill>
   );
 };
 
@@ -453,15 +507,21 @@ const TitleCard: React.FC<{
 // CTA 엔딩 (Tier 1 #9: 2초)
 // ---------------------------------------------------------------------------
 
+const CTA_DURATION_SEC = 2.5;
+
 const CtaEnding: React.FC<{
   ctaText: string;
   accentColor: string;
-}> = ({ ctaText, accentColor }) => {
+  /** 실제 콘텐츠 끝 프레임 (props 기반) */
+  contentEndFrame?: number;
+}> = ({ ctaText, accentColor, contentEndFrame }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, height } = useVideoConfig();
   const isPortrait = height > 1000;
 
-  const ctaStart = durationInFrames - fps * 2.5;
+  // props에 실제 duration이 있으면 그걸 사용, 아니면 Composition 기본값
+  const actualEnd = contentEndFrame ?? durationInFrames;
+  const ctaStart = actualEnd - fps * CTA_DURATION_SEC;
   if (frame < ctaStart) return null;
 
   const localFrame = frame - ctaStart;
@@ -521,9 +581,12 @@ export const BriefShort: React.FC<BriefShortProps> = ({
   title,
   brandColor = BRAND_COLOR,
   accentColor = ACCENT,
-  ctaText = "Follow VibeHub",
+  ctaText = "Síguenos en VibeHub",
+  durationInFrames: propDuration,
 }) => {
   const { height } = useVideoConfig();
+  // 실제 콘텐츠 끝 = props duration 또는 마지막 word의 endFrame + 여유
+  const contentEndFrame = propDuration ?? (words.length > 0 ? words[words.length - 1]!.endFrame + 60 : undefined);
   const isPortrait = height > 1000;
 
   return (
@@ -551,14 +614,14 @@ export const BriefShort: React.FC<BriefShortProps> = ({
       {/* L4: 브랜드 워터마크 */}
       <BrandWatermark accentColor={accentColor} />
 
-      {/* L5: 타이틀 카드 */}
-      <TitleCard title={title} accentColor={accentColor} />
+      {/* L5: 타이틀 카드 (첫 2.5초, YouTube 썸네일 겸용) */}
+      <TitleCard title={title} accentColor={accentColor} brandColor={brandColor} />
 
       {/* L6: 워드바이워드 자막 */}
       <WordByWordCaptions words={words} />
 
-      {/* L7: CTA 엔딩 */}
-      <CtaEnding ctaText={ctaText} accentColor={accentColor} />
+      {/* L7: CTA 엔딩 (마지막 2.5초) */}
+      <CtaEnding ctaText={ctaText} accentColor={accentColor} contentEndFrame={contentEndFrame} />
     </AbsoluteFill>
   );
 };

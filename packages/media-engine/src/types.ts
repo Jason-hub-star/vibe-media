@@ -63,6 +63,8 @@ export interface TtsProvider {
 // --- Publish ---
 export interface PublishPayload {
   title: string;
+  /** brief slug (크로스프로모 링크 생성용) */
+  slug?: string;
   htmlBody?: string;
   markdownBody?: string;
   videoUrl?: string;

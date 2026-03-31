@@ -194,6 +194,7 @@
 - [x] 오디오/비디오 E2E 검증 완료 (2026-03-27) — ~~NLM+아바타 경로 레거시 (2026-03-31 삭제)~~
   - 현재 메인: Shorts (Pexels+MimikaStudio+Remotion BriefShort V3) + Longform (동일 엔진, 16:9)
 - [x] daily-media-publish.md 자동화 프롬프트 — Shorts/Longform 트랙으로 갱신 (2026-03-31)
+- [x] Shorts/Longform 통합 렌더 워커 (`video:render <slug>`) — Chatterbox 2문장 청크 + hallucination 가드 + whisper-cpp + 프레임 균등 + 타이틀/자막/CTA 타이밍 분리 + 80-100w ES 스크립트, 83 테스트 (2026-03-31)
 - [x] Remotion 인트로/아웃트로 검증 — BrandIntro(3초) + BrandOutro(5초)
 - [x] 전체 자동화 체인 실전 검증: 9건 published + 미디어 합성
 - [x] approved+draft 상태 꼬임 방지 DB 트리거 (trg_fix_approved_draft)

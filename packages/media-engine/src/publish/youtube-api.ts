@@ -16,7 +16,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type { PublishPayload } from "../types";
-import { BRAND_NAME, SITE_URL, THREADS_HANDLE } from "../brand";
+import { BRAND_NAME, SITE_URL, THREADS_HANDLE, PODCAST_URL } from "../brand";
 import type {
   ChannelPublisher,
   ChannelPublishResult,
@@ -73,21 +73,27 @@ async function refreshAccessToken(
   return data.access_token;
 }
 
-/** YouTube 설명 텍스트 생성 */
-function buildDescription(payload: PublishPayload, briefUrl: string): string {
+/** YouTube 설명 텍스트 생성 (locale-aware) */
+function buildDescription(payload: PublishPayload, briefUrl: string, locale?: string): string {
   const body = payload.markdownBody ?? payload.htmlBody ?? "";
   const tags =
     payload.tags && payload.tags.length > 0
       ? "\n\n" + payload.tags.map((t) => `#${t.replace(/\s+/g, "")}`).join(" ")
       : "";
 
+  const isEs = locale === "es";
   const links = [
-    `📄 Full Brief: ${briefUrl}`,
+    `📄 ${isEs ? "Brief completo" : "Full Brief"}: ${briefUrl}`,
     `🧵 Threads: https://threads.net/@${THREADS_HANDLE}`,
-    `🌐 Website: ${SITE_URL}`,
+    `🎙️ Podcast: ${PODCAST_URL}`,
+    `🌐 ${isEs ? "Sitio web" : "Website"}: ${SITE_URL}`,
   ].join("\n");
 
-  return `${body}\n\n${links}${tags}\n\n---\nPowered by ${BRAND_NAME} | AI-curated tech insights`;
+  const tagline = isEs
+    ? `Powered by ${BRAND_NAME} | Resúmenes diarios de IA y tecnología`
+    : `Powered by ${BRAND_NAME} | AI-curated tech insights`;
+
+  return `${body}\n\n${links}${tags}\n\n---\n${tagline}`;
 }
 
 /** 비디오 파일 업로드 (resumable upload) */
@@ -258,7 +264,7 @@ export function createYouTubeApiPublisher(
       const briefUrl = context.briefUrl ?? `${SITE_URL}/${lang}/brief/${context.briefSlug}`;
       const result = await uploadVideo(accessToken, context.videoFilePath, {
         title: payload.title,
-        description: buildDescription(payload, briefUrl),
+        description: buildDescription(payload, briefUrl, lang),
         tags: [...(payload.tags ?? []), BRAND_NAME, "AI", "Tech News"],
         categoryId: "28", // Science & Technology
         privacyStatus,

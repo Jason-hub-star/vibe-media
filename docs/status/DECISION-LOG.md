@@ -4,6 +4,13 @@
 
 ## Pending
 
+### 2026-03-31 — Shorts YouTube 업로드 locale 자동 감지
+- 상태: implemented
+- 배경: Shorts 영상은 ES로 생성되지만 Brief canonical locale은 EN → YouTube 제목/설명이 영어로 올라가는 미스매치
+- 결정: `render-meta.json`의 `shorts.locale`을 읽어 canonical과 다르면 `brief_post_variants`에서 해당 locale의 제목/요약 조회 → YouTube 메타데이터(title, language, briefUrl, DB locale)에 반영
+- 근거: 영상 내용과 메타데이터 언어가 일치해야 YouTube 추천 알고리즘이 올바른 시청자에게 노출함. variant 미존재 시 영어 fallback으로 안전
+- 영향: `run-publish-channels.ts` Shorts 업로드 섹션 수정. 기존 EN-only brief에는 영향 없음 (shortsLocale === canonicalLocale이면 기존 동작 유지)
+
 ### 2026-03-30 — 발행 전략: EN 원본 유지 + ES 확장
 - 상태: resolved
 - 결정:

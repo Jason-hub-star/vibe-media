@@ -658,6 +658,23 @@ publish:channels <brief-id>
         → Pass 3: youtube_url을 기존 채널에 추가
 ```
 
+### YouTube Shorts locale-aware 업로드
+
+Shorts 영상은 `video:render --locale=es`로 스페인어 생성이 기본이지만, Brief의 canonical locale은 `en`이다.
+업로드 시 메타데이터 불일치를 방지하기 위해 `render-meta.json`에서 실제 locale을 감지한다.
+
+```
+Shorts 업로드 시:
+1. output/<slug>/render-meta.json → meta.shorts.locale 읽기
+2. shortsLocale ≠ canonicalLocale이면:
+   → brief_post_variants에서 해당 locale의 title/summary 조회
+   → YouTube 제목: variant.title + " #Shorts"
+   → YouTube language: shortsLocale (e.g. "es")
+   → briefUrl: /${shortsLocale}/brief/<slug>
+   → channel_publish_results.locale: shortsLocale
+3. variant 미존재 시 fallback: 영어 brief.title 사용
+```
+
 ### brief → 채널별 콘텐츠 변환 규칙
 
 | 채널 | 입력 | 변환 | 출력 |
@@ -800,7 +817,7 @@ function tistoryPromoFooter(promo): string;
 packages/media-engine/src/
   tts/
     notebooklm-bridge.ts        ← NotebookLM MCP CLI 래퍼 (주 경로)
-    qwen3-client.ts             ← Qwen3-TTS FastAPI 클라이언트 (백업 경로)
+    qwen3-client.ts             ← MimikaStudio Chatterbox/Qwen3 TTS 클라이언트 (2문장 청크 + hallucination 가드)
     tts-types.ts                ← TtsRequest, TtsResult, VoicePreset 타입
   image/
     gemini-image.ts             ← Gemini 2.5 Flash 이미지 생성 (무료 티어, $0)

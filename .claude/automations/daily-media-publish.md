@@ -4,8 +4,8 @@
 
 `daily-auto-publish`에서 새로 `published` 전환된 Brief에 대해 미디어 파이프라인을 실행한다.
 두 트랙으로 미디어를 생성한다 (같은 엔진 BriefShort V3 공유, 해상도만 다름):
-- **Shorts (9:16)**: Gemini 스크립트 → MimikaStudio 1.7B TTS → Pexels 배경 → Remotion BriefShort V3 → BGM 랜덤 + ffmpeg
-- **Longform (16:9)**: Gemini 스크립트 → MimikaStudio 1.7B TTS → Pexels 배경 → Remotion BriefLongform → BGM 랜덤 + ffmpeg
+- **Shorts (9:16)**: Gemini 스크립트 (80-100단어) → MimikaStudio **Chatterbox** TTS (2문장 청크) → Pexels 배경 → Remotion BriefShort V3 → BGM 랜덤 + ffmpeg
+- **Longform (16:9)**: Gemini 스크립트 (300-350단어) → MimikaStudio **Chatterbox** TTS (2문장 청크) → Pexels 배경 → Remotion BriefLongform → BGM 랜덤 + ffmpeg
 
 이 프롬프트는 `daily-auto-publish.md` 실행 이후 스케줄러에서 자동 실행된다.
 
@@ -18,25 +18,27 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
   └→ §10 번역 (translate:variant --locale=es)
   └→ daily-media-publish (이것)
       ┌─ Shorts Track (9:16) ───────────────────────────
-      │  S1. Gemini 스크립트 (120-140단어, 50-55초)
-      │  S2. MimikaStudio 1.7B TTS (woman-es 클론, temp 0.3)
-      │  S3. Whisper word-level 자막 (JSON)
-      │  S4. Pexels 키워드 배경 이미지 4장 (portrait)
-      │  S5. 문장 경계 기반 씬 자동분할 (4씬)
+      │  S1. Gemini 스크립트 (80-100단어, ~50초, 스페인어)
+      │  S2. MimikaStudio Chatterbox TTS (woman-es 클론, 2문장 청크)
+      │      → hallucination 감지: 청크 duration > 단어수×1.2초 → 재시도
+      │  S3. whisper-cpp word-level 자막 (--output-json-full)
+      │      → 구두점 토큰 이전 단어에 병합
+      │  S4. Pexels 키워드 배경 비디오 4개 (portrait, 중복 제거)
+      │  S5. 프레임 균등 씬 분할 (4씬)
       │  S6. Remotion BriefShort V3 렌더 (1080×1920)
-      │      → TransitionSeries 크로스페이드
-      │      → UPPERCASE Bold 72px + 금색 하이라이트
-      │      → 프로그레스 바 + 워터마크 + CTA
-      │  S7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
+      │      → 타이틀 카드 (0~2.5초, 썸네일 겸용)
+      │      → 자막 (2.5초 이후)
+      │      → CTA 아웃트로 (마지막 2.5초)
+      │  S7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm + 동적 fadeOut)
       │
       ├─ Longform Track (16:9) ─────────────────────────
-      │  L1. Gemini 스크립트 (300-350단어, ~2분)
-      │  L2. MimikaStudio 1.7B TTS (woman-es 동일 클론)
-      │  L3. Whisper word-level 자막 (JSON)
-      │  L4. Pexels 키워드 배경 이미지 8장 (landscape)
-      │  L5. 문장 경계 기반 씬 자동분할 (8씬 + 챕터 카드)
+      │  L1. Gemini 스크립트 (300-350단어, ~2분, 스페인어)
+      │  L2. MimikaStudio Chatterbox TTS (woman-es, 2문장 청크)
+      │  L3. whisper-cpp word-level 자막 (--output-json-full)
+      │  L4. Pexels 키워드 배경 비디오 8개 (landscape, 중복 제거)
+      │  L5. 프레임 균등 씬 분할 (8씬 + 챕터 카드)
       │  L6. Remotion BriefLongform 렌더 (1920×1080)
-      │  L7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
+      │  L7. ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm + 동적 fadeOut)
       │
       └─ 발행 (EN 원본 + ES 확장) ──────────────────────
          7. EN 발행: Threads EN + YouTube EN (publish:channels)
@@ -69,13 +71,15 @@ echo "THREADS_ACCESS_TOKEN: ${THREADS_ACCESS_TOKEN:+set}"
 ### 도구 확인
 
 ```bash
-which /opt/homebrew/opt/ffmpeg-full/bin/ffmpeg  # ffmpeg-full
-curl -s -o /dev/null -w "%{http_code}" http://localhost:7693/api/health  # MimikaStudio TTS
+which ffmpeg                                    # ffmpeg
+curl -s -o /dev/null -w "%{http_code}" http://localhost:7693/api/health  # MimikaStudio
+/opt/homebrew/Cellar/whisper-cpp/1.8.4/bin/whisper-cli --help >/dev/null 2>&1 && echo "whisper OK"
+ls models/ggml-base.bin                         # whisper 모델
 ls assets/bgm/*.mp3 | wc -l                    # BGM 라이브러리 (10곡)
 ```
 
 MimikaStudio가 꺼져있으면: `/Users/family/MimikaStudio/bin/mimikactl backend start`
-BGM 없으면: 영상은 생성하되 BGM 없이 음성만 합성.
+⚠️ Chatterbox 모델 필요: `~/.cache/huggingface/hub/models--mlx-community--chatterbox-fp16`
 
 ### BGM 랜덤 선택
 
@@ -140,8 +144,32 @@ LIMIT 2;
 
 ## 3. 영상 생성 (Shorts + Longform)
 
-각 brief에 대해 Shorts와 Longform 트랙을 순차 실행한다.
-상세 절차는 Remotion BriefShort V3 / BriefLongform 컴포넌트와 ffmpeg 합성 스크립트를 따른다.
+각 brief에 대해 `video:render` CLI 워커를 실행한다.
+기존 shorts.mp4/longform.mp4가 있으면 자동 skip.
+
+```bash
+cd /Users/family/jason/vibehub-media
+
+# 기본: Shorts + Longform 둘 다 렌더
+npm run video:render -w @vibehub/backend -- <slug>
+
+# Shorts만
+npm run video:render -w @vibehub/backend -- <slug> --shorts-only
+
+# Longform만
+npm run video:render -w @vibehub/backend -- <slug> --longform-only
+
+# 스페인어
+npm run video:render -w @vibehub/backend -- <slug> --locale=es
+
+# Dry-run (스크립트만 생성, 렌더 없음)
+npm run video:render -w @vibehub/backend -- <slug> --dry-run
+```
+
+파이프라인: Gemini 스크립트 (80-100w ES) → Chatterbox TTS (2문장 청크) → whisper-cpp word-level → Pexels 비디오 배경 → Remotion BriefShort V3 → ffmpeg+BGM
+
+⚠️ 기본 locale은 `es` (스페인어). 영어는 `--locale=en` 명시 필요.
+⚠️ 기존 mp4 있으면 skip. 재생성은 `--force` 필요.
 
 ---
 

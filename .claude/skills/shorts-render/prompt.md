@@ -3,293 +3,172 @@
 Brief slug를 받아서 Shorts(9:16) + Longform(16:9) 풀 파이프라인을 실행한다.
 같은 엔진(BriefShort V3)을 해상도만 바꿔서 공유한다.
 
-## 검증된 E2E 파이프라인 (2026-03-30, V3 Final)
+## 검증된 E2E 파이프라인 (2026-03-31, V3 Production Final)
 
 ```
 Brief (Supabase)
-  → Gemini 스크립트 (Shorts: 120-140단어/52초, Longform: 300-350단어/2분)
-    → MimikaStudio Qwen3-TTS 1.7B 클론 (woman-es, WAV)
-      → Whisper STT word-level 자막 (JSON)
-        → Pexels 키워드 기반 배경 이미지 (portrait/landscape)
-          → 문장 경계 기반 씬 자동분할
-            → Remotion BriefShort V3 (TransitionSeries 크로스페이드)
-              → ffmpeg 합성 (음성 + BGM 랜덤 + loudnorm)
-                → YouTube 업로드
+  → Gemini 스크립트 (Shorts: 80-100단어, Longform: 300-350단어)
+    → MimikaStudio **Chatterbox** 엔진 (woman-es 클론)
+      → 2문장 청크 분할 → 각각 TTS → hallucination 감지+재시도 → ffmpeg concat
+        → whisper-cpp --output-json-full 워드 타임스탬프
+          → 구두점 토큰 이전 단어에 병합
+            → 프레임 균등 분배 씬 분할 (4/8씬)
+              → Pexels 비디오 배경 (중복 제거)
+                → Remotion BriefShort V3 렌더
+                  → 타이틀 카드(2.5초) → 자막 → CTA 아웃트로(2.5초) 순서 분리
+                    → ffmpeg 합성 (음성 + BGM + loudnorm + 동적 fadeOut)
+```
+
+## CLI 명령
+
+```bash
+# 프로젝트 루트에서 실행
+npx tsx apps/backend/src/workers/run-shorts-render.ts <slug> [옵션]
+
+# 또는 npm run (cwd가 apps/backend이므로 모델 경로 주의)
+npm run video:render -w @vibehub/backend -- <slug> [옵션]
 ```
 
 ## 인자
 
-- `<slug>`: Brief slug (필수)
-- `--shorts-only`: Shorts만 생성
-- `--longform-only`: Longform만 생성
-- `--dry-run`: 렌더만 하고 업로드 스킵
-- `--locale=es`: 스페인어 파이프라인 (ES 스크립트 + TTS + 자막)
-- `--video-bg`: Pexels Video 배경 사용 (이미지 대신 비디오 클립)
+| 인자 | 설명 | 기본값 |
+|------|------|--------|
+| `<slug>` | Brief slug (필수) | - |
+| `--shorts-only` | Shorts만 생성 | 둘 다 |
+| `--longform-only` | Longform만 생성 | 둘 다 |
+| `--dry-run` | 스크립트만 생성, 렌더 스킵 | false |
+| `--force` | 기존 mp4 있어도 재생성 | false (skip) |
+| `--locale=en` | 영어 파이프라인 | **es** (스페인어) |
 
 ## 사전 조건
 
-- MimikaStudio 서버 실행 중 (`mimikactl backend start`, localhost:7693)
-- `.env.local`에 `GEMINI_API_KEY`, `PEXELS_API_KEY` 설정
+| 항목 | 확인 방법 |
+|------|-----------|
+| MimikaStudio | `curl http://localhost:7693/api/health` → `{"status":"ok"}` |
+| Chatterbox 모델 | `~/.cache/huggingface/hub/models--mlx-community--chatterbox-fp16` 존재 |
+| ffmpeg | `which ffmpeg` |
+| whisper-cpp | `/opt/homebrew/Cellar/whisper-cpp/1.8.4/bin/whisper-cli --help` |
+| whisper 모델 | `ls models/ggml-base.bin` (프로젝트 루트) |
+| BGM | `ls assets/bgm/*.mp3` → 10곡 |
+| env | `.env.local`에 `GEMINI_API_KEY`, `PEXELS_API_KEY`, `SUPABASE_*` |
 
-## Steps
+MimikaStudio 시작: `/Users/family/MimikaStudio/bin/mimikactl backend start`
+Chatterbox 모델 다운: `MimikaStudio venv → snapshot_download('mlx-community/chatterbox-fp16')`
 
-### 1. Brief 조회
+## 핵심 성공 패턴 (실패→해결 경험 기반)
 
-Supabase MCP 또는 `listSupabaseBriefs()`로 slug 기반 조회.
-필요 필드: title, summary, body
+### TTS 엔진: Chatterbox (Qwen3 아님!)
 
-### 2. 스크립트 생성
+| 시도 | 결과 | 결론 |
+|------|------|------|
+| Qwen3 1.7B | OOM/타임아웃 | ❌ 사용 금지 |
+| Qwen3 0.6B 전체 텍스트 | 163초 hallucinate | ❌ |
+| Qwen3 0.6B 1문장 청크 | 6/12에서 서버 크래시 | ❌ |
+| **Chatterbox 2문장 청크** | **12/12 성공, 크래시 0** | ✅ 최종 |
+
+- **엔진:** `engine: "chatterbox"` (기본값)
+- **API:** `POST /api/chatterbox/generate` → JSON `{ audio_url }` → 별도 GET 다운로드
+- **음성:** `voice_name: "woman-es"` (Qwen3과 동일 클론 공유)
+- **청크:** 2문장 단위 분할 (`splitIntoChunks(text, 2)`)
+- **hallucination 가드:** 각 청크 duration > `단어수 × 1.2초`면 자동 재시도
+- **서버 크래시 대응:** 3회 retry + `mimikactl backend start` 자동 재시작
+- **청크 간 딜레이:** 3초 (서버 안정화)
+
+### 스크립트: 80-100 words (STRICT)
+
+- Chatterbox가 느리게 읽어서 **120+ words → 90초 초과**
+- **80-100 words가 35-50초 Shorts에 최적**
+- Gemini 프롬프트에 `(STRICT — Chatterbox TTS reads slowly)` 명시
+
+### Whisper: whisper-cpp (Python 아님!)
+
+- 바이너리: `/opt/homebrew/Cellar/whisper-cpp/1.8.4/bin/whisper-cli`
+- `--output-json-full` → token별 `offsets.from/to` (밀리초)
+- 모델: `models/ggml-base.bin` (`findModelPath()` 자동 탐색 — cwd 무관)
+- **구두점 토큰 병합:** `,` `.` `!` 등은 이전 단어에 합침 (자막 깜빡임 방지)
+
+### 씬 분할: 프레임 균등 (문장 매칭 아님!)
+
+- `totalEndFrame / sceneCount`로 균등 분배
+- ~~문장 경계 매칭은 불안정하여 폐기~~
+- Pexels 비디오 중복 제거: `usedIds` Set으로 같은 영상 반복 방지
+
+### Remotion 타이밍 (겹침 방지)
 
 ```
-Gemini 2.0 Flash API
-- Shorts: 120-140 단어 (50-55초), 3초 훅 + 핵심 + CTA
-- Longform: 300-350 단어 (2분), 도입 + 본론(3-4 섹션) + 결론 + CTA
-- 끝: "Follow VibeHub for daily AI briefs"
+[0초 ─── 타이틀 카드 (VIBEHUB + 제목 + 불투명 배경) ─── 2.5초]
+                                    [2.5초 ─── 자막 시작 ─── 끝-2.5초]
+                                                          [끝-2.5초 ─── CTA 아웃트로 ─── 끝]
 ```
 
-**스페인어 모드 (`--locale=es`):**
-```
-Gemini 2.0 Flash API
-- 프롬프트: "Write a YouTube Shorts script in SPANISH (Latin American)..."
-- Shorts: 120-140 단어 (50-55초), 3초 훅 + 핵심 + CTA
-- Longform: 300-350 단어 (2분), 도입 + 본론 + 결론 + CTA
-- CTA: "Sigue a VibeHub para briefings diarios de IA"
-- 고유명사/기술 용어는 영어 유지 (GPT, OpenAI, Apple 등)
-- 라틴 아메리카 스페인어 ("computadora" 아닌 "ordenador" 사용 금지)
-```
+- **타이틀 카드:** 0~2.5초, 불투명 배경 (YouTube 썸네일 겸용), VIBEHUB 브랜드 + 제목
+- **자막:** 2.5초 이후부터 표시 (`TITLE_CARD_DURATION_SEC` 가드)
+- **CTA:** `contentEndFrame - fps*2.5`부터, props `durationInFrames` 기반
+- 기본 CTA: "Síguenos en VibeHub"
 
-### 3. MimikaStudio TTS (1.7B)
+### YouTube 썸네일 전략
 
-```bash
-curl -X POST http://localhost:7693/api/qwen3/generate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "<script>",
-    "mode": "clone",
-    "voice_name": "woman-es",
-    "language": "English",
-    "speed": 1.0,
-    "model_size": "1.7B",
-    "model_quantization": "bf16",
-    "temperature": 0.3,
-    "top_p": 0.7,
-    "top_k": 20,
-    "repetition_penalty": 1.1
-  }'
-```
+YouTube Shorts는 **커스텀 썸네일 업로드 불가** — YouTube가 자동 추출한 3프레임 중 선택만 가능.
 
-**필수:** `model_size: "1.7B"` (0.6B 대비 음질 현저히 향상)
+**대응:** 타이틀 카드(첫 0~2.5초)를 포스터 수준으로 디자인 → YouTube가 첫 프레임에서 추출 시 브랜딩+제목이 보이도록.
 
-**스페인어 모드 (`--locale=es`):**
-```bash
-curl -X POST http://localhost:7693/api/qwen3/generate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "<es-script>",
-    "mode": "clone",
-    "voice_name": "woman-es",
-    "language": "Spanish",
-    "speed": 1.0,
-    "model_size": "1.7B",
-    "model_quantization": "bf16",
-    "temperature": 0.3,
-    "top_p": 0.7,
-    "top_k": 20,
-    "repetition_penalty": 1.1
-  }'
-```
+타이틀 카드 구성:
+- **불투명 배경** (0초: 95% → 0.5초: 60% 페이드)
+- **VIBEHUB 브랜드** (상단, 오렌지, letter-spacing 8)
+- **액센트 그라데이션 라인** (오렌지→금색)
+- **제목** (54px, Montserrat Black, UPPERCASE)
+- **"TECH BRIEFING" 태그라인** (하단, 반투명)
 
-**검증 결과 (2026-03-30):** MimikaStudio `language: "Spanish"` + `woman-es` 성공 (12.88초 WAV, 24kHz mono PCM).
-`woman-es`는 Woman.m4a에서 10초 클린 클립으로 등록한 여성 보이스 클론.
-음질 최적화: temperature 0.3 + top_p 0.7 + top_k 20 + repetition_penalty 1.1.
-후처리: ffmpeg highpass 80Hz + lowpass 12kHz + acompressor + loudnorm -16 LUFS.
+⚠️ 자막은 2.5초 이후 시작 → 타이틀 카드와 겹치지 않음 → 썸네일에 자막 노이즈 없음
 
-**Fallback:** Edge TTS (완전 무료, venv 필요)
-```bash
-/tmp/edge-tts-env/bin/edge-tts --voice es-MX-DaliaNeural --text "<es-script>" --write-media output.mp3
-# 또는 남성: es-MX-JorgeNeural
-# 설치: python3 -m venv /tmp/edge-tts-env && /tmp/edge-tts-env/bin/pip install edge-tts
-# 검증 완료: DaliaNeural 7.97초 MP3, 48kbps, 24kHz mono
-```
+Longform은 `thumbnailFilePath`를 `publish:channels`에 전달하면 YouTube API로 커스텀 썸네일 업로드 가능 (`youtube-api.ts`의 `uploadThumbnail()`).
 
-서버 미기동 시: `mimikactl backend start`
-모델 미다운로드 시: `huggingface_hub.snapshot_download('mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16')`
+### ffmpeg 합성
 
-### 4. Whisper 워드 자막
-
-```python
-import whisper
-model = whisper.load_model("tiny")
-result = model.transcribe(wav_path, word_timestamps=True, language="en")
-# → [{ "text": "word", "startFrame": N, "endFrame": N }, ...]
-```
-
-**스페인어 모드:**
-```python
-result = model.transcribe(wav_path, word_timestamps=True, language="es")
-# Whisper는 스페인어 word-level 타임스탬프를 기본 지원
-```
-
-### 5. Pexels 배경 (이미지 또는 비디오)
-
-**이미지 모드 (기본):**
-```bash
-# Brief title에서 키워드 2-3개 추출 → Pexels 검색
-curl -s "https://api.pexels.com/v1/search?query=<keyword>&per_page=1&orientation=portrait" \
-  -H "Authorization: $PEXELS_API_KEY"
-```
-
-**비디오 모드 (`--video-bg`, V4):**
-```bash
-# Pexels Video API — 이미지 대신 비디오 클립 배경
-curl -s "https://api.pexels.com/videos/search?query=<keyword>&per_page=1&orientation=portrait" \
-  -H "Authorization: $PEXELS_API_KEY"
-# → video_files[].link (HD mp4) 추출
-```
-
-- `searchPexelsVideos(keyword, orientation, count)` 사용 (`pexels-video-client.ts`)
-- Shorts: `orientation=portrait`, 4개 비디오 클립
-- Longform: `orientation=landscape`, 8개 비디오 클립
-- `ShortScene.videoSrc`에 비디오 URL 세팅 → `<OffthreadVideo>` 렌더
-- 이미지/비디오 혼용 가능: `videoSrc` 있으면 비디오, 없으면 `backgroundSrc` 이미지
-
-**공통:**
-- Shorts: `orientation=portrait`, 4개 씬
-- Longform: `orientation=landscape`, 8개 씬
-- 키워드별 1개씩 검색 → 내용에 맞는 배경 매칭
-
-### 6. 문장 경계 기반 씬 분할
-
-```python
-# 마침표/물음표/느낌표 기준으로 문장 끝 감지
-# Shorts: 4개 씬, Longform: 8개 씬
-# 각 씬의 startFrame/endFrame을 문장 경계에 맞춤
-```
-
-균등 분할 아님! 문장이 끊기는 지점에서 씬 전환.
-
-### 7. Remotion 렌더링
-
-**V3 비주얼 스펙:**
-
-| 레이어 | 컴포넌트 | 설명 |
-|--------|----------|------|
-| L1 | `SceneTransitionLayer` | TransitionSeries + fade 15f 크로스페이드 |
-| L2 | `ChapterCard` | 롱폼 전용: 씬마다 챕터 제목 0.5초 |
-| L3 | `ProgressBar` | 8px, 오렌지→금색 그라데이션 |
-| L4 | `BrandWatermark` | 9:16: 좌상단 / 16:9: 우하단 |
-| L5 | `TitleCard` | 첫 1.5초, spring + UPPERCASE |
-| L6 | `WordByWordCaptions` | Montserrat 900 72px UPPERCASE, 금색 배경 박스, 4단어 phrase |
-| L7 | `CtaEnding` | 마지막 2.5초, pulse 효과 |
-
-**자막 바이럴 스타일:**
-- Font: Montserrat Black 72px UPPERCASE
-- Stroke: `-webkit-text-stroke: 2px black`
-- Shadow: `0 0 12px rgba(0,0,0,0.9)`
-- Active word: 금색(#FFD700) 배경 + 검정 텍스트 + padding + borderRadius
-- 위치: 9:16 = top 45% (중앙), 16:9 = bottom 18%
-- 한 번에 4단어 (phrase 단위)
-
-**렌더 명령:**
-```bash
-cd packages/media-engine
-npx remotion render src/remotion/index.tsx BriefShort /tmp/shorts-visual.mp4 \
-  --codec=h264 --props=/tmp/props.json --frames=0-<N> --concurrency=3
-```
-
-- Shorts: `BriefShort` (1080×1920)
-- Longform: `BriefLongform` (1920×1080)
-- 이미지는 **base64 data URI**로 props에 인라인 (CORS 회피)
-
-### 8. BGM 랜덤 선택 + 오디오 합성
-
-```bash
-# BGM 랜덤 선택
-BGM=$(ls assets/bgm/*.mp3 | shuf -n 1)
-
-# 합성
-ffmpeg -y \
-  -i visual.mp4 \
-  -i voice.wav \
-  -i "$BGM" \
-  -map 0:v \
-  -filter_complex "[1:a]loudnorm=I=-16:TP=-1.5[voice];[2:a]volume=0.25,afade=t=out:st=<end-3>:d=3[bgm];[voice][bgm]amix=inputs=2:duration=shortest[aout]" \
-  -map "[aout]" \
-  -c:v copy -c:a aac -b:a 192k -shortest \
-  output.mp4
-```
-
-**필수:**
-- `-map 0:v -map 1:a` (Remotion 무음 트랙 무시)
-- BGM `volume=0.25` (나레이션 대비 배경 레벨)
-- BGM fade-out: 영상 끝 3초 전부터
-
-**BGM 라이브러리 (10곡):** `assets/bgm/`
-| 파일 | 분위기 | 어울리는 주제 |
-|------|--------|-------------|
-| 01-calm-ambient | 차분 | 일반 뉴스, 분석 |
-| 02-dark-pulse | 어두움 | 보안, 해킹, 위협 |
-| 03-warm-pad | 따뜻함 | 긍정적 발표, 성과 |
-| 04-tension-build | 긴장 | 경쟁, 갈등, 논쟁 |
-| 05-bright-tech | 밝음 | 신제품 출시, 혁신 |
-| 06-deep-bass | 깊음 | 인프라, 대규모 시스템 |
-| 07-ethereal | 몽환 | AI, 미래, 비전 |
-| 08-urgent | 긴급 | 속보, 긴급 업데이트 |
-| 09-dreamy | 부드러움 | 연구, 학술, 장기 전망 |
-| 10-cinematic | 장엄 | 대형 발표, 역사적 사건 |
-
-### 9. YouTube 자동 업로드 (`publish:channels` 통합)
-
-영상 생성 후 `publish:channels`를 실행하면 자동으로 처리된다:
-
-```bash
-npm run publish:channels <slug>
-```
-
-- `shorts.mp4` → YouTube Shorts (unlisted, #Shorts 태그)
-- `longform.mp4` → YouTube Longform (unlisted)
-- API 업로드 성공 시 `brief_posts.youtube_video_id` 자동 연결
-- `YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN` 미설정 시 → 로컬 메타데이터만 저장
-
-운영자는 YouTube Studio에서 unlisted → public 전환만 하면 된다.
+- BGM fadeOut: `voiceDurationSec - 3`초 시작 (동적)
+- dropout_transition: 3초
+- `-c:v copy` (재인코딩 없음)
 
 ## 알려진 문제 + 해결 패턴
 
-| 문제 | 해결 |
-|------|------|
-| Remotion public-dir 404 | base64 data URI로 이미지 인라인 |
-| Remotion 무음 오디오 트랙 | ffmpeg `-map 0:v -map 1:a` |
-| Sequence 내 프레임 계산 | useCurrentFrame()은 이미 로컬 |
-| Gemini 429 rate limit | 10초 대기 후 재시도 |
-| MimikaStudio 모델 미설치 | `snapshot_download('mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16')` |
-| mlx-audio 미설치 | `pip install -U mlx-audio` |
-| Pexels 이미지 다운로드 실패 | 다른 키워드로 재시도, bg 크기 29B면 실패 |
-| BGM 안 들림 | 볼륨 -20dB 이상 확인, 합성 시 volume=0.25 |
+| 문제 | 원인 | 해결 |
+|------|------|------|
+| TTS hallucinate (40초+) | Chatterbox가 3문장 이상에서 반복 생성 | 2문장 청크 + duration 가드 + 재시도 |
+| TTS 서버 크래시 | Qwen3 연속 요청 과부하 | **Chatterbox 엔진 전환** |
+| MimikaStudio API가 WAV 대신 JSON | API 설계: `audio_url` 반환 | `res.json()` → `audio_url` → GET 다운로드 |
+| Whisper 모델 못 찾음 | cwd ≠ 프로젝트 루트 | `findModelPath()` 5단계 상위 탐색 |
+| 자막+타이틀 겹침 | 둘 다 0초 시작 | 자막에 2.5초 딜레이 |
+| CTA 안 나옴 | Composition durationInFrames ≠ 실제 | props `durationInFrames` 전달 |
+| 총 TTS > 75초 | 스크립트 120+ words | **80-100 words로 제한** |
+| Pexels 배경 중복 | 같은 키워드 → 같은 영상 | `usedIds` Set으로 중복 제거 |
+| Gemini 503 | 일시 과부하 | retry 3회 + backoff (2s, 4s, 6s) |
 
 ## 출력물
 
 ```
 output/<slug>/
-├── shorts-script.txt       # Shorts 스크립트
-├── shorts-voice.wav        # 1.7B 클론 음성
-├── shorts-words.json       # 워드 타임스탬프
-├── shorts.mp4              # 최종 Shorts (9:16, ~47초)
-├── longform-script.txt     # Longform 스크립트
-├── longform-voice.wav      # 1.7B 클론 음성
-├── longform-words.json     # 워드 타임스탬프
-├── longform.mp4            # 최종 Longform (16:9, ~2분)
-└── render-meta.json        # BGM 선택, 렌더 시간 등
+├── shorts-script.txt         # 스크립트 (ES)
+├── shorts-voice.wav          # TTS 음성 (Chatterbox + loudnorm)
+├── shorts-voice-words.json   # word-level 타임스탬프
+├── shorts-props.json         # Remotion input props
+├── shorts.mp4                # 최종 Shorts (9:16, ~50초)
+├── longform-script.txt
+├── longform-voice.wav
+├── longform-voice-words.json
+├── longform-props.json
+├── longform.mp4              # 최종 Longform (16:9, ~2분)
+└── render-meta.json          # 메타 (BGM, duration, timestamp)
 ```
 
-## NotebookLM 관계
+## 코드 모듈
 
-NotebookLM(17분 팟캐스트)은 **이 파이프라인에서 사용하지 않음**.
-MimikaStudio Qwen3-TTS 1.7B가 Shorts + Longform 둘 다 커버.
-기존 NotebookLM 코드는 동결(삭제 X) — 팟캐스트 포맷 재개 시 사용 가능.
-
-## 관련 파일
-
-- `packages/media-engine/src/remotion/BriefShort.tsx` — V3 Composition (Shorts + Longform 공유)
-- `packages/media-engine/src/remotion/index.tsx` — BriefShort + BriefLongform + BriefAudiogram 등록
-- `assets/bgm/` — BGM 라이브러리 10곡
-- `.claude/automations/daily-media-publish.md` — 자동화 프롬프트
+| 모듈 | 경로 | 역할 |
+|------|------|------|
+| qwen3-client | `packages/media-engine/src/tts/qwen3-client.ts` | MimikaStudio Chatterbox/Qwen3 + 청크 + 후처리 |
+| whisper-word-level | `packages/media-engine/src/stt/whisper-word-level.ts` | whisper-cpp JSON → ShortWord[] |
+| script-generator | `packages/media-engine/src/video/script-generator.ts` | Gemini 스크립트 (ES/EN) |
+| scene-splitter | `packages/media-engine/src/video/scene-splitter.ts` | 프레임 균등 씬 분할 |
+| ffmpeg-compose | `packages/media-engine/src/video/ffmpeg-compose.ts` | 음성+BGM 합성 |
+| render-brief-video | `packages/media-engine/src/video/render-brief-video.ts` | 9단계 오케스트레이션 |
+| run-shorts-render | `apps/backend/src/workers/run-shorts-render.ts` | CLI worker |
+| BriefShort.tsx | `packages/media-engine/src/remotion/BriefShort.tsx` | V3 Composition |

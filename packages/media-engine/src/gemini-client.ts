@@ -29,12 +29,15 @@ export async function callGemini(options: GeminiCallOptions): Promise<unknown> {
   return options.responseSchema ? JSON.parse(text) : text;
 }
 
-async function callWithRetry<T>(fn: () => Promise<T>, maxRetries = 1): Promise<T> {
+async function callWithRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try { return await fn(); }
     catch (err: unknown) {
-      if ((err as { status?: number }).status === 429 && attempt < maxRetries) {
-        await new Promise((r) => setTimeout(r, 2000));
+      const status = (err as { status?: number }).status;
+      const retryable = status === 429 || status === 503;
+      if (retryable && attempt < maxRetries) {
+        const delay = 2000 * (attempt + 1); // 2s, 4s, 6s
+        await new Promise((r) => setTimeout(r, delay));
         continue;
       }
       throw err;

@@ -9,7 +9,7 @@
  */
 
 import path from "path";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import {
   dispatchPublish,
@@ -251,7 +251,7 @@ const result = await dispatchPublish({
   briefMeta,
   channels,
   dryRun,
-  skipCrossPromo: true, // Threads 전파 지연 — 크로스프로모는 별도 실행
+  skipCrossPromo: false,
 });
 
 console.log(JSON.stringify(result, null, 2));
@@ -310,19 +310,55 @@ if (useYouTubeApi && youtubeResult?.publishedUrl && !youtubeResult.publishedUrl.
 let shortsYouTubeUrl: string | undefined;
 
 if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath) {
-  console.log(`\nYouTube Shorts: uploading shorts.mp4 separately...`);
+  // render-meta.json에서 Shorts 실제 locale 감지
+  let shortsLocale = canonicalLocale;
+  try {
+    const metaPath = path.join(outputDir, "render-meta.json");
+    if (existsSync(metaPath)) {
+      const meta = JSON.parse(readFileSync(metaPath, "utf-8"));
+      if (meta.shorts?.locale) shortsLocale = meta.shorts.locale;
+    }
+  } catch { /* fallback to canonical */ }
+
+  // Shorts locale ≠ canonical이면 DB에서 variant 제목/요약 조회
+  let shortsTitle = brief.title;
+  let shortsSummary = brief.summary ?? briefMeta.markdownBody;
+  if (shortsLocale !== canonicalLocale) {
+    try {
+      const varSql = createSupabaseSql();
+      const varRows = await varSql<Array<{ title: string; summary: string }>>`
+        SELECT v.title, v.summary
+        FROM public.brief_post_variants v
+        JOIN public.brief_posts bp ON bp.id = v.canonical_id
+        WHERE bp.slug = ${brief.slug}
+          AND v.locale = ${shortsLocale}
+          AND v.translation_status IN ('translated', 'published')
+        LIMIT 1
+      `;
+      await varSql.end();
+      if (varRows.length > 0) {
+        shortsTitle = varRows[0].title;
+        shortsSummary = varRows[0].summary ?? shortsSummary;
+        console.log(`  Shorts locale: ${shortsLocale} → using variant title: "${shortsTitle}"`);
+      }
+    } catch (err) {
+      console.warn(`  ⚠️ Shorts variant query failed, using EN title: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+
+  console.log(`\nYouTube Shorts: uploading shorts.mp4 (locale: ${shortsLocale})...`);
   const shortsPublisher = createYouTubeApiPublisher({
     videoFilePath: shortsPath,
     thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
     briefSlug: brief.slug,
-    briefUrl: `${SITE_URL}/${canonicalLocale}/brief/${brief.slug}`,
-    language: canonicalLocale,
+    briefUrl: `${SITE_URL}/${shortsLocale}/brief/${brief.slug}`,
+    language: shortsLocale,
   }, { privacyStatus: "unlisted" });
 
   const shortsPayload: PublishPayload = {
     ...briefMeta,
-    title: `${brief.title} #Shorts`,
-    markdownBody: brief.summary ?? briefMeta.markdownBody,
+    title: `${shortsTitle} #Shorts`,
+    markdownBody: shortsSummary,
     tags: [...(briefMeta.tags ?? []), "Shorts"],
   };
 
@@ -338,7 +374,7 @@ if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath) {
         INSERT INTO public.channel_publish_results
           (brief_slug, channel_name, locale, success, published_url)
         VALUES
-          (${brief.slug}, 'youtube-shorts', ${canonicalLocale}, true,
+          (${brief.slug}, 'youtube-shorts', ${shortsLocale}, true,
            ${shortsResult.publishedUrl ?? ''})
         ON CONFLICT DO NOTHING
       `;

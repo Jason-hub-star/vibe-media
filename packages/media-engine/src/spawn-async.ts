@@ -90,6 +90,26 @@ export function spawnAsync(
  * Windows: cmd.exe /c npx ...
  * Unix: npx ...
  */
+/**
+ * ffprobe로 미디어 파일 길이 측정 (초).
+ */
+export async function measureDuration(filePath: string): Promise<number> {
+  const { stdout } = await spawnAsync("ffprobe", [
+    "-v", "quiet",
+    "-show_entries", "format=duration",
+    "-of", "default=noprint_wrappers=1:nokey=1",
+    filePath,
+  ]);
+  const sec = parseFloat(stdout.trim());
+  if (Number.isNaN(sec)) throw new Error(`ffprobe returned invalid duration: ${stdout}`);
+  return sec;
+}
+
+/**
+ * 크로스플랫폼 npx 실행 (render-spawn.ts 패턴).
+ * Windows: cmd.exe /c npx ...
+ * Unix: npx ...
+ */
 export function spawnNpx(
   args: string[],
   options?: SpawnAsyncOptions,

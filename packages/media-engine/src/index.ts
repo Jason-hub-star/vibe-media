@@ -42,11 +42,19 @@ export * from "./image/pexels-video-client";
 // --- TTS ---
 export * from "./tts/tts-types";
 export * from "./tts/notebooklm-bridge";
+export * from "./tts/qwen3-client";
 
 // --- STT ---
 export * from "./stt/whisper-stt";
+export * from "./stt/whisper-word-level";
 export * from "./stt/srt-utils";
 export * from "./stt/locale-srt-pipeline";
+
+// --- Video Pipeline ---
+export * from "./video/script-generator";
+export * from "./video/scene-splitter";
+export * from "./video/ffmpeg-compose";
+export * from "./video/render-brief-video";
 
 // --- Remotion (import directly from subpath when remotion is installed) ---
 // BriefAudiogram: ./remotion/BriefAudiogram

@@ -6,7 +6,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type { PublishPayload } from "../types";
-import { BRAND_NAME, SITE_URL, THREADS_HANDLE } from "../brand";
+import { BRAND_NAME, SITE_URL, THREADS_HANDLE, PODCAST_URL } from "../brand";
 import type {
   ChannelPublisher,
   ChannelPublishResult,
@@ -125,12 +125,18 @@ export async function generateYouTubeUploadGuide(
   const hashtags = tags.map((t) => `#${t.replace(/\s+/g, "")}`).join(" ");
   const brandTags = `#${BRAND_NAME} #AI #Tech`;
 
-  // 크로스프로모 링크
+  // 크로스프로모 링크 (locale-aware)
+  const isEs = normalizedLanguage === "es";
   const links: string[] = [];
-  links.push(`📄 Full Brief: ${localizedBriefUrl}`);
+  links.push(`📄 ${isEs ? "Brief completo" : "Full Brief"}: ${localizedBriefUrl}`);
   if (threadsUrl) links.push(`🧵 Threads: ${threadsUrl}`);
   else links.push(`🧵 Threads: https://threads.net/@${THREADS_HANDLE}`);
-  links.push(`🌐 Website: ${localizedHomeUrl}`);
+  links.push(`🎙️ Podcast: ${PODCAST_URL}`);
+  links.push(`🌐 ${isEs ? "Sitio web" : "Website"}: ${localizedHomeUrl}`);
+
+  const tagline = isEs
+    ? `Powered by ${BRAND_NAME} | Resúmenes diarios de IA y tecnología`
+    : `Powered by ${BRAND_NAME} | AI-curated tech insights`;
 
   const description = `${desc}
 
@@ -139,13 +145,19 @@ ${links.join("\n")}
 ${hashtags} ${brandTags}
 
 ---
-Powered by ${BRAND_NAME} | AI-curated tech insights`;
+${tagline}`;
 
-  const pinnedComment = [
-    `Read the full brief: ${localizedBriefUrl}`,
-    `Browse more daily briefs: ${localizedHomeUrl}`,
-    threadsUrl ? `Join the Threads follow-up: ${threadsUrl}` : `Threads: https://threads.net/@${THREADS_HANDLE}`,
-  ].join("\n");
+  const pinnedComment = isEs
+    ? [
+        `Lee el brief completo: ${localizedBriefUrl}`,
+        `Más briefs diarios: ${localizedHomeUrl}`,
+        threadsUrl ? `Síguenos en Threads: ${threadsUrl}` : `Threads: https://threads.net/@${THREADS_HANDLE}`,
+      ].join("\n")
+    : [
+        `Read the full brief: ${localizedBriefUrl}`,
+        `Browse more daily briefs: ${localizedHomeUrl}`,
+        threadsUrl ? `Join the Threads follow-up: ${threadsUrl}` : `Threads: https://threads.net/@${THREADS_HANDLE}`,
+      ].join("\n");
 
   // 파일 체크리스트
   const files: string[] = [];

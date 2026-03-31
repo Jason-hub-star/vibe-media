@@ -14,7 +14,7 @@
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
-import { BRAND_NAME, SITE_URL } from "../brand";
+import { BRAND_NAME, SITE_URL, THREADS_HANDLE, YOUTUBE_CHANNEL } from "../brand";
 import type { PublishPayload } from "../types";
 import type {
   ChannelPublisher,
@@ -177,10 +177,24 @@ export function createPodcastRssPublisher(
         // feed.xml 없으면 새로 생성
       }
 
+      // 에피소드 설명에 크로스프로모 링크 추가
+      const bodyText = payload.markdownBody ?? payload.htmlBody ?? "";
+      const isEs = lang === "es";
+      const briefSlug = payload.slug ?? "";
+      const promoLinks = [
+        briefSlug ? `📄 ${isEs ? "Brief completo" : "Full Brief"}: ${SITE_URL}/${lang}/brief/${briefSlug}` : "",
+        `🧵 Threads: https://threads.net/@${THREADS_HANDLE}`,
+        `▶️ YouTube: https://youtube.com/@${YOUTUBE_CHANNEL}`,
+        `🌐 ${isEs ? "Sitio web" : "Website"}: ${SITE_URL}`,
+      ].filter(Boolean).join("\n");
+      const episodeDescription = promoLinks
+        ? `${bodyText}\n\n---\n${promoLinks}`
+        : bodyText;
+
       // 새 에피소드 추가
       const newEpisode: PodcastEpisode = {
         title: payload.title,
-        description: payload.markdownBody ?? payload.htmlBody ?? "",
+        description: episodeDescription,
         audioUrl: context.audioPublicUrl,
         audioLength: context.audioFileSize,
         duration: context.duration,

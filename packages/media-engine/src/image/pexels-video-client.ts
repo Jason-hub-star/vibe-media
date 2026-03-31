@@ -132,18 +132,24 @@ export async function searchPexelsVideosBatch(
   apiKey?: string,
 ): Promise<PexelsVideoResult[]> {
   const results: PexelsVideoResult[] = [];
+  const usedIds = new Set<number>();
 
   for (const keyword of keywords) {
     try {
-      const videos = await searchPexelsVideos(keyword, orientation, 1, apiKey);
-      if (videos.length > 0) {
+      // 중복 방지: 여러 개 요청해서 미사용 ID 선택
+      const videos = await searchPexelsVideos(keyword, orientation, 3, apiKey);
+      const unique = videos.find((v) => !usedIds.has(v.id));
+      if (unique) {
+        results.push(unique);
+        usedIds.add(unique.id);
+      } else if (videos.length > 0) {
+        // 중복이라도 없는 것보단 나음
         results.push(videos[0]!);
       }
     } catch (err) {
       console.warn(
         `Pexels Video search failed for "${keyword}": ${err instanceof Error ? err.message : err}`,
       );
-      // 다른 키워드로 계속
     }
   }
 

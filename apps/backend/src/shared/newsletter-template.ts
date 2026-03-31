@@ -10,6 +10,9 @@ interface NewsletterBrief {
 }
 
 const SITE_URL = process.env.SITE_URL ?? "https://vibehub.tech";
+const THREADS_HANDLE = process.env.THREADS_HANDLE ?? "vibehub";
+const YOUTUBE_CHANNEL = process.env.YOUTUBE_CHANNEL ?? "vibehub";
+const PODCAST_URL = process.env.PODCAST_URL ?? "https://open.spotify.com/show/vibehub";
 
 const COLORS = {
   bg: "#0e0e10",
@@ -21,17 +24,19 @@ const COLORS = {
   border: "#27272a",
 };
 
-const COPY: Record<string, { greeting: string; readMore: string; footer: string; subject: (first: string, more: number) => string }> = {
+const COPY: Record<string, { greeting: string; readMore: string; footer: string; unsubscribe: string; subject: (first: string, more: number) => string }> = {
   en: {
     greeting: "Here's your daily AI brief digest.",
     readMore: "Read more →",
     footer: "You're receiving this because you subscribed to VibeHub daily briefs.",
+    unsubscribe: "Unsubscribe",
     subject: (first, more) => more > 0 ? `AI Brief: ${first} + ${more} more` : `AI Brief: ${first}`,
   },
   es: {
     greeting: "Aqui tienes tu resumen diario de IA.",
     readMore: "Leer mas →",
     footer: "Recibes esto porque te suscribiste a los briefs diarios de VibeHub.",
+    unsubscribe: "Cancelar suscripción",
     subject: (first, more) => more > 0 ? `AI Brief: ${first} + ${more} mas` : `AI Brief: ${first}`,
   },
 };
@@ -103,14 +108,25 @@ export function buildNewsletterHtml(briefs: NewsletterBrief[], locale: string): 
         <!-- Brief cards -->
         ${briefCards}
 
+        <!-- Social links -->
+        <tr><td style="padding:20px 0 0 0; text-align:center;">
+          <a href="https://threads.net/@${THREADS_HANDLE}" style="font-size:13px; color:${COLORS.accent}; text-decoration:none; margin:0 8px;">Threads</a>
+          <span style="color:${COLORS.border};">·</span>
+          <a href="https://youtube.com/@${YOUTUBE_CHANNEL}" style="font-size:13px; color:${COLORS.accent}; text-decoration:none; margin:0 8px;">YouTube</a>
+          <span style="color:${COLORS.border};">·</span>
+          <a href="${PODCAST_URL}" style="font-size:13px; color:${COLORS.accent}; text-decoration:none; margin:0 8px;">Podcast</a>
+          <span style="color:${COLORS.border};">·</span>
+          <a href="${SITE_URL}" style="font-size:13px; color:${COLORS.accent}; text-decoration:none; margin:0 8px;">${SITE_URL.replace("https://", "")}</a>
+        </td></tr>
+
         <!-- Footer -->
-        <tr><td style="padding:24px 0 0 0; border-top:1px solid ${COLORS.border}; text-align:center;">
+        <tr><td style="padding:16px 0 0 0; border-top:1px solid ${COLORS.border}; text-align:center;">
           <p style="margin:0 0 8px 0; font-size:12px; color:${COLORS.muted};">
             ${escapeHtml(copy.footer)}
           </p>
           <a href="{{{RESEND_UNSUBSCRIBE_URL}}}"
             style="font-size:12px; color:${COLORS.muted}; text-decoration:underline;">
-            Unsubscribe
+            ${copy.unsubscribe}
           </a>
         </td></tr>
 
