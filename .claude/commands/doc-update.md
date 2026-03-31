@@ -39,7 +39,18 @@ git status --porcelain
 - 구현 완료된 결정이 `Pending`에 남아있으면 → `docs/archive/decisions-resolved.md`로 이동
 - DECISION-LOG.md에는 pending 항목만 유지
 
-### 5. 검증 보고
+### 5. PROJECT-STATUS 자동 정리
+
+done 항목이 쌓이지 않도록 14일 이상 된 항목을 자동 제거한다:
+```bash
+bash tools/prune-status.sh
+```
+
+- dry-run 확인: `bash tools/prune-status.sh --dry-run`
+- done 항목 추가 시 **반드시 날짜 포함**: `- 항목명: done (YYYY-MM-DD)`
+- 날짜 없는 done 항목은 정리 대상에서 제외됨 (영구 잔류 → 날짜를 붙여야 정리됨)
+
+### 6. 검증 보고
 
 ```
 ## Doc Update Report

@@ -1,110 +1,110 @@
 # VibeHub Project Status
 
 ## Current Phase
-- bootstrap scaffold complete: done
-- P0-1 JS runtime baseline + typecheck stabilization: done
-- P0-2 git bootstrap + decision-log split: done
+- bootstrap scaffold complete: done (2026-03-22)
+- P0-1 JS runtime baseline + typecheck stabilization: done (2026-03-22)
+- P0-2 git bootstrap + decision-log split: done (2026-03-22)
 
 ## Active Tracks
-- frontend shell: done
-- admin workflow shell: done
-- discovery/radar shell: done
-- pipeline operating model docs: done
-- ingest core SQL draft: done
-- admin inbox scaffold: done
-- admin runs scaffold: done
-- admin review scaffold: done
-- admin publish scaffold: done
-- admin exceptions scaffold: done
-- admin policies scaffold: done
-- admin programs scaffold: done
-- video pipeline scaffold refresh: done
-- video worker contract + queue routing docs: done
-- target_surface routing + human-on-exception state wiring: done
-- ingest stack decision: done
-- source catalog v1: done
-- brief/discover dry-run worker: done
-- auto-safe live source fetch worker: done
-- local ingest spine snapshot worker: done
-- Supabase remote sync scripts: done
-- Supabase editorial draft sync: done
-- Supabase brief/discover read path: done
-- Supabase review/publish/exceptions read path realignment: done
-- Supabase RLS + lifecycle/retry/video metadata migration: done
-- Supabase legacy public cleanup backup + worker: done
-- Supabase retention worker + read-path slimming: done — hot log TTL, archive/discard ingest payload compaction, inbox summary-only projection, admin/public list caps
-- watch folder worker (`fs.watch` + polling fallback): done
-- review decision / publish transition action handlers: done
-- exception retry action (retryable run/video → re-queue): done
-- classifier shadow trial scaffold: done
-- brief draft shadow trial scaffold: done
-- brief draft shadow trial: done
-- discover draft shadow trial scaffold: done
-- discover draft shadow trial: done
-- critic shadow trial scaffold: done
-- critic shadow trial: done
-- orchestration trial runbook: done
-- telegram-orchestrator contract: done
-- orchestration trial log template: done
-- operating docs set: done
-- shared contracts: done
-- token system: done
-- test harness: done
+- frontend shell: done (2026-03-22)
+- admin workflow shell: done (2026-03-22)
+- discovery/radar shell: done (2026-03-22)
+- pipeline operating model docs: done (2026-03-22)
+- ingest core SQL draft: done (2026-03-22)
+- admin inbox scaffold: done (2026-03-22)
+- admin runs scaffold: done (2026-03-22)
+- admin review scaffold: done (2026-03-22)
+- admin publish scaffold: done (2026-03-22)
+- admin exceptions scaffold: done (2026-03-22)
+- admin policies scaffold: done (2026-03-22)
+- admin programs scaffold: done (2026-03-22)
+- video pipeline scaffold refresh: done (2026-03-22)
+- video worker contract + queue routing docs: done (2026-03-22)
+- target_surface routing + human-on-exception state wiring: done (2026-03-22)
+- ingest stack decision: done (2026-03-22)
+- source catalog v1: done (2026-03-22)
+- brief/discover dry-run worker: done (2026-03-22)
+- auto-safe live source fetch worker: done (2026-03-22)
+- local ingest spine snapshot worker: done (2026-03-22)
+- Supabase remote sync scripts: done (2026-03-22)
+- Supabase editorial draft sync: done (2026-03-22)
+- Supabase brief/discover read path: done (2026-03-22)
+- Supabase review/publish/exceptions read path realignment: done (2026-03-22)
+- Supabase RLS + lifecycle/retry/video metadata migration: done (2026-03-22)
+- Supabase legacy public cleanup backup + worker: done (2026-03-22)
+- Supabase retention worker + read-path slimming: done (2026-03-22) — hot log TTL, archive/discard ingest payload compaction, inbox summary-only projection, admin/public list caps
+- watch folder worker (`fs.watch` + polling fallback): done (2026-03-22)
+- review decision / publish transition action handlers: done (2026-03-22)
+- exception retry action (retryable run/video → re-queue): done (2026-03-22)
+- classifier shadow trial scaffold: done (2026-03-22)
+- brief draft shadow trial scaffold: done (2026-03-22)
+- brief draft shadow trial: done (2026-03-22)
+- discover draft shadow trial scaffold: done (2026-03-22)
+- discover draft shadow trial: done (2026-03-22)
+- critic shadow trial scaffold: done (2026-03-22)
+- critic shadow trial: done (2026-03-22)
+- orchestration trial runbook: done (2026-03-22)
+- telegram-orchestrator contract: done (2026-03-22)
+- orchestration trial log template: done (2026-03-22)
+- operating docs set: done (2026-03-22)
+- shared contracts: done (2026-03-22)
+- token system: done (2026-03-22)
+- test harness: done (2026-03-22)
 - route-level design docs: in progress
-- public localized route consolidation: done — legacy `app/(public)` 제거, `app/[locale]/(public)`만 유지, 18개 파일 (`17 tsx + 1 CLAUDE.md`)
-- frontend CSS split (M1): done
-- frontend 3-state components (M2): done
-- frontend loading/error routes (M3): done
-- frontend typo/spacing/hierarchy (M4): done
-- frontend admin sidebar (M5): done
-- frontend state hardening: done
-- admin review/publish mutation buttons (Server Actions): done
-- showcase sidecar lane foundation: done
-- public UX 내부 용어 제거 + 사용자 언어 전환: done
-- admin 사이드바 탭 통합 (15→12개): done — 정책+프로그램→운영 규칙, 수신함+실행 이력→수집 현황, 검수+예외 처리→검토 대기
-- admin 탭 데이터 정리: done — 발행 탭 미승인 항목 제거, 수신함 drafted 제외, 브리프 상태 필터, 검수 요청 버튼
-- admin 카드 가독성 개선: done — 제목 h3/700, 메타 grid 정렬, dd 볼드, 대시보드 카운트 대형화, overflow 수정
-- 사이드바 파이프라인 흐름순 정렬: done — 소스→파이프라인→수집 현황→브리프→디스커버리→검토 대기→발행
-- brief cover image 지원: done — RSS enclosure/media:content/img 자동 추출 → brief_posts.cover_image_url → 공개 디테일 렌더링
-- 레퍼런스 브리프 작성: done — 3단락+섹션헤딩+소스3개+커버이미지 구조의 기준 브리프 DB 등록
-- pipeline → UI end-to-end 검증: done
-- Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done
-- auto-publish 워커 (`publish:auto`): done — approved 브리프 quality check → scheduled → published 자동 전환
-- editorial automation hardening: done — auto-publish skip recovery, `publish:repair-state`, `automation:check`, Supabase retry/backoff
-- pipeline-to-ui E2E test suite (8 tests): done
-- `/pipeline-check` skill: done
-- local `code-review-graph` baseline + `.code-review-graphignore`: done
-- Defuddle article enrichment (Phase 1): done
-- fixture-backed shadow trial suite (`trial:all`): done
-- design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done
-- palette recalibration + asset/media brand sync: done — 저채도 보정 토큰, status/category pill 알파 조정, brand/placeholder/sprite/Remotion/thumbnail 기본색 동기화
-- mobile responsiveness hardening (missing breakpoints, touch targets, nav hamburger, table scroll, pipeline panel): done
-- public hub page overhaul (6-phase): done — body token 1rem, muted contrast 0.82, button weight 600, card line-height 1.25/1.5, showcase/custom-assets 빈 섹션 제거, hero/section 카피 리뉴얼, nav/footer locale prefix, brief-grid lead card, panel shadow 경감+hover lift, hero/radar/home skeleton loading, 2-step responsive collapse 900→768, newsletter CTA, slug dedup
-- brief detail page redesign (MetaBar, BriefBodySections, BriefInsight, BriefSourcePanel): done
-- admin brief quality checklist (6 criteria, advisory): done
-- review detail brief body preview (previewBody via title lookup): done
-- admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching): done
-- Supabase connection pool deadlock fix (max:1→10) + timestamp Date→string parse fix: done
-- Supabase retry budget 보강 (RETRY_LIMIT 2→3, delays [500,1500]→[500,1500,3000]ms): done — 2026-03-25 CONNECTION_DESTROYED cold-start 실패 대응
-- discover items 공개 발행 게이트: done — `isPublished()` 가드로 approved + published만 `/radar` 노출, 중앙 상수 + editorial-guards 패키지 추가
-- brief quality gate CLI 워커 적용: done — `runBriefQualityCheck` 공유 모듈 분리, `review:decision`/`publish:action` 양쪽에 gate 추가, 부실 브리프 9건 리셋
-- discover 자동 발행 통합: done — `daily-auto-publish.md`에 discover 경량 quality check + auto-publish 섹션 추가
-- Source Registry DB 연결: done — `live-source-registry.ts`가 Supabase `sources` 테이블을 SSOT으로 읽도록 변경, 30→23개 활성화 (7개 404/403 비활성), 수집량 9→63건/실행 (7배 증가)
-- Brief Quality Score 확장: done — pass/fail → 0~100 점수 + A/B/C/D/F 등급. 6개 게이트 + 5개 확장 점수(titleAppeal/summaryStandalone/structureScore/sourceDiversity/readability). 레퍼런스 brief 90점(A), 부실 brief 60점(C) 검증 완료
-- Vercel 프로덕션 배포: done — `vibehub-media` 프로젝트, `vibehub.tech` 도메인 연결, Next.js 16 Turbopack 빌드, en/es 다국어 라우트 정상 동작
-- Full Cycle 검증 (2026-03-26): done
+- public localized route consolidation: done (2026-03-22) — legacy `app/(public)` 제거, `app/[locale]/(public)`만 유지, 18개 파일 (`17 tsx + 1 CLAUDE.md`)
+- frontend CSS split (M1): done (2026-03-22)
+- frontend 3-state components (M2): done (2026-03-22)
+- frontend loading/error routes (M3): done (2026-03-22)
+- frontend typo/spacing/hierarchy (M4): done (2026-03-22)
+- frontend admin sidebar (M5): done (2026-03-22)
+- frontend state hardening: done (2026-03-22)
+- admin review/publish mutation buttons (Server Actions): done (2026-03-22)
+- showcase sidecar lane foundation: done (2026-03-22)
+- public UX 내부 용어 제거 + 사용자 언어 전환: done (2026-03-22)
+- admin 사이드바 탭 통합 (15→12개): done (2026-03-22) — 정책+프로그램→운영 규칙, 수신함+실행 이력→수집 현황, 검수+예외 처리→검토 대기
+- admin 탭 데이터 정리: done (2026-03-22) — 발행 탭 미승인 항목 제거, 수신함 drafted 제외, 브리프 상태 필터, 검수 요청 버튼
+- admin 카드 가독성 개선: done (2026-03-22) — 제목 h3/700, 메타 grid 정렬, dd 볼드, 대시보드 카운트 대형화, overflow 수정
+- 사이드바 파이프라인 흐름순 정렬: done (2026-03-22) — 소스→파이프라인→수집 현황→브리프→디스커버리→검토 대기→발행
+- brief cover image 지원: done (2026-03-22) — RSS enclosure/media:content/img 자동 추출 → brief_posts.cover_image_url → 공개 디테일 렌더링
+- 레퍼런스 브리프 작성: done (2026-03-22) — 3단락+섹션헤딩+소스3개+커버이미지 구조의 기준 브리프 DB 등록
+- pipeline → UI end-to-end 검증: done (2026-03-22)
+- Supabase query timeout 보호 (connect_timeout + Promise.race 15s): done (2026-03-26)
+- auto-publish 워커 (`publish:auto`): done (2026-03-26) — approved 브리프 quality check → scheduled → published 자동 전환
+- editorial automation hardening: done (2026-03-26) — auto-publish skip recovery, `publish:repair-state`, `automation:check`, Supabase retry/backoff
+- pipeline-to-ui E2E test suite (8 tests): done (2026-03-26)
+- `/pipeline-check` skill: done (2026-03-26)
+- local `code-review-graph` baseline + `.code-review-graphignore`: done (2026-03-26)
+- Defuddle article enrichment (Phase 1): done (2026-03-26)
+- fixture-backed shadow trial suite (`trial:all`): done (2026-03-26)
+- design token unification (RGB channels, purple, radius/type-scale expansion, CSS hardcode cleanup): done (2026-03-26)
+- palette recalibration + asset/media brand sync: done (2026-03-26) — 저채도 보정 토큰, status/category pill 알파 조정, brand/placeholder/sprite/Remotion/thumbnail 기본색 동기화
+- mobile responsiveness hardening (missing breakpoints, touch targets, nav hamburger, table scroll, pipeline panel): done (2026-03-26)
+- public hub page overhaul (6-phase): done (2026-03-26) — body token 1rem, muted contrast 0.82, button weight 600, card line-height 1.25/1.5, showcase/custom-assets 빈 섹션 제거, hero/section 카피 리뉴얼, nav/footer locale prefix, brief-grid lead card, panel shadow 경감+hover lift, hero/radar/home skeleton loading, 2-step responsive collapse 900→768, newsletter CTA, slug dedup
+- brief detail page redesign (MetaBar, BriefBodySections, BriefInsight, BriefSourcePanel): done (2026-03-26)
+- admin brief quality checklist (6 criteria, advisory): done (2026-03-26)
+- review detail brief body preview (previewBody via title lookup): done (2026-03-26)
+- admin dashboard AutomationTrail infinite loop fix (useSyncExternalStore snapshot caching): done (2026-03-26)
+- Supabase connection pool deadlock fix (max:1→10) + timestamp Date→string parse fix: done (2026-03-26)
+- Supabase retry budget 보강 (RETRY_LIMIT 2→3, delays [500,1500]→[500,1500,3000]ms): done (2026-03-25) — 2026-03-25 CONNECTION_DESTROYED cold-start 실패 대응
+- discover items 공개 발행 게이트: done (2026-03-26) — `isPublished()` 가드로 approved + published만 `/radar` 노출, 중앙 상수 + editorial-guards 패키지 추가
+- brief quality gate CLI 워커 적용: done (2026-03-26) — `runBriefQualityCheck` 공유 모듈 분리, `review:decision`/`publish:action` 양쪽에 gate 추가, 부실 브리프 9건 리셋
+- discover 자동 발행 통합: done (2026-03-26) — `daily-auto-publish.md`에 discover 경량 quality check + auto-publish 섹션 추가
+- Source Registry DB 연결: done (2026-03-26) — `live-source-registry.ts`가 Supabase `sources` 테이블을 SSOT으로 읽도록 변경, 30→23개 활성화 (7개 404/403 비활성), 수집량 9→63건/실행 (7배 증가)
+- Brief Quality Score 확장: done (2026-03-26) — pass/fail → 0~100 점수 + A/B/C/D/F 등급. 6개 게이트 + 5개 확장 점수(titleAppeal/summaryStandalone/structureScore/sourceDiversity/readability). 레퍼런스 brief 90점(A), 부실 brief 60점(C) 검증 완료
+- Vercel 프로덕션 배포: done (2026-03-26) — `vibehub-media` 프로젝트, `vibehub.tech` 도메인 연결, Next.js 16 Turbopack 빌드, en/es 다국어 라우트 정상 동작
+- Full Cycle 검증 (2026-03-26): done (2026-03-26)
   - pipeline:daily: 23개 소스 → 63건 fetch → 191건 로컬 스냅샷 → 19건 Supabase sync (FK 버그 4건 수정: orphan source_id 연쇄 위반)
   - draft+approved 상태 꼬임 5건 리셋 → draft+pending
   - 레퍼런스 brief [REFERENCE] 태깅 (GPT-5.4 mini, slug: openai-gpt-5-4-mini-nano-launch)
   - 자동화 프롬프트 3건 추가/수정: daily-editorial-review(스코어+few-shot), daily-dedup-guard(신규), weekly-source-health(신규)
   - Supabase 현황: sources 30(23활성) / ingest_runs 57 / ingested_items 19 / brief_posts 19(draft14+review4+published1) / discover_items 8
-- NotebookLM 도구 선정: done — `notebooklm-mcp-cli` (CLI 모드) 채택. PleasePrompto/notebooklm-mcp는 팟캐스트 기능 없음(Q&A 전용), Google 공식 Podcast API는 Enterprise allowlist 접근 불가
-- Threads API 사전 준비: done — Meta Developer 앱 생성, OAuth redirect URI 설정, @vibehub1030 액세스 토큰 발급 완료
-- NotebookLM CLI 실동작 검증: done — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 + ffmpeg 설치 완료
-- 영상 전략 확정: done — Audiogram 방식 (웨이브폼+자막+커버 1장), 섹션별 이미지는 후순위. 다국어 2트랙 (영어+스페인어) 자막 번역 동시 생성 (비용 $0). 자기개선은 YouTube Analytics 숫자만 읽음
-- Category SSOT 도입: done — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
-- radar 카테고리 그룹 UI: done — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
-- design inspiration 확장: done — editorial RSS 8개 seed migration, `design_token` category + rose badge, `/radar?category=design_token` 필터, Obsidian `Design Tokens` 폴더 export
+- NotebookLM 도구 선정: done (2026-03-27) — `notebooklm-mcp-cli` (CLI 모드) 채택. PleasePrompto/notebooklm-mcp는 팟캐스트 기능 없음(Q&A 전용), Google 공식 Podcast API는 Enterprise allowlist 접근 불가
+- Threads API 사전 준비: done (2026-03-27) — Meta Developer 앱 생성, OAuth redirect URI 설정, @vibehub1030 액세스 토큰 발급 완료
+- NotebookLM CLI 실동작 검증: done (2026-03-27) — brief 텍스트 → 2인 대화 M4A(32MB, 17분15초) 생성 성공. 원본 볼륨 -28dB → loudnorm 정규화 -19.4dB 확인. pyenv 3.12 + nlm 0.5.9 + ffmpeg 설치 완료
+- 영상 전략 확정: done (2026-03-27) — Audiogram 방식 (웨이브폼+자막+커버 1장), 섹션별 이미지는 후순위. 다국어 2트랙 (영어+스페인어) 자막 번역 동시 생성 (비용 $0). 자기개선은 YouTube Analytics 숫자만 읽음
+- Category SSOT 도입: done (2026-03-27) — `DISCOVER_CATEGORIES` 배열 1개로 타입/허용목록/라벨 통일, 3곳 하드코딩 제거
+- radar 카테고리 그룹 UI: done (2026-03-27) — Featured 중복 제거 + 카테고리별 그룹 섹션 + 색상 pill + New 뱃지 + `/design-sync` 스킬
+- design inspiration 확장: done (2026-03-27) — editorial RSS 8개 seed migration, `design_token` category + rose badge, `/radar?category=design_token` 필터, Obsidian `Design Tokens` 폴더 export
   - live ingest snapshot이 `public.sources.id` UUID를 그대로 보존해 sync/export/source linkage가 replay 시에도 안정적으로 유지됨
   - `supabase-editorial-sync`가 approved discover row에 `published_at`를 채워 public radar gate와 자동 sync 결과를 정렬함
   - Featured 카드는 기본 radar index에서는 중복 제거를 유지하되 category/search 필터가 걸리면 결과 목록에 다시 포함됨
@@ -124,13 +124,13 @@
   - icon.tsx / apple-icon.tsx: "V" → "VH" 텍스트, ink 배경 → orange 배경 전환
   - 플레이스홀더 3개 AI 생성 이미지로 교체: radar(PNG), newsletter(PNG), source-strip(JPG)
   - design-tokens assetSlots 경로 + 백엔드 폴백 경로 일괄 업데이트
-- Channel Publish Pipeline v2 설계: done — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
+- Channel Publish Pipeline v2 설계: done (2026-03-29) — CHANNEL-PUBLISH-PIPELINE.md 전면 개편
   - MimikaStudio → NLM 레거시 삭제 (b855935), Chatterbox TTS 전환 완료
   - YouTube API 자동 업로드 → 로컬 저장 + 운영자 직접 업로드로 전환
   - Threads 공식 API 최우선 텍스트 채널로 추가 (9/10 실현성)
   - 2-pass 크로스 프로모션 + YouTube 비동기 3rd pass 설계
   - YouTube Analytics + GA4 피드백 루프 설계 (자동 제안 + 운영자 승인 모델)
-- Channel Publish Pipeline v2 구현: done — 23개 신규 파일, ~2,800줄
+- Channel Publish Pipeline v2 구현: done (2026-03-29) — 23개 신규 파일, ~2,800줄
   - Phase 0: 공통 타입 (channel-types.ts, fetch-with-retry.ts)
   - Phase 1: Threads Publisher (createContainer → publish 2단계 + 크로스프로모 답글)
   - Phase 2: NotebookLM Bridge — 삭제됨 (Chatterbox TTS로 전환)
@@ -144,11 +144,11 @@
   - 테스트: 28개 신규 테스트 전부 통과 (threads 7, dispatcher 6, srt-utils 5, notebooklm 3, promo 6, fetch-retry 1)
   - 코드 품질 개선: spawnAsync 공용 유틸 추출 (3곳 중복 제거), 브랜드 상수화 (4곳 하드코딩 → brand.ts), 채널 on/off 환경변수화 (PUBLISH_CHANNELS)
   - briefMeta DB 연결: placeholder → Supabase getSupabaseBriefDetail() 실제 조회
-- Threads 라이브 발행 검증: done — @vibehub1030 계정에 실제 포스팅 성공 (brief: openai-gpt-5-4-mini-nano-launch)
+- Threads 라이브 발행 검증: done (2026-03-29) — @vibehub1030 계정에 실제 포스팅 성공 (brief: openai-gpt-5-4-mini-nano-launch)
   - 2단계 API 흐름 검증: createContainer → publish 정상 동작
   - 크로스프로모: skipCrossPromo=true 기본 적용 (Threads 전파 지연 → 채널 2개 이상 운영 시 별도 워커로 분리 예정)
   - Supabase → Threads 전체 경로 E2E 확인: DB brief 조회 → 본문 생성 → API 발행 → URL 반환
-- 파이프라인 자동화 연결: done
+- 파이프라인 자동화 연결: done (2026-03-29)
   - channel_publish_results + publish_dispatches 테이블 생성 (Supabase 마이그레이션 적용)
   - 채널 발행 결과 DB 자동 저장 (channel-publish-report.ts)
   - 채널 발행 Telegram 보고 연결 — E2E 수신 확인 완료
@@ -163,7 +163,7 @@
   - 프레임 균등 씬 분할 + Pexels 비디오 중복 제거
   - ffmpeg 합성 (loudnorm + 동적 BGM fadeOut)
   - production 결과: ~50초, 크래시 0, 운영비 $0
-- Shorts/Longform 영상 렌더 워커: done — `video:render <slug>` CLI, 6개 신규 모듈
+- Shorts/Longform 영상 렌더 워커: done (2026-03-31) — `video:render <slug>` CLI, 6개 신규 모듈
   - Phase 1: Chatterbox/Qwen3 TTS Client (2문장 청크 + hallucination 가드 + 자동 재시작)
   - Phase 2: whisper-cpp word-level (`--output-json-full` → 구두점 병합 → ShortWord[])
   - Phase 3: Scene Splitter (프레임 균등 분배 + kenBurns 4패턴 순환 + Pexels 비디오 중복 제거)
@@ -171,16 +171,16 @@
   - Phase 5: Script Generator (Gemini JSON Schema, 80-100w ES) + 통합 오케스트레이션
   - Phase 6: CLI Worker (run-shorts-render.ts, --shorts-only/--longform-only/--dry-run/--force/--locale)
   - 테스트: 83개 전부 통과
-- dedup-guard 워커 구현: done — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
-- source-health 워커 구현: done — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
-- daily-pipeline.md 소스 현황 문서 수정: done — "3개 활성"→"25개 활성" 정정
-- thin-content 방어 게이트: done — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
-- brief body/image 자동 채움: done — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
-- YouTube API 자동 업로드: done — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
-- Shorts YouTube locale-aware 업로드: done — render-meta.json에서 Shorts 실제 locale 감지 → canonical(EN)과 다르면 DB variant 제목/요약 자동 조회 → YouTube 제목·설명·language·briefUrl 모두 해당 locale로 발행
-- Newsletter Pipeline: done — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
-- 채널 크로스프로모 활성화: done — skipCrossPromo=false 전환, YouTube 설명 Podcast 링크 추가 + ES 스페인어 레이블, Podcast 에피소드 크로스프로모 링크, Newsletter 소셜 링크 섹션, brand.ts 상수화 (YOUTUBE_CHANNEL, PODCAST_URL)
-- Vercel 배포 정적 에셋 수정: done — 루트 public/에 누락된 PNG/JPG 플레이스홀더 + favicon 복사 (Vercel이 monorepo 루트 public/ 서빙)
+- dedup-guard 워커 구현: done (2026-03-31) — `dedup:guard` CLI, Jaccard title/summary + 동일 source_links 비교 + `[DUPLICATE]` 태깅 + Telegram 보고
+- source-health 워커 구현: done (2026-03-31) — `source:health` CLI, 실패 소스 자동 비활성화 + 30일 무실적 경고 + maxItems 제안 + 신규 소스 후보 발견 + Telegram 보고
+- daily-pipeline.md 소스 현황 문서 수정: done (2026-03-31) — "3개 활성"→"25개 활성" 정정
+- thin-content 방어 게이트: done (2026-03-31) — content-failed/summary-only 항목 review 강제, parsedSummary < 100자 brief 차단, body 없으면 F등급 캡, ingest_status "failed" 분류
+- brief body/image 자동 채움: done (2026-03-31) — contentMarkdown→body 문단 자동 변환 (sync 단계), 소스 도메인 fallback 이미지 자동 적용 (openai/google/anthropic), `brief:enrich-backfill` CLI 워커, 기존 부실 brief 12건 보강 완료
+- YouTube API 자동 업로드: done (2026-03-31) — `youtube-api.ts` publisher 구현 (OAuth2 refresh token + resumable upload), YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN 환경변수 설정 시 자동 활성화, 비공개 업로드 + brief 자동 링크 연결, 미설정 시 기존 로컬 메타 모드 fallback
+- Shorts YouTube locale-aware 업로드: done (2026-03-31) — render-meta.json에서 Shorts 실제 locale 감지 → canonical(EN)과 다르면 DB variant 제목/요약 자동 조회 → YouTube 제목·설명·language·briefUrl 모두 해당 locale로 발행
+- Newsletter Pipeline: done (2026-03-31) — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
+- 채널 크로스프로모 활성화: done (2026-03-31) — skipCrossPromo=false 전환, YouTube 설명 Podcast 링크 추가 + ES 스페인어 레이블, Podcast 에피소드 크로스프로모 링크, Newsletter 소셜 링크 섹션, brand.ts 상수화 (YOUTUBE_CHANNEL, PODCAST_URL)
+- Vercel 배포 정적 에셋 수정: done (2026-03-31) — 루트 public/에 누락된 PNG/JPG 플레이스홀더 + favicon 복사 (Vercel이 monorepo 루트 public/ 서빙)
 
 ## Execution Checklist
 
