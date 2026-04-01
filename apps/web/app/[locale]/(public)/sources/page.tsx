@@ -26,7 +26,7 @@ export async function generateMetadata({
   return {
     title: "Submit Tool",
     description:
-      "Submit your tool, get through automated screening, and earn a spot in VibeHub Showcase Picks.",
+      "Share your tool with a fast, no-login form and get screened for VibeHub listings and Showcase Picks.",
     alternates: {
       canonical: `${SITE_URL}/${locale}/sources`,
       languages: buildAlternates("/sources", SITE_URL),
@@ -47,12 +47,11 @@ export default async function SourcesPage() {
       <section className="shell hero-grid">
         <div className="stack-tight">
           <p className="eyebrow">Submit Tool</p>
-          <h1>Share your tool, pass automated screening, and earn a curated spotlight.</h1>
+          <h1>Share your tool without a login wall.</h1>
           <p className="muted">
-            Showcase Picks are operator-curated. Latest Submissions highlights new
-            tools that passed our first automated screening pass. Imported
-            Candidates is a separate lane for tools spotted on trusted public
-            sources.
+            Start with the basics, submit in a minute, and let us handle the first
+            screening pass. Strong fits can surface in Latest Submissions and may
+            later be handpicked for Showcase Picks.
           </p>
           <div className="button-row">
             <a className="button-primary" href="#submit-tool">
@@ -92,31 +91,28 @@ export default async function SourcesPage() {
       <SectionBlock
         eyebrow="Submit your tool"
         sectionId="submit-tool"
-        title="Fast intake, no login wall"
+        title="Quick intake built for busy builders"
       >
         <div className="hero-grid submit-tool-grid">
           <ToolSubmissionForm />
           <article className="panel stack-tight">
-            <p className="eyebrow">How it works</p>
-            <h3>Four lanes, four different promises.</h3>
+            <p className="eyebrow">What happens next</p>
+            <h3>Send the basics. We handle the first review pass.</h3>
             <p className="muted">
-              Showcase Picks is curated by operators. Submit Your Tool is the
-              intake lane. Latest Submissions only shows tools that pass automated
-              screening. Imported Candidates tracks trusted-source finds with
-              preserved attribution.
+              This page is designed so you can submit first and elaborate later.
+              Latest Submissions and Showcase Picks are different lanes with
+              different thresholds.
             </p>
-            <div className="stack-tight">
-              <p>Required: title, summary, website URL, submitter email.</p>
-              <p>Optional: GitHub, demo, docs, extra tags, submitter name.</p>
-              <p>
-                Screening checks URLs, duplicates, basic spam patterns, and public
-                site reachability.
-              </p>
-              <p>
-                Imported Candidates is a separate lane for trusted-source finds and
-                never pretends those tools were submitted directly by their builders.
-              </p>
-            </div>
+            <ol className="submit-tool-steps">
+              <li>Submit your title, one-line summary, website, and email.</li>
+              <li>We check duplicates, spam patterns, and whether the public link works.</li>
+              <li>Approved tools can appear in Latest Submissions.</li>
+              <li>Operators handpick a smaller set for Showcase Picks.</li>
+            </ol>
+            <p className="muted">
+              Imported Candidates stays separate for tools found on trusted public
+              sources, so builder submissions keep their own lane.
+            </p>
           </article>
         </div>
       </SectionBlock>

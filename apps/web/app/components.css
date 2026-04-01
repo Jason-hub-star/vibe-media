@@ -210,6 +210,87 @@
   min-height: 100%;
 }
 
+.submission-section {
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.08);
+}
+
+.submission-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.submission-pill,
+.submission-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: var(--type-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.submission-pill {
+  border: 1px solid rgba(var(--color-cream-rgb), 0.14);
+  background: rgba(var(--color-cream-rgb), 0.05);
+  color: rgba(var(--color-cream-rgb), 0.76);
+}
+
+.submission-field {
+  gap: 0.45rem;
+}
+
+.submission-field--full {
+  grid-column: 1 / -1;
+}
+
+.submission-field-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.submission-badge {
+  border: 1px solid rgba(var(--color-orange-rgb), 0.3);
+  background: rgba(var(--color-orange-rgb), 0.14);
+  color: rgba(var(--color-orange-rgb), 0.92);
+}
+
+.submission-badge-optional {
+  border-color: rgba(var(--color-cream-rgb), 0.16);
+  background: rgba(var(--color-cream-rgb), 0.06);
+  color: rgba(var(--color-cream-rgb), 0.6);
+}
+
+.submission-help {
+  color: rgba(var(--color-cream-rgb), 0.58);
+  font-size: var(--type-small);
+}
+
+.submission-optional {
+  border-top: 1px solid rgba(var(--color-cream-rgb), 0.08);
+  padding-top: 1rem;
+}
+
+.submission-optional summary {
+  cursor: pointer;
+  color: var(--color-cream);
+  font-weight: 600;
+}
+
+.submission-optional summary::marker {
+  color: var(--color-orange);
+}
+
+.submission-optional-body {
+  margin-top: 1rem;
+}
+
 .submission-honeypot {
   position: absolute;
   left: -9999px;
@@ -287,6 +368,16 @@
 .textarea-input {
   min-height: 6.5rem;
   resize: vertical;
+}
+
+.submit-tool-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: rgba(var(--color-cream-rgb), 0.76);
+}
+
+.submit-tool-steps li + li {
+  margin-top: 0.6rem;
 }
 
 /* -- filter bar (shared: brief + radar) -- */
