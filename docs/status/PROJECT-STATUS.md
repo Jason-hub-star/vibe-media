@@ -216,6 +216,12 @@
   - Backend: Row 타입 + mapper + SQL 쿼리 4곳에 `cover_image_url` 포함
   - Frontend: `ToolCandidateImportCard` 이미지 렌더링 ("use client" + onError fallback)
   - Backfill: 84개 중 72개 커버 이미지 채움 (GitHub social preview + og:image 크롤링)
+- /sources Submit Tool UX 개선: done (2026-04-01)
+  - URL 자동 크롤링: website URL blur 시 og:title/description/image 자동 추출 + 폼 prefill
+  - 실시간 카드 프리뷰: 폼 입력 시 오른쪽에 최종 카드 모습 실시간 업데이트 (sticky)
+  - /api/tools/og-preview Route Handler 신규 (32KB 스트리밍, SSRF 방어)
+  - useOgPrefill hook + ToolSubmissionPreview + ToolSubmissionFormWithPreview 컴포넌트
+- 루트 public/brand 구 로고 동기화: done (2026-04-01) — Vercel 루트 public/ 우선 서빙으로 구 도형 로고 노출 → 새 VH 텍스트 로고로 동기화
 
 ## Execution Checklist
 

@@ -276,3 +276,9 @@
 - 목적: Supabase Sync 단계 실행
 - 동작: `npm run pipeline:supabase-sync` 실행
 - 반환: `{ ok, itemCount, durationMs }`
+
+### `POST /api/tools/og-preview`
+- 목적: 임의 URL에서 OG 메타데이터를 가져와 Submit Tool 폼 자동 완성에 활용
+- 요청 바디: `{ url: string }`
+- 반환: `{ ogTitle: string | null, ogDescription: string | null, ogImage: string | null }`
+- 동작: HTML 스트리밍 최대 32KB 읽기, 6초 타임아웃, SSRF 방지 (private IP 차단)
