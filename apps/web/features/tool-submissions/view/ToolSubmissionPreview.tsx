@@ -46,6 +46,7 @@ export function ToolSubmissionPreview({
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             loading="lazy"
+            unoptimized
             className="discover-card-cover-img"
             onError={() => setImgError(true)}
           />
