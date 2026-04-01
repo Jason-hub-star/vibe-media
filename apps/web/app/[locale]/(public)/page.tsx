@@ -13,6 +13,8 @@ import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
 import { NewsletterForm } from "@/features/newsletter/view/NewsletterForm";
 import { isPublishedShowcaseEntry } from "@vibehub/backend";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
