@@ -19,3 +19,4 @@ output/
 public/shorts/
 packages/media-engine/public/
 .vercel
+models/
