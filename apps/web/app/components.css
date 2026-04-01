@@ -193,6 +193,19 @@
   min-height: 100%;
 }
 
+.imported-card-cover {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  overflow: hidden;
+  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)) 0;
+  width: calc(100% + 2 * var(--space-sm));
+}
+
+.imported-card-cover-img {
+  object-fit: cover;
+}
+
 .imported-badge-row {
   display: flex;
   align-items: center;

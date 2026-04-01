@@ -14,6 +14,7 @@ export interface ToolCandidateImportRow {
   github_url: string | null;
   demo_url: string | null;
   docs_url: string | null;
+  cover_image_url: string | null;
   tags: string[];
   status: ToolCandidateImportStatus;
   screening_status: ToolCandidateImportScreeningStatus;
@@ -50,6 +51,7 @@ export function mapToolCandidateImport(row: ToolCandidateImportRow): ToolCandida
     githubUrl: row.github_url,
     demoUrl: row.demo_url,
     docsUrl: row.docs_url,
+    coverImageUrl: row.cover_image_url ?? null,
     tags: toStringArray(row.tags),
     status: row.status,
     screeningStatus: row.screening_status,

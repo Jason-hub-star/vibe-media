@@ -49,6 +49,7 @@ async function queryToolCandidateImportRows(limit?: number | null) {
           github_url,
           demo_url,
           docs_url,
+          cover_image_url,
           tags,
           status,
           screening_status,

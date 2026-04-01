@@ -203,6 +203,13 @@
   - `getGitHubSocialPreview()` 신규: GitHub URL → `opengraph.githubassets.com` 자동 변환
   - `weekly-image-health` 자동화 신규: 주간 HEAD 검증 + 자동 복구
   - `/retro` 스킬 신규: 세션 회고 → 성공 패턴/실패 우회/반복 수작업을 스킬/피드백/자동화로 자동 추출
+- /sources 빈 섹션 숨기기: done (2026-04-01) — 데이터 없는 Showcase/Submissions/Imported 섹션 조건부 렌더링, Submit 폼만 노출
+- Imported Candidates 커버 이미지: done (2026-04-01)
+  - DB: `tool_candidate_imports.cover_image_url` 컬럼 추가 (migration)
+  - Contract: `ToolCandidateImport.coverImageUrl` 필드 추가
+  - Backend: Row 타입 + mapper + SQL 쿼리 4곳에 `cover_image_url` 포함
+  - Frontend: `ToolCandidateImportCard` 이미지 렌더링 ("use client" + onError fallback)
+  - Backfill: 84개 중 72개 커버 이미지 채움 (GitHub social preview + og:image 크롤링)
 
 ## Execution Checklist
 

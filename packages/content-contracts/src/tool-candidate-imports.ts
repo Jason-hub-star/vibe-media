@@ -26,6 +26,7 @@ export interface ToolCandidateImport {
   githubUrl: string | null;
   demoUrl: string | null;
   docsUrl: string | null;
+  coverImageUrl: string | null;
   tags: string[];
   status: ToolCandidateImportStatus;
   screeningStatus: ToolCandidateImportScreeningStatus;
@@ -55,6 +56,7 @@ export interface ToolCandidateImportTeaser {
   githubUrl: string | null;
   demoUrl: string | null;
   docsUrl: string | null;
+  coverImageUrl: string | null;
   tags: string[];
   status: ToolCandidateImportStatus;
   screeningStatus: ToolCandidateImportScreeningStatus;

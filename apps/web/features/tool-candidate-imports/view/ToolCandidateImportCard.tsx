@@ -1,3 +1,7 @@
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
 import type { ToolCandidateImport } from "@vibehub/content-contracts";
 
 function externalLink(label: string, href: string | null) {
@@ -10,8 +14,24 @@ function externalLink(label: string, href: string | null) {
 }
 
 export function ToolCandidateImportCard({ item }: { item: ToolCandidateImport }) {
+  const [imgError, setImgError] = useState(false);
+  const showImage = item.coverImageUrl && !imgError;
+
   return (
     <article className="panel stack-tight imported-card">
+      {showImage && (
+        <div className="imported-card-cover">
+          <Image
+            src={item.coverImageUrl!}
+            alt={item.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            loading="lazy"
+            className="imported-card-cover-img"
+            onError={() => setImgError(true)}
+          />
+        </div>
+      )}
       <div className="row-between submission-card-header">
         <div className="stack-tight">
           <div className="imported-badge-row">
