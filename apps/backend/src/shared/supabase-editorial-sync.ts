@@ -159,8 +159,6 @@ function getTags(item: SnapshotIngestedItemRow) {
 const SOURCE_DOMAIN_FALLBACK_IMAGES: Record<string, string> = {
   "openai.com":
     "https://images.ctfassets.net/kftzwdyauwt9/6tvi0m9Z8P15gx4gd3ClmR/cfb5e925a1d3b2f9ac2ccbcd311c50cc/Frame__2_.png?w=1600&h=900&fit=fill",
-  "anthropic.com":
-    "https://www.anthropic.com/images/icons/apple-touch-icon.png",
   "blog.google":
     "https://blog.google/static/blogv2/images/google-1000x1000.png"
 };
@@ -177,9 +175,27 @@ function getFallbackImageByDomain(itemUrl: string): string | null {
   return null;
 }
 
+/** GitHub 도메인 URL에서 owner/repo를 추출하여 social preview 이미지 URL 생성 */
+function getGitHubSocialPreview(itemUrl: string): string | null {
+  try {
+    const parsed = new URL(itemUrl);
+    if (parsed.hostname !== "github.com") return null;
+    // /owner/repo 또는 /owner/repo/releases/... 등에서 owner/repo 추출
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    if (parts.length < 2) return null;
+    return `https://opengraph.githubassets.com/1/${parts[0]}/${parts[1]}`;
+  } catch {
+    return null;
+  }
+}
+
 function getImageUrl(item: SnapshotIngestedItemRow): string | null {
   const url = item.parsed_content.imageUrl;
   if (typeof url === "string" && url.startsWith("http") && isValidCoverImageUrl(url)) return url;
+
+  // GitHub URL이면 social preview 자동 생성
+  const ghPreview = getGitHubSocialPreview(item.url);
+  if (ghPreview) return ghPreview;
 
   // og:image 없으면 소스 도메인 fallback 자동 적용
   return getFallbackImageByDomain(item.url);

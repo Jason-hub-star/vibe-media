@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 import type { DiscoverCategory } from "@vibehub/content-contracts";
 import { colorRgbTokens } from "@vibehub/design-tokens";
@@ -14,13 +17,16 @@ interface DiscoverCardCoverProps {
 export function DiscoverCardCover({ coverImage, title, category }: DiscoverCardCoverProps) {
   const cat = presentDiscoverCategory(category);
   const accentRgb = colorRgbTokens[cat.color];
+  const [imgError, setImgError] = useState(false);
+
+  const showImage = coverImage && !imgError;
 
   return (
     <div
       className="discover-card-cover"
       style={{ "--card-accent-rgb": accentRgb } as React.CSSProperties}
     >
-      {coverImage ? (
+      {showImage ? (
         <Image
           src={coverImage}
           alt={title}
@@ -28,11 +34,10 @@ export function DiscoverCardCover({ coverImage, title, category }: DiscoverCardC
           sizes="(max-width: 768px) 100vw, 33vw"
           loading="lazy"
           className="discover-card-cover-img"
+          onError={() => setImgError(true)}
         />
       ) : (
-        <div className="discover-card-cover-fallback">
-          <span className="discover-card-cover-icon">{cat.icon}</span>
-        </div>
+        <div className="discover-card-cover-fallback" />
       )}
     </div>
   );

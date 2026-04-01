@@ -150,9 +150,9 @@ function shouldEnrichArticle(source: LiveSourceDefinition) {
 }
 
 const OG_IMAGE_FETCH_TIMEOUT_MS = 6_000;
-const OG_IMAGE_MAX_BYTES = 16_384;
+const OG_IMAGE_MAX_BYTES = 32_768;
 
-/** Lightweight og:image extraction — reads only the first 16KB of HTML */
+/** Lightweight og:image extraction — reads the first 32KB of HTML, tries og:image then twitter:image */
 async function fetchOgImageOnly(url: string): Promise<string | null> {
   try {
     const response = await fetch(url, {
@@ -160,7 +160,8 @@ async function fetchOgImageOnly(url: string): Promise<string | null> {
       headers: {
         accept: "text/html,application/xhtml+xml",
         "user-agent": "vibehub-media"
-      }
+      },
+      redirect: "follow"
     });
     if (!response.ok || !response.body) return null;
 
@@ -177,11 +178,22 @@ async function fetchOgImageOnly(url: string): Promise<string | null> {
     reader.cancel();
 
     const html = new TextDecoder().decode(Buffer.concat(chunks));
-    const match =
+
+    // Try og:image first (both attribute orders)
+    const ogMatch =
       html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ??
       html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-    const candidate = match?.[1]?.trim() || null;
-    return candidate && isValidCoverImageUrl(candidate) ? candidate : null;
+    const ogCandidate = ogMatch?.[1]?.trim() || null;
+    if (ogCandidate && isValidCoverImageUrl(ogCandidate)) return ogCandidate;
+
+    // Fallback: twitter:image (many sites set this even without og:image)
+    const twMatch =
+      html.match(/<meta[^>]+(?:name|property)=["']twitter:image["'][^>]+content=["']([^"']+)["']/i) ??
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["']twitter:image["']/i);
+    const twCandidate = twMatch?.[1]?.trim() || null;
+    if (twCandidate && isValidCoverImageUrl(twCandidate)) return twCandidate;
+
+    return null;
   } catch {
     return null;
   }

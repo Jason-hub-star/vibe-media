@@ -16,6 +16,7 @@
 | `weekly-ingest-research.md` | 새 source/tool 조사와 parser stack 후보 추적 | 주 1회 |
 | `weekly-autoresearch-loop.md` | 작은 실험을 반복하며 keep/discard 판정 | 주 2-3회 |
 | `weekly-seo-audit.md` | 공개 사이트 SEO 건강성 점검 (메타/sitemap/JSON-LD/hreflang/OG) | 주 1회 |
+| `weekly-image-health.md` | cover_image_url HEAD 검증 → 깨진 URL 자동 복구/리포트 | 주 1회, source-health 이후 |
 | `daily-media-publish.md` | Shorts+Longform 미디어 생성 → Threads + YouTube API 자동 업로드 (unlisted) | 매일 1회, auto-publish 이후 |
 
 ## Execution Order (Daily)

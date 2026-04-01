@@ -31,9 +31,23 @@ node -e "const s=require('./apps/backend/state/live-ingest-snapshot.json'); cons
 npm run pipeline:supabase-sync
 ```
 
-5. Run pipeline-to-UI E2E tests:
+5. Cover image health check (sync 후 이미지 건강성 검증):
+```sql
+-- Supabase MCP execute_sql (project: hzxsropbcjfywmospobb)
+SELECT category, COUNT(*) FILTER (WHERE cover_image_url IS NULL OR cover_image_url = '') as no_img,
+       COUNT(*) FILTER (WHERE cover_image_url LIKE '%.svg') as svg_img,
+       COUNT(*) as total
+FROM discover_items WHERE review_status = 'approved'
+GROUP BY category HAVING COUNT(*) FILTER (WHERE cover_image_url IS NULL OR cover_image_url = '') > 0
+   OR COUNT(*) FILTER (WHERE cover_image_url LIKE '%.svg') > 0
+ORDER BY category;
+```
+- 이미지 없는 항목이 발견되면 `getGitHubSocialPreview()` 또는 소스 URL og:image 재크롤링 시도
+- SVG 이미지는 `isValidCoverImageUrl()`에서 차단되므로 파이프라인 버그 표시
+
+6. Run pipeline-to-UI E2E tests:
 ```bash
 npx playwright test apps/web/tests/e2e/pipeline-to-ui.spec.ts
 ```
 
-6. Report results: summarize fetch counts, sync status, and test pass/fail.
+7. Report results: summarize fetch counts, sync status, image health, and test pass/fail.

@@ -194,6 +194,15 @@
   - Contract: `DiscoverItem.coverImage` optional 필드 추가
   - Frontend: `DiscoverCardCover` 컴포넌트 (3:1 compact accent strip, category color gradient fallback + icon), Brief 커버와 차별화된 Radar 시각 아이덴티티
   - Detail: `.radar-detail-col` gap 추가 (0→1.5rem), 커버 이미지 삽입 (21:9 wide), 발행일 표시, prose line-height 개선
+- Radar 빈 카테고리 시딩 + 이미지 강화: done (2026-04-01)
+  - 빈 20개 카테고리에 각 3개씩 실제 아이템 시딩 (60개 INSERT → 5개 삭제 → 최종 93개/25개 카테고리)
+  - `DiscoverCardCover` 아이콘 fallback 제거 → gradient-only + `onError` runtime fallback ("use client" 전환)
+  - 기존 이미지 없는 31개 아이템 cover_image_url 보충 (GitHub social preview, og:image 재크롤링)
+  - `isValidCoverImageUrl()` 강화: favicon/apple-touch-icon/small-icon 패턴 차단
+  - `fetchOgImageOnly()` 강화: 버퍼 16KB→32KB, `twitter:image` fallback, `redirect: "follow"`
+  - `getGitHubSocialPreview()` 신규: GitHub URL → `opengraph.githubassets.com` 자동 변환
+  - `weekly-image-health` 자동화 신규: 주간 HEAD 검증 + 자동 복구
+  - `/retro` 스킬 신규: 세션 회고 → 성공 패턴/실패 우회/반복 수작업을 스킬/피드백/자동화로 자동 추출
 
 ## Execution Checklist
 

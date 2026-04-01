@@ -25,8 +25,8 @@ export function presentDiscoverCategory(category: DiscoverCategory): CategoryPre
   };
 }
 
-/** 카테고리별로 아이템을 그룹핑 — 빈 카테고리는 자동 제외 */
-export function groupByCategory<T extends { category: DiscoverCategory }>(items: T[]) {
+/** 카테고리별로 아이템을 그룹핑 — 빈 카테고리는 자동 제외, coverImage 있는 아이템 우선 */
+export function groupByCategory<T extends { category: DiscoverCategory; coverImage?: string }>(items: T[]) {
   const grouped = new Map<DiscoverCategory, T[]>();
   for (const item of items) {
     const list = grouped.get(item.category) ?? [];
@@ -38,6 +38,7 @@ export function groupByCategory<T extends { category: DiscoverCategory }>(items:
   for (const cat of DISCOVER_CATEGORIES) {
     const list = grouped.get(cat.id);
     if (list && list.length > 0) {
+      list.sort((a, b) => (a.coverImage ? 0 : 1) - (b.coverImage ? 0 : 1));
       ordered.set(cat.id, list);
     }
   }

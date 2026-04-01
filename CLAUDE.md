@@ -77,6 +77,7 @@
 - `weekly-autoresearch-loop.md` — 작은 keep/discard 실험 루프
 - `weekly-self-critique.md` — 발행 brief 회고 및 개선 제안
 - `weekly-seo-audit.md` — 공개 사이트 SEO 건강성 주간 점검
+- `weekly-image-health.md` — cover_image_url 건강성 점검 + 깨진 URL 자동 복구
 - `youtube-link-intake.md` — YouTube URL을 brief에 수동 연결
 
 ### Skills
@@ -85,6 +86,7 @@
 - `skills/design-sync/SKILL.md` — content-contracts -> design-tokens -> CSS 정합성 점검
 - `skills/ui-audit/SKILL.md` — admin/public overflow, 가독성, 반응성 점검
 - `skills/big-task/SKILL.md` — 대규모 작업 플랜 및 마일스톤 오케스트레이션
+- `skills/retro/SKILL.md` — 세션 회고 → 성공 패턴·실패 우회·반복 수작업을 스킬/피드백/자동화로 자동 추출 (`/retro`)
 - `skills/vibehub-youtube-link-intake/SKILL.md` — Telegram/CLI 기반 YouTube 링크 intake
 - `skills/media-publish/prompt.md` — 미디어 발행 프롬프트
 - `skills/shorts-render/prompt.md` — Shorts 렌더 프롬프트
