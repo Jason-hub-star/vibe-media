@@ -16,11 +16,12 @@ export function middleware(request: NextRequest) {
 
   // admin Basic Auth gate
   if (pathname.startsWith("/admin")) {
-    const authHeader = request.headers.get("authorization");
     const expected = process.env.ADMIN_BASIC_AUTH;
-
     if (expected) {
-      if (!authHeader || authHeader !== `Basic ${btoa(expected)}`) {
+      const authHeader = request.headers.get("authorization") ?? "";
+      const match = authHeader.match(/^Basic\s+(.+)$/i);
+      const decoded = match ? atob(match[1]) : "";
+      if (decoded !== expected) {
         return new NextResponse("Unauthorized", {
           status: 401,
           headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
