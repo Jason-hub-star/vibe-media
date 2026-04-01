@@ -502,6 +502,15 @@ interface PodcastEpisodeMeta {
 
 **초기 설정 (1회)**: Spotify RSS → Apple Podcasts 제출 (심사 3~5영업일) → YouTube Studio 연결 (오디오→영상 자동 변환).
 
+#### Podcast-RSS 자동 백필 (daily-auto-publish §9.3)
+
+> **백필 조건**: published 상태의 brief에 `channel_publish_results`에 성공한 `podcast-rss` 레코드가 없고,
+> `output/<slug>/longform-voice.wav` 또는 `output/<slug>/shorts-voice.wav` 파일이 존재하면
+> `daily-auto-publish §9.3`이 하루 최대 5건씩 자동으로 podcast-rss를 재등록한다.
+
+> **보이스 파일 없음 처리**: 위 경로에 voice 파일이 모두 없으면 podcast-rss publisher 등록 자체를 건너뛰고,
+> 기대 경로를 포함한 로그 메시지(`[podcast-rss] skip — no voice file found: output/<slug>/longform-voice.wav, output/<slug>/shorts-voice.wav`)를 남긴다.
+
 ### 3-5. YouTube (API 자동 업로드 또는 수동 fallback)
 
 YouTube Data API v3 환경변수가 설정되면 **비공개(private)로 자동 업로드** + brief 자동 링크 연결까지 수행한다. 미설정 시 기존 로컬 메타 모드로 fallback.

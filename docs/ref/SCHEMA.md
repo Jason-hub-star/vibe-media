@@ -116,7 +116,7 @@
   - public latest / admin list는 전체 스캔 대신 limited query를 우선 사용한다.
 - `tool_candidate_imports`는 외부 소스에서 자동 수집한 후보 저장소다.
   - identity fields: `id`, `slug`, `title`, `source_id`, `source_entry_url`
-  - content fields: `summary`, `description`, `website_url`, `github_url`, `demo_url`, `docs_url`, `tags`
+  - content fields: `summary`, `description`, `website_url`, `github_url`, `demo_url`, `docs_url`, `cover_image_url`, `tags`
   - screening fields: `status`, `screening_status`, `screening_score`, `screening_notes`
   - attribution fields: `source_name_snapshot`, `source_entry_external_id`
   - tracking fields: `source_locale`, `target_locales`, `first_seen_at`, `last_seen_at`, `imported_at`
