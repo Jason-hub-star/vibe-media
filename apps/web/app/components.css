@@ -191,19 +191,7 @@
 
 .imported-card {
   min-height: 100%;
-}
-
-.imported-card-cover {
-  position: relative;
-  aspect-ratio: 2 / 1;
-  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
   overflow: hidden;
-  margin: -1.25rem -1.25rem 0;
-  width: calc(100% + 2.5rem);
-}
-
-.imported-card-cover-img {
-  object-fit: cover;
 }
 
 .imported-badge-row {

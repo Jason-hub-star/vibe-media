@@ -18,18 +18,22 @@ export function ToolCandidateImportCard({ item }: { item: ToolCandidateImport })
   const showImage = item.coverImageUrl && !imgError;
 
   return (
-    <article className="panel stack-tight imported-card">
-      {showImage && (
-        <div className="imported-card-cover">
+    <article className="panel stack-tight imported-card discover-card">
+      {showImage ? (
+        <div className="discover-card-cover">
           <Image
             src={item.coverImageUrl!}
             alt={item.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             loading="lazy"
-            className="imported-card-cover-img"
+            className="discover-card-cover-img"
             onError={() => setImgError(true)}
           />
+        </div>
+      ) : (
+        <div className="discover-card-cover">
+          <div className="discover-card-cover-fallback" />
         </div>
       )}
       <div className="row-between submission-card-header">
@@ -62,9 +66,6 @@ export function ToolCandidateImportCard({ item }: { item: ToolCandidateImport })
       <div className="stack-tight">
         <p className="submission-meta muted">
           Source: {item.sourceName} · Imported on {item.importedAt.slice(0, 10)}
-        </p>
-        <p className="submission-meta muted">
-          Separate from direct submissions so attribution stays clear.
         </p>
       </div>
     </article>
