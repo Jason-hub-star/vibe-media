@@ -25,7 +25,8 @@ export function middleware(request: NextRequest) {
     pathname === "/favicon.svg" ||
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml"
+    pathname === "/sitemap.xml" ||
+    pathname === "/feed.xml"
   ) {
     return NextResponse.next();
   }
