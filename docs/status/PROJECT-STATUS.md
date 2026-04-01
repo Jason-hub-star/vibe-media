@@ -222,6 +222,8 @@
   - /api/tools/og-preview Route Handler 신규 (32KB 스트리밍, SSRF 방어)
   - useOgPrefill hook + ToolSubmissionPreview + ToolSubmissionFormWithPreview 컴포넌트
 - 루트 public/brand 구 로고 동기화: done (2026-04-01) — Vercel 루트 public/ 우선 서빙으로 구 도형 로고 노출 → 새 VH 텍스트 로고로 동기화
+- 홈페이지 ISR 전환: done (2026-04-02) — force-dynamic → revalidate=60, 매 요청 DB 쿼리 제거, 캐시 히트 시 즉시 서빙
+- 외부 이미지 로딩 최적화: done (2026-04-02) — 외부 OG 이미지 unoptimized 전환 (Vercel 변환 0.3~0.7s → 원본 직접 0.05~0.07s, 4~13배 개선), lead brief priority 로드, 로컬 에셋은 최적화 유지
 
 ## Execution Checklist
 
