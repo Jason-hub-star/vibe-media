@@ -34,9 +34,10 @@
 - VibeHub의 `contest`, `event`, `report`, `grant` 축을 하나의 parser 계열로 묶기 좋다.
 - 현재 repo에는 PDF/doc source가 없어 아직 실제 연결하지 않는다.
 
-### PDF Fallback: `OpenDataLoader PDF`
+### PDF Fallback / Benchmark Candidate: `OpenDataLoader PDF`
 - PDF 구조 추출과 bbox/read-order 성격이 강해 일부 문서형 source에서 비교 가치가 있다.
 - v1 primary로 바로 고정하기보다 `Docling` 실패 또는 품질 이슈 시 fallback으로 둔다.
+- **2026-04-01 업데이트**: v2.0.2 (2026-03-18)에서 라이선스가 Apache 2.0으로 전환됨. 오픈소스 PDF 벤치마크 1위(0.90). OCR·Table·Formula·Chart AI add-on 무료 제공. PDF source 실제 도입 시 Docling과 나란히 benchmark 대상으로 올릴 근거가 생김.
 - 현재 repo에는 PDF/doc source가 없어 아직 실제 연결하지 않는다.
 
 ### Utility Fallback: `MarkItDown`

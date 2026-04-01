@@ -10,6 +10,7 @@
   - trigger: `trg_fix_approved_draft` — `review_status = approved` && `status = draft` → 자동 `status = review` 전환 (상태 꼬임 방지)
   - YouTube canonical link fields: `youtube_video_id`, `youtube_url`, `youtube_linked_at`
 - `discover_items`
+  - content fields: `cover_image_url` (text, nullable) — OG image 또는 소스 도메인 fallback, `getImageUrl()` 경유
 - `discover_actions`
 - `source_entries`
 - `newsletter_subscribers`

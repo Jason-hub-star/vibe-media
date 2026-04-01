@@ -39,6 +39,10 @@
     max-height: 220px;
   }
 
+  .brief-card-cover-lead {
+    aspect-ratio: 16 / 9;
+  }
+
   .brief-meta-bar {
     flex-wrap: wrap;
   }

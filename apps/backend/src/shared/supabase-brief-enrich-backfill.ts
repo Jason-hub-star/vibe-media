@@ -1,5 +1,6 @@
 import { createSupabaseSql } from "./supabase-postgres";
 import { enrichArticleContent } from "./live-source-fetch";
+import { isValidCoverImageUrl } from "./image-url-validator";
 import { markdownToPlainBody } from "./markdown-to-plain-body";
 
 const MIN_BODY_PARAGRAPHS = 3;
@@ -145,8 +146,8 @@ export async function runBriefEnrichBackfill(dryRun = false) {
               }
             }
 
-            // og:image 추출
-            if (needsImage && enriched.ogImageUrl) {
+            // og:image 추출 (검증 게이트 적용)
+            if (needsImage && enriched.ogImageUrl && isValidCoverImageUrl(enriched.ogImageUrl)) {
               newImageUrl = enriched.ogImageUrl;
               result.imageUpdated = true;
               result.newImageUrl = newImageUrl;
@@ -154,8 +155,9 @@ export async function runBriefEnrichBackfill(dryRun = false) {
           } catch {
             // enrichArticleContent 실패 시 og:image만 별도 시도
             if (needsImage) {
-              newImageUrl = await fetchOgImage(row.source_url);
-              if (newImageUrl) {
+              const ogCandidate = await fetchOgImage(row.source_url);
+              if (ogCandidate && isValidCoverImageUrl(ogCandidate)) {
+                newImageUrl = ogCandidate;
                 result.imageUpdated = true;
                 result.newImageUrl = newImageUrl;
               }

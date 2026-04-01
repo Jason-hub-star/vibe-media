@@ -102,6 +102,40 @@
   font-size: var(--type-small);
 }
 
+/* ── Discover card cover (3:1 compact accent strip) ───────── */
+
+.discover-card-cover {
+  position: relative;
+  aspect-ratio: 3 / 1;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  overflow: hidden;
+  margin: -1rem -1rem 0;
+}
+
+.discover-card-cover-img {
+  object-fit: cover;
+}
+
+.discover-card-cover-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--card-accent-rgb), 0.18),
+    rgba(var(--card-accent-rgb), 0.06)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discover-card-cover-icon {
+  font-size: var(--type-h2);
+  opacity: 0.5;
+}
+
+/* ── Discover card ────────────────────────────────────────── */
+
 .discover-card {
   gap: 1rem;
 }
@@ -281,6 +315,10 @@
   .discover-card-status-group {
     justify-content: flex-start;
   }
+
+  .discover-card-cover {
+    aspect-ratio: 5 / 2;
+  }
 }
 
 /* ── Discover filter sections ── */
@@ -291,4 +329,24 @@
 
 .discover-filter-section .eyebrow {
   margin-bottom: 0.75rem;
+}
+
+/* ── Radar detail page ────────────────────────────────────── */
+
+.radar-detail-col {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 42rem;
+}
+
+.radar-detail-col .discover-card-cover {
+  margin: 0;
+  border-radius: var(--radius-sm);
+  aspect-ratio: 21 / 9;
+}
+
+.radar-detail-body {
+  line-height: 1.7;
+  color: rgba(var(--color-cream-rgb), 0.72);
+  max-width: 38rem;
 }

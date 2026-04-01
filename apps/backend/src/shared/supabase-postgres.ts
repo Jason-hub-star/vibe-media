@@ -177,6 +177,7 @@ export function readMigrationSql() {
     "supabase/migrations/20260327193000_add_brief_youtube_link_fields.sql",
     "supabase/migrations/20260329150000_seed_design_editorial_sources.sql",
     "supabase/migrations/20260331110000_translate_schema_comments_to_english.sql",
+    "supabase/migrations/20260401180000_add_discover_cover_image.sql",
   ];
 
   return files.map((relativePath) => ({

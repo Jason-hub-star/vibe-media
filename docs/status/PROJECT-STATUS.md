@@ -181,6 +181,17 @@
 - Newsletter Pipeline: done (2026-03-31) — Resend Broadcasts EN+ES dual-locale 뉴스레터 발행, inline-CSS HTML 템플릿, published brief 자동 수집 → Broadcast API 발송, 구독 CTA→Resend Contacts API, Telegram 실시간 알림(구독자/발송), daily pipeline 자동 연결(blocking:false), dry-run CLI 지원
 - 채널 크로스프로모 활성화: done (2026-03-31) — skipCrossPromo=false 전환, YouTube 설명 Podcast 링크 추가 + ES 스페인어 레이블, Podcast 에피소드 크로스프로모 링크, Newsletter 소셜 링크 섹션, brand.ts 상수화 (YOUTUBE_CHANNEL, PODCAST_URL)
 - Vercel 배포 정적 에셋 수정: done (2026-03-31) — 루트 public/에 누락된 PNG/JPG 플레이스홀더 + favicon 복사 (Vercel이 monorepo 루트 public/ 서빙)
+- BriefCard 커버 이미지 + Ingest OG Image 강화: done (2026-04-01)
+  - Backend: `isValidCoverImageUrl` 검증 유틸 신설 (https 필수, SVG/tracking pixel/2048자 거부), `extractImageUrl` 5단계 확장 (`content:encoded` 내 img), `fetchOgImageOnly` 경량 추출 (16KB HTML, 6초 타임아웃), `enrichArticleContent`/`supabase-editorial-sync`/`supabase-brief-enrich-backfill` 전 경로에 검증 게이트 적용
+  - Frontend: `presentBriefAccentColor` topic/slug 기반 결정적 6색 해싱, `BriefCardCover` 컴포넌트 (next/image + gradient fallback), BriefCard에 커버 삽입, `next.config.mjs` 외부 이미지 허용
+  - 테스트: image-url-validator 7개 + present-brief-topic 4개 전부 통과
+- Radar 커버 이미지 + Detail 가독성 강화: done (2026-04-01)
+- 주간 Self-Critique 루프 최초 실행: done (2026-04-01) — 10건 분석, 평균 3.0/5.0, 4개 개선 제안 생성 (artifact 오염/마케팅 언어/한국어 gate/Apple ML treatment)
+  - DB: `discover_items.cover_image_url` 컬럼 추가 (migration)
+  - Backend: sync/read 경로에 `cover_image_url` 추가, 기존 `getImageUrl()` 재사용
+  - Contract: `DiscoverItem.coverImage` optional 필드 추가
+  - Frontend: `DiscoverCardCover` 컴포넌트 (3:1 compact accent strip, category color gradient fallback + icon), Brief 커버와 차별화된 Radar 시각 아이덴티티
+  - Detail: `.radar-detail-col` gap 추가 (0→1.5rem), 커버 이미지 삽입 (21:9 wide), 발행일 표시, prose line-height 개선
 
 ## Execution Checklist
 

@@ -39,6 +39,8 @@ export interface AutoPublishReport {
   published: number;
   skipped: number;
   results: AutoPublishResult[];
+  dailyLimitHit?: boolean;
+  alreadyPublishedToday?: number;
 }
 
 async function recoverBriefForEditorialRetry(brief: BriefRow, failures: string[], dryRun?: boolean) {
@@ -59,15 +61,45 @@ async function recoverBriefForEditorialRetry(brief: BriefRow, failures: string[]
 export async function runAutoPublish(opts: {
   dryRun?: boolean;
   maxBriefs?: number;
+  dailyLimit?: number;
 }): Promise<AutoPublishReport> {
   const sql = createSupabaseSql();
   const ranAt = new Date().toISOString();
   const maxBriefs = opts.maxBriefs ?? 10;
+  const dailyLimit = opts.dailyLimit;
 
   const results: AutoPublishResult[] = [];
+  let alreadyPublishedToday = 0;
+  let dailyLimitHit = false;
 
   try {
+    // 0. 오늘 이미 발행된 건수 확인 (dailyLimit 설정 시)
+    if (dailyLimit !== undefined) {
+      const todayStart = new Date();
+      todayStart.setUTCHours(0, 0, 0, 0);
+      const todayRows = await sql<{ cnt: string }[]>`
+        SELECT COUNT(*) AS cnt FROM public.brief_posts
+        WHERE status = 'published'
+          AND published_at >= ${todayStart.toISOString()}::timestamptz
+      `;
+      alreadyPublishedToday = parseInt(todayRows[0]?.cnt ?? "0", 10);
+
+      if (alreadyPublishedToday >= dailyLimit) {
+        console.log(`[auto-publish] 일일 발행 상한 도달 (${alreadyPublishedToday}/${dailyLimit}건) — 오늘은 더 발행하지 않습니다.`);
+        dailyLimitHit = true;
+        return { ranAt, total: 0, scheduled: 0, published: 0, skipped: 0, results, dailyLimitHit, alreadyPublishedToday };
+      }
+
+      const remaining = dailyLimit - alreadyPublishedToday;
+      console.log(`[auto-publish] 오늘 발행 현황: ${alreadyPublishedToday}/${dailyLimit}건 — 남은 슬롯: ${remaining}건`);
+    }
+
     // 1. approved 브리프 조회 — review/scheduled만 (draft 직행 차단)
+    //    dailyLimit 설정 시 남은 슬롯 이상은 조회하지 않음
+    const effectiveMax = dailyLimit !== undefined
+      ? Math.min(maxBriefs, dailyLimit - alreadyPublishedToday)
+      : maxBriefs;
+
     const rows = await sql<BriefRow[]>`
       SELECT
         id, slug, title, summary, body, source_links, source_count,
@@ -76,7 +108,7 @@ export async function runAutoPublish(opts: {
       WHERE review_status = 'approved'
         AND status IN ('review', 'scheduled')
       ORDER BY slug ASC
-      LIMIT ${maxBriefs}
+      LIMIT ${effectiveMax}
     `;
 
     for (const brief of rows) {
@@ -178,6 +210,8 @@ export async function runAutoPublish(opts: {
     scheduled: results.filter((r) => r.action === "scheduled").length,
     published: results.filter((r) => r.action === "published").length,
     skipped: results.filter((r) => r.action === "skipped").length,
-    results
+    results,
+    dailyLimitHit,
+    alreadyPublishedToday
   };
 }

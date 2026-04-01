@@ -1,157 +1,292 @@
 {
-  "performedAt": "2026-03-31T00:42:11.997Z",
+  "performedAt": "2026-04-01T05:03:31.466Z",
   "candidates": [
     {
-      "title": "claude-code-organizer",
-      "summary": "One dashboard to scan, find, and fix everything Claude Code loads — security scanner, context budget, scope management. npx @mcpware/claude-code-organizer",
-      "description": "One dashboard to scan, find, and fix everything Claude Code loads — security scanner, context budget, scope management. npx @mcpware/claude-code-organizer",
-      "websiteUrl": "https://www.npmjs.com/package/@mcpware/claude-code-organizer",
-      "githubUrl": "https://github.com/mcpware/claude-code-organizer",
+      "title": "lean-ctx",
+      "summary": "Hybrid Context Optimizer — Shell Hook + MCP Server. Reduces LLM token consumption by 89-99%. Single Rust binary, zero dependencies.",
+      "description": "Hybrid Context Optimizer — Shell Hook + MCP Server. Reduces LLM token consumption by 89-99%. Single Rust binary, zero dependencies.",
+      "websiteUrl": "https://leanctx.com",
+      "githubUrl": "https://github.com/yvgude/lean-ctx",
       "tags": [
         "github",
         "open-source",
         "tooling",
-        "ai-agent",
-        "ai-tools",
-        "anthropic"
-      ],
-      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
-      "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/mcpware/claude-code-organizer",
-      "sourceEntryExternalId": "1185714860"
-    },
-    {
-      "title": "CommandMate",
-      "summary": "Issue-driven AI development IDE for Claude Code and Codex CLI. Run multiple issues in parallel and keep work moving from desktop or mobile.",
-      "description": "Issue-driven AI development IDE for Claude Code and Codex CLI. Run multiple issues in parallel and keep work moving from desktop or mobile.",
-      "websiteUrl": "https://www.npmjs.com/package/commandmate",
-      "githubUrl": "https://github.com/Kewton/CommandMate",
-      "tags": [
-        "github",
-        "open-source",
-        "tooling",
-        "ai-coding",
-        "autonomous-coding",
+        "agentic-coding",
+        "ai",
         "claude-code"
       ],
       "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
       "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/Kewton/CommandMate",
-      "sourceEntryExternalId": "1097615367"
+      "sourceEntryUrl": "https://github.com/yvgude/lean-ctx",
+      "sourceEntryExternalId": "1189918673"
     },
     {
-      "title": "spec-gen",
-      "summary": "Automate the reverse-engineering of your codebase into structured OpenSpec specifications using static analysis and LLM-powered generation to extract business logic, verify architectural accuracy, an…",
-      "description": "Automate the reverse-engineering of your codebase into structured OpenSpec specifications using static analysis and LLM-powered generation to extract business logic, verify architectural accuracy, and maintain a living source of truth.",
-      "websiteUrl": "https://www.npmjs.com/package/spec-gen-cli",
-      "githubUrl": "https://github.com/clay-good/spec-gen",
+      "title": "FPBInject",
+      "summary": "Revolutionizing ARM Cortex-M Embedded Development & Debugging Experience",
+      "description": "Revolutionizing ARM Cortex-M Embedded Development & Debugging Experience",
+      "websiteUrl": "https://deepwiki.com/FASTSHIFT/FPBInject",
+      "githubUrl": "https://github.com/FASTSHIFT/FPBInject",
       "tags": [
         "github",
         "open-source",
         "tooling",
-        "api-documentation",
-        "automated-documentation",
-        "claude-ai"
+        "arm",
+        "armv7-m",
+        "armv8-m"
       ],
       "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
       "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/clay-good/spec-gen",
-      "sourceEntryExternalId": "1146753014"
+      "sourceEntryUrl": "https://github.com/FASTSHIFT/FPBInject",
+      "sourceEntryExternalId": "1131955769"
     },
     {
-      "title": "ContextGO",
-      "summary": "Local-first context & memory runtime for multi-agent AI coding teams. MCP-free. Rust/Go accelerated.",
-      "description": "Local-first context & memory runtime for multi-agent AI coding teams. MCP-free. Rust/Go accelerated.",
-      "websiteUrl": "https://github.com/dunova/ContextGO",
-      "githubUrl": "https://github.com/dunova/ContextGO",
+      "title": "Vibe-Skills",
+      "summary": "Wherever your AI supports skills, VibeSkills works. 340+ governed skills spanning coding, research, automation & creative work.",
+      "description": "Wherever your AI supports skills, VibeSkills works. 340+ governed skills spanning coding, research, automation & creative work.",
+      "websiteUrl": "https://github.com/foryourhealth111-pixel/Vibe-Skills",
+      "githubUrl": "https://github.com/foryourhealth111-pixel/Vibe-Skills",
+      "tags": [
+        "github",
+        "open-source",
+        "tooling",
+        "agent-skills",
+        "agentic-coding",
+        "ai-agents"
+      ],
+      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
+      "sourceName": "GitHub Search: developer tools",
+      "sourceEntryUrl": "https://github.com/foryourhealth111-pixel/Vibe-Skills",
+      "sourceEntryExternalId": "1164005541"
+    },
+    {
+      "title": "multi_mcp",
+      "summary": "Multi-Model chat, code review and analysis MCP Server for Claude Code",
+      "description": "Multi-Model chat, code review and analysis MCP Server for Claude Code",
+      "websiteUrl": "https://github.com/religa/multi_mcp",
+      "githubUrl": "https://github.com/religa/multi_mcp",
+      "tags": [
+        "github",
+        "open-source",
+        "tooling",
+        "agents",
+        "ai",
+        "ai-agents"
+      ],
+      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
+      "sourceName": "GitHub Search: developer tools",
+      "sourceEntryUrl": "https://github.com/religa/multi_mcp",
+      "sourceEntryExternalId": "1106641393"
+    },
+    {
+      "title": "pi-tool-display",
+      "summary": "Compact tool call rendering, diff visualization, and output truncation extension for Pi coding agent. Hides, collapses, and truncates verbose tool output for cleaner TUI display.",
+      "description": "Compact tool call rendering, diff visualization, and output truncation extension for Pi coding agent. Hides, collapses, and truncates verbose tool output for cleaner TUI display.",
+      "websiteUrl": "https://github.com/MasuRii/pi-tool-display",
+      "githubUrl": "https://github.com/MasuRii/pi-tool-display",
+      "tags": [
+        "github",
+        "open-source",
+        "tooling",
+        "coding-agent",
+        "compact",
+        "developer-tools"
+      ],
+      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
+      "sourceName": "GitHub Search: developer tools",
+      "sourceEntryUrl": "https://github.com/MasuRii/pi-tool-display",
+      "sourceEntryExternalId": "1169862875"
+    },
+    {
+      "title": "abtop",
+      "summary": "Like htop, but for AI coding agents. Monitor Claude Code & Codex CLI sessions, tokens, context window, rate limits, and ports in real-time.",
+      "description": "Like htop, but for AI coding agents. Monitor Claude    Code & Codex CLI sessions, tokens, context window,    rate limits, and ports in real-time.",
+      "websiteUrl": "https://github.com/graykode/abtop",
+      "githubUrl": "https://github.com/graykode/abtop",
       "tags": [
         "github",
         "open-source",
         "tooling",
         "ai-agents",
-        "ai-coding",
+        "ai-coding-agent",
+        "btop"
+      ],
+      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
+      "sourceName": "GitHub Search: developer tools",
+      "sourceEntryUrl": "https://github.com/graykode/abtop",
+      "sourceEntryExternalId": "1195165448"
+    },
+    {
+      "title": "nex-as-a-skill",
+      "summary": "Turn every AI agent session into company intelligence. Nex silently unifies every AI agent conversation with your email, Slack, CRM, and 100+ tools into one knowledge graph. The more your team works,…",
+      "description": "Turn every AI agent session  into company intelligence. Nex silently unifies every AI agent conversation with your email, Slack, CRM, and 100+ tools into one knowledge graph. The more your team works, the smarter every agent gets.",
+      "websiteUrl": "https://nex.ai",
+      "githubUrl": "https://github.com/nex-crm/nex-as-a-skill",
+      "tags": [
+        "github",
+        "open-source",
+        "tooling",
+        "ai",
+        "ai-agent",
         "cli"
       ],
       "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
       "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/dunova/ContextGO",
-      "sourceEntryExternalId": "1165809111"
+      "sourceEntryUrl": "https://github.com/nex-crm/nex-as-a-skill",
+      "sourceEntryExternalId": "1149757345"
     },
     {
-      "title": "claude-code-usage-bar",
-      "summary": "Real‑time statusline for Claude Code: token usage, remaining budget, burn rate, and depletion time",
-      "description": "Real‑time statusline for Claude Code: token usage, remaining budget, burn rate, and depletion time",
-      "websiteUrl": "https://github.com/leeguooooo/claude-code-usage-bar",
-      "githubUrl": "https://github.com/leeguooooo/claude-code-usage-bar",
+      "title": "mcpproxy-go",
+      "summary": "Supercharge AI Agents, Safely",
+      "description": "Supercharge AI Agents, Safely",
+      "websiteUrl": "https://mcpproxy.app",
+      "githubUrl": "https://github.com/smart-mcp-proxy/mcpproxy-go",
       "tags": [
         "github",
         "open-source",
         "tooling",
-        "ai-tools",
-        "claude-ai",
-        "cli-tool"
-      ],
-      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
-      "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/leeguooooo/claude-code-usage-bar",
-      "sourceEntryExternalId": "1041102492"
-    },
-    {
-      "title": "OpenHands",
-      "summary": "🙌 OpenHands: AI-Driven Development",
-      "description": "🙌 OpenHands: AI-Driven Development",
-      "websiteUrl": "https://openhands.dev",
-      "githubUrl": "https://github.com/OpenHands/OpenHands",
-      "tags": [
-        "github",
-        "open-source",
-        "tooling",
-        "agent",
-        "artificial-intelligence",
-        "chatgpt"
-      ],
-      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
-      "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/OpenHands/OpenHands",
-      "sourceEntryExternalId": "771302083"
-    },
-    {
-      "title": "hanzi-browse",
-      "summary": "let any ai agent use the local browser",
-      "description": "let any ai agent use the local browser",
-      "websiteUrl": "https://browse.hanzilla.co/",
-      "githubUrl": "https://github.com/hanzili/hanzi-browse",
-      "tags": [
-        "github",
-        "open-source",
-        "tooling",
-        "ai-agent",
-        "browser-automation",
-        "chrome"
-      ],
-      "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
-      "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/hanzili/hanzi-browse",
-      "sourceEntryExternalId": "1141468878"
-    },
-    {
-      "title": "CLIO",
-      "summary": "Command Line Intelligence Orchestrator",
-      "description": "Command Line Intelligence Orchestrator",
-      "websiteUrl": "https://github.com/SyntheticAutonomicMind/CLIO",
-      "githubUrl": "https://github.com/SyntheticAutonomicMind/CLIO",
-      "tags": [
-        "github",
-        "open-source",
-        "tooling",
-        "agentic-ai-development",
         "ai",
-        "apple"
+        "ai-agents",
+        "audit-logging"
       ],
       "sourceId": "03d41f07-351e-4e36-bb1d-9c4f455255e1",
       "sourceName": "GitHub Search: developer tools",
-      "sourceEntryUrl": "https://github.com/SyntheticAutonomicMind/CLIO",
-      "sourceEntryExternalId": "1136941035"
+      "sourceEntryUrl": "https://github.com/smart-mcp-proxy/mcpproxy-go",
+      "sourceEntryExternalId": "1004056914"
+    },
+    {
+      "title": "1-Bit Bonsai, the First Commercially Viable 1-Bit LLMs",
+      "summary": "Show HN: 1-Bit Bonsai, the First Commercially Viable 1-Bit LLMs",
+      "description": "Imported from Show HN by PrismML.",
+      "websiteUrl": "https://prismml.com/",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47593422",
+      "sourceEntryExternalId": "47593422"
+    },
+    {
+      "title": "Postgres extension for BM25 relevance-ranked full-text search",
+      "summary": "Last summer we faced a conundrum at my company, Tiger Data, a Postgres cloud vendor whose main business is in timeseries data. We were trying to grow our business towards emerging AI-centric workload…",
+      "description": "Last summer we faced a conundrum at my company, Tiger Data, a Postgres cloud vendor whose main business is in timeseries data.  We were trying to grow our business towards emerging AI-centric workloads and wanted to provide a state-of-the-art hybrid search stack in Postgres.  We&#x27;d already built pgvectorscale in house with the goal of scaling semantic search beyond pgvector&#x27;s main memory limitations.  We just needed a scalable ranked keyword search solution too.<p>The problem: core Postgres doesn&#x27;t provide this; the leading Postgres BM25 extension, ParadeDB, is guarded behind AGPL; developing our own extension appeared daunting.  We&#x27;d need a small team of sharp engineers and 6-12 months, I figured.  And we&#x27;d probably still fall short of the performance of a mature system like Parade&#x2F;Tantivy.<p>Or would we?  I&#x27;d be experimenting long enough with AI-boosted development at that point to realize that with the latest tools (Claude Code + Opus) and an experienced hand (I&#x27;ve been working in database systems internals for 25 years now), the old time estimates pretty much go out the window.<p>I told our CTO I thought I could solo the project in one quarter.  This raised some eyebrows.<p>It did take a little more time than that (two quarters), and we got some real help from the community (amazing!) after open-sourcing the pre-release.  But I&#x27;m thrilled&#x2F;exhausted today to share that pg_textsearch v1.0 is freely available via open source (Postgres license), on Tiger Data cloud, and hopefully soon, a hyperscalar near you:<p><a href=\"https:&#x2F;&#x2F;github.com&#x2F;timescale&#x2F;pg_textsearch\" rel=\"nofollow\">https:&#x2F;&#x2F;github.com&#x2F;timescale&#x2F;pg_textsearch</a><p>In the blog post accompanying the release, I overview the architecture and present benchmark results using MS-MARCO.  To my surprise, we were not only able to meet Parade&#x2F;Tantivy&#x27;s query performance, but exceed it substantially, measuring a 4.7x advantage on query throughput at scale:<p><a href=\"https:&#x2F;&#x2F;www.tigerdata.com&#x2F;blog&#x2F;pg-textsearch-bm25-full-text-search-postgres\" rel=\"nofollow\">https:&#x2F;&#x2F;www.tigerdata.com&#x2F;blog&#x2F;pg-textsearch-bm25-full-text-...</a><p>It&#x27;s exciting (and, to be honest, a little unnerving) to see a field I&#x27;ve spent so much time toiling in change so quickly in ways that enable us to be more ambitious in our technical objectives.  Technical moats are moats no longer.<p>The benchmark scripts and methodology are available in the github repo.  Happy to answer any questions in the thread.<p>Thanks,<p>TJ (tj@tigerdata.com)",
+      "websiteUrl": "https://github.com/timescale/pg_textsearch",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47589856",
+      "sourceEntryExternalId": "47589856"
+    },
+    {
+      "title": "Forkrun – NUMA-aware shell parallelizer (50×–400× faster than parallel)",
+      "summary": "forkrun is the culmination of a 10-year-long journey focused on &quot;how to make shell parallelization fast&quot;. What started as a standard &quot;fork jobs in a loop&quot; has turned into a lock-f…",
+      "description": "forkrun is the culmination of a 10-year-long journey focused on &quot;how to make shell parallelization fast&quot;. What started as a standard &quot;fork jobs in a loop&quot; has turned into a lock-free, CAS-retry-loop-free, SIMD-accelerated, self-tuning, NUMA aware shell-based stream parallelization engine that is (mostly) a drop-in replacement for xargs -P and GNU parallel.<p>On my 14-core&#x2F;28-thread i9-7940x, forkrun achieves:<p>* 200,000+ batch dispatches&#x2F;sec (vs ~500 for GNU Parallel)<p>* ~95–99% CPU utilization across all 28 logical cores, even when the workload is non-existant (bash no-ops &#x2F; `:`) (vs ~6% for GNU Parallel). These benchmarks are intentionally worst-case (near-zero work per task) because they measure the capability of the parallelization framework itself, not how much work an external tool can do.<p>* Typically 50×–400× faster on real high-frequency low-latency workloads (vs GNU Parallel)<p>A few of the techniques that make this possible:<p>* Born-local NUMA: stdin is splice()&#x27;d into a shared memfd, then pages are placed on the target NUMA node via set_mempolicy(MPOL_BIND) before any worker touches them, making the memfd NUMA-spliced. Each numa node only claims work that is <i>already</i> born-local on its node. Stealing from other nodes is permitted under some conditions when no local work exists.<p>* SIMD scanning: per-node indexers&#x2F;scanners use AVX2&#x2F;NEON to find line boundaries (delimiters) at speeds approaching memory bandwidth, and publish byte-offsets and line-counts into per-node lock-free rings.<p>* Lock-free claiming: workers claim batches with a single atomic_fetch_add — no locks, no CAS retry loops; contention is reduced to a single atomic on one cache line.<p>* Memory management: a background thread uses fallocate(PUNCH_HOLE) to reclaim space without breaking the logical offset system.<p>…and that’s just the surface. The implementation uses many additional systems-level techniques (phase-aware tail handling, adaptive batching, early-flush detection, etc.) to eliminate overhead, increase throughput and reduce latency at every stage.<p>In its fastest (-b) mode (fixed-size batches, minimal processing), it can exceed 1B lines&#x2F;sec.<p>forkrun ships as a single bash file with an embedded, self-extracting C extension — no Perl, no Python, no install, full native support for parallelizing arbitrary shell functions. The binary is built in public GitHub Actions so you can trace it back to CI (see the GitHub &quot;Blame&quot; on the line containing the base64 embeddings). Trying it is literally two commands:<p><pre><code>    . frun.bash    \n    frun shell_func_or_cmd &lt; inputs\n</code></pre>\nFor benchmarking scripts and results, see the BENCHMARKS dir in the GitHub repo<p>For an architecture deep-dive, see the DOCS dir in the GitHub repo<p>Happy to answer questions.",
+      "websiteUrl": "https://github.com/jkool702/forkrun",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47541746",
+      "sourceEntryExternalId": "47541746"
+    },
+    {
+      "title": "Loreline, narrative language transpiled via Haxe: C++/C#/JS/Java/Py/Lua",
+      "summary": "Show HN: Loreline, narrative language transpiled via Haxe: C++/C#/JS/Java/Py/Lua",
+      "description": "Imported from Show HN by jeremyfa.",
+      "websiteUrl": "https://loreline.app/en/docs/technical-overview/",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47555035",
+      "sourceEntryExternalId": "47555035"
+    },
+    {
+      "title": "Sundial – a new way to look at a weather forecast",
+      "summary": "Show HN: Sundial – a new way to look at a weather forecast",
+      "description": "Imported from Show HN by izaidi.",
+      "websiteUrl": "https://sundial.page/",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47588324",
+      "sourceEntryExternalId": "47588324"
+    },
+    {
+      "title": "Claude Code rewritten as a bash script",
+      "summary": "Have you ever wondered if Claude Code could be rewritten as a bash script? Me neither, yet here we are. Just for kicks I decided to try and strip down the source, removing all the packages.",
+      "description": "Have you ever wondered if Claude Code could be rewritten as a bash script? Me neither, yet here we are. Just for kicks I decided to try and strip down the source, removing all the packages.",
+      "websiteUrl": "https://github.com/jdcodes1/claude-sh",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47594804",
+      "sourceEntryExternalId": "47594804"
+    },
+    {
+      "title": "Asciimap – Interactive ASCII world map with live data",
+      "summary": "Show HN: Asciimap – Interactive ASCII world map with live data",
+      "description": "Imported from Show HN by limsight.",
+      "websiteUrl": "https://github.com/Lionel-Lim/asciimap",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47594637",
+      "sourceEntryExternalId": "47594637"
+    },
+    {
+      "title": "EU Leadership – Live API data site comparing Europe to the world",
+      "summary": "Show HN: EU Leadership – Live API data site comparing Europe to the world",
+      "description": "Imported from Show HN by aureljohn.",
+      "websiteUrl": "https://ajh.ovh/",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47592392",
+      "sourceEntryExternalId": "47592392"
+    },
+    {
+      "title": "I turned a sketch into a 3D-print pegboard for my kid with an AI agent",
+      "summary": "We have pegboards and plywood all over our apartment, and I had an idea to make a tiny pegboard for my kid, Oli. So I naturally cut the wood, drilled in the holes, sat down at the computer to open Fu…",
+      "description": "We have pegboards and plywood all over our apartment, and I had an idea to make a tiny pegboard for my kid, Oli. So I naturally cut the wood, drilled in the holes, sat down at the computer to open Fusion 360 and spend an hour or two drawing the pieces by hand.<p>Then I looked at the rough sketch Oli and I had made together, took a photo of it, pasted it into Codex, and gave it just two dimensions: the holes are 40mm apart and the pegs are 8mm wide.<p>To my surprise, 5 minutes later my 3D printer was heating up and printing the first set.<p>I ran it a few times to tune the dimensions for ideal fit, but I am posting the final result as a repository in case anyone else wants to print one, tweak it, or have fun with it too. I am already printing another one to hang on our front door instead of a wreath, so people visiting us have something fun and intriguing to play with while they knock.<p>This is also going onto my list of weird uses of AI from the last few months.",
+      "websiteUrl": "https://github.com/virpo/pegboard",
+      "tags": [
+        "show-hn",
+        "launch",
+        "indie"
+      ],
+      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
+      "sourceName": "Hacker News Show HN",
+      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47580910",
+      "sourceEntryExternalId": "47580910"
     },
     {
       "title": "Coasts – Containerized Hosts for Agents",
@@ -167,141 +302,6 @@
       "sourceName": "Hacker News Show HN",
       "sourceEntryUrl": "https://news.ycombinator.com/item?id=47575417",
       "sourceEntryExternalId": "47575417"
-    },
-    {
-      "title": "Rusdantic",
-      "summary": "A unified, high-performance data validation and serialization framework for Rust, inspired by Pydantic&#x27;s ergonomics and powered by Serde.",
-      "description": "A unified, high-performance data validation and serialization framework for Rust, inspired by Pydantic&#x27;s ergonomics and powered by Serde.",
-      "websiteUrl": "https://github.com/mmgehlot/rusdantic",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47580221",
-      "sourceEntryExternalId": "47580221"
-    },
-    {
-      "title": "30u30.fyi – Is your startup founder on Forbes' most fraudulent list?",
-      "summary": "Show HN: 30u30.fyi – Is your startup founder on Forbes' most fraudulent list?",
-      "description": "Imported from Show HN by not-chatgpt.",
-      "websiteUrl": "https://30u30.fyi",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47580350",
-      "sourceEntryExternalId": "47580350"
-    },
-    {
-      "title": "A 3D Body Scan for Nine Cents – Without SMPL",
-      "summary": "Show HN: A 3D Body Scan for Nine Cents – Without SMPL",
-      "description": "Imported from Show HN by arkadiuss.",
-      "websiteUrl": "https://clad.you/blog/posts/body-pipeline/",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47575910",
-      "sourceEntryExternalId": "47575910"
-    },
-    {
-      "title": "I made my fitness dashboard public and Apple Health needs an API",
-      "summary": "Show HN: I made my fitness dashboard public and Apple Health needs an API",
-      "description": "Imported from Show HN by pbarondadditude.",
-      "websiteUrl": "https://aka.me/blog/personal-software-to-stay-healthy/",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47577347",
-      "sourceEntryExternalId": "47577347"
-    },
-    {
-      "title": "The Alphabetical Clock",
-      "summary": "Show HN: The Alphabetical Clock",
-      "description": "Imported from Show HN by secretdark.",
-      "websiteUrl": "https://boat.horse/clock/",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47571401",
-      "sourceEntryExternalId": "47571401"
-    },
-    {
-      "title": "QuickBEAM – run JavaScript as supervised Erlang/OTP processes",
-      "summary": "QuickBEAM is a JavaScript runtime embedded inside the Erlang&#x2F;OTP VM.<p>If you’re building a full-stack app, JavaScript tends to leak in anyway — frontend, SSR, or third-party code.<p>QuickBEAM r…",
-      "description": "QuickBEAM is a JavaScript runtime embedded inside the Erlang&#x2F;OTP VM.<p>If you’re building a full-stack app, JavaScript tends to leak in anyway — frontend, SSR, or third-party code.<p>QuickBEAM runs that JavaScript inside OTP supervision trees.<p>Each runtime is a process with a `Beam` global that can:\n- call Elixir code\n- send&#x2F;receive messages\n- spawn and monitor processes\n- inspect runtime&#x2F;system state<p>It also provides browser-style APIs backed by OTP&#x2F;native primitives (fetch, WebSocket, Worker, BroadcastChannel, localStorage, native DOM, etc.).<p>This makes it usable for:\n- SSR\n- sandboxed user code\n- per-connection state\n- backend JS with direct OTP interop<p>Notable bits:<p>- JS runtimes are supervised and restartable\n- sandboxing with memory&#x2F;reduction limits and API control\n- native DOM that Erlang can read directly (no string rendering step)\n- no JSON boundary between JS and Erlang\n- built-in TypeScript, npm support, and native addons<p>QuickBEAM is part of Elixir Volt — a full-stack frontend toolchain built on Erlang&#x2F;OTP with no Node.js.<p>Still early, feedback welcome.",
-      "websiteUrl": "https://github.com/elixir-volt/quickbeam",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47558094",
-      "sourceEntryExternalId": "47558094"
-    },
-    {
-      "title": "Crazierl – An Erlang Operating System",
-      "summary": "Crazierl is an experimental&#x2F;hobby operating system based around BEAM.<p>I&#x27;ve linked the browser based demo; I don’t recommend using a phone; it does work, slowly, on the phones I tested, bu…",
-      "description": "Crazierl is an experimental&#x2F;hobby operating system based around BEAM.<p>I&#x27;ve linked the browser based demo; I don’t recommend using a phone; it does work, slowly, on the phones I tested, but it’s very awkward to use. You can share a link with a hashtag with your friends and click the consent checkbox, and it (should) link up into dist and I’ve also included a chat application you can start with chat:start(). (quit chat with &#x2F;quit, or use the shell menu with ctrl-g to switch between shells etc).<p>The browser demo relies on the v86 javascript x86 virtual machine. You can also run Crazierl on a real x86 system, but I’ve had mixed luck on modern systems, it uses some esoteric legacy VGA features and support for that isn’t getting better.<p>Crazierl is fairly limited: 32-bit x86, BIOS boot, only two NIC drivers virtio-net and realtek 8168. But it&#x27;s got enough to become part of an Erlang dist cluster. It also supports SMP, but it’s crashy with high core counts in qemu; there’s almost certainly several concurrency bugs in the kernel. There&#x27;s also a lot of excess tcp debug spew (sorry).<p>Source code is available (Apache) <a href=\"https:&#x2F;&#x2F;github.com&#x2F;russor&#x2F;crazierl&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;github.com&#x2F;russor&#x2F;crazierl&#x2F;</a>",
-      "websiteUrl": "https://crazierl.org/demo/",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47567049",
-      "sourceEntryExternalId": "47567049"
-    },
-    {
-      "title": "Sheet Ninja – Google Sheets as a CRUD Back End for Vibe Coders",
-      "summary": "Show HN: Sheet Ninja – Google Sheets as a CRUD Back End for Vibe Coders",
-      "description": "Imported from Show HN by sxa001.",
-      "websiteUrl": "https://sheetninja.io",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47562288",
-      "sourceEntryExternalId": "47562288"
-    },
-    {
-      "title": "Codemaxxing – Maximize your slop abilities",
-      "summary": "I built a CLI tool to generate as much slop as possible",
-      "description": "I built a CLI tool to generate as much slop as possible",
-      "websiteUrl": "https://github.com/jshchnz/codemaxxing",
-      "tags": [
-        "show-hn",
-        "launch",
-        "indie"
-      ],
-      "sourceId": "cbf6774a-41e2-401c-aa4f-942367ebeb1d",
-      "sourceName": "Hacker News Show HN",
-      "sourceEntryUrl": "https://news.ycombinator.com/item?id=47580585",
-      "sourceEntryExternalId": "47580585"
     }
   ],
   "sourceStatuses": [

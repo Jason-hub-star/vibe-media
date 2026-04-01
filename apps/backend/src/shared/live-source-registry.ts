@@ -140,16 +140,30 @@ export async function loadSourcesFromDb(
 
   const sql = createSupabaseSql();
   try {
-    const rows = await sql<SupabaseFetchSourceRow[]>`
-      SELECT id, name, kind, base_url, source_tier, enabled,
-             pipeline_lane, feed_url, content_type, default_tags, max_items, fetch_kind,
-             github_owner, github_repo, brand
-      FROM public.sources
-      WHERE enabled = true
-        AND pipeline_lane = ${pipelineLane}
-        ${brand ? sql`AND (brand = ${brand} OR brand IS NULL)` : sql``}
-      ORDER BY name ASC
-    `;
+    // NOTE: do NOT use conditional sql`` fragments here — the retry proxy
+    // intercepts sql`` calls as DB queries rather than inline fragments,
+    // which corrupts parameter numbering (syntax error at or near "$2").
+    // Split into two explicit branches instead.
+    const rows = brand
+      ? await sql<SupabaseFetchSourceRow[]>`
+          SELECT id, name, kind, base_url, source_tier, enabled,
+                 pipeline_lane, feed_url, content_type, default_tags, max_items, fetch_kind,
+                 github_owner, github_repo, brand
+          FROM public.sources
+          WHERE enabled = true
+            AND pipeline_lane = ${pipelineLane}
+            AND (brand = ${brand} OR brand IS NULL)
+          ORDER BY name ASC
+        `
+      : await sql<SupabaseFetchSourceRow[]>`
+          SELECT id, name, kind, base_url, source_tier, enabled,
+                 pipeline_lane, feed_url, content_type, default_tags, max_items, fetch_kind,
+                 github_owner, github_repo, brand
+          FROM public.sources
+          WHERE enabled = true
+            AND pipeline_lane = ${pipelineLane}
+          ORDER BY name ASC
+        `;
 
     const definitions = rows.map(mapRowToDefinition).filter((d): d is LiveSourceDefinition => d !== null);
 

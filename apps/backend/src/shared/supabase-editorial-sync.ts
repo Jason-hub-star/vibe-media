@@ -7,6 +7,7 @@ import type {
   SnapshotItemClassificationRow,
   SnapshotSourceRow
 } from "./live-ingest-snapshot";
+import { isValidCoverImageUrl } from "./image-url-validator";
 import { runDiscoverQualityCheck } from "./discover-quality-check";
 import { markdownToPlainBody } from "./markdown-to-plain-body";
 import { normalizeDiscoverCopy, normalizeDiscoverTags } from "./discover-copy-normalizer";
@@ -43,6 +44,7 @@ interface DiscoverItemRow {
   published_at: string | null;
   tags: string[];
   highlighted: boolean;
+  cover_image_url: string | null;
 }
 
 interface DiscoverActionRow {
@@ -177,7 +179,7 @@ function getFallbackImageByDomain(itemUrl: string): string | null {
 
 function getImageUrl(item: SnapshotIngestedItemRow): string | null {
   const url = item.parsed_content.imageUrl;
-  if (typeof url === "string" && url.startsWith("http")) return url;
+  if (typeof url === "string" && url.startsWith("http") && isValidCoverImageUrl(url)) return url;
 
   // og:image 없으면 소스 도메인 fallback 자동 적용
   return getFallbackImageByDomain(item.url);
@@ -413,7 +415,8 @@ export function buildEditorialRows(snapshot: LiveIngestSnapshot) {
         scheduled_at: null,
         published_at: inferDiscoverPublishedAt(classification, snapshot.generatedAt, discoverQuality.passed),
         tags: getTags(item),
-        highlighted: !qualityHold && inferDiscoverStatus(classification) === "featured"
+        highlighted: !qualityHold && inferDiscoverStatus(classification) === "featured",
+        cover_image_url: getImageUrl(item)
       };
 
       discoverItems.push(row);
@@ -454,6 +457,27 @@ function toJsonParam<T extends ReturnType<typeof createSupabaseSql>>(sql: T, val
   return sql.json(value as Parameters<T["json"]>[0]);
 }
 
+type SqlClient = ReturnType<typeof createSupabaseSql>;
+
+async function resolveUniqueSlug(
+  sql: SqlClient,
+  table: "brief_posts" | "discover_items",
+  baseSlug: string,
+  sourceItemId: string
+): Promise<string> {
+  let candidate = baseSlug;
+  let attempt = 2;
+  while (true) {
+    const rows = table === "brief_posts"
+      ? await sql<{ source_item_id: string }[]>`select source_item_id from public.brief_posts where slug = ${candidate} limit 1`
+      : await sql<{ source_item_id: string }[]>`select source_item_id from public.discover_items where slug = ${candidate} limit 1`;
+    if (rows.length === 0) return candidate;                       // 슬러그 미사용 → 그대로 사용
+    if (rows[0].source_item_id === sourceItemId) return candidate; // 같은 항목 → ON CONFLICT가 처리
+    candidate = `${baseSlug}-${attempt}`;
+    attempt++;
+  }
+}
+
 export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapshot) {
   const sql = createSupabaseSql();
   const editorial = buildEditorialRows(snapshot);
@@ -473,6 +497,7 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
         limit 1
       `;
       const row = preserveBriefLifecycle(originalRow, existingRows[0] ?? null);
+      row.slug = await resolveUniqueSlug(sql, "brief_posts", row.slug, row.source_item_id);
 
       await sql`
         insert into public.brief_posts (
@@ -535,6 +560,7 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
         limit 1
       `;
       const row = preserveDiscoverLifecycle(originalRow, existingRows[0] ?? null);
+      row.slug = await resolveUniqueSlug(sql, "discover_items", row.slug, row.source_item_id);
 
       await sql`
         insert into public.discover_items (
@@ -549,7 +575,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           scheduled_at,
           published_at,
           tags,
-          highlighted
+          highlighted,
+          cover_image_url
         ) values (
           ${row.id}::uuid,
           ${row.source_item_id}::uuid,
@@ -562,7 +589,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           ${row.scheduled_at}::timestamptz,
           ${row.published_at}::timestamptz,
           ${toJsonParam(sql, row.tags)},
-          ${row.highlighted}
+          ${row.highlighted},
+          ${row.cover_image_url}
         )
         on conflict (source_item_id) do update set
           slug = excluded.slug,
@@ -574,7 +602,8 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
           scheduled_at = excluded.scheduled_at,
           published_at = excluded.published_at,
           tags = excluded.tags,
-          highlighted = excluded.highlighted
+          highlighted = excluded.highlighted,
+          cover_image_url = excluded.cover_image_url
       `;
     }
 

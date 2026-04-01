@@ -4,6 +4,12 @@
 
 ---
 
+### 2026-04-01 — source-registry SQL 조건 분기 수정 (autoresearch keep)
+- 상태: resolved
+- 배경: `loadSourcesFromDb`의 조건부 `sql` fragment가 retry 프록시를 통해 fragment 대신 DB 쿼리로 처리되어 syntax error 발생 → 28개 활성 소스 대신 3개 하드코딩 fallback으로 강등
+- 결정: 조건부 fragment 대신 brand 유무에 따라 두 개의 독립 쿼리로 분기
+- 영향: 소스 로드 커버리지 3 → 28개 복구
+
 ### 2026-03-31 — Chatterbox TTS 전환 + NLM 팟캐스트 레거시 삭제
 - 상태: resolved
 - 배경: Qwen3 TTS가 hallucination/OOM/서버 크래시 반복 → Chatterbox 2문장 청크로 안정화. NLM 팟캐스트는 수동 다운로드 의존 + 더 이상 사용하지 않아 전체 삭제

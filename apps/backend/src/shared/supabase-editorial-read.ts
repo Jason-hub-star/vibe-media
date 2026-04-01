@@ -37,6 +37,7 @@ interface DiscoverRow {
   published_at: string | null;
   tags: string[];
   highlighted: boolean;
+  cover_image_url: string | null;
   actions: DiscoverAction[];
 }
 
@@ -108,7 +109,8 @@ async function fetchEditorialData() {
           scheduled_at,
           published_at,
           tags,
-          highlighted
+          highlighted,
+          cover_image_url
         from public.discover_items
         order by highlighted desc, created_at desc
       `,
@@ -185,6 +187,7 @@ async function fetchEditorialData() {
             publishedAt: row.published_at,
             tags: normalizeDiscoverTags({ tags: Array.isArray(row.tags) ? row.tags : [] }),
             highlighted: row.highlighted,
+            coverImage: row.cover_image_url ?? undefined,
             actions,
             translationStatus: "canonical" as const,
             ...buildDefaultLocaleMetadata(),

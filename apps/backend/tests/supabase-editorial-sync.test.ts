@@ -280,7 +280,8 @@ describe("supabase editorial sync", () => {
         scheduled_at: null,
         published_at: null,
         tags: ["sdk"],
-        highlighted: true
+        highlighted: true,
+        cover_image_url: null
       },
       {
         source_item_id: "source-item-1",
@@ -309,7 +310,8 @@ describe("supabase editorial sync", () => {
         scheduled_at: null,
         published_at: "2026-03-29T14:41:16.037Z",
         tags: ["design"],
-        highlighted: true
+        highlighted: true,
+        cover_image_url: null
       },
       {
         source_item_id: "source-item-1",

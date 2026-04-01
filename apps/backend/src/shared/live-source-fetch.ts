@@ -8,6 +8,7 @@ import { runBriefDiscoverCycle, type BriefDiscoverCycleReport } from "./brief-di
 import { normalizeDiscoverCopy } from "./discover-copy-normalizer";
 import type { LiveSourceDefinition } from "./live-source-registry";
 import { liveSourceRegistry, loadSourcesFromDb } from "./live-source-registry";
+import { isValidCoverImageUrl } from "./image-url-validator";
 import { parseGitHubReleaseItems, parseRssItems } from "./live-source-parse";
 
 export type LiveItemParserName = "rss-summary" | "defuddle";
@@ -148,6 +149,44 @@ function shouldEnrichArticle(source: LiveSourceDefinition) {
   return source.fetchKind === "rss" && source.contentType === "article";
 }
 
+const OG_IMAGE_FETCH_TIMEOUT_MS = 6_000;
+const OG_IMAGE_MAX_BYTES = 16_384;
+
+/** Lightweight og:image extraction — reads only the first 16KB of HTML */
+async function fetchOgImageOnly(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(OG_IMAGE_FETCH_TIMEOUT_MS),
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "user-agent": "vibehub-media"
+      }
+    });
+    if (!response.ok || !response.body) return null;
+
+    const reader = response.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+
+    while (totalBytes < OG_IMAGE_MAX_BYTES) {
+      const { done, value } = await reader.read();
+      if (done || !value) break;
+      chunks.push(value);
+      totalBytes += value.length;
+    }
+    reader.cancel();
+
+    const html = new TextDecoder().decode(Buffer.concat(chunks));
+    const match =
+      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ??
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    const candidate = match?.[1]?.trim() || null;
+    return candidate && isValidCoverImageUrl(candidate) ? candidate : null;
+  } catch {
+    return null;
+  }
+}
+
 /** summary가 부실한지 판단 — "Comments" 한 단어이거나 30자 미만 */
 function isThinSummary(summary: string) {
   const trimmed = summary.trim();
@@ -189,7 +228,8 @@ export async function enrichArticleContent(url: string) {
 
   // og:image 추출 — HTML을 이미 fetch했으므로 추가 요청 없음
   const ogImageMeta = dom.document.querySelector('meta[property="og:image"]');
-  const ogImageUrl = ogImageMeta?.getAttribute("content")?.trim() || null;
+  const rawOgImage = ogImageMeta?.getAttribute("content")?.trim() || null;
+  const ogImageUrl = rawOgImage && isValidCoverImageUrl(rawOgImage) ? rawOgImage : null;
 
   const result = await runDefuddleQuietly(() =>
     Defuddle(dom.document, url, {
@@ -240,10 +280,19 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         }
       }
 
+      // RSS에도 enrichment에도 이미지 없으면 경량 og:image 추출 시도
+      if (!item.imageUrl && !ogImageUrl && !needsEnrich) {
+        ogImageUrl = await fetchOgImageOnly(item.url);
+      }
+
       // enriched markdown이 있으면 summary를 본문 첫 부분으로 대체
       const enrichedSummary = contentMarkdown && isThinSummary(copy.summary)
         ? summarizeText(normalizeMarkdownPreview(contentMarkdown), 180)
         : null;
+
+      // 최종 이미지 URL: RSS → og:image → undefined, 검증 게이트 적용
+      const rawImageUrl = item.imageUrl ?? ogImageUrl ?? undefined;
+      const validatedImageUrl = rawImageUrl && isValidCoverImageUrl(rawImageUrl) ? rawImageUrl : undefined;
 
       items.push({
         id: createItemId(source.id, item.url),
@@ -259,7 +308,7 @@ async function fetchSource(source: LiveSourceDefinition): Promise<LiveFetchedIte
         parseStatus,
         contentType: source.contentType,
         tags: inferTags(source, copy.title, copy.summary),
-        imageUrl: item.imageUrl ?? ogImageUrl ?? undefined
+        imageUrl: validatedImageUrl
       });
     }
 

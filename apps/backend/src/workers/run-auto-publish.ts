@@ -4,19 +4,29 @@ const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const maxBriefs = parseInt(args.find((a) => a.startsWith("--max="))?.split("=")[1] ?? "5", 10);
 
+// 일일 발행 상한: --daily-limit=N > DAILY_PUBLISH_LIMIT 환경변수 > 기본값 5
+const dailyLimitArg = args.find((a) => a.startsWith("--daily-limit="))?.split("=")[1];
+const dailyLimit = parseInt(dailyLimitArg ?? process.env.DAILY_PUBLISH_LIMIT ?? "5", 10);
+
 if (dryRun) {
   console.log("[auto-publish] dry-run mode — DB 업데이트 없음");
 }
+console.log(`[auto-publish] 일일 발행 상한: ${dailyLimit}건 / 회당 최대: ${maxBriefs}건`);
 
-const report = await runAutoPublish({ dryRun, maxBriefs });
+const report = await runAutoPublish({ dryRun, maxBriefs, dailyLimit });
 
 // ─── 결과 출력 ────────────────────────────────────────────────────────────────
 
 console.log(`\n## Auto Publish Report — ${report.ranAt}`);
-console.log(`- 대상: ${report.total}건`);
-console.log(`- scheduled: ${report.scheduled}건`);
-console.log(`- published: ${report.published}건`);
-console.log(`- skipped: ${report.skipped}건`);
+if (report.dailyLimitHit) {
+  console.log(`- ⚠️  일일 상한 도달 (오늘 이미 ${report.alreadyPublishedToday}/${dailyLimit}건 발행됨) — 추가 발행 없음`);
+} else {
+  console.log(`- 오늘 기발행: ${report.alreadyPublishedToday ?? 0}건 / 일일 상한: ${dailyLimit}건`);
+  console.log(`- 대상: ${report.total}건`);
+  console.log(`- scheduled: ${report.scheduled}건`);
+  console.log(`- published: ${report.published}건`);
+  console.log(`- skipped: ${report.skipped}건`);
+}
 
 if (report.results.length > 0) {
   console.log("\n| slug | action | 비고 |");

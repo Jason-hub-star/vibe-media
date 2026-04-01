@@ -46,6 +46,13 @@ function extractImageUrl(block: string): string | null {
   // 4. first <img src="..."> in content
   const img = block.match(/<img[^>]+src=["']([^"']+)["']/i);
   if (img?.[1]) return decodeHtmlEntities(img[1]);
+  // 5. <content:encoded> 내 첫 <img>
+  const encoded = block.match(/<content:encoded[^>]*>([\s\S]*?)<\/content:encoded>/i);
+  if (encoded?.[1]) {
+    const decoded = decodeHtmlEntities(encoded[1]);
+    const innerImg = decoded.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (innerImg?.[1]) return decodeHtmlEntities(innerImg[1]);
+  }
   return null;
 }
 

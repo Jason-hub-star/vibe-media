@@ -92,6 +92,7 @@ export interface DiscoverItem {
   tags: string[];
   actions: DiscoverAction[];
   highlighted: boolean;
+  coverImage?: string;
   locale?: LocaleCode;
   canonicalLocale?: LocaleCode;
   availableLocales?: LocaleCode[];

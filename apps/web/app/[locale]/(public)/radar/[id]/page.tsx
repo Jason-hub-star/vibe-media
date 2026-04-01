@@ -10,9 +10,18 @@ import { getRelatedBriefs } from "@/features/brief/use-case/get-related-briefs";
 import { getDiscoverItemDetail } from "@/features/discover/use-case/get-discover-item-detail";
 import { presentDiscoverCategory } from "@/features/discover/presenter/present-discover-category";
 import { presentDiscoverStatus } from "@/features/discover/presenter/present-discover-status";
+import { DiscoverCardCover } from "@/features/discover/view/DiscoverCardCover";
 import { isValidActionHref } from "@vibehub/content-contracts";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export async function generateMetadata({
   params,
@@ -90,22 +99,29 @@ export default async function RadarDetailPage({
           ],
         }}
       />
-      <SectionBlock eyebrow={cat.label} title={item.title}>
+      <SectionBlock eyebrow="Radar" title={item.title}>
         <div className="radar-detail-col">
+          <DiscoverCardCover coverImage={item.coverImage} title={item.title} category={item.category} />
+
           <div className="row-between">
             <span className={`category-pill category-pill-${cat.color}`}>
               <span className="category-pill-icon">{cat.icon}</span>
               {cat.label}
             </span>
-            <span className={`status status-${statusStyle}`}>{statusLabel}</span>
+            <div className="status-group">
+              <span className={`status status-${statusStyle}`}>{statusLabel}</span>
+              {item.publishedAt && (
+                <time className="muted" dateTime={item.publishedAt}>
+                  {formatDate(item.publishedAt)}
+                </time>
+              )}
+            </div>
           </div>
 
           <p className="brief-dek">{item.summary}</p>
 
           {item.fullDescription && item.fullDescription !== item.summary && (
-            <article className="stack-tight">
-              <p>{item.fullDescription}</p>
-            </article>
+            <p className="radar-detail-body">{item.fullDescription}</p>
           )}
 
           {item.tags.length > 0 && (
@@ -116,19 +132,22 @@ export default async function RadarDetailPage({
             </div>
           )}
 
-          {item.actions.filter((a) => isValidActionHref(a.href)).length > 0 && (
-            <div className="button-row">
-              {item.actions.filter((a) => isValidActionHref(a.href)).map((action) => (
-                <Link
-                  className="button-secondary"
-                  href={action.href}
-                  key={`${item.id}-${action.kind}`}
-                >
-                  {action.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          {(() => {
+            const validActions = item.actions.filter((a) => isValidActionHref(a.href));
+            return validActions.length > 0 ? (
+              <div className="button-row">
+                {validActions.map((action) => (
+                  <Link
+                    className="button-secondary"
+                    href={action.href}
+                    key={`${item.id}-${action.kind}`}
+                  >
+                    {action.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null;
+          })()}
         </div>
       </SectionBlock>
 

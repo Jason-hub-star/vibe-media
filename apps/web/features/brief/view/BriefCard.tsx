@@ -7,6 +7,7 @@ import { presentRelativeDate } from "@/features/shared/presenter/present-relativ
 import { presentReadTime } from "@/features/shared/presenter/present-read-time";
 
 import { briefStatusPublicCopy } from "../presenter/present-brief-status";
+import { BriefCardCover } from "./BriefCardCover";
 
 interface BriefCardProps {
   brief: BriefListItem;
@@ -37,6 +38,14 @@ export function BriefCard({ brief, isLead, locale }: BriefCardProps) {
 
   return (
     <article className={panelClass}>
+      <BriefCardCover
+        coverImage={brief.coverImage}
+        title={brief.title}
+        topic={brief.topic}
+        slug={brief.slug}
+        isLead={isLead}
+      />
+
       {/* Tier 1 — instant scan */}
       <div className="row-between">
         <span className={badgeClass}>{dateLabel}</span>

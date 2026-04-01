@@ -4,6 +4,7 @@ import { isValidActionHref, type DiscoverItem } from "@vibehub/content-contracts
 
 import { presentDiscoverCategory } from "../presenter/present-discover-category";
 import { presentDiscoverStatus, presentReviewStatus } from "../presenter/present-discover-status";
+import { DiscoverCardCover } from "./DiscoverCardCover";
 
 function isNew(publishedAt: string | null): boolean {
   if (!publishedAt) return false;
@@ -49,6 +50,7 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
 
   return (
     <article className="panel stack-tight discover-card">
+      <DiscoverCardCover coverImage={item.coverImage} title={item.title} category={item.category} />
       <div className="row-between discover-card-header">
         <span className={`category-pill category-pill-${cat.color} discover-card-category`}>
           <span className="category-pill-icon">{cat.icon}</span>
