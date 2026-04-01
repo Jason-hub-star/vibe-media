@@ -186,6 +186,8 @@
   - Frontend: `presentBriefAccentColor` topic/slug 기반 결정적 6색 해싱, `BriefCardCover` 컴포넌트 (next/image + gradient fallback), BriefCard에 커버 삽입, `next.config.mjs` 외부 이미지 허용
   - 테스트: image-url-validator 7개 + present-brief-topic 4개 전부 통과
 - Radar 커버 이미지 + Detail 가독성 강화: done (2026-04-01)
+- Radar Featured Picks 섹션 제거 → Discovery Index 통합: done (2026-04-01)
+- Discover summary LLM enrichment (gpt-4o-mini via OpenAI): done (2026-04-01)
 - 주간 Self-Critique 루프 최초 실행: done (2026-04-01) — 10건 분석, 평균 3.0/5.0, 4개 개선 제안 생성 (artifact 오염/마케팅 언어/한국어 gate/Apple ML treatment)
   - DB: `discover_items.cover_image_url` 컬럼 추가 (migration)
   - Backend: sync/read 경로에 `cover_image_url` 추가, 기존 `getImageUrl()` 재사용

@@ -46,7 +46,9 @@
     "brief:enrich-backfill-dry": "tsx src/workers/run-brief-enrich-backfill.ts --dry-run",
     "youtube:setup": "tsx src/workers/run-youtube-setup.ts",
     "newsletter:send": "tsx src/workers/run-newsletter-send.ts",
-    "newsletter:send-dry": "tsx src/workers/run-newsletter-send.ts --dry-run"
+    "newsletter:send-dry": "tsx src/workers/run-newsletter-send.ts --dry-run",
+    "discover:enrich-summary": "tsx src/workers/run-discover-summary-enrich.ts",
+    "discover:enrich-summary-dry": "tsx src/workers/run-discover-summary-enrich.ts --dry-run"
   },
   "dependencies": {
     "@vibehub/content-contracts": "0.1.0",
@@ -54,6 +56,7 @@
     "@vibehub/media-engine": "0.1.0",
     "defuddle": "^0.14.0",
     "linkedom": "^0.18.12",
+    "openai": "^6.33.0",
     "postgres": "^3.4.8",
     "resend": "^6.9.4"
   },

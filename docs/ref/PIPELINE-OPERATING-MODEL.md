@@ -70,6 +70,15 @@ VibeHub Media의 운영 핵심은 아래 순서를 따른다.
 - `archive`: 보관만 하고 노출하지 않음
 - `discard`: 중복, 저가치, 정책 보류
 
+## Discover Summary Enrichment
+- `discover_items`의 summary가 thin(변경 로그 나열, "Updated dependencies." 등)인 경우 OpenAI `gpt-4o-mini`로 에디토리얼 블럽으로 재작성한다.
+- worker: `apps/backend/src/shared/discover-summary-enrich.ts`
+- runner: `apps/backend/src/workers/run-discover-summary-enrich.ts`
+- npm script: `discover:enrich-summary` / `discover:enrich-summary-dry` (dry-run)
+- 필요 env: `OPENAI_API_KEY`
+- supabase sync 이후 standalone 또는 post-sync 후처리로 실행할 수 있다.
+- 실패해도 본선 ingest/sync 결과를 바꾸지 않는다.
+
 ## Sidecar Lanes
 - `showcase`와 Obsidian export는 `brief/discover` 자동 분류 본선과 분리된 sidecar lane이다.
 - sidecar lane은 본선 산출물을 읽어 추가 노출 또는 외부 저장만 수행한다.

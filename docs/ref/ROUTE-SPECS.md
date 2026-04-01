@@ -30,7 +30,7 @@
 
 ### `/radar`
 - 목적: 오픈소스, 스킬, 플러그인, 디자인 레퍼런스, 사이트, 이벤트, 공모전 discovery 허브
-- 핵심 섹션: hero, featured picks, discovery index
+- 핵심 섹션: hero, discovery index (하이라이트 항목 포함 전체 통합 필터 목록, featured picks 섹션 없음)
 - URL 필터: `?category=X&q=Y` (레거시 `?group=X`도 초기 진입 시 허용, debounce 300ms)
 - 현재 상태: scaffold cards + fast action links + 상세 페이지 링크
 - 공개 규칙: showcase는 radar에서 소비하지 않는다. showcase 노출은 home + submit hub에서만 유지한다.

@@ -25,10 +25,9 @@ function buildCategoryFilters(): FilterOption[] {
 
 interface Props {
   items: DiscoverItem[];
-  excludeHighlightedWhenUnfiltered?: boolean;
 }
 
-export function DiscoverListWithFilter({ items, excludeHighlightedWhenUnfiltered = false }: Props) {
+export function DiscoverListWithFilter({ items }: Props) {
   const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
     basePath: "/radar",
     filterParam: "category",
@@ -38,10 +37,7 @@ export function DiscoverListWithFilter({ items, excludeHighlightedWhenUnfiltered
   const categoryFilters = useMemo(() => buildCategoryFilters(), []);
 
   const filtered = useMemo(() => {
-    let result =
-      excludeHighlightedWhenUnfiltered && !filter.activeFilter && !filter.query
-        ? items.filter((item) => !item.highlighted)
-        : items;
+    let result = items;
 
     if (filter.activeFilter) {
       result = result.filter((item) => item.category === filter.activeFilter);
@@ -56,7 +52,7 @@ export function DiscoverListWithFilter({ items, excludeHighlightedWhenUnfiltered
       );
     }
     return result;
-  }, [excludeHighlightedWhenUnfiltered, items, filter]);
+  }, [items, filter]);
 
   const grouped = groupByCategory(filtered);
 
