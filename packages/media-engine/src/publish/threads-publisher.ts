@@ -130,7 +130,7 @@ export function createThreadsPublisher(
       return {
         channel: "threads",
         success: true,
-        publishedUrl: `https://threads.net/@${THREADS_HANDLE}/post/DRY_RUN`,
+        publishedUrl: `https://www.threads.com/@${THREADS_HANDLE}/post/DRY_RUN`,
         publishedAt: new Date().toISOString(),
         error: `[DRY RUN] Would post: ${text.slice(0, 100)}...`,
       };
@@ -145,7 +145,7 @@ export function createThreadsPublisher(
       return {
         channel: "threads",
         success: true,
-        publishedUrl: `https://www.threads.net/@${THREADS_HANDLE}/post/${postId}`,
+        publishedUrl: `https://www.threads.com/@${THREADS_HANDLE}/post/${postId}`,
         publishedAt: new Date().toISOString(),
       };
     } catch (err) {

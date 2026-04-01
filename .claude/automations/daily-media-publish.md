@@ -4,8 +4,8 @@
 
 `daily-auto-publish`에서 새로 `published` 전환된 Brief에 대해 미디어 파이프라인을 실행한다.
 두 트랙으로 미디어를 생성한다 (같은 엔진 BriefShort V3 공유, 해상도만 다름):
-- **Shorts (9:16)**: Gemini 스크립트 (80-100단어) → MimikaStudio **Chatterbox** TTS (2문장 청크) → Pexels 배경 → Remotion BriefShort V3 → BGM 랜덤 + ffmpeg
-- **Longform (16:9)**: Gemini 스크립트 (300-350단어) → MimikaStudio **Chatterbox** TTS (2문장 청크) → Pexels 배경 → Remotion BriefLongform → BGM 랜덤 + ffmpeg
+- **Shorts (9:16)**: Gemini 스크립트 (80-100단어) → MimikaStudio **Chatterbox** TTS (**jisun** 클론, 2문장 청크) → Pexels 배경 → Remotion BriefShort V3 → BGM 랜덤 + ffmpeg
+- **Longform (16:9)**: Gemini 스크립트 (300-350단어) → MimikaStudio **Chatterbox** TTS (**jisun** 클론, 2문장 청크) → Pexels 배경 → Remotion BriefLongform → BGM 랜덤 + ffmpeg
 
 이 프롬프트는 `daily-auto-publish.md` 실행 이후 스케줄러에서 자동 실행된다.
 
@@ -19,9 +19,11 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
   └→ daily-media-publish (이것)
       ┌─ Shorts Track (9:16) ───────────────────────────
       │  S1. Gemini 스크립트 (80-100단어, ~50초, 스페인어)
-      │  S2. MimikaStudio Chatterbox TTS (woman-es 클론, 2문장 청크)
-      │      → hallucination 감지: 청크 duration > 단어수×1.2초 → 재시도
-      │  S3. whisper-cpp word-level 자막 (--output-json-full)
+      │  S2. MimikaStudio Chatterbox TTS (**jisun** 클론, 2문장 청크)
+      │      → hallucination 감지: duration > 단어수×1.2초 → 10초 쿨다운 후 재시도
+      │      → too-short 감지: duration < 단어수×0.2초 → 5초 쿨다운 후 재시도
+      │  S3. whisper-cpp word-level 자막 (--output-json-full, GGML_METAL_DISABLE=1)
+      │      → Metal GPU 오염 방지 (MimikaStudio TTS 후 동일 tsx 프로세스에서 exit code 3 크래시)
       │      → 구두점 토큰 이전 단어에 병합
       │  S4. Pexels 키워드 배경 비디오 4개 (portrait, 중복 제거)
       │  S5. 프레임 균등 씬 분할 (4씬)
@@ -33,8 +35,8 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
       │
       ├─ Longform Track (16:9) ─────────────────────────
       │  L1. Gemini 스크립트 (300-350단어, ~2분, 스페인어)
-      │  L2. MimikaStudio Chatterbox TTS (woman-es, 2문장 청크)
-      │  L3. whisper-cpp word-level 자막 (--output-json-full)
+      │  L2. MimikaStudio Chatterbox TTS (**jisun**, 2문장 청크)
+      │  L3. whisper-cpp word-level 자막 (--output-json-full, GGML_METAL_DISABLE=1)
       │  L4. Pexels 키워드 배경 비디오 8개 (landscape, 중복 제거)
       │  L5. 프레임 균등 씬 분할 (8씬 + 챕터 카드)
       │  L6. Remotion BriefLongform 렌더 (1920×1080)
@@ -42,8 +44,10 @@ daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-p
       │
       └─ 발행 (EN 원본 + ES 확장) ──────────────────────
          7. EN 발행: Threads EN + YouTube EN (publish:channels)
-            - YouTube: API 설정 + mp4 존재 시만 자동 업로드, 아니면 로컬 메타
-            - Podcast: EN 음성 WAV → MP3 → feed.xml (canonicalLocale 기준 1회)
+            - YouTube: API 자동 업로드 (unlisted). description 4800자 하드캡 (5000자 한도)
+            - Podcast: EN WAV → MP3 → Supabase → feed-en.xml 갱신 (기존 에피소드 보존)
+              → 로컬 feed.xml 없으면 리모트에서 fetch → 에피소드 append → Supabase 재업로드
+              → WebSub ping (pubsubhubbub.appspot.com) → Spotify 즉시 갱신
          8. ES 발행: brief_post_variants에서 ES variant 자동 조회 → 듀얼 dispatch
             - Threads ES: variant title/body로 별도 게시
             - YouTube ES: locale별 publisher 재등록 (language, briefUrl ES 반영)

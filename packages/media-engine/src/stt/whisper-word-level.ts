@@ -209,6 +209,8 @@ export async function transcribeWordLevel(
     const wavPath = await convertToWav(audioPath, outputDir);
 
     // 2) Run whisper-cpp with JSON full output
+    // GGML_METAL_DISABLE=1: MimikaStudio TTS 후 Metal GPU 컨텍스트 오염으로
+    // whisper-cli가 exit code 3으로 크래시하는 문제 방지 (CPU fallback 사용).
     await spawnAsync(binaryPath, [
       "-m", modelPath,
       "-f", wavPath,
@@ -217,6 +219,7 @@ export async function transcribeWordLevel(
       "-of", outputBase,
     ], {
       timeout: 300_000, // 5분
+      env: { ...process.env, GGML_METAL_DISABLE: "1" },
     });
 
     // 3) Read JSON output

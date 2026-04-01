@@ -3,14 +3,17 @@
 Brief slug를 받아서 Shorts(9:16) + Longform(16:9) 풀 파이프라인을 실행한다.
 같은 엔진(BriefShort V3)을 해상도만 바꿔서 공유한다.
 
-## 검증된 E2E 파이프라인 (2026-03-31, V3 Production Final)
+## 검증된 E2E 파이프라인 (2026-04-01, V3 Production Final)
 
 ```
 Brief (Supabase)
   → Gemini 스크립트 (Shorts: 80-100단어, Longform: 300-350단어)
-    → MimikaStudio **Chatterbox** 엔진 (woman-es 클론)
-      → 2문장 청크 분할 → 각각 TTS → hallucination 감지+재시도 → ffmpeg concat
-        → whisper-cpp --output-json-full 워드 타임스탬프
+    → MimikaStudio **Chatterbox** 엔진 (jisun 클론 — 기본)
+      → 2문장 청크 분할 → 각각 TTS
+        → hallucination 감지 (duration > 단어수×1.2초) → 10초 쿨다운 후 재시도
+        → too-short 감지 (duration < 단어수×0.2초) → 5초 쿨다운 후 재시도
+        → ffmpeg concat
+        → whisper-cpp --output-json-full (GGML_METAL_DISABLE=1) 워드 타임스탬프
           → 구두점 토큰 이전 단어에 병합
             → 프레임 균등 분배 씬 분할 (4/8씬)
               → Pexels 비디오 배경 (중복 제거)
@@ -68,9 +71,12 @@ Chatterbox 모델 다운: `MimikaStudio venv → snapshot_download('mlx-communit
 
 - **엔진:** `engine: "chatterbox"` (기본값)
 - **API:** `POST /api/chatterbox/generate` → JSON `{ audio_url }` → 별도 GET 다운로드
-- **음성:** `voice_name: "woman-es"` (Qwen3과 동일 클론 공유)
+- **음성:** `voice_name: "jisun"` (기본값 — `/Users/family/MimikaStudio/data/user_voices/cloners/jisun.wav`)
+  - 보이스 추가 방법: `ffmpeg -i <input.mp3> -ss 2 -t 10 -ar 24000 -ac 1 -c:a pcm_s16le <name>.wav`
+  - 3파일 필요: `<name>.wav` + `<name>.txt` (빈 파일 가능) + `<name>.meta.json`
 - **청크:** 2문장 단위 분할 (`splitIntoChunks(text, 2)`)
-- **hallucination 가드:** 각 청크 duration > `단어수 × 1.2초`면 자동 재시도
+- **hallucination 가드:** 각 청크 duration > `단어수 × 1.2초` → **10초 쿨다운** 후 재시도
+- **too-short 가드:** 각 청크 duration < `단어수 × 0.2초` → **5초 쿨다운** 후 재시도
 - **서버 크래시 대응:** 3회 retry + `mimikactl backend start` 자동 재시작
 - **청크 간 딜레이:** 3초 (서버 안정화)
 
@@ -86,6 +92,10 @@ Chatterbox 모델 다운: `MimikaStudio venv → snapshot_download('mlx-communit
 - `--output-json-full` → token별 `offsets.from/to` (밀리초)
 - 모델: `models/ggml-base.bin` (`findModelPath()` 자동 탐색 — cwd 무관)
 - **구두점 토큰 병합:** `,` `.` `!` 등은 이전 단어에 합침 (자막 깜빡임 방지)
+- **⚠️ Metal GPU 오염:** MimikaStudio TTS 후 동일 tsx 프로세스에서 whisper-cli 실행 시
+  `ggml_metal_library_compile_pipeline: compiling` 단계에서 exit code 3 크래시 발생
+  → `spawnAsync` 옵션에 `env: { ...process.env, GGML_METAL_DISABLE: "1" }` 필수
+  → CPU fallback 사용 (속도 차이 미미, 안정성 확보)
 
 ### 씬 분할: 프레임 균등 (문장 매칭 아님!)
 
@@ -133,10 +143,15 @@ Longform은 `thumbnailFilePath`를 `publish:channels`에 전달하면 YouTube AP
 
 | 문제 | 원인 | 해결 |
 |------|------|------|
-| TTS hallucinate (40초+) | Chatterbox가 3문장 이상에서 반복 생성 | 2문장 청크 + duration 가드 + 재시도 |
+| TTS hallucinate (40초+) | Chatterbox가 3문장 이상에서 반복 생성 | 2문장 청크 + max duration 가드 + **10초 쿨다운** 재시도 |
+| TTS garbled audio (자막 공백) | hallucination 직후 즉시 재시도 → 불안정 상태 | **10초 쿨다운** 후 재시도 (2026-04-01 수정) |
+| TTS too-short (텍스트 누락) | 서버 불안정 → 일부 단어 생략 | min duration 가드 (단어수×0.2초) + **5초 쿨다운** |
 | TTS 서버 크래시 | Qwen3 연속 요청 과부하 | **Chatterbox 엔진 전환** |
 | MimikaStudio API가 WAV 대신 JSON | API 설계: `audio_url` 반환 | `res.json()` → `audio_url` → GET 다운로드 |
+| Whisper exit code 3 크래시 | MimikaStudio TTS 후 Metal GPU 컨텍스트 오염 | `GGML_METAL_DISABLE=1` env → CPU fallback (2026-04-01 수정) |
 | Whisper 모델 못 찾음 | cwd ≠ 프로젝트 루트 | `findModelPath()` 5단계 상위 탐색 |
+| YouTube description 400 오류 | markdownBody 8000자+ → 5000자 한도 초과 | **4800자 하드캡** (suffix 먼저 확보, body 잘라냄) (2026-04-01 수정) |
+| Podcast 에피소드 유실 | feed.xml 로컬 없으면 새로 시작, Supabase 미업로드 | 리모트 fetch fallback + 즉시 Supabase 업로드 + WebSub ping (2026-04-01 수정) |
 | 자막+타이틀 겹침 | 둘 다 0초 시작 | 자막에 2.5초 딜레이 |
 | CTA 안 나옴 | Composition durationInFrames ≠ 실제 | props `durationInFrames` 전달 |
 | 총 TTS > 75초 | 스크립트 120+ words | **80-100 words로 제한** |

@@ -75,7 +75,7 @@ async function refreshAccessToken(
 
 /** YouTube 설명 텍스트 생성 (locale-aware) */
 function buildDescription(payload: PublishPayload, briefUrl: string, locale?: string): string {
-  const body = payload.markdownBody ?? payload.htmlBody ?? "";
+  const rawBody = payload.markdownBody ?? payload.htmlBody ?? "";
   const tags =
     payload.tags && payload.tags.length > 0
       ? "\n\n" + payload.tags.map((t) => `#${t.replace(/\s+/g, "")}`).join(" ")
@@ -93,7 +93,17 @@ function buildDescription(payload: PublishPayload, briefUrl: string, locale?: st
     ? `Powered by ${BRAND_NAME} | Resúmenes diarios de IA y tecnología`
     : `Powered by ${BRAND_NAME} | AI-curated tech insights`;
 
-  return `${body}\n\n${links}${tags}\n\n---\n${tagline}`;
+  // YouTube description 한도: 5000자. 여유 있게 4800자로 하드캡.
+  // suffix(links + tags + tagline)를 먼저 확보하고 body를 잘라낸다.
+  const suffix = `\n\n${links}${tags}\n\n---\n${tagline}`;
+  const MAX_TOTAL = 4800;
+  const maxBodyLen = MAX_TOTAL - suffix.length;
+  const body =
+    rawBody.length > maxBodyLen
+      ? rawBody.slice(0, maxBodyLen - 3) + "..."
+      : rawBody;
+
+  return `${body}${suffix}`;
 }
 
 /** 비디오 파일 업로드 (resumable upload) */

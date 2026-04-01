@@ -14,7 +14,7 @@
 import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
-import { BRAND_NAME, SITE_URL, THREADS_HANDLE, YOUTUBE_CHANNEL } from "../brand";
+import { BRAND_NAME, PODCAST_URL, SITE_URL, THREADS_HANDLE, YOUTUBE_CHANNEL } from "../brand";
 import type { PublishPayload } from "../types";
 import type {
   ChannelPublisher,
@@ -93,6 +93,7 @@ function buildFeedXml(config: PodcastFeedConfig, episodes: PodcastEpisode[]): st
     <language>${config.language}</language>
     <link>${escapeXml(config.siteUrl)}</link>
     <atom:link href="${escapeXml(config.feedUrl)}" rel="self" type="application/rss+xml"/>
+    <atom:link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
     <itunes:author>${escapeXml(config.author)}</itunes:author>
     <itunes:image href="${escapeXml(config.imageUrl)}"/>
     <itunes:explicit>false</itunes:explicit>
@@ -158,7 +159,7 @@ export function createPodcastRssPublisher(
       return {
         channel: "podcast-rss",
         success: true,
-        publishedUrl: context.feedUrl,
+        publishedUrl: PODCAST_URL,
         publishedAt: new Date().toISOString(),
         error: "[DRY RUN] Would update podcast feed.xml",
       };
@@ -168,13 +169,23 @@ export function createPodcastRssPublisher(
       const feedPath = path.join(context.feedDir, "feed.xml");
       const lang = context.language ?? "es";
 
-      // 기존 에피소드 로드
+      // 기존 에피소드 로드: 로컬 우선, 없으면 리모트 fetch
       let existingEpisodes: PodcastEpisode[] = [];
       try {
         const existingFeed = await fs.readFile(feedPath, "utf-8");
         existingEpisodes = parseExistingEpisodes(existingFeed);
       } catch {
-        // feed.xml 없으면 새로 생성
+        // 로컬 feed.xml 없음 → Supabase 리모트에서 fetch
+        try {
+          const remoteRes = await fetch(context.feedUrl);
+          if (remoteRes.ok) {
+            const remoteFeed = await remoteRes.text();
+            existingEpisodes = parseExistingEpisodes(remoteFeed);
+            console.log(`  Podcast RSS: fetched ${existingEpisodes.length} existing episodes from remote`);
+          }
+        } catch {
+          // 리모트도 없으면 새로 시작
+        }
       }
 
       // 에피소드 설명에 크로스프로모 링크 추가
@@ -227,10 +238,55 @@ export function createPodcastRssPublisher(
 
       console.log(`  Podcast RSS: feed updated with "${payload.title}" (${allEpisodes.length} episodes total)`);
 
+      // Supabase Storage에 feed.xml 업로드 (podcast-upload.ts보다 늦게 실행되므로 여기서 처리)
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (serviceKey) {
+        const feedObjPath = `feed-${lang}.xml`;
+        const supabaseUploadUrl = `https://hzxsropbcjfywmospobb.supabase.co/storage/v1/object/podcast/${feedObjPath}`;
+        const feedBuffer = await fs.readFile(feedPath);
+        const uploadRes = await fetch(supabaseUploadUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${serviceKey}`,
+            "Content-Type": "application/rss+xml",
+            "x-upsert": "true",
+          },
+          body: new Uint8Array(feedBuffer),
+        });
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text();
+          console.warn(`  Podcast RSS: Supabase upload failed (${uploadRes.status}): ${errText}`);
+        } else {
+          console.log(`  Podcast RSS: uploaded feed → ${context.feedUrl}`);
+
+          // WebSub ping — Spotify가 즉시 RSS 폴링하도록 알림
+          // (수동 새로고침 없이 에피소드 자동 반영)
+          try {
+            const pingBody = new URLSearchParams({
+              "hub.mode": "publish",
+              "hub.url": context.feedUrl,
+            });
+            const pingRes = await fetch("https://pubsubhubbub.appspot.com/", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: pingBody.toString(),
+            });
+            if (pingRes.status === 204) {
+              console.log(`  Podcast RSS: WebSub ping sent → Spotify will refresh shortly`);
+            } else {
+              console.warn(`  Podcast RSS: WebSub ping returned ${pingRes.status}`);
+            }
+          } catch (pingErr) {
+            console.warn(`  Podcast RSS: WebSub ping failed (non-critical): ${pingErr}`);
+          }
+        }
+      }
+
       return {
         channel: "podcast-rss",
         success: true,
-        publishedUrl: context.feedUrl,
+        // 크로스프로모엔 Spotify 쇼 URL 노출 (raw RSS feed URL 대신)
+        publishedUrl: PODCAST_URL,
         publishedAt: new Date().toISOString(),
       };
     } catch (err) {

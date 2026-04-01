@@ -6,8 +6,8 @@ Brief slug를 받아서 전체 미디어 파이프라인을 실행한다.
 
 ```
 Brief → Gemini 스크립트 생성 (ES 기본)
-  → MimikaStudio Qwen3-TTS 0.6B (woman-es 클론)
-    → whisper-cpp word-level 자막 (구두점 병합)
+  → MimikaStudio Chatterbox TTS (jisun 클론 — 기본)
+    → whisper-cpp word-level 자막 (구두점 병합, GGML_METAL_DISABLE=1)
       → Pexels Video 배경 수집 (portrait/landscape)
         → Remotion BriefShort V3 / BriefLongform 렌더
           → ffmpeg 합성 (음성 + BGM + loudnorm + 동적 fadeOut)
@@ -48,22 +48,32 @@ npm run publish:channels -w @vibehub/backend -- <slug>
 
 ## 핵심 성공 패턴
 
-- TTS: **0.6B 모델** (1.7B는 OOM/타임아웃)
+- TTS 엔진: **Chatterbox** (qwen3 아님 — hallucinate/크래시)
+- TTS 모델: **0.6B** (1.7B는 OOM/타임아웃)
+- TTS 기본 보이스: **`jisun`** (`/Users/family/MimikaStudio/data/user_voices/cloners/jisun.wav`)
+  - 포맷: 24kHz 모노 PCM 10초 클립 (WAV + TXT + meta.json 3파일 필요)
+  - 보이스 추가: `ffmpeg -i <input.mp3> -ss 2 -t 10 -ar 24000 -ac 1 -c:a pcm_s16le <name>.wav`
+- TTS hallucination 방어:
+  - 최대 duration 초과 시 파일 삭제 후 **10초 쿨다운** 후 재시도
+  - 최소 duration 미달 시 (expectedWords × 0.2초) 파일 삭제 후 **5초 쿨다운**
 - TTS 응답: JSON `audio_url` → 별도 GET 다운로드 (바이너리 직접 반환 아님)
 - Whisper: **whisper-cpp** `--output-json-full` (Python whisper 아님)
+- Whisper Metal GPU 오염: MimikaStudio TTS 후 동일 tsx 프로세스에서 whisper-cli 호출 시
+  exit code 3 크래시 → **`env: { GGML_METAL_DISABLE: "1" }`** 으로 CPU fallback 강제
 - 씬 분할: **프레임 균등 분배** (문장 매칭 아님)
 - 구두점: 이전 단어에 **병합** (독립 토큰 금지)
 - BGM fadeOut: `voiceDurationSec - 3`초 시작 (동적)
 - 기본 언어: **스페인어** (Latin American)
+- YouTube description: **4800자 하드캡** (YouTube 5000자 한도, suffix 먼저 확보 후 body 잘라냄)
 
 ## 검증 상태
 
 | 항목 | 상태 |
 |------|------|
 | Shorts ES (9:16, ~58초) | ✅ 2026-03-31 검증 |
-| Longform (16:9, ~2분) | ⬜ 미검증 |
+| Longform (16:9, ~2분) | ✅ 2026-04-01 검증 (jisun 보이스, GGML_METAL_DISABLE=1) |
 | Threads 발행 | ✅ 검증 완료 |
-| YouTube API 업로드 | ✅ 검증 완료 |
+| YouTube API 업로드 | ✅ 검증 완료 (description 4800자 캡 포함) |
 | Podcast RSS (Spotify) | ✅ 검증 완료 |
 
 ## 제약사항

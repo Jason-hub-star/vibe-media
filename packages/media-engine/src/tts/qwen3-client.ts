@@ -22,7 +22,7 @@ export interface Qwen3TtsOptions {
   outputPath: string;
   /** TTS 엔진 (기본: "chatterbox" — qwen3보다 안정적) */
   engine?: TtsEngine;
-  /** 음성 프리셋 (기본: "woman-es") */
+  /** 음성 프리셋 (기본: "jisun") */
   voiceName?: string;
   /** 언어 (기본: "English") */
   language?: string;
@@ -150,7 +150,7 @@ export async function generateTts(
     text,
     outputPath,
     engine = "chatterbox",
-    voiceName = "woman-es",
+    voiceName = "jisun",
     language = "English",
     modelSize = "0.6B",
     baseUrl = DEFAULT_BASE_URL,
@@ -222,6 +222,17 @@ export async function generateTts(
           if (chunkDur > maxChunkDuration) {
             console.log(`    TTS chunk ${i + 1} hallucinated: ${chunkDur.toFixed(1)}s > ${maxChunkDuration.toFixed(0)}s limit, retrying...`);
             await fs.unlink(chunkPath).catch(() => {});
+            // TTS 서버 안정화 대기: hallucination 직후 즉시 재시도 시 garbled 음성 생성 방지
+            await new Promise((r) => setTimeout(r, 10_000));
+            continue;
+          }
+
+          // 최소 지속 시간 검사: 너무 짧으면 TTS가 텍스트를 누락한 것
+          const minChunkDuration = Math.max(1, expectedWords * 0.2);
+          if (chunkDur < minChunkDuration) {
+            console.log(`    TTS chunk ${i + 1} too short: ${chunkDur.toFixed(1)}s < ${minChunkDuration.toFixed(1)}s min, retrying...`);
+            await fs.unlink(chunkPath).catch(() => {});
+            await new Promise((r) => setTimeout(r, 5_000));
             continue;
           }
 
