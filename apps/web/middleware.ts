@@ -14,9 +14,24 @@ const DEFAULT_LOCALE = "en";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // admin, api, _next, 정적 파일은 제외
+  // admin Basic Auth gate
+  if (pathname.startsWith("/admin")) {
+    const authHeader = request.headers.get("authorization");
+    const expected = process.env.ADMIN_BASIC_AUTH;
+
+    if (expected) {
+      if (!authHeader || authHeader !== `Basic ${btoa(expected)}`) {
+        return new NextResponse("Unauthorized", {
+          status: 401,
+          headers: { "WWW-Authenticate": 'Basic realm="Admin"' },
+        });
+      }
+    }
+    return NextResponse.next();
+  }
+
+  // api, _next, 정적 파일은 제외
   if (
-    pathname.startsWith("/admin") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/brand") ||
