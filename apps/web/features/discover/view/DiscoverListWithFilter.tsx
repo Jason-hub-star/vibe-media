@@ -66,7 +66,7 @@ export function DiscoverListWithFilter({ items }: Props) {
         onChange={handleChange}
       />
       {grouped.size === 0 ? (
-        <p className="muted" style={{ textAlign: "center", padding: "2rem 0" }}>
+        <p className="muted empty-filter-message">
           {items.length > 0
             ? "No items match your filter."
             : "Discovery items will appear after curation."}

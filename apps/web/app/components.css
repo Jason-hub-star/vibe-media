@@ -99,6 +99,11 @@
   gap: 0.8rem;
 }
 
+.empty-filter-message {
+  text-align: center;
+  padding: var(--space-section) 0;
+}
+
 .panel {
   border: 1px solid rgba(var(--color-cream-rgb), 0.12);
   border-radius: var(--radius-panel);

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { ToolCandidateImport } from "@vibehub/content-contracts";
+import { formatDateShort } from "@/lib/format-date";
 
 function externalLink(label: string, href: string | null) {
   if (!href) return null;
@@ -65,7 +66,7 @@ export function ToolCandidateImportCard({ item }: { item: ToolCandidateImport })
       </div>
       <div className="stack-tight">
         <p className="submission-meta muted">
-          Source: {item.sourceName} · Imported on {item.importedAt.slice(0, 10)}
+          Source: {item.sourceName} · Imported on {formatDateShort(item.importedAt)}
         </p>
       </div>
     </article>

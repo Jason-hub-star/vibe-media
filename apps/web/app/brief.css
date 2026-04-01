@@ -27,7 +27,7 @@
 /* ── Brief dek (summary) ── */
 
 .brief-dek {
-  font-size: 1.05rem;
+  font-size: calc(var(--type-body) * 1.05);
   line-height: 1.6;
   color: rgba(var(--color-cream-rgb), 0.76);
   border-left: 3px solid var(--color-orange);
@@ -186,7 +186,7 @@
 
 /* ── Detail page: article body ── */
 .brief-detail-article {
-  font-size: 1.05rem;
+  font-size: calc(var(--type-body) * 1.05);
   line-height: 1.75;
   color: rgba(var(--color-cream-rgb), 0.88);
 }

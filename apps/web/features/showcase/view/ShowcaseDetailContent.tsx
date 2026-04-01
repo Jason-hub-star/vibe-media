@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { ShowcaseEntry } from "@vibehub/content-contracts";
+import { formatDateShort } from "@/lib/format-date";
 
 export function ShowcaseDetailContent({ entry }: { entry: ShowcaseEntry }) {
   return (
@@ -55,7 +56,7 @@ export function ShowcaseDetailContent({ entry }: { entry: ShowcaseEntry }) {
             <div className="admin-detail-row">
               <dt className="admin-detail-label">발행일</dt>
               <dd className="admin-detail-value">
-                {entry.publishedAt.slice(0, 10)}
+                {formatDateShort(entry.publishedAt)}
               </dd>
             </div>
           )}

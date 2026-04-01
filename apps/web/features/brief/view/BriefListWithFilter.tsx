@@ -75,7 +75,7 @@ export function BriefListWithFilter({ briefs, locale }: { briefs: BriefListItem[
         ))}
       </div>
       {filtered.length === 0 && briefs.length > 0 && (
-        <p className="muted" style={{ textAlign: "center", padding: "2rem 0" }}>
+        <p className="muted empty-filter-message">
           No briefs match your filter.
         </p>
       )}

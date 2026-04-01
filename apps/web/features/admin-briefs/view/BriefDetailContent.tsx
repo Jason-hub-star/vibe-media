@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import type { BriefDetail } from "@vibehub/content-contracts";
+import { formatDateShort } from "@/lib/format-date";
 
 import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
 
@@ -45,7 +46,7 @@ export function BriefDetailContent({ brief }: { brief: BriefDetail }) {
         <div className="panel stack-tight">
           <p className="eyebrow">배포</p>
           <p>
-            발행일: {brief.publishedAt.slice(0, 10)}
+            발행일: {formatDateShort(brief.publishedAt)}
           </p>
           <Link className="inline-link" href={`/brief/${brief.slug}`}>
             공개 페이지 보기 &rarr;

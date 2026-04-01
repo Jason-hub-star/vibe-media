@@ -1,4 +1,5 @@
 import type { ToolSubmission } from "@vibehub/content-contracts";
+import { formatDateShort } from "@/lib/format-date";
 
 function externalLink(label: string, href: string | null) {
   if (!href) return null;
@@ -36,7 +37,7 @@ export function ToolSubmissionCard({ item }: { item: ToolSubmission }) {
         {externalLink("Docs", item.docsUrl)}
       </div>
       <p className="submission-meta muted">
-        Submitted by {item.submitterName ?? "Community builder"} on {item.createdAt.slice(0, 10)}
+        Submitted by {item.submitterName ?? "Community builder"} on {formatDateShort(item.createdAt)}
       </p>
     </article>
   );
