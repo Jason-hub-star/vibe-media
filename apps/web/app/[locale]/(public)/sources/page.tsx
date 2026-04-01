@@ -7,7 +7,6 @@ import {
   getOgLocale,
 } from "@/lib/i18n";
 import { PageFrame } from "@/components/PageFrame";
-import { EmptyState } from "@/components/EmptyState";
 import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listShowcasePicksForSubmitHub } from "@/features/showcase/use-case/list-showcase-picks-for-submit-hub";
@@ -59,12 +58,16 @@ export default async function SourcesPage() {
             <a className="button-primary" href="#submit-tool">
               Submit your tool
             </a>
-            <a className="button-secondary" href="#latest-submissions">
-              Browse latest submissions
-            </a>
-            <a className="button-secondary" href="#imported-candidates">
-              Browse imported candidates
-            </a>
+            {latestSubmissions.length > 0 && (
+              <a className="button-secondary" href="#latest-submissions">
+                Browse latest submissions
+              </a>
+            )}
+            {importedCandidates.length > 0 && (
+              <a className="button-secondary" href="#imported-candidates">
+                Browse imported candidates
+              </a>
+            )}
           </div>
         </div>
         <PlaceholderArt
@@ -73,23 +76,18 @@ export default async function SourcesPage() {
         />
       </section>
 
-      <SectionBlock
-        eyebrow="Showcase picks"
-        title="Operator-curated tools we think deserve a closer look"
-      >
-        {showcasePicks.length === 0 ? (
-          <EmptyState
-            body="Curated showcase picks will appear here once operators promote the first standout submissions."
-            title="No showcase picks yet"
-          />
-        ) : (
+      {showcasePicks.length > 0 && (
+        <SectionBlock
+          eyebrow="Showcase picks"
+          title="Operator-curated tools we think deserve a closer look"
+        >
           <div className="showcase-grid">
             {showcasePicks.map((entry) => (
               <ShowcaseCard entry={entry} key={entry.id} />
             ))}
           </div>
-        )}
-      </SectionBlock>
+        </SectionBlock>
+      )}
 
       <SectionBlock
         eyebrow="Submit your tool"
@@ -123,43 +121,33 @@ export default async function SourcesPage() {
         </div>
       </SectionBlock>
 
-      <SectionBlock
-        eyebrow="Latest submissions"
-        sectionId="latest-submissions"
-        title="Fresh tools that passed automated screening"
-      >
-        {latestSubmissions.length === 0 ? (
-          <EmptyState
-            body="Approved submissions will appear here after the first successful screening pass."
-            title="No approved submissions yet"
-          />
-        ) : (
+      {latestSubmissions.length > 0 && (
+        <SectionBlock
+          eyebrow="Latest submissions"
+          sectionId="latest-submissions"
+          title="Fresh tools that passed automated screening"
+        >
           <div className="submission-card-grid">
             {latestSubmissions.map((item) => (
               <ToolSubmissionCard item={item} key={item.id} />
             ))}
           </div>
-        )}
-      </SectionBlock>
+        </SectionBlock>
+      )}
 
-      <SectionBlock
-        eyebrow="Imported candidates"
-        sectionId="imported-candidates"
-        title="Projects spotted on trusted public sources"
-      >
-        {importedCandidates.length === 0 ? (
-          <EmptyState
-            body="Imported candidates will appear here after the first HN or GitHub fetch succeeds."
-            title="No imported candidates yet"
-          />
-        ) : (
+      {importedCandidates.length > 0 && (
+        <SectionBlock
+          eyebrow="Imported candidates"
+          sectionId="imported-candidates"
+          title="Projects spotted on trusted public sources"
+        >
           <div className="submission-card-grid">
             {importedCandidates.map((item) => (
               <ToolCandidateImportCard item={item} key={item.id} />
             ))}
           </div>
-        )}
-      </SectionBlock>
+        </SectionBlock>
+      )}
     </PageFrame>
   );
 }
