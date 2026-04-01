@@ -30,6 +30,7 @@
     "publish:auto": "tsx src/workers/run-auto-publish.ts",
     "publish:auto-dry": "tsx src/workers/run-auto-publish.ts --dry-run",
     "publish:repair-state": "tsx src/workers/run-editorial-integrity-repair.ts",
+    "brief:repair-canonical-english": "tsx src/workers/run-repair-canonical-english.ts",
     "trial:classifier": "tsx src/workers/run-classifier-shadow-trial.ts",
     "trial:brief-draft": "tsx src/workers/run-brief-draft-shadow-trial.ts",
     "trial:discover-draft": "tsx src/workers/run-discover-draft-shadow-trial.ts",

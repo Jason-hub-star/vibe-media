@@ -1,5 +1,10 @@
 import { createSupabaseSql } from "./supabase-postgres";
 import { runBriefQualityCheck } from "./brief-quality-check";
+import {
+  briefContainsHangulContent,
+  canTranslateBriefToEnglish,
+  normalizeBriefToEnglish,
+} from "./brief-language";
 
 const AUTO_APPROVE_MIN_CONFIDENCE = 0.85;
 const AUTO_APPROVE_MIN_QUALITY_SCORE = 70;
@@ -202,7 +207,52 @@ export async function runAutoApprove(opts: { maxBriefs?: number } = {}): Promise
     const results: AutoApproveResult[] = [];
 
     for (const brief of pendingBriefs) {
-      const { reasons, quality } = buildHoldReasons(brief, publishedBriefs);
+      let workingBrief = brief;
+      let translationFailure: string | null = null;
+      let translationApplied = false;
+
+      if (briefContainsHangulContent({
+        title: brief.title,
+        summary: brief.summary,
+        body: brief.body,
+      })) {
+        if (!canTranslateBriefToEnglish()) {
+          translationFailure = "canonical English normalization required but GEMINI_API_KEY is not configured";
+        } else {
+          try {
+            const normalized = await normalizeBriefToEnglish({
+              title: brief.title,
+              summary: brief.summary,
+              body: brief.body,
+            });
+
+            await sql`
+              update public.brief_posts
+              set
+                title = ${normalized.title},
+                summary = ${normalized.summary},
+                body = ${sql.json(normalized.body)},
+                last_editor_note = ${"canonical English copy normalized before auto-approve"}
+              where id = ${brief.id}::uuid
+                and status = 'review'
+                and review_status = 'pending'
+            `;
+
+            workingBrief = {
+              ...brief,
+              ...normalized,
+            };
+            translationApplied = true;
+          } catch (error) {
+            translationFailure = `canonical English normalization failed: ${error instanceof Error ? error.message : String(error)}`;
+          }
+        }
+      }
+
+      const { reasons, quality } = buildHoldReasons(workingBrief, publishedBriefs);
+      if (translationFailure) {
+        reasons.unshift(translationFailure);
+      }
 
       if (reasons.length > 0) {
         const note = buildAutoApproveHoldNote(reasons);
@@ -236,7 +286,9 @@ export async function runAutoApprove(opts: { maxBriefs?: number } = {}): Promise
         continue;
       }
 
-      const approvedNote = `auto-approved by review guard (${quality.grade} ${quality.qualityScore})`;
+      const approvedNote = translationApplied
+        ? `auto-approved by review guard (${quality.grade} ${quality.qualityScore}); canonical copy normalized to English`
+        : `auto-approved by review guard (${quality.grade} ${quality.qualityScore})`;
 
       await sql`
         update public.brief_posts

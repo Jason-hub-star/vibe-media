@@ -1,3 +1,5 @@
+import { briefContainsHangulContent } from "./brief-language";
+
 const INTERNAL_TERMS = ["pipeline", "ingest", "classify", "orchestrat"];
 
 export interface BriefQualityInput {
@@ -124,6 +126,14 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   }
   if (sourceCount < 1) {
     failures.push(`source count ${sourceCount} (expected ≥1)`);
+  }
+
+  if (briefContainsHangulContent({
+    title: brief.title ?? "",
+    summary: brief.summary ?? "",
+    body: brief.body ?? [],
+  })) {
+    failures.push("canonical brief must be in English only");
   }
 
   const bodyText = (brief.body ?? []).join(" ").toLowerCase();

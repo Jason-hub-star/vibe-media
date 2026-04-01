@@ -189,6 +189,12 @@
 - Radar Featured Picks 섹션 제거 → Discovery Index 통합: done (2026-04-01)
 - Discover summary LLM enrichment (gpt-4o-mini via OpenAI): done (2026-04-01)
 - 주간 Self-Critique 루프 최초 실행: done (2026-04-01) — 10건 분석, 평균 3.0/5.0, 4개 개선 제안 생성 (artifact 오염/마케팅 언어/한국어 gate/Apple ML treatment)
+- canonical brief English repair + prevention: done (2026-04-01)
+  - published brief 4건의 한글 canonical title/summary/body를 영어 copy로 수동 보정
+  - `brief-quality-check`에 canonical English-only gate 추가
+  - `supabase-auto-approve`가 한글 brief를 만나면 Gemini 기반 English normalization 후 승인, 키 미설정 시 hold
+  - `supabase-editorial-sync`가 scheduled/published 등 locked brief의 기존 canonical copy를 보존해 후속 sync 덮어쓰기 방지
+  - `brief:repair-canonical-english` CLI 워커 추가
   - DB: `discover_items.cover_image_url` 컬럼 추가 (migration)
   - Backend: sync/read 경로에 `cover_image_url` 추가, 기존 `getImageUrl()` 재사용
   - Contract: `DiscoverItem.coverImage` optional 필드 추가

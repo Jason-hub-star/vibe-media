@@ -4,6 +4,17 @@
 
 ---
 
+### 2026-04-01 — canonical brief는 영어만 허용하고 한글 copy는 승인 전 정규화
+- 상태: resolved
+- 배경: published brief 29건 중 4건이 한국어 title/summary로 canonical DB에 그대로 발행되었다. 한국 AI 매체 소스의 원문이 `brief_posts` canonical row에 직접 들어오고 있었고, 이후 sync도 같은 source item을 다시 덮어쓸 수 있었다.
+- 결정:
+  - canonical brief 품질 게이트에 English-only 규칙을 추가한다
+  - auto-approve 단계에서 한글 brief를 만나면 Gemini로 영어 canonical copy를 정규화한 뒤 승인한다
+  - 번역 키가 없거나 정규화가 실패하면 auto-approve hold로 멈춘다
+  - scheduled/published 등 locked brief는 sync 시 기존 canonical copy를 보존해 수동 보정 내용이 덮어써지지 않게 한다
+  - 이미 발행된 한글 canonical brief는 별도 repair worker와 수동 DB 보정으로 즉시 정리한다
+- 영향: canonical `brief_posts`는 영어를 유지하고, locale 확장은 variant 테이블로만 가게 된다. 운영 환경에서 번역 키가 빠지면 한글 brief가 조용히 발행되지 않고 review 단계에서 멈춘다.
+
 ### 2026-04-01 — source-registry SQL 조건 분기 수정 (autoresearch keep)
 - 상태: resolved
 - 배경: `loadSourcesFromDb`의 조건부 `sql` fragment가 retry 프록시를 통해 fragment 대신 DB 쿼리로 처리되어 syntax error 발생 → 28개 활성 소스 대신 3개 하드코딩 fallback으로 강등

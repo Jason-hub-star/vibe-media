@@ -243,6 +243,7 @@ describe("Admin card presenters", () => {
       githubUrl: "https://github.com/example/agent-workbench",
       demoUrl: null,
       docsUrl: null,
+      coverImageUrl: null,
       tags: ["agent"],
       status: "approved_for_listing",
       screeningStatus: "passed",

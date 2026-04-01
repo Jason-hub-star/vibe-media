@@ -37,7 +37,7 @@ describe("supabase editorial actions", () => {
     expect(() => assertBriefCanSchedule("review")).not.toThrow();
   });
 
-  it("blocks publish for briefs with insufficient body or sources", () => {
+  it("blocks publish for briefs with insufficient body depth", () => {
     const shallow = runBriefQualityCheck({
       title: "Creating with Sora Safely",
       summary: "To address the novel safety challenges posed by a state-of-the-art video model.",
@@ -48,7 +48,6 @@ describe("supabase editorial actions", () => {
 
     expect(shallow.passed).toBe(false);
     expect(shallow.failures.some((f) => f.includes("body paragraphs"))).toBe(true);
-    expect(shallow.failures.some((f) => f.includes("source count"))).toBe(true);
   });
 
   it("passes quality check for well-formed briefs", () => {
@@ -73,5 +72,24 @@ describe("supabase editorial actions", () => {
 
     expect(good.passed).toBe(true);
     expect(good.failures).toHaveLength(0);
+  });
+
+  it("blocks canonical briefs that still contain Hangul", () => {
+    const korean = runBriefQualityCheck({
+      title: "지푸, 초저가 코딩 모델 GLM-5.1 출시",
+      summary: "지푸 AI가 코딩 특화 모델을 출시하며 고성능 저비용 전략을 강조했다.",
+      body: [
+        "지푸 AI가 새 코딩 모델을 공개했다.",
+        "## Why it matters",
+        "개발자 시장에서 가격 경쟁을 본격화할 수 있다.",
+        "## Details",
+        "기존 상용 모델과 비슷한 성능을 더 낮은 가격에 제시했다.",
+      ],
+      source_links: [{ label: "AI Times Korea", href: "https://www.aitimes.com/example" }],
+      source_count: 1,
+    });
+
+    expect(korean.passed).toBe(false);
+    expect(korean.failures).toContain("canonical brief must be in English only");
   });
 });

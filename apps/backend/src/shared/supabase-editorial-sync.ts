@@ -67,11 +67,17 @@ interface AdminReviewRow {
 
 interface ExistingBriefLifecycleRow {
   source_item_id: string;
+  title: string;
+  summary: string;
+  body: string[];
   status: BriefPostRow["status"];
   review_status: BriefPostRow["review_status"];
   scheduled_at: string | null;
   published_at: string | null;
   last_editor_note: string | null;
+  source_links: Array<{ label: string; href: string }>;
+  source_count: number;
+  cover_image_url: string | null;
 }
 
 interface ExistingDiscoverLifecycleRow {
@@ -229,11 +235,17 @@ export function preserveBriefLifecycle(row: BriefPostRow, existing?: ExistingBri
 
   return {
     ...row,
+    title: existing.title,
+    summary: existing.summary,
+    body: Array.isArray(existing.body) ? existing.body : row.body,
     status: existing.status,
     review_status: existing.review_status,
     scheduled_at: existing.scheduled_at,
     published_at: existing.published_at,
-    last_editor_note: existing.last_editor_note ?? row.last_editor_note
+    last_editor_note: existing.last_editor_note ?? row.last_editor_note,
+    source_links: Array.isArray(existing.source_links) ? existing.source_links : row.source_links,
+    source_count: existing.source_count ?? row.source_count,
+    cover_image_url: existing.cover_image_url ?? row.cover_image_url,
   };
 }
 
@@ -503,11 +515,17 @@ export async function syncEditorialSnapshotToSupabase(snapshot: LiveIngestSnapsh
       const existingRows = await sql<ExistingBriefLifecycleRow[]>`
         select
           source_item_id,
+          title,
+          summary,
+          body,
           status,
           review_status,
           scheduled_at,
           published_at,
-          last_editor_note
+          last_editor_note,
+          source_links,
+          source_count,
+          cover_image_url
         from public.brief_posts
         where source_item_id = ${originalRow.source_item_id}::uuid
         limit 1

@@ -252,18 +252,30 @@ describe("supabase editorial sync", () => {
       },
       {
         source_item_id: "source-item-1",
+        title: "Operator title",
+        summary: "Operator summary",
+        body: ["Operator body"],
         status: "scheduled",
         review_status: "approved",
         scheduled_at: "2026-03-23T09:00:00.000Z",
         published_at: null,
-        last_editor_note: "keep operator note"
+        last_editor_note: "keep operator note",
+        source_links: [{ label: "Operator source", href: "https://operator.example" }],
+        source_count: 2,
+        cover_image_url: "https://operator.example/cover.png"
       }
     );
 
+    expect(merged.title).toBe("Operator title");
+    expect(merged.summary).toBe("Operator summary");
+    expect(merged.body).toEqual(["Operator body"]);
     expect(merged.status).toBe("scheduled");
     expect(merged.review_status).toBe("approved");
     expect(merged.scheduled_at).toBe("2026-03-23T09:00:00.000Z");
     expect(merged.last_editor_note).toBe("keep operator note");
+    expect(merged.source_links).toEqual([{ label: "Operator source", href: "https://operator.example" }]);
+    expect(merged.source_count).toBe(2);
+    expect(merged.cover_image_url).toBe("https://operator.example/cover.png");
   });
 
   it("preserves manual discover lifecycle once it has moved beyond pending", () => {
