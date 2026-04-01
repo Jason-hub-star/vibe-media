@@ -187,6 +187,9 @@ if (podcastVoicePath && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       language: canonicalLocale,
     }),
   );
+} else {
+  console.log("Podcast: no voice file found — skipping podcast-rss registration");
+  console.log(`  Looked for: ${longformVoicePath} or ${shortsVoicePath}`);
 }
 
 // YouTube: API 환경변수 있으면 자동 업로드, 없으면 로컬 메타 저장

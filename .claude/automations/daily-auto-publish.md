@@ -202,14 +202,44 @@ npm run publish:channels <brief-slug>
 - 결과는 자동으로 DB(`channel_publish_results`)에 저장 + Telegram 보고
 - YouTube는 이 단계에서 `업로드 준비`까지만 완료된다. public YouTube URL 연결과 Pass 3은 업로드 후 별도 완료 신호가 필요하다.
 
-### 9-3. 안전장치
+### 9-3. Podcast 누락 보충
+
+채널 발행 후, podcast-rss 발행이 누락된 기존 published brief를 보충한다.
+
+**대상 조회**:
+```sql
+SELECT bp.slug
+FROM public.brief_posts bp
+WHERE bp.status = 'published'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.channel_publish_results cpr
+    WHERE cpr.brief_slug = bp.slug
+      AND cpr.channel_name = 'podcast-rss'
+      AND cpr.success = true
+  )
+ORDER BY bp.published_at DESC
+LIMIT 5
+```
+
+**보충 조건**: `output/<slug>/longform-voice.wav` 또는 `output/<slug>/shorts-voice.wav`가 존재해야 함.
+음성 파일이 없으면 skip (media render가 아직 안 된 것이므로 `daily-media-publish`에서 처리).
+
+**실행**:
+```bash
+npm run publish:channels <slug> --channel podcast-rss
+```
+
+- 하루 최대 5건 보충 (과부하 방지)
+- 이미 podcast 성공 기록이 있으면 자동 skip
+
+### 9-4. 안전장치
 
 - `published` 상태 brief만 대상 — draft/review/scheduled는 절대 건드리지 않음
 - 동일 brief 중복 발행 방지: `channel_publish_results` 테이블에 이전 성공 기록이 있으면 skip
 - Threads API 250건/일 제한 — 일일 brief 10건 이하이므로 안전
 - 채널별 실패 격리: `Promise.allSettled`로 한 채널 실패가 다른 채널에 영향 없음
 
-### 9-4. 행동 원칙 (Channel Publish)
+### 9-5. 행동 원칙 (Channel Publish)
 
 - Auto Publish에서 전환된 brief만 대상으로 한다 — 과거 published brief는 건드리지 않는다.
 - 발행 결과는 DB + Telegram 모두에 기록한다.
