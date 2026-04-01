@@ -15,7 +15,7 @@ import { listImportedToolCandidatesForListing } from "@/features/tool-candidate-
 import { ToolCandidateImportCard } from "@/features/tool-candidate-imports/view/ToolCandidateImportCard";
 import { listLatestToolSubmissions } from "@/features/tool-submissions/use-case/list-latest-tool-submissions";
 import { ToolSubmissionCard } from "@/features/tool-submissions/view/ToolSubmissionCard";
-import { ToolSubmissionForm } from "@/features/tool-submissions/view/ToolSubmissionForm";
+import { ToolSubmissionFormWithPreview } from "@/features/tool-submissions/view/ToolSubmissionFormWithPreview";
 
 export async function generateMetadata({
   params,
@@ -93,28 +93,7 @@ export default async function SourcesPage() {
         sectionId="submit-tool"
         title="Quick intake built for busy builders"
       >
-        <div className="hero-grid submit-tool-grid">
-          <ToolSubmissionForm />
-          <article className="panel stack-tight">
-            <p className="eyebrow">What happens next</p>
-            <h3>Send the basics. We handle the first review pass.</h3>
-            <p className="muted">
-              This page is designed so you can submit first and elaborate later.
-              Latest Submissions and Showcase Picks are different lanes with
-              different thresholds.
-            </p>
-            <ol className="submit-tool-steps">
-              <li>Submit your title, one-line summary, website, and email.</li>
-              <li>We check duplicates, spam patterns, and whether the public link works.</li>
-              <li>Approved tools can appear in Latest Submissions.</li>
-              <li>Operators handpick a smaller set for Showcase Picks.</li>
-            </ol>
-            <p className="muted">
-              Imported Candidates stays separate for tools found on trusted public
-              sources, so builder submissions keep their own lane.
-            </p>
-          </article>
-        </div>
+        <ToolSubmissionFormWithPreview />
       </SectionBlock>
 
       {latestSubmissions.length > 0 && (

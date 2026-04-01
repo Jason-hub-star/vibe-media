@@ -194,6 +194,30 @@
   font-size: var(--type-small);
 }
 
+.submission-preview {
+  position: sticky;
+  top: 2rem;
+  align-self: start;
+}
+
+.submission-badge-crawling {
+  border-color: rgba(var(--color-orange-rgb), 0.3);
+  background: rgba(var(--color-orange-rgb), 0.14);
+  color: rgba(var(--color-orange-rgb), 0.92);
+  animation: pulse-badge 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-preview {
+  border: 1px solid rgba(var(--color-purple-rgb), 0.3);
+  background: rgba(var(--color-purple-rgb), 0.14);
+  color: rgba(var(--color-purple-rgb), 0.92);
+}
+
 .imported-card {
   min-height: 100%;
   overflow: hidden;

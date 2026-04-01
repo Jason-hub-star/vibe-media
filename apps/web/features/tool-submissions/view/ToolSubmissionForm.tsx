@@ -4,7 +4,21 @@ import { useActionState } from "react";
 
 import { submitToolSubmissionAction } from "../action/submit-tool-submission";
 
-export function ToolSubmissionForm() {
+interface ToolSubmissionFormProps {
+  titleRef?: React.RefObject<HTMLInputElement | null>;
+  summaryRef?: React.RefObject<HTMLTextAreaElement | null>;
+  isCrawling?: boolean;
+  onFieldChange?: (field: string, value: string) => void;
+  onUrlBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+}
+
+export function ToolSubmissionForm({
+  titleRef,
+  summaryRef,
+  isCrawling,
+  onFieldChange,
+  onUrlBlur,
+}: ToolSubmissionFormProps) {
   const [state, formAction, isPending] = useActionState(submitToolSubmissionAction, {
     status: "idle",
     message: null,
@@ -50,11 +64,13 @@ export function ToolSubmissionForm() {
             </span>
             <span className="submission-help">Use the name people already know.</span>
             <input
+              ref={titleRef}
               autoComplete="organization-title"
               className="input"
               name="title"
               placeholder="Vibe Ops Console"
               required
+              onChange={(e) => onFieldChange?.("title", e.target.value)}
             />
           </label>
 
@@ -62,6 +78,7 @@ export function ToolSubmissionForm() {
             <span className="submission-field-topline">
               <span className="eyebrow">Website URL</span>
               <span className="submission-badge">Required</span>
+              {isCrawling && <span className="submission-badge submission-badge-crawling">Fetching info...</span>}
             </span>
             <span className="submission-help">Link the main page where people can understand or try it.</span>
             <input
@@ -71,6 +88,8 @@ export function ToolSubmissionForm() {
               placeholder="https://yourproject.com"
               required
               type="url"
+              onBlur={onUrlBlur}
+              onChange={(e) => onFieldChange?.("websiteUrl", e.target.value)}
             />
           </label>
 
@@ -81,10 +100,12 @@ export function ToolSubmissionForm() {
             </span>
             <span className="submission-help">Say what it does and why it matters in one or two short sentences.</span>
             <textarea
+              ref={summaryRef}
               className="input textarea-input"
               name="summary"
               placeholder="AI ops dashboard that watches workflows, catches failures, and helps teams recover faster."
               required
+              onChange={(e) => onFieldChange?.("summary", e.target.value)}
             />
           </label>
 
@@ -153,7 +174,12 @@ export function ToolSubmissionForm() {
                 <span className="submission-badge submission-badge-optional">Optional</span>
               </span>
               <span className="submission-help">A few simple tags help people discover the right category.</span>
-              <input className="input" name="tags" placeholder="automation, agents, workflow" />
+              <input
+                className="input"
+                name="tags"
+                placeholder="automation, agents, workflow"
+                onChange={(e) => onFieldChange?.("tags", e.target.value)}
+              />
             </label>
           </div>
 
@@ -176,7 +202,13 @@ export function ToolSubmissionForm() {
               <span className="submission-badge submission-badge-optional">Optional</span>
             </span>
             <span className="submission-help">Add a builder, team, or company name if you want it attached.</span>
-            <input autoComplete="name" className="input" name="submitterName" placeholder="Builder name" />
+            <input
+              autoComplete="name"
+              className="input"
+              name="submitterName"
+              placeholder="Builder name"
+              onChange={(e) => onFieldChange?.("submitterName", e.target.value)}
+            />
           </label>
         </div>
       </details>
