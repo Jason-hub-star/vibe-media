@@ -27,7 +27,9 @@ export function BriefCardCover({ coverImage, title, topic, slug, isLead }: Brief
           alt={title}
           fill
           sizes={isLead ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
-          loading="lazy"
+          loading={isLead ? "eager" : "lazy"}
+          priority={isLead}
+          unoptimized
           className="brief-card-cover-img"
         />
       ) : (
