@@ -55,7 +55,6 @@ export function ToolSubmissionFormWithPreview() {
         onUrlBlur={handleUrlBlur}
       />
       <div className="submission-preview">
-        <p className="eyebrow">Live preview</p>
         <ToolSubmissionPreview
           title={values.title}
           summary={values.summary}
