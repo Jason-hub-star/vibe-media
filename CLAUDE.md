@@ -87,6 +87,7 @@
 - `skills/ui-audit/SKILL.md` — admin/public overflow, 가독성, 반응성 점검
 - `skills/big-task/SKILL.md` — 대규모 작업 플랜 및 마일스톤 오케스트레이션
 - `skills/retro/SKILL.md` — 세션 회고 → 성공 패턴·실패 우회·반복 수작업을 스킬/피드백/자동화로 자동 추출 (`/retro`)
+- `skills/doc-framework/SKILL.md` — 범용 문서 관리 프레임워크 이식 스킬 (정본 1곳 + change-class 매핑 + 상태 자동 정리)
 - `skills/vibehub-youtube-link-intake/SKILL.md` — Telegram/CLI 기반 YouTube 링크 intake
 - `skills/media-publish/prompt.md` — 미디어 발행 프롬프트
 - `skills/shorts-render/prompt.md` — Shorts 렌더 프롬프트
