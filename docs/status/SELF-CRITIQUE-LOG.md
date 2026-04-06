@@ -126,3 +126,119 @@
 - [ ] 제안 #2: daily-editorial-review.md 요약 마케팅 언어 차단 추가 (운영자 승인 대기)
 - [ ] 제안 #3: AUTO-PUBLISH-RULES.md 한국어 브리프 gate 추가 (운영자 승인 대기)
 - [ ] 제안 #4: SOURCE-CATALOG.md Apple ML editorial 주석 + maxItems 2로 조정 (운영자 승인 대기)
+
+---
+
+## 2026-04-06 비평 결과
+
+### 처리 브리프: 10건
+### 평균 점수: 3.0 / 5.0
+
+### 브리프별 요약
+
+| slug | 제목명확성 | 흡입력 | 요약밀도 | 본문깊이 | 톤 | 평균 |
+|------|-----------|--------|----------|----------|-----|------|
+| ai-benchmarks-are-broken-here-s-what-we-need-instead-live-a36 | 4 | 5 | 2 | 3 | 4 | 3.6 |
+| accelerating-the-next-phase-of-ai-live-9bd | 2 | 2 | 4 | 2 | 3 | 2.6 |
+| 30-years-ago-robots-learned-to-walk-without-falling-live-38d | 5 | 5 | 2 | 3 | 4 | 3.8 |
+| accelerating-the-next-phase-of-ai-live-ope (**중복**) | 2 | 2 | 4 | 2 | 3 | 2.6 |
+| protecting-people-from-harmful-manipulation-live-f0d | 4 | 4 | 3 | 3 | 4 | 3.6 |
+| new-artificial-intelligence-specialty-for-ux-certification-live-235 | 4 | 2 | 2 | 2 | 3 | 2.6 |
+| minimum-viable-product-mvp-definition-live-235 | 3 | 1 | 2 | 3 | 2 | 2.2 |
+| lyria-3-pro-create-longer-tracks-in-more-live-f0d | 2 | 2 | 4 | 3 | 4 | 3.0 |
+| less-gaussians-texture-more-4k-feed-forward-textured-splatti-live-62c | 2 | 2 | 2 | 1 | 1 | 1.6 |
+| glm-5-1-4-6-live-370 | 5 | 5 | 5 | 4 | 5 | 4.8 |
+
+### 발견된 패턴
+
+- **[P1] 완전 중복 발행 (1건 쌍)**: `accelerating-the-next-phase-of-ai`가 `-ope` (2026-04-01)와 `-9bd` (2026-04-03) 두 개로 이틀 간격 발행됨. title, summary, body가 완전 동일한 OpenAI 블로그 포스트. `duplicate_of IS NULL` auto-approve 가드와 Jaccard 유사도 검사가 모두 이를 통과시킨 것. 중복 감지가 발행 후 중복을 잡지 못하고 있다.
+- **[P2] 요약 truncation 지속 (4/10건)**: ai-benchmarks, 30-years-robots, new-ai-specialty, less-gaussians 브리프의 summary가 "..." 또는 "...."로 끝남. 지난 주 [P6]에서도 Lyria 제목 잘림이 지적됐으나, summary truncation에 대한 brief-level quality gate가 없어 반복됨. AUTO-PUBLISH-RULES의 discover 게이트엔 truncation 조건이 있으나 brief_posts에는 없다.
+- **[P3] 학술 논문 원문 무가공 노출 (1건)**: `less-gaussians` 브리프에 논문 저자 affiliation 각주(`†`, `\\`, `Work done while at Apple`), 관련 없는 related work 블럽 2개, 채용 배너("Discover opportunities in Machine Learning / Work with us")가 그대로 포함됨. 지난 주 [P4]와 같은 Apple ML 소스 문제가 여전히 해결되지 않음. 제안 #4가 적용되지 않은 상태.
+- **[P4] 보도자료 보일러플레이트 미제거 (2건)**: `accelerating-next-phase` 브리프가 "March 31, 2026\nCompany\n"으로 시작하고, `new-ai-specialty` 브리프가 "Announcements\n"으로 시작함. 지난 주 제안 #1 artifact 정제가 아직 적용되지 않아 반복됨.
+- **[P5] 정의형/glossary 콘텐츠 부적합 (1건)**: `minimum-viable-product` 브리프(16,941자)는 NNGroup 정의 아티클의 near-complete 사본. 뉴스 미디어 피드에서 glossary entry는 독자 가치가 낮고 제목 흡입력도 1점. 동일 발행일 NNGroup 소스 2건 동시 노출 중.
+- **[P6] 제목 truncation 재발 (1건)**: `lyria-3-pro-create-longer-tracks-in-more` 제목이 "in more"에서 잘림. 지난 주 동일 브리프가 [P6]에서 이미 지적됨 — 같은 소스/slug에서 재발한 것이 아니라 동일 슬러그 재발행으로 보임.
+- **[P7] 최우수 브리프 패턴 확인**: `glm-5-1-4-6` (4.8/5) — 원문 없이 독자적으로 합성된 콘텐츠, 수치 기반 제목("nears Claude Opus 4.6"), 타이트한 요약. `last_editor_note: "canonical English copy repaired manually"`. 이 패턴이 editorial review 기준점이어야 함.
+
+### 개선 제안
+
+---
+
+## 제안 #5: `docs/ref/AUTO-PUBLISH-RULES.md` — 완전 중복 발행 차단 강화
+
+**근거:** P1 패턴 — 동일 title + 동일 source domain 조합이 이미 published 상태로 존재하면 새 브리프를 auto-approve 하지 않는다. 현재 Jaccard 유사도 검사는 "중복 임계치"를 사용하는데, 동일 문자열에서도 통과한 것으로 보임.
+
+**현재:**
+> - no high-similarity match against existing published brief titles/summaries
+
+**제안:**
+> - no high-similarity match against existing published brief titles/summaries
+> - **exact-title block**: 동일 title 문자열(대소문자 무시)이 `published` 상태 브리프에 이미 존재하면 `duplicate_of`를 해당 id로 설정하고 auto-approve를 막는다
+> - **same-source dedup window**: 동일 `source_links[0]` 도메인에서 생성된 브리프가 최근 7일 내 published된 것과 Jaccard ≥ 0.85이면 중복으로 처리한다
+
+---
+
+## 제안 #6: `docs/ref/AUTO-PUBLISH-RULES.md` — brief summary truncation gate 추가
+
+**근거:** P2 패턴 — Discover quality gate에는 summary `...` 잘림 방지 조건이 있으나(§ Discover Quality Gate), brief_posts에는 없음. 4/10건이 truncated summary로 발행됨.
+
+**현재:**
+> ## Auto Queue Conditions
+> - summary length `50-200`
+
+**제안:**
+> ## Auto Queue Conditions
+> - summary length `50-200`
+> - **summary truncation block**: summary가 `...` 또는 `….` 로 끝나면서 길이가 160자 미만이면 auto-approve를 막는다. 160자 이상이면 clampText 산출물로 허용 (discover 게이트와 동일 기준)
+
+---
+
+## 제안 #7: `.claude/automations/daily-editorial-review.md` — 학술 소스 editorial-wrapper 필수화
+
+**근거:** P3 패턴 — Apple ML RSS, arxiv 계열 소스는 논문 abstract를 그대로 피드하므로 저자 affiliation 각주, related work 블럽, 채용 배너가 본문에 유입됨. 제안 #4(2026-04-01)가 아직 미적용인 상태에서 동일 패턴 재발.
+
+**현재:**
+> #### 본문(body) 규칙
+> - 내부 용어 금지: pipeline, ingest, draft, classify, orchestrat 등
+
+**제안:**
+> #### 본문(body) 규칙
+> - 내부 용어 금지: pipeline, ingest, draft, classify, orchestrat 등
+> - **학술 소스 필수 재작성**: source_links[0].href가 arxiv.org, machinelearning.apple.com, research.*.com 계열이면 abstract/저자 목록을 그대로 사용 금지. 반드시 독자 언어(non-jargon)로 다시 작성하고, 저자 affiliation 각주·related work 블럽·채용 배너를 제거한다
+
+---
+
+## 제안 #8: `docs/ref/REVIEW-POLICY.md` — 사람 검수 진입 조건에 verbatim 감지 추가
+
+**근거:** P4 패턴 — 보도자료 보일러플레이트가 반복 유입되고 있음. 현재 Sampling Review 기준은 confidence/critic score 중심이라 verbatim 복사 여부를 별도로 확인하지 않음.
+
+**현재:**
+> ## Human Review Entry Conditions
+> - low confidence
+> - policy risk
+> - duplicate ambiguity
+> - source tier issue
+> - publish rule failure
+> - broken action link
+> - category mismatch
+> - source coverage insufficiency
+
+**제안:**
+> ## Human Review Entry Conditions
+> - low confidence
+> - policy risk
+> - duplicate ambiguity
+> - source tier issue
+> - publish rule failure
+> - broken action link
+> - category mismatch
+> - source coverage insufficiency
+> - **verbatim body**: body 첫 단락이 source_links[0] 원문과 ≥80% 문자열 일치 (보도자료 그대로 노출 방지)
+
+### 적용 여부
+
+- [ ] 제안 #5: AUTO-PUBLISH-RULES.md 완전 중복 exact-title block + same-source 7일 dedup window (운영자 승인 대기)
+- [ ] 제안 #6: AUTO-PUBLISH-RULES.md brief summary truncation gate 160자 미만 잘림 차단 (운영자 승인 대기)
+- [ ] 제안 #7: daily-editorial-review.md 학술 소스 editorial-wrapper 필수화 (운영자 승인 대기)
+- [ ] 제안 #8: REVIEW-POLICY.md verbatim body 감지 human-review 진입 조건 추가 (운영자 승인 대기)
+
+> ⚠️ 참고: 2026-04-01 제안 #1~#4가 모두 미적용 상태. P2(summary truncation), P3(학술 소스), P4(artifact 보일러플레이트) 패턴이 이번 주 재발. 우선순위 높은 항목부터 적용 검토 권장.

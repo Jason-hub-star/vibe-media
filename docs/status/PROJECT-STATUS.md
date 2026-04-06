@@ -224,6 +224,7 @@
 - 루트 public/brand 구 로고 동기화: done (2026-04-01) — Vercel 루트 public/ 우선 서빙으로 구 도형 로고 노출 → 새 VH 텍스트 로고로 동기화
 - 홈페이지 ISR 전환: done (2026-04-02) — force-dynamic → revalidate=60, 매 요청 DB 쿼리 제거, 캐시 히트 시 즉시 서빙
 - 외부 이미지 로딩 최적화: done (2026-04-02) — 외부 OG 이미지 unoptimized 전환 (Vercel 변환 0.3~0.7s → 원본 직접 0.05~0.07s, 4~13배 개선), lead brief priority 로드, 로컬 에셋은 최적화 유지
+- 주간 Self-Critique 2차 실행: done (2026-04-06) — 10건 분석 (2026-03-31~04-03), 평균 3.0/5.0, 4개 신규 제안(#5~#8) 생성. 주요 발견: exact duplicate 발행(9bd/ope 동일 OpenAI 블로그), summary truncation 4/10건, 학술 소스 무가공 노출, 최우수 브리프 GLM-5.1(4.8/5) 패턴 확인. 2026-04-01 제안 #1~#4 여전히 미적용 상태 — 우선 적용 권장.
 
 ## Execution Checklist
 
