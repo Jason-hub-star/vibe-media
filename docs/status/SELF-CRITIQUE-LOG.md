@@ -242,3 +242,96 @@
 - [ ] 제안 #8: REVIEW-POLICY.md verbatim body 감지 human-review 진입 조건 추가 (운영자 승인 대기)
 
 > ⚠️ 참고: 2026-04-01 제안 #1~#4가 모두 미적용 상태. P2(summary truncation), P3(학술 소스), P4(artifact 보일러플레이트) 패턴이 이번 주 재발. 우선순위 높은 항목부터 적용 검토 권장.
+
+---
+
+## 2026-04-13 비평 결과
+
+### 처리 브리프: 4건
+### 평균 점수: 3.5 / 5.0
+
+### 브리프별 요약
+
+| slug | 제목명확성 | 흡입력 | 요약밀도 | 본문깊이 | 톤 | 평균 |
+|------|-----------|--------|----------|----------|-----|------|
+| ai-is-changing-how-small-online-sellers-decide-what-to-make-live-a36 | 4 | 3 | 1 | 4 | 4 | 3.2 |
+| ai-can-help-with-survey-writing-but-it-still-requires-human--live-235 | 5 | 3 | 4 | 4 | 3 | 3.8 |
+| a-concrete-definition-of-an-ai-agent-live-235 | 5 | 4 | 4 | 5 | 3 | 4.2 |
+| anthropic-is-having-a-month-live-b73 | 2 | 4 | 2 | 3 | 2 | 2.6 |
+
+### 발견된 패턴
+
+- **[P1] Summary truncation 3주 연속 재발 (1건)**: `ai-is-changing-how-small-online-sellers` 브리프의 summary가 "…bec"로 잘림. 2026-04-01 [P6], 2026-04-06 [P2]에서 동일 패턴이 지적됐고 제안 #6(AUTO-PUBLISH-RULES summary truncation gate)이 미적용 상태에서 또 반복됨. 이번 7일 내 발행 4건 중 25%가 truncated summary.
+- **[P2] Body 첫 줄 "Summary:" boilerplate 유입 (2건)**: `ai-can-help-with-survey-writing` 및 `a-concrete-definition-of-an-ai-agent` 두 브리프 body 모두 `"Summary: ..."` 문구로 시작. NNGroup 원문 구조가 가공 없이 그대로 복사된 것으로 보임. 제안 #1(artifact 정제)이 아직 미적용 상태.
+- **[P3] NNGroup 단일 소스 동일일 2건 동시 발행**: `ai-can-help-with-survey-writing`과 `a-concrete-definition-of-an-ai-agent`가 2026-04-07 정확히 같은 published_at 타임스탬프(`03:03:48`)로 발행됨. max_items=3 제한이 있으나 동일 날짜 집중 발행을 막지 못함. 독자 피드에서 동일 소스 콘텐츠가 연속 노출될 위험.
+- **[P4] 제목·요약 비전문 구어체 톤 (1건)**: `anthropic-is-having-a-month` 제목은 "having a month"라는 모호한 영어 관용어, summary는 "A human really borks things"라는 속어(slang)를 사용. 전문 미디어 톤 기준 위반이며 last_editor_note가 null — 사람 검수 없이 auto-approve된 것으로 보임. 전체 브리프 중 최저 평균(2.6/5).
+- **[P5] "AI + 동사" 제목 구조 반복**: 동일 7일 내 2건 — "AI is changing how…", "AI Can Help with…" — 이 동일한 구조를 공유. 4건 중 50%가 AI 주어 + 동사 패턴으로 제목 다양성 저하.
+
+### 개선 제안
+
+---
+
+## 제안 #9: `.claude/automations/daily-editorial-review.md` — body "Summary:" prefix 명시 제거 필수화
+
+**근거:** P2 패턴 — NNGroup 등 외부 원문이 `Summary:` 또는 `Summary\n` 접두사와 함께 body에 유입됨. 제안 #1(artifact 정제)에 이미 보일러플레이트 제거 규칙이 있으나 이 구체적 패턴이 명시되지 않아 2주 연속 통과.
+
+**현재:**
+> #### 본문(body) 규칙
+> - **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
+>   - 이미지 alt-text
+>   - 팟캐스트/오디오 플레이어 요소
+>   - 단독 섹션 헤더 boilerplate
+>   - 원문 사이트 자기 홍보 문구
+
+**제안:**
+> #### 본문(body) 규칙
+> - **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
+>   - 이미지 alt-text
+>   - 팟캐스트/오디오 플레이어 요소
+>   - 단독 섹션 헤더 boilerplate
+>   - 원문 사이트 자기 홍보 문구
+>   - **body 첫 줄 "Summary:" 접두사**: `Summary:`, `Summary\n`, `TL;DR:` 등으로 시작하는 body는 VibeHub summary 필드와 중복이다. 반드시 제거하고 실제 리드 단락으로 대체한다.
+
+---
+
+## 제안 #10: `.claude/automations/daily-editorial-review.md` — 제목·요약 구어체 slang 필터 추가
+
+**근거:** P4 패턴 — "borks", "having a month" 같은 비격식 슬랭이 summary와 title에 유입됨. 현재 editorial review 프롬프트에는 톤 일관성 지침이 있으나, 구체적 금지 표현 패턴이 명시되지 않아 auto-approve를 통과함.
+
+**현재:**
+> #### 제목(title) 규칙
+> - 영어, 15-70자
+> - 원문 제목과 달라도 됨
+
+**제안:**
+> #### 제목(title) 규칙
+> - 영어, 15-70자
+> - 원문 제목과 달라도 됨
+> - **톤 금지 표현**: 아래 유형의 표현이 title 또는 summary에 있으면 전문 미디어 언어로 재작성한다
+>   - 슬랭·속어 ("borks", "nukes", "tanks", "dunks on" 등)
+>   - 모호한 관용어 ("having a moment/month/day", "it's giving X", "no cap" 등)
+>   - 과도한 감탄·과장 ("absolutely", "insane", "mind-blowing" 등)
+>   - 이 경우 human review 진입 조건으로 escalate하지 않고 프롬프트 내 재작성을 우선한다
+
+---
+
+## 제안 #11: `docs/ref/AUTO-PUBLISH-RULES.md` — 동일 소스 동일일 복수 발행 방지
+
+**근거:** P3 패턴 — NNGroup 소스 2건이 완전히 동일한 타임스탬프로 발행됨. 독자 피드에 같은 소스 콘텐츠가 연속 노출. 현재 max_items=3 제한은 소스별 총 건수를 제한하나, 동일 발행일 집중 노출을 막지 못함.
+
+**현재:**
+> ## Auto Queue Conditions
+> - no high-similarity match against existing published brief titles/summaries
+
+**제안:**
+> ## Auto Queue Conditions
+> - no high-similarity match against existing published brief titles/summaries
+> - **same-source daily cap**: 동일 source_links[0] 도메인에서 동일 published_date(UTC 기준)에 이미 1건이 published 상태이면 추가 발행을 보류하고 다음 날 스케줄로 이동한다. (daily-auto-publish 단계에서 적용)
+
+### 적용 여부
+
+- [ ] 제안 #9: daily-editorial-review.md body "Summary:" prefix 제거 필수화 (운영자 승인 대기)
+- [ ] 제안 #10: daily-editorial-review.md 제목·요약 slang 필터 추가 (운영자 승인 대기)
+- [ ] 제안 #11: AUTO-PUBLISH-RULES.md 동일 소스 동일일 1건 daily cap (운영자 승인 대기)
+
+> ⚠️ 누적 미적용 현황: 제안 #1~#8 전원 미적용 상태. 이번 주 P1(summary truncation)·P2(body boilerplate) 패턴이 각각 3주, 2주 연속 재발. **제안 #6(summary truncation gate)과 제안 #1(artifact 정제)이 가장 반복 발생 빈도 높음 — 최우선 적용 권장.**

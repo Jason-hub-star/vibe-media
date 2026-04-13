@@ -225,6 +225,18 @@
 - 홈페이지 ISR 전환: done (2026-04-02) — force-dynamic → revalidate=60, 매 요청 DB 쿼리 제거, 캐시 히트 시 즉시 서빙
 - 외부 이미지 로딩 최적화: done (2026-04-02) — 외부 OG 이미지 unoptimized 전환 (Vercel 변환 0.3~0.7s → 원본 직접 0.05~0.07s, 4~13배 개선), lead brief priority 로드, 로컬 에셋은 최적화 유지
 - 주간 Self-Critique 2차 실행: done (2026-04-06) — 10건 분석 (2026-03-31~04-03), 평균 3.0/5.0, 4개 신규 제안(#5~#8) 생성. 주요 발견: exact duplicate 발행(9bd/ope 동일 OpenAI 블로그), summary truncation 4/10건, 학술 소스 무가공 노출, 최우수 브리프 GLM-5.1(4.8/5) 패턴 확인. 2026-04-01 제안 #1~#4 여전히 미적용 상태 — 우선 적용 권장.
+- 주간 Self-Critique 3차 실행: done (2026-04-13) — 4건 분석 (2026-04-06~04-12), 평균 3.5/5.0, 3개 신규 제안(#9~#11) 생성. 주요 발견: summary truncation 3주 연속 재발(제안 #6 미적용), body "Summary:" boilerplate 2건(제안 #1 미적용), 구어체 slang 제목/요약("borks"/"having a month"), NNGroup 동일일 2건 동시 발행. 최고 브리프: a-concrete-definition-of-an-ai-agent(4.2/5). 누적 미적용 제안 #1~#8 전원 대기 중 — 제안 #6·#1 최우선 적용 권장.
+- YouTube 발행 복구 하드닝: done (2026-04-09)
+  - `publish:channels` 단계에서 `thumbnail.png` 누락 시 자동 생성
+  - 동일 brief의 기존 YouTube `https://` 성공 이력 기반 중복 업로드 skip (`--force-youtube`로 override)
+  - `youtube:repair` 워커 추가: YouTube 누락 업로드 백필 + `unlisted/private` → `public` 전환
+  - `daily-auto-publish` 흐름에 `daily-youtube-repair` 단계 반영
+  - 목표 KPI: `youtube_url` 연결률↑, public 누락↓, 썸네일 누락↓, 중복 업로드↓
+- Pexels 배경 반복 방지 가드: done (2026-04-09)
+  - `state/pexels-video-history.json` 기반 배경 사용 이력 저장
+  - 최근 사용 ID 제외 + 재사용 쿨다운 도입으로 영상 간 배경 반복 완화
+  - 검색 다양화: 키워드/후보 시드 셔플 + 후보 수 확대 + fallback 키워드 보충
+  - 기본값 강화: cooldown 21일, exclude 180개, per-keyword candidates 10개
 
 ## Execution Checklist
 
@@ -642,6 +654,14 @@
   - `sitemap.ts`에서 정적 페이지와 publish timestamp 없는 항목의 `lastModified: new Date()` 제거 — 실제 콘텐츠 날짜가 있을 때만 `lastModified` 출력
   - `/admin` route tree에 `robots: { index: false, follow: false }` 추가 + `robots.ts`에서 `/admin` disallow
   - root metadata에 `NAVER_SITE_VERIFICATION` 조건부 구조 추가, Organization JSON-LD에 `sameAs` 지원 (GitHub 기본 + Threads/YouTube env 확장)
+- SEO/수익화 프로덕션 온보딩 (2026-04-09): done
+  - GA4 실측 태깅: `NEXT_PUBLIC_GA_ID` 프로덕션 env 반영 + 재배포 완료 (`G-07R6LC6XDJ`)
+  - AdSense 스크립트: root `Analytics` 컴포넌트에서 `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` 기반 조건부 로드
+  - `ads.txt` 정식 대응: `/ads.txt` route handler 추가 + middleware locale redirect 예외 처리로 루트 200 응답 고정
+  - AdSense publisher id 반영: `ca-pub-6030666586328903` 기준 `ads.txt` 응답 검증 완료
+  - SEO 성능 후속 조치: brief detail cover를 `next/image`로 전환, root layout에 YouTube preconnect/dns-prefetch 추가
+  - Search Console 메타 검증 확장: `GOOGLE_SITE_VERIFICATION` env 지원 추가 (Naver 검증과 병행 가능)
+  - 잔여 SEO SHOULD: ES RSS feed 추가 여부 결정
 - Editorial guardrail auto-approve (2026-03-27): done
   - `review:auto-approve` 워커 추가 — `review + pending` brief 중 quality/dedup/confidence/source-tier guardrail을 통과한 항목만 자동 `approved`
   - hold 사유는 `last_editor_note`와 `admin_reviews.notes`에 기록되고, 기준 미달 항목만 admin pending queue에 남음
