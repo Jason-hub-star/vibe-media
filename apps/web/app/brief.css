@@ -10,6 +10,7 @@
 /* ── Brief cover image ── */
 
 .brief-cover {
+  position: relative;
   border-radius: var(--radius-panel);
   overflow: hidden;
   aspect-ratio: 16 / 9;

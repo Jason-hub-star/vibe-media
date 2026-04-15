@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
+import { trackGaEvent } from "@/lib/ga-event";
 import { submitToolSubmissionAction } from "../action/submit-tool-submission";
 
 interface ToolSubmissionFormProps {
@@ -23,6 +24,18 @@ export function ToolSubmissionForm({
     status: "idle",
     message: null,
   });
+  const trackedStatusRef = useRef(state.status);
+
+  useEffect(() => {
+    if (state.status === trackedStatusRef.current) return;
+    trackedStatusRef.current = state.status;
+
+    if (state.status === "success") {
+      trackGaEvent("tool_submit_success");
+    } else if (state.status === "error") {
+      trackGaEvent("tool_submit_error");
+    }
+  }, [state.status]);
 
   return (
     <form action={formAction} className="panel stack-tight submission-form">

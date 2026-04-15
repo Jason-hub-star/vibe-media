@@ -9,6 +9,17 @@ import type { NextRequest } from "next/server";
 // Static for Edge runtime performance. Must match content-contracts locales.ts.
 const SUPPORTED_LOCALES = ["en", "es"];
 const DEFAULT_LOCALE = "en";
+const LOCALE_HEADER = "x-vibehub-locale";
+
+function withLocaleHeader(request: NextRequest, locale: string) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(LOCALE_HEADER, locale);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
 
 /** locale prefix 없이 접근한 public 경로를 /en/... 으로 리다이렉트 */
 export function middleware(request: NextRequest) {
@@ -28,7 +39,8 @@ export function middleware(request: NextRequest) {
         });
       }
     }
-    return NextResponse.next();
+    const acceptLang = request.headers.get("accept-language") ?? "";
+    return withLocaleHeader(request, detectLocale(acceptLang));
   }
 
   // api, _next, 정적 파일은 제외
@@ -40,6 +52,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/sprites") ||
     pathname === "/favicon.svg" ||
     pathname === "/favicon.ico" ||
+    pathname === "/ads.txt" ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
     pathname === "/feed.xml"
@@ -50,7 +63,7 @@ export function middleware(request: NextRequest) {
   // 이미 locale prefix가 있으면 통과
   const segments = pathname.split("/").filter(Boolean);
   if (segments.length > 0 && SUPPORTED_LOCALES.includes(segments[0])) {
-    return NextResponse.next();
+    return withLocaleHeader(request, segments[0]);
   }
 
   // locale 감지: Accept-Language 헤더 기반

@@ -25,11 +25,13 @@ function buildCategoryFilters(): FilterOption[] {
 
 interface Props {
   items: DiscoverItem[];
+  locale?: string;
 }
 
-export function DiscoverListWithFilter({ items }: Props) {
+export function DiscoverListWithFilter({ items, locale }: Props) {
+  const basePath = locale ? `/${locale}/radar` : "/radar";
   const { filter, initialFilter, initialQuery, handleChange } = useFilterUrlSync({
-    basePath: "/radar",
+    basePath,
     filterParam: "category",
     legacyFilterParams: ["group"]
   });
@@ -81,7 +83,7 @@ export function DiscoverListWithFilter({ items }: Props) {
               </h3>
               <div className="panel-grid">
                 {catItems.map((item) => (
-                  <DiscoverCard item={item} key={item.id} />
+                  <DiscoverCard item={item} key={item.id} locale={locale} />
                 ))}
               </div>
             </div>

@@ -3,10 +3,12 @@ import { SITE_URL } from "@/lib/constants";
 interface Props {
   slug: string;
   title: string;
+  locale?: string;
 }
 
-export function BriefShareBar({ slug, title }: Props) {
-  const url = `${SITE_URL}/brief/${slug}`;
+export function BriefShareBar({ slug, title, locale }: Props) {
+  const briefPath = locale ? `/${locale}/brief/${slug}` : `/brief/${slug}`;
+  const url = `${SITE_URL}${briefPath}`;
   const text = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(url);
 
@@ -19,6 +21,10 @@ export function BriefShareBar({ slug, title }: Props) {
         rel="noopener noreferrer"
         className="share-btn"
         aria-label="Share on X"
+        data-ga-event="brief_share_click"
+        data-ga-platform="x"
+        data-ga-slug={slug}
+        data-ga-locale={locale ?? "en"}
       >
         𝕏
       </a>
@@ -28,6 +34,10 @@ export function BriefShareBar({ slug, title }: Props) {
         rel="noopener noreferrer"
         className="share-btn"
         aria-label="Share on LinkedIn"
+        data-ga-event="brief_share_click"
+        data-ga-platform="linkedin"
+        data-ga-slug={slug}
+        data-ga-locale={locale ?? "en"}
       >
         in
       </a>
@@ -37,6 +47,10 @@ export function BriefShareBar({ slug, title }: Props) {
         rel="noopener noreferrer"
         className="share-btn"
         aria-label="Share on Threads"
+        data-ga-event="brief_share_click"
+        data-ga-platform="threads"
+        data-ga-slug={slug}
+        data-ga-locale={locale ?? "en"}
       >
         @
       </a>

@@ -33,7 +33,20 @@ function getAccentBadge(params: {
   return null;
 }
 
-export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; showReviewStatus?: boolean }) {
+interface DiscoverCardProps {
+  item: DiscoverItem;
+  showReviewStatus?: boolean;
+  locale?: string;
+}
+
+function localizeInternalHref(href: string, locale?: string): string {
+  if (!locale) return href;
+  if (!href.startsWith("/") || href.startsWith("//")) return href;
+  if (/^\/[a-z]{2}(\/|$)/.test(href)) return href;
+  return `/${locale}${href}`;
+}
+
+export function DiscoverCard({ item, showReviewStatus, locale }: DiscoverCardProps) {
   const cat = presentDiscoverCategory(item.category);
   const { label: statusLabel, style: statusStyle } = presentDiscoverStatus(item.status);
   const review = showReviewStatus ? presentReviewStatus(item.reviewStatus) : null;
@@ -47,6 +60,7 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
   const semanticTags = item.tags.filter((tag) => tag !== "Repo" && tag !== "Release");
   const visibleTags = semanticTags.slice(0, 2);
   const extraTagCount = Math.max(semanticTags.length - visibleTags.length, 0);
+  const detailHref = locale ? `/${locale}/radar/${item.id}` : `/radar/${item.id}`;
 
   return (
     <article className="panel stack-tight discover-card">
@@ -65,7 +79,14 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
       </div>
       <div className="stack-tight">
         <h3 className="discover-card-title">
-          <Link href={`/radar/${item.id}`} className="inline-link">
+          <Link
+            href={detailHref}
+            className="inline-link"
+            data-ga-event="radar_item_open"
+            data-ga-item-id={item.id}
+            data-ga-locale={locale ?? "en"}
+            data-ga-category={item.category}
+          >
             {item.title}
           </Link>
         </h3>
@@ -83,7 +104,16 @@ export function DiscoverCard({ item, showReviewStatus }: { item: DiscoverItem; s
       )}
       <div className="button-row discover-card-actions">
         {item.actions.filter((action) => isValidActionHref(action.href)).map((action) => (
-          <Link className="button-secondary discover-card-action" href={action.href} key={`${item.id}-${action.kind}`}>
+          <Link
+            className="button-secondary discover-card-action"
+            href={localizeInternalHref(action.href, locale)}
+            key={`${item.id}-${action.kind}`}
+            data-ga-event="radar_action_click"
+            data-ga-action-kind={action.kind}
+            data-ga-item-id={item.id}
+            data-ga-locale={locale ?? "en"}
+            data-ga-category={item.category}
+          >
             {action.label}
           </Link>
         ))}

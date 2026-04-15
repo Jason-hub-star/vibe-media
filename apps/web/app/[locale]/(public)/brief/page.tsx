@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
 import { PageFrame } from "@/components/PageFrame";
@@ -32,10 +33,36 @@ export default async function BriefPage({
   params: Promise<{ locale: string }>;
 }) {
   const locale = await getLocaleFromParams(params);
-  const briefs = await listBriefs();
+  const rawBriefs = await listBriefs();
+  const seen = new Set<string>();
+  const briefs = rawBriefs.filter((brief) => {
+    if (seen.has(brief.slug)) return false;
+    seen.add(brief.slug);
+    return true;
+  });
+  const canonical = `${SITE_URL}/${locale}/brief`;
 
   return (
     <PageFrame>
+      {briefs.length > 0 && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "VibeHub Brief Archive",
+            inLanguage: locale,
+            url: canonical,
+            numberOfItems: briefs.length,
+            itemListOrder: "https://schema.org/ItemListOrderDescending",
+            itemListElement: briefs.map((brief, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: brief.title,
+              url: `${SITE_URL}/${locale}/brief/${brief.slug}`,
+            })),
+          }}
+        />
+      )}
       <SectionBlock eyebrow="Briefs" title="AI news brief archive">
         <p className="muted">
           We curate global AI sources every day and distill them into concise, actionable briefs.

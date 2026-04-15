@@ -3,6 +3,7 @@
   .hero-grid,
   .admin-layout,
   .admin-form-grid,
+  .latest-video-brief,
   .submission-grid,
   .showcase-card,
   .admin-grid,
@@ -45,6 +46,16 @@
 
   .brief-meta-bar {
     flex-wrap: wrap;
+  }
+
+  .latest-video-play-cta {
+    padding: 0.7rem 0.9rem;
+    font-size: var(--type-small);
+  }
+
+  .latest-video-meta-row {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .brief-source-panel {

@@ -24,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = await getLocaleFromParams(params);
   return {
-    title: "Submit Tool",
+    title: "Submit a Tool",
     description:
       "Share your tool with a fast, no-login form and get screened for VibeHub listings and Showcase Picks.",
     alternates: {

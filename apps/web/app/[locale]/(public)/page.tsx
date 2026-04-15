@@ -7,6 +7,7 @@ import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 import { BriefCard } from "@/features/brief/view/BriefCard";
+import { LatestVideoBrief } from "@/features/brief/view/LatestVideoBrief";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { listShowcaseEntries } from "@/features/showcase/use-case/list-showcase-entries";
 import { ShowcaseCard } from "@/features/showcase/view/ShowcaseCard";
@@ -83,27 +84,7 @@ export default async function HomePage({
 
       {latestVideoBrief && latestVideoBrief.youtubeUrl && (
         <SectionBlock eyebrow="Latest video" title="Latest Video Brief">
-          <article className="panel stack-tight">
-            <p className="eyebrow">Connected brief</p>
-            <h3>{latestVideoBrief.title}</h3>
-            <p className="muted">{latestVideoBrief.summary}</p>
-            <div className="button-row">
-              <Link
-                className="button-primary"
-                href={latestVideoBrief.youtubeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Watch on YouTube
-              </Link>
-              <Link
-                className="button-secondary"
-                href={`/${locale}/brief/${latestVideoBrief.slug}`}
-              >
-                Read the brief
-              </Link>
-            </div>
-          </article>
+          <LatestVideoBrief brief={latestVideoBrief} locale={locale} />
         </SectionBlock>
       )}
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
 import { PageFrame } from "@/components/PageFrame";
@@ -26,11 +27,35 @@ export async function generateMetadata({
   };
 }
 
-export default async function RadarPage() {
+export default async function RadarPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = await getLocaleFromParams(params);
   const items = await listDiscoverItems();
+  const canonical = `${SITE_URL}/${locale}/radar`;
 
   return (
     <PageFrame>
+      {items.length > 0 && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "VibeHub Radar Discovery Index",
+            inLanguage: locale,
+            url: canonical,
+            numberOfItems: items.length,
+            itemListElement: items.map((item, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: item.title,
+              url: `${SITE_URL}/${locale}/radar/${item.id}`,
+            })),
+          }}
+        />
+      )}
       <section className="shell hero-grid">
         <div className="stack-tight">
           <p className="eyebrow">Radar</p>
@@ -43,7 +68,7 @@ export default async function RadarPage() {
       </section>
 
       <SectionBlock eyebrow="Radar" title="Browse by category or search across all items">
-        <DiscoverListWithFilter items={items} />
+        <DiscoverListWithFilter items={items} locale={locale} />
       </SectionBlock>
     </PageFrame>
   );

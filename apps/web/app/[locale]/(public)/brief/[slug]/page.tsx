@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { AdSlot } from "@/components/AdSlot";
 import { JsonLd } from "@/components/JsonLd";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
@@ -14,11 +16,14 @@ import { BriefBodySections } from "@/features/brief/view/BriefBodySections";
 import { BriefInsight } from "@/features/brief/view/BriefInsight";
 import { BriefMetaBar } from "@/features/brief/view/BriefMetaBar";
 import { BriefNav } from "@/features/brief/view/BriefNav";
+import { BriefScrollTracker } from "@/features/brief/view/BriefScrollTracker";
 import { BriefShareBar } from "@/features/brief/view/BriefShareBar";
 import { BriefSourcePanel } from "@/features/brief/view/BriefSourcePanel";
 import { presentRelativeDate } from "@/features/shared/presenter/present-relative-date";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+
+const BRIEF_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_BRIEF_SLOT?.trim();
 
 export async function generateMetadata({
   params,
@@ -162,6 +167,7 @@ export default async function BriefDetailPage({
       />
       <SectionBlock eyebrow={eyebrow} title={displayTitle}>
         <div className="brief-reading-col">
+          <BriefScrollTracker slug={slug} locale={locale} />
           {showFallbackBanner && <TranslationPendingBanner locale={locale} />}
 
           <BriefMetaBar
@@ -172,10 +178,12 @@ export default async function BriefDetailPage({
 
           {brief.coverImage && (
             <div className="brief-cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={brief.coverImage}
-                alt=""
+                alt={displayTitle}
+                fill
+                sizes="(max-width: 768px) 100vw, 680px"
+                unoptimized
                 className="brief-cover-img"
               />
             </div>
@@ -220,7 +228,11 @@ export default async function BriefDetailPage({
             <BriefBodySections body={displayBody} />
           </article>
 
-          <BriefShareBar slug={slug} title={displayTitle} />
+          {BRIEF_AD_SLOT && (
+            <AdSlot className="panel stack-tight" slot={BRIEF_AD_SLOT} />
+          )}
+
+          <BriefShareBar slug={slug} title={displayTitle} locale={locale} />
           <BriefSourcePanel sourceLinks={brief.sourceLinks} />
           <BriefNav prev={adjacent.prev} next={adjacent.next} locale={locale} />
         </div>
