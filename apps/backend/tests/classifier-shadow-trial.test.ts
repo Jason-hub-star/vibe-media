@@ -13,7 +13,7 @@ describe("classifier shadow trial", () => {
     expect(report.stage).toBe("classifier");
     expect(report.mode).toBe("hybrid");
     expect(report.activeProvider).toBe("ollama");
-    expect(report.activeModel).toBe("mistral-small3.1");
+    expect(report.activeModel).toBe("vibehub-classifier-g4");
     expect(report.candidateProvider).toBe("anthropic");
     expect(report.candidateModel).toBe("claude-sonnet-4-6");
     expect(report.sampleCount).toBe(CLASSIFIER_SHADOW_MINIMUM_SAMPLE_COUNT);
@@ -31,7 +31,7 @@ describe("classifier shadow trial", () => {
     expect(markdown).toContain("### Trial");
     expect(markdown).toContain("- stage: classifier");
     expect(markdown).toContain("- active provider: ollama");
-    expect(markdown).toContain("- active model: mistral-small3.1");
+    expect(markdown).toContain("- active model: vibehub-classifier-g4");
     expect(markdown).toContain("- candidate provider: anthropic");
     expect(markdown).toContain("- candidate model: claude-sonnet-4-6");
     expect(markdown).toContain(`- sample count: ${report.sampleCount} / ${report.minimumSampleCount}`);

@@ -110,6 +110,20 @@ docs/status/SELF-CRITIQUE-LOG.md
 
 ---
 
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-정책수정]
+- REVIEW-POLICY / AUTO-PUBLISH-RULES 개선 제안: 검토 후 반영 여부 결정
+→ 승인 시: "제안 적용" 또는 "보류 및 다음 주 재검토"
+
+[PENDING-프롬프트개선]
+- daily-editorial-review.md 프롬프트 수정: 발견된 패턴 기반 업데이트 승인
+→ 승인 시: "프롬프트 수정 후 커밋"
+
+---
+
 ## 5. 운영자 알림 (선택)
 
 TELEGRAM_BOT_TOKEN이 설정된 경우 요약 메시지를 발송한다:

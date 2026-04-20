@@ -1,5 +1,5 @@
 export type DiscoverDraftTrialProvider = "anthropic" | "ollama";
-export type DiscoverDraftTrialModelId = "claude-sonnet-4-6" | "mistral-small3.1";
+export type DiscoverDraftTrialModelId = "claude-sonnet-4-6" | "vibehub-discover-draft-g4";
 
 export interface DiscoverDraftShadowTrialExpected {
   categoryScoreTarget: number;
@@ -38,7 +38,7 @@ export interface DiscoverDraftShadowTrialFixture {
 }
 
 const LOCAL_PROVIDER: DiscoverDraftTrialProvider = "ollama";
-const LOCAL_MODEL_ID: DiscoverDraftTrialModelId = "mistral-small3.1";
+const LOCAL_MODEL_ID: DiscoverDraftTrialModelId = "vibehub-discover-draft-g4";
 const CANDIDATE_PROVIDER: DiscoverDraftTrialProvider = "anthropic";
 const CANDIDATE_MODEL_ID: DiscoverDraftTrialModelId = "claude-sonnet-4-6";
 

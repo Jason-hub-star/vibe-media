@@ -30,6 +30,7 @@
     "publish:auto": "npm run publish:auto -w @vibehub/backend",
     "publish:channels": "npm run publish:channels -w @vibehub/backend",
     "publish:link-youtube": "npm run publish:link-youtube -w @vibehub/backend",
+    "youtube:repair": "npm run youtube:repair -w @vibehub/backend --",
     "youtube:setup": "npm run youtube:setup -w @vibehub/backend",
     "publish:repair-state": "npm run publish:repair-state -w @vibehub/backend",
     "automation:check": "node scripts/check-automation-sync.mjs",
@@ -66,6 +67,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@xyflow/react": "^12.10.1"
+    "@xyflow/react": "^12.10.1",
+    "sharp": "^0.34.5"
   }
 }

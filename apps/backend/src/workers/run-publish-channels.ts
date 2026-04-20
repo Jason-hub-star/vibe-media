@@ -10,6 +10,7 @@
 
 import path from "path";
 import { existsSync, readFileSync } from "fs";
+import { mkdir, writeFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import {
   dispatchPublish,
@@ -27,6 +28,7 @@ import {
   createPodcastRssPublisher,
   uploadPodcastEpisode,
   formatDuration,
+  generateThumbnail,
   SITE_URL,
 } from "@vibehub/media-engine";
 
@@ -42,7 +44,7 @@ import type { BriefChannelMeta, BriefChannelVariantMeta, ChannelConfig, ChannelN
 import { getSupabaseBriefDetail } from "../shared/supabase-editorial-read";
 import { reportChannelPublish } from "../shared/channel-publish-report";
 import { createSupabaseSql } from "../shared/supabase-postgres";
-import { updateBriefYouTubeLink, parseYouTubeInput, recordPublicYouTubePublishResult } from "../shared/youtube-linking";
+import { updateBriefYouTubeLink, parseYouTubeInput } from "../shared/youtube-linking";
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -51,10 +53,36 @@ import { updateBriefYouTubeLink, parseYouTubeInput, recordPublicYouTubePublishRe
 const args = process.argv.slice(2);
 const briefSlug = args.find((a) => !a.startsWith("--"));
 const dryRun = args.includes("--dry-run");
+const forceYouTube = args.includes("--force-youtube");
 
 if (!briefSlug) {
-  console.error("usage: tsx src/workers/run-publish-channels.ts <brief-slug> [--dry-run]");
+  console.error("usage: tsx src/workers/run-publish-channels.ts <brief-slug> [--dry-run] [--force-youtube]");
   process.exit(1);
+}
+
+async function findLatestPublishedChannelUrl(
+  slug: string,
+  channel: "youtube" | "youtube-shorts",
+): Promise<string | null> {
+  const sql = createSupabaseSql();
+  try {
+    const rows = await sql<Array<{ published_url: string }>>`
+      SELECT published_url
+      FROM public.channel_publish_results
+      WHERE brief_slug = ${slug}
+        AND channel_name = ${channel}
+        AND success = true
+        AND dry_run = false
+        AND published_url LIKE 'https://%'
+      ORDER BY created_at DESC
+      LIMIT 1
+    `;
+    return rows[0]?.published_url ?? null;
+  } catch {
+    return null;
+  } finally {
+    await sql.end();
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -102,6 +130,16 @@ const briefMeta: BriefChannelMeta = {
 // ---------------------------------------------------------------------------
 
 const outputDir = path.join(PROJECT_ROOT, "output", brief.slug);
+const thumbnailPath = path.join(outputDir, "thumbnail.png");
+
+// 영상 파일 자동 감지: shorts.mp4 / longform.mp4
+const shortsPath = path.join(outputDir, "shorts.mp4");
+const longformPath = path.join(outputDir, "longform.mp4");
+const hasShorts = existsSync(shortsPath);
+const hasLongform = existsSync(longformPath);
+
+// 메인 YouTube publisher는 longform 우선, 없으면 shorts
+const primaryVideoPath = hasLongform ? longformPath : shortsPath;
 
 registerPublisher("threads", () => createThreadsPublisher());
 registerPublisher("ghost", () => createGhostPublisher());
@@ -194,23 +232,34 @@ if (podcastVoicePath && process.env.SUPABASE_SERVICE_ROLE_KEY) {
 
 // YouTube: API 환경변수 있으면 자동 업로드, 없으면 로컬 메타 저장
 const useYouTubeApi = isYouTubeApiConfigured();
+const existingYouTubeUrl =
+  !forceYouTube ? await findLatestPublishedChannelUrl(brief.slug, "youtube") : null;
+const existingShortsUrl =
+  !forceYouTube ? await findLatestPublishedChannelUrl(brief.slug, "youtube-shorts") : null;
+const shouldSkipPrimaryYouTubeUpload = useYouTubeApi && Boolean(existingYouTubeUrl);
 
-// 영상 파일 자동 감지: shorts.mp4 / longform.mp4
-const shortsPath = path.join(outputDir, "shorts.mp4");
-const longformPath = path.join(outputDir, "longform.mp4");
-
-const hasShorts = existsSync(shortsPath);
-const hasLongform = existsSync(longformPath);
-
-// 메인 YouTube publisher는 longform 우선, 없으면 shorts
-const primaryVideoPath = hasLongform ? longformPath : shortsPath;
+if ((hasShorts || hasLongform) && !existsSync(thumbnailPath)) {
+  console.log("Thumbnail: generating thumbnail.png from rendered video...");
+  const thumbnail = await generateThumbnail({
+    title: brief.title,
+    language: canonicalLocale,
+    videoFilePath: primaryVideoPath,
+  });
+  if (thumbnail.success && thumbnail.buffer.length > 0) {
+    await mkdir(outputDir, { recursive: true });
+    await writeFile(thumbnailPath, thumbnail.buffer);
+    console.log(`  ✅ Thumbnail generated: ${thumbnailPath}`);
+  } else {
+    console.warn(`  ⚠️ Thumbnail generation failed: ${thumbnail.error ?? "unknown"}`);
+  }
+}
 
 if (useYouTubeApi && (hasShorts || hasLongform)) {
-  console.log(`YouTube: API mode — shorts:${hasShorts} longform:${hasLongform}`);
+  console.log(`YouTube: API mode — shorts:${hasShorts} longform:${hasLongform}${shouldSkipPrimaryYouTubeUpload ? " (existing upload found, channel will be skipped)" : ""}`);
   registerPublisher("youtube", () =>
     createYouTubeApiPublisher({
       videoFilePath: primaryVideoPath,
-      thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
+      thumbnailFilePath: thumbnailPath,
       briefSlug: brief.slug,
       briefUrl: `${SITE_URL}/${canonicalLocale}/brief/${brief.slug}`,
       language: canonicalLocale,
@@ -237,10 +286,18 @@ const enabledChannels = (process.env.PUBLISH_CHANNELS ?? "threads,youtube,podcas
   .split(",")
   .map((s) => s.trim())
   .filter((s): s is ChannelName => VALID_CHANNELS.includes(s as ChannelName));
+const filteredChannels = shouldSkipPrimaryYouTubeUpload
+  ? enabledChannels.filter((name) => name !== "youtube")
+  : enabledChannels;
+
+if (shouldSkipPrimaryYouTubeUpload && existingYouTubeUrl) {
+  console.log(`YouTube: skipping duplicate upload for ${brief.slug} (already uploaded: ${existingYouTubeUrl})`);
+  console.log("  Use --force-youtube to upload again.");
+}
 
 const channels: ChannelConfig[] = VALID_CHANNELS.map((name) => ({
   name,
-  enabled: enabledChannels.includes(name),
+  enabled: filteredChannels.includes(name),
   dryRun,
 }));
 
@@ -248,7 +305,7 @@ const channels: ChannelConfig[] = VALID_CHANNELS.map((name) => ({
 // 실행
 // ---------------------------------------------------------------------------
 
-console.log(`Publishing brief "${brief.title}" (${brief.slug}) to [${enabledChannels.join(", ")}]${dryRun ? " [DRY RUN]" : ""}`);
+console.log(`Publishing brief "${brief.title}" (${brief.slug}) to [${filteredChannels.join(", ")}]${dryRun ? " [DRY RUN]" : ""}`);
 
 const result = await dispatchPublish({
   briefMeta,
@@ -294,11 +351,6 @@ if (useYouTubeApi && youtubeResult?.publishedUrl && !youtubeResult.publishedUrl.
       youtubeVideoId: parsed.youtubeVideoId,
       youtubeUrl: parsed.youtubeUrl,
     });
-    await recordPublicYouTubePublishResult({
-      briefSlug: brief.slug,
-      youtubeUrl: parsed.youtubeUrl,
-      locale: canonicalLocale,
-    });
     console.log(`  ✅ Brief linked (longform): ${parsed.youtubeUrl}`);
   } catch (err) {
     console.warn(`  ⚠️ Auto-link failed: ${err instanceof Error ? err.message : err}`);
@@ -312,7 +364,7 @@ if (useYouTubeApi && youtubeResult?.publishedUrl && !youtubeResult.publishedUrl.
 
 let shortsYouTubeUrl: string | undefined;
 
-if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath) {
+if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath && !existingShortsUrl) {
   // render-meta.json에서 Shorts 실제 locale 감지
   let shortsLocale = canonicalLocale;
   try {
@@ -352,7 +404,7 @@ if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath) {
   console.log(`\nYouTube Shorts: uploading shorts.mp4 (locale: ${shortsLocale})...`);
   const shortsPublisher = createYouTubeApiPublisher({
     videoFilePath: shortsPath,
-    thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
+    thumbnailFilePath: thumbnailPath,
     briefSlug: brief.slug,
     briefUrl: `${SITE_URL}/${shortsLocale}/brief/${brief.slug}`,
     language: shortsLocale,
@@ -369,35 +421,19 @@ if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath) {
   if (shortsResult.success) {
     console.log(`  ✅ Shorts uploaded: ${shortsResult.publishedUrl}`);
     shortsYouTubeUrl = shortsResult.publishedUrl;
-
-    // Shorts도 channel_publish_results에 기록
-    try {
-      const sql = createSupabaseSql();
-      await sql`
-        INSERT INTO public.channel_publish_results
-          (brief_slug, channel_name, locale, success, published_url)
-        VALUES
-          (${brief.slug}, 'youtube-shorts', ${shortsLocale}, true,
-           ${shortsResult.publishedUrl ?? ''})
-        ON CONFLICT DO NOTHING
-      `;
-      await sql.end();
-    } catch (err) {
-      console.warn(`  ⚠️ Shorts DB record failed: ${err instanceof Error ? err.message : err}`);
-    }
   } else {
     console.warn(`  ❌ Shorts upload failed: ${shortsResult.error}`);
   }
-} else if (useYouTubeApi && hasShorts && primaryVideoPath === shortsPath) {
-  // Shorts만 있는 경우 — 이미 메인 dispatch에서 업로드됨
-  shortsYouTubeUrl = youtubeResult?.publishedUrl;
+} else if (useYouTubeApi && hasShorts && primaryVideoPath !== shortsPath && existingShortsUrl) {
+  console.log(`YouTube Shorts: skipping duplicate upload for ${brief.slug} (already uploaded: ${existingShortsUrl})`);
+  console.log("  Use --force-youtube to upload again.");
 }
 
 // DB 저장 + Telegram 보고 (canonical locale + Shorts 결과 포함)
 const allResults = [...result.results];
 if (shortsYouTubeUrl) {
   allResults.push({
-    channel: "youtube" as ChannelName,
+    channel: "youtube-shorts" as ChannelName,
     success: true,
     publishedUrl: shortsYouTubeUrl,
     publishedAt: new Date().toISOString(),
@@ -424,11 +460,11 @@ async function reregisterLocalePublishers(
   variant: { title: string; summary: string },
   dry: boolean,
 ) {
-  if (useYouTubeApi && (hasShorts || hasLongform)) {
+if (useYouTubeApi && (hasShorts || hasLongform)) {
     registerPublisher("youtube", () =>
       createYouTubeApiPublisher({
         videoFilePath: primaryVideoPath,
-        thumbnailFilePath: path.join(outputDir, "thumbnail.png"),
+        thumbnailFilePath: thumbnailPath,
         briefSlug: brief!.slug,
         briefUrl: `${SITE_URL}/${locale}/brief/${brief!.slug}`,
         language: locale,

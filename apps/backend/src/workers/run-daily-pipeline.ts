@@ -51,7 +51,7 @@ async function main() {
     try {
       const stdout = execSync(step.command, {
         cwd: rootDir,
-        timeout: 120_000,
+        timeout: 300_000,
         encoding: "utf-8",
       });
       const match = stdout.match(step.itemPattern);

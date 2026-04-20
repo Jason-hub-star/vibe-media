@@ -175,6 +175,21 @@ npm run video:render -w @vibehub/backend -- <slug> --dry-run
 ⚠️ 기본 locale은 `es` (스페인어). 영어는 `--locale=en` 명시 필요.
 ⚠️ 기존 mp4 있으면 skip. 재생성은 `--force` 필요.
 
+### 배경 반복 방지 옵션 (선택)
+
+최근 사용한 Pexels 배경 ID를 저장해 재사용을 줄인다.
+
+- `PEXELS_BG_REUSE_COOLDOWN_DAYS` (기본 `21`): 최근 N일 내 사용한 배경은 제외
+- `PEXELS_BG_EXCLUDE_LIMIT` (기본 `180`): 제외 후보 최대 개수
+- `PEXELS_BG_PER_KEYWORD_CANDIDATES` (기본 `10`): 키워드당 후보 조회 수
+
+예시:
+```bash
+export PEXELS_BG_REUSE_COOLDOWN_DAYS=21
+export PEXELS_BG_EXCLUDE_LIMIT=180
+export PEXELS_BG_PER_KEYWORD_CANDIDATES=10
+```
+
 ---
 
 ## 4. 채널 발행
@@ -186,10 +201,13 @@ npm run video:render -w @vibehub/backend -- <slug> --dry-run
 **영상 파일 감지:**
 - `shorts.mp4` → YouTube Shorts (9:16, #Shorts 태그)
 - `longform.mp4` → YouTube 일반 영상 (16:9)
+- `thumbnail.png`이 없으면 `publish:channels` 실행 전에 비디오 프레임 기반 썸네일을 자동 생성한다.
 
 **업로드 모드 자동 전환:**
 - `YOUTUBE_CLIENT_ID` + `YOUTUBE_CLIENT_SECRET` + `YOUTUBE_REFRESH_TOKEN` 설정됨 → **API 자동 업로드** (unlisted)
 - 환경변수 미설정 → 로컬 메타데이터 JSON 저장 (수동 업로드)
+- 같은 brief에 대해 이미 YouTube `https://` 성공 이력이 있으면 기본적으로 중복 업로드를 건너뛴다.
+  강제 재업로드가 필요하면 `--force-youtube`를 사용한다.
 
 ```bash
 cd /Users/family/jason/vibehub-media
@@ -202,6 +220,9 @@ npm run publish:channels <slug>
 # Pass 2: ES variant 발행 (brief_post_variants에 ES 존재 시)
 # → DB channel_publish_results 기록 (locale별)
 # → Telegram 보고
+
+# 강제 재업로드 (기존 YouTube 성공 이력이 있어도 재실행)
+npm run publish:channels <slug> -- --force-youtube
 ```
 
 ### YouTube OAuth2 설정 (최초 1회)
@@ -220,6 +241,23 @@ npm run youtube:setup -- /path/to/client_secret.json
 Gemini로 썸네일 프롬프트만 자동 생성하고, 실제 이미지는 AI Studio 웹에서 수동 생성한다.
 
 `output/<slug>/thumbnail-prompt.txt`에 저장.
+
+---
+
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-미디어검토]
+- 렌더 완료 영상: YouTube 업로드 전 시청 확인 후 공개 여부 결정
+→ 승인 시: "YouTube 공개 전환" 또는 "재렌더 필요"
+
+[PENDING-채널발행]
+- Threads/YouTube 발행 오류: 재시도 또는 수동 발행 필요 여부 결정
+→ 승인 시: "`npm run publish:channels <slug> --force-youtube`" 또는 "수동 업로드"
+
+[PENDING-썸네일]
+  (없음) — 썸네일 프롬프트는 AI Studio에서 수동 생성
 
 ---
 

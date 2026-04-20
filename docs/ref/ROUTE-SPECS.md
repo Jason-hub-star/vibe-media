@@ -3,17 +3,17 @@
 ## Public Route Tree
 - 공개 라우트는 `apps/web/app/[locale]/(public)/` 기준으로만 유지한다.
 - 레거시 `apps/web/app/(public)/` route group은 제거 완료다.
-- 현재 localized public tree는 총 18개 파일이다.
-  - `17`개 `tsx`
+- 현재 localized public tree는 총 22개 파일이다.
+  - `21`개 `tsx`
   - `1`개 `CLAUDE.md`
-- 포함 범위: home, brief list/detail + OG/Twitter 이미지, radar list/detail + OG/Twitter 이미지, sources submit hub, newsletter, about, privacy, terms, route-group loading/error
+- 포함 범위: home, brief list/detail + OG/Twitter 이미지, radar list/detail + OG/Twitter 이미지, sources submit hub, newsletter, about, editorial policy, team, contact, privacy, terms, route-group loading/error
 
 ## Locale Routing
 - `middleware.ts`가 locale prefix 없는 접근을 `Accept-Language` 기반으로 `/en/...` 또는 `/es/...`로 301 리다이렉트
-- admin, api, _next, 정적 파일은 미들웨어에서 제외
+- admin, api, _next, 정적 파일(`favicon`, `robots`, `sitemap`, `feed`, `ads.txt`)은 미들웨어에서 제외
 - 지원 locale: `en` (canonical), `es` (first target) — `packages/content-contracts/src/locales.ts` SSOT
 - 모든 공개 페이지에 `generateMetadata` + `buildAlternates` (hreflang) + `getOgLocale` 적용
-- `sitemap.ts`가 모든 정적/동적 페이지를 locale × 2로 생성 (hreflang alternates 포함)
+- `sitemap.ts`가 review window 정책에 맞춰 locale × 2 정적/동적 페이지를 생성한다 (hreflang alternates 포함)
 - `/[locale]/brief/[slug]`에서 variant 조회 → 있으면 번역 콘텐츠, 없으면 영어 + TranslationPendingBanner
 
 ## Public
@@ -34,6 +34,7 @@
 - URL 필터: `?category=X&q=Y` (레거시 `?group=X`도 초기 진입 시 허용, debounce 300ms)
 - 현재 상태: scaffold cards + fast action links + 상세 페이지 링크
 - 공개 규칙: showcase는 radar에서 소비하지 않는다. showcase 노출은 home + submit hub에서만 유지한다.
+- review window: public reachable 유지, `robots: noindex,follow`, sitemap 제외
 
 ### `/radar/[id]`
 - 목적: 디스커버리 항목 상세 (SEO 크롤링 + 공유 가능 URL)
@@ -41,6 +42,7 @@
 - 메타데이터: title, description, OG article, Twitter card, canonical, JSON-LD Thing + BreadcrumbList
 - 동적 이미지: opengraph-image.tsx + twitter-image.tsx (카테고리 색상 기반 액센트)
 - 현재 상태: 구현 완료, notFound() 폴백
+- review window: public reachable 유지, `robots: noindex,follow`, sitemap 제외
 
 ### `/brief/[slug]`
 - 목적: 브리프 상세와 출처 확인
@@ -53,18 +55,35 @@
 - 공개 규칙: Latest Submissions에는 자동 심사 통과분만 노출
 - 공개 규칙: Imported Candidates는 외부 소스 attribution을 유지하며 direct submission과 분리 노출
 - 현재 상태: locale public route로 통합 완료, non-login submission intake + imported sidecar lane + showcase 승격 분리 운영
+- review window: public reachable 유지, `robots: noindex,follow`, sitemap 제외
 
 ### `/newsletter`
 - 목적: 구독 CTA
 - 핵심 섹션: form, hero placeholder, social proof CTA
 - 현재 상태: client-side success/error copy 구현
 - 메타데이터: title "Newsletter", description "Get weekly AI brief digests..."
+- review window: public reachable 유지, `robots: noindex,follow`, sitemap 제외
 
 ### `/about`
 - 목적: 서비스 소개 + 연락처 + 뉴스레터 CTA
-- 핵심 섹션: 미션, What we do, Brief/Radar 설명, 연락처 (contact@vibehub.tech), NewsletterForm 재사용
+- 핵심 섹션: 미션, What we do, Brief/Radar 설명, 연락처 (contact@vibehub.tech), trust center 링크, NewsletterForm 재사용
 - 메타데이터: title "About", canonical /about
 - 원칙: 내부 기술(파이프라인/AI/스코어) 노출 없음 — 사용자 가치만 표현
+
+### `/editorial-policy`
+- 목적: 게시 기준과 저가치 콘텐츠 차단 원칙 공개
+- 핵심 섹션: sourcing rules, rewrite standards, corrections policy, AI assistance disclosure, ads/editorial separation, low-value rejection criteria
+- 메타데이터: title "Editorial Policy", canonical /editorial-policy
+
+### `/team`
+- 목적: 운영 주체와 편집 책임 공개
+- 핵심 섹션: publisher identity, editorial ownership, review workflow, org-level expertise statement
+- 메타데이터: title "Team", canonical /team
+
+### `/contact`
+- 목적: 지원/법무/비즈니스 문의 동선 제공
+- 핵심 섹션: contact/legal/privacy inbox, response expectation, partnership path
+- 메타데이터: title "Contact", canonical /contact
 
 ### `/privacy`
 - 목적: 개인정보처리방침 (뉴스레터 이메일 수집 법적 필수)
@@ -80,14 +99,19 @@
 
 ## SEO Infrastructure
 - `robots.ts`: Next.js Metadata API, sitemap 경로 포함
-- `sitemap.ts`: 정적 8개 + 동적 brief slug + 동적 discover item 페이지, `lastModified` 포함
-- JSON-LD: Organization (root), NewsArticle + BreadcrumbList (brief detail), Thing + BreadcrumbList (radar detail)
+- `sitemap.ts`: review window ON 기본값에서는 정적 8개(indexable public + trust/legal) + 동적 brief slug만 포함, `radar`/`sources`/`newsletter`와 discover detail은 제외
+- `ads.txt`: Route Handler (`/ads.txt`)에서 publisher id 기반 본문 응답
+- JSON-LD: Organization (root), ItemList (brief/radar list), NewsArticle + BreadcrumbList (brief detail), Thing + BreadcrumbList (radar detail)
 - OG/Twitter 이미지: `colorTokens`/`brandTokens`/`categoryAccentHex` (design-tokens) 기반 — raw hex 하드코딩 금지
 - hreflang: `buildAlternates()`로 en, es, x-default 3개 alternate 생성
 - `<html lang>`: `SetHtmlLang` 클라이언트 컴포넌트가 locale segment 기반 동적 설정
 - `viewport` export: root layout에서 `Viewport` 타입으로 분리 (width, initialScale, themeColor)
 - RSS feed: `/feed.xml` — brief 링크에 `/en/` locale prefix 포함
 - GA4: `NEXT_PUBLIC_GA_ID` 환경변수 기반, 미설정 시 비렌더링
+- Search Console verification: `GOOGLE_SITE_VERIFICATION` (google), `NAVER_SITE_VERIFICATION` (naver) env 기반 메타 주입
+- AdSense script: `NEXT_PUBLIC_ADSENSE_PUBLISHER_ID` env 기반 로드, brief detail은 `NEXT_PUBLIC_ADSENSE_BRIEF_SLOT` 설정 시 슬롯 렌더링
+- public review window switch: `VIBEHUB_PUBLIC_REVIEW_WINDOW` env 기반, 기본값 ON, `false`일 때만 radar/source/newsletter index + discover sitemap 복원
+- 성능 힌트: root layout에 YouTube preconnect/dns-prefetch 추가
 - SEO 자동화: `weekly-seo-audit.md` 주간 점검 프롬프트
 
 ## Shared Utilities

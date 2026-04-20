@@ -19,6 +19,7 @@ interface BriefRow {
   body: string[];
   source_links: { label: string; href: string }[];
   source_count: number;
+  cover_image_url: string | null;
   status: BriefStatus;
   review_status: string;
 }
@@ -102,7 +103,7 @@ export async function runAutoPublish(opts: {
 
     const rows = await sql<BriefRow[]>`
       SELECT
-        id, slug, title, summary, body, source_links, source_count,
+        id, slug, title, summary, body, source_links, source_count, cover_image_url,
         status, review_status
       FROM public.brief_posts
       WHERE review_status = 'approved'

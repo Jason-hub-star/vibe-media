@@ -17,6 +17,12 @@ import { composeVideo, pickRandomBgm } from "./ffmpeg-compose";
 import { generateVideoScript } from "./script-generator";
 import type { VideoFormat } from "./script-generator";
 import { runRemotionRender } from "../render-spawn";
+import {
+  appendBackgroundHistory,
+  getRecentExcludedBackgroundIds,
+  readBackgroundHistory,
+  writeBackgroundHistory,
+} from "./background-history";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -86,6 +92,52 @@ const COMPOSITION_ID: Record<VideoFormat, string> = {
   longform: "BriefLongform", // 같은 컴포넌트, 1920×1080 해상도
 };
 
+function getNumericEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return value;
+}
+
+const PEXELS_HISTORY_EXCLUDE_LIMIT = getNumericEnv(
+  "PEXELS_BG_EXCLUDE_LIMIT",
+  180,
+);
+const PEXELS_PER_KEYWORD_CANDIDATES = getNumericEnv(
+  "PEXELS_BG_PER_KEYWORD_CANDIDATES",
+  10,
+);
+const PEXELS_BG_REUSE_COOLDOWN_DAYS = getNumericEnv(
+  "PEXELS_BG_REUSE_COOLDOWN_DAYS",
+  21,
+);
+
+const PEXELS_FALLBACK_KEYWORDS: Record<VideoFormat, string[]> = {
+  shorts: [
+    "technology abstract",
+    "city night lights",
+    "coding screen",
+    "data center",
+    "smartphone closeup",
+    "robotics",
+    "digital art",
+    "startup office",
+  ],
+  longform: [
+    "futuristic city",
+    "technology workspace",
+    "ai visualization",
+    "business team",
+    "cloud server",
+    "software developer",
+    "innovation lab",
+    "digital economy",
+    "cyber security",
+    "modern office",
+  ],
+};
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -110,6 +162,8 @@ export async function renderBriefVideo(
 
   const prefix = format; // "shorts" or "longform"
   const outputPath = path.join(outputDir, `${prefix}.mp4`);
+  const slug = path.basename(outputDir);
+  const historyPath = path.resolve(outputDir, "../../state/pexels-video-history.json");
 
   try {
     // Ensure output dir exists
@@ -178,6 +232,9 @@ export async function renderBriefVideo(
     }
 
     // Step 4: Word-level Whisper
+    // MimikaStudio TTS 직후 Metal GPU 점유 충돌로 whisper-cli가 exit code 3 크래시.
+    // 5초 대기로 MimikaStudio Metal GPU 리소스 자연 해제 후 Whisper 실행.
+    await new Promise((r) => setTimeout(r, 5000));
     console.log(`[${prefix}] Transcribing word-level timestamps...`);
     const whisperResult = await transcribeWordLevel(voicePath, outputDir, {
       language: locale === "es" ? "es" : "en",
@@ -191,22 +248,81 @@ export async function renderBriefVideo(
     // Step 5: Pexels backgrounds
     console.log(`[${prefix}] Searching Pexels backgrounds...`);
     const orientation = ORIENTATION[format];
+    const sceneCount = SCENE_COUNT[format];
+    const history = await readBackgroundHistory(historyPath);
+    const excludeIds = getRecentExcludedBackgroundIds(
+      history,
+      orientation,
+      PEXELS_HISTORY_EXCLUDE_LIMIT,
+      {
+        maxAgeDays: PEXELS_BG_REUSE_COOLDOWN_DAYS,
+      },
+    );
+    const rotationSeed = `${slug}:${format}:${new Date().toISOString().slice(0, 10)}`;
+
     const backgrounds = await searchPexelsVideosBatch(
       scriptResult.keywords,
       orientation,
+      undefined,
+      {
+        excludeIds,
+        perKeywordCandidates: PEXELS_PER_KEYWORD_CANDIDATES,
+        seed: rotationSeed,
+      },
     );
 
-    if (backgrounds.length === 0) {
+    let selectedBackgrounds = [...backgrounds];
+    if (selectedBackgrounds.length < sceneCount) {
+      const fallbackExclude = new Set<number>([
+        ...excludeIds,
+        ...selectedBackgrounds.map((bg) => bg.id),
+      ]);
+
+      const fallbackBackgrounds = await searchPexelsVideosBatch(
+        PEXELS_FALLBACK_KEYWORDS[format],
+        orientation,
+        undefined,
+        {
+          excludeIds: fallbackExclude,
+          perKeywordCandidates: PEXELS_PER_KEYWORD_CANDIDATES,
+          seed: `${rotationSeed}:fallback`,
+        },
+      );
+
+      const seen = new Set(selectedBackgrounds.map((bg) => bg.id));
+      for (const bg of fallbackBackgrounds) {
+        if (seen.has(bg.id)) continue;
+        selectedBackgrounds.push(bg);
+        seen.add(bg.id);
+        if (selectedBackgrounds.length >= sceneCount) break;
+      }
+    }
+
+    if (selectedBackgrounds.length === 0) {
       throw new Error("No Pexels backgrounds found");
     }
 
+    // 선택된 배경 ID를 이력에 기록해 다음 영상에서 반복 노출을 줄인다.
+    try {
+      const nextHistory = appendBackgroundHistory(history, {
+        orientation,
+        slug,
+        format,
+        ids: selectedBackgrounds.map((bg) => bg.id),
+      });
+      await writeBackgroundHistory(historyPath, nextHistory);
+    } catch (historyErr) {
+      console.warn(
+        `[${prefix}] background history update failed: ${historyErr instanceof Error ? historyErr.message : String(historyErr)}`,
+      );
+    }
+
     // Step 6: Scene split
-    const sceneCount = SCENE_COUNT[format];
     const scenes = splitScenes({
       script: scriptResult.script,
       words: whisperResult.words,
       sceneCount,
-      backgrounds,
+      backgrounds: selectedBackgrounds,
       chapterTitles: scriptResult.chapterTitles,
     });
     console.log(`[${prefix}] Scenes: ${scenes.length}`);

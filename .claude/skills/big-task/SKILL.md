@@ -7,10 +7,23 @@ user_invocable: true
 
 # Big Task — 대규모 작업 오케스트레이터
 
+## Model Tier 전략 (항상 적용)
+
+메인 세션은 기본값(sonnet)을 유지하고, 서브에이전트 호출 시 아래 티어를 **명시적으로 오버라이드**한다.
+
+| 용도 | 모델 | 호출 방법 |
+|------|------|-----------|
+| 코드/문서 탐색, grep, 파일 읽기 | **haiku** | `Agent` 호출 시 `model: "haiku"` 명시 (Explore 포함) |
+| 플랜 작성, 아키텍처 결정, 트레이드오프 | **opus** | `Plan` 서브에이전트를 `model: "opus"` 로 호출 |
+| 구현, 리팩터, 테스트 작성 | **sonnet** | 메인 세션 기본값 그대로 (별도 지정 불필요) |
+| 막혔을 때 2차 진단/구현 | **opus** | `codex:codex-rescue` 를 `model: "opus"` 로 호출 |
+
+**플랜 출력 제약**: `plan length ≤ 40 lines, bullet form only, no risk inventory unless explicitly asked`. Opus가 플랜을 과도하게 부풀리지 않도록 Plan 호출 프롬프트에 포함한다.
+
 ## 실행 흐름
 
 ### Phase 0 — 탐색 & 플랜 수립
-1. **현황 탐색**: Explore 에이전트로 관련 코드/문서를 병렬 조사
+1. **현황 탐색**: Explore 에이전트(`model: "haiku"`)로 관련 코드/문서를 병렬 조사
 2. **공식 문서 확인**: 필요 시 WebSearch/WebFetch로 Next.js, Supabase 등 공식 문서 참조
 3. **변경 성격 분류**: 플랜 전에 이번 작업의 change class를 먼저 적는다
    - route/surface
@@ -21,11 +34,12 @@ user_invocable: true
    - design/token/UX
    - sidecar/lane/channel
    - lane 분류가 애매하면 `plans/harnesses/sidecar-safety-harness-plan.md`를 먼저 읽는다
-4. **플랜 작성**: EnterPlanMode로 마일스톤 구조화
+4. **플랜 작성**: `Plan` 서브에이전트(`model: "opus"`)로 마일스톤 구조화 후 EnterPlanMode
    - 각 마일스톤에 독립성 표시 (병렬 가능 여부)
    - 마일스톤별 예상 변경 파일 목록
    - 의존 관계 명시
    - 마일스톤별 companion check 후보도 같이 적는다
+   - 길이 제약: ≤40 lines bullet form (상단 Model Tier 전략 참조)
 5. **사용자 확인**: 플랜을 보여주고 승인받은 후 진행
 
 ### Phase 1~N — 마일스톤 실행
@@ -39,6 +53,7 @@ user_invocable: true
    - `npm run lint` (lint)
    - 관련 단위 테스트
 3. **실패 시 수정**: 테스트 실패 → 원인 분석 → 수정 → 재검증 (최대 3회)
+   - 3회 재시도 후에도 막히면 `codex:codex-rescue` 를 `model: "opus"` 로 호출해 2차 진단 위임
 4. **체크포인트**: 마일스톤 완료마다 진행 상태를 사용자에게 1줄 보고
 
 ### Phase Final — 자기 리뷰 & 설명

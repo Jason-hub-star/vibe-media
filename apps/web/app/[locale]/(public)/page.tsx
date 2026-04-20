@@ -3,6 +3,11 @@ import Link from "next/link";
 
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import {
+  getPublicPageRobots,
+  isPublicReviewWindowEnabled,
+  selectReviewWindowFeaturedBriefs,
+} from "@/lib/review-window";
 
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
@@ -26,6 +31,7 @@ export async function generateMetadata({
     title: "VibeHub — Daily AI Briefs",
     description:
       "Briefs, source links, and tool discovery in one place.",
+    robots: getPublicPageRobots("home"),
     alternates: {
       canonical: `${SITE_URL}/${locale}`,
       languages: buildAlternates("", SITE_URL),
@@ -47,6 +53,8 @@ export default async function HomePage({
     seen.add(b.slug);
     return true;
   });
+  const featuredBriefs = selectReviewWindowFeaturedBriefs(briefs, 15);
+  const reviewWindowActive = isPublicReviewWindowEnabled();
   const latestVideoBrief = briefs
     .filter((brief) => Boolean(brief.youtubeUrl && brief.youtubeLinkedAt))
     .sort((a, b) => {
@@ -89,11 +97,29 @@ export default async function HomePage({
       )}
 
       <SectionBlock eyebrow="Selected briefs" title="Latest AI Briefs">
-        <div className="brief-grid">
-          {briefs.map((brief, i) => (
-            <BriefCard brief={brief} isLead={i === 0} key={brief.slug} locale={locale} />
-          ))}
-        </div>
+        {reviewWindowActive && (
+          <p className="muted">
+            Review window is active. We are surfacing the strongest editorial briefs first while
+            lower-confidence archive entries remain accessible through the brief archive.
+          </p>
+        )}
+        {featuredBriefs.length === 0 ? (
+          <div className="brief-cta-banner">
+            <p>
+              We are tightening the featured selection for review. Browse the archive for the
+              latest reviewed briefs while we continue editorial cleanup.
+            </p>
+            <Link className="button-secondary" href={`/${locale}/brief`}>
+              Browse reviewed briefs
+            </Link>
+          </div>
+        ) : (
+          <div className="brief-grid">
+            {featuredBriefs.map((brief, i) => (
+              <BriefCard brief={brief} isLead={i === 0} key={brief.slug} locale={locale} />
+            ))}
+          </div>
+        )}
       </SectionBlock>
 
       <SectionBlock eyebrow="Stay updated" title="Get briefs in your inbox">

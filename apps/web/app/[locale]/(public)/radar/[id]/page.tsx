@@ -14,6 +14,7 @@ import { DiscoverCardCover } from "@/features/discover/view/DiscoverCardCover";
 import { isValidActionHref } from "@vibehub/content-contracts";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -37,6 +38,7 @@ export async function generateMetadata({
   return {
     title: item.title,
     description: item.summary,
+    robots: getPublicPageRobots("radar-detail"),
     openGraph: {
       type: "article",
       title: item.title,

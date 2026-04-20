@@ -26,6 +26,9 @@
 - `/:locale/sources`
 - `/:locale/newsletter`
 - `/:locale/about`
+- `/:locale/editorial-policy`
+- `/:locale/team`
+- `/:locale/contact`
 - `/:locale/privacy`
 - `/:locale/terms`
 - `/admin`
@@ -68,8 +71,9 @@
 
 ## Current Delivery Status
 - 공개 허브 기본 화면 구현 완료
-- localized public route tree 정리 완료: `[locale]/(public)` 18개 파일 (`17 tsx + 1 CLAUDE.md`)
+- localized public route tree 정리 완료: `[locale]/(public)` 22개 파일 (`21 tsx + 1 CLAUDE.md`)
 - discovery 확장을 위한 `radar` 공개 route와 `admin/discover` 운영 route 추가
+- AdSense 재심사 대응 public review window 잠금 적용: home/brief/trust/legal 중심 index 정책, `radar`/`sources`/`newsletter`는 public reachable + noindex/sitemap 제외
 - `design_token` category와 design inspiration source 확장으로 radar가 디자인 레퍼런스 허브 역할도 수행
 - 홈 티저 + `radar` 전시 섹션 + `/admin/showcase`로 이어지는 showcase sidecar lane foundation 추가
 - admin 개요, inbox, runs, review, briefs, discover, publish, exceptions, policies, programs, video-jobs, sources, assets 화면 구현 완료

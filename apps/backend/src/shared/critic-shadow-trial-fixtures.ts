@@ -1,5 +1,5 @@
 export type CriticTrialProvider = "anthropic" | "ollama";
-export type CriticTrialModelId = "claude-sonnet-4-6" | "mistral-small3.1";
+export type CriticTrialModelId = "claude-sonnet-4-6" | "gemma4:26b-a4b-it-q4_K_M";
 
 export interface CriticShadowTrialExpected {
   shouldBlock: boolean;
@@ -32,7 +32,7 @@ export interface CriticShadowTrialFixture {
 }
 
 const LOCAL_PROVIDER: CriticTrialProvider = "ollama";
-const LOCAL_MODEL_ID: CriticTrialModelId = "mistral-small3.1";
+const LOCAL_MODEL_ID: CriticTrialModelId = "gemma4:26b-a4b-it-q4_K_M";
 const CANDIDATE_PROVIDER: CriticTrialProvider = "anthropic";
 const CANDIDATE_MODEL_ID: CriticTrialModelId = "claude-sonnet-4-6";
 

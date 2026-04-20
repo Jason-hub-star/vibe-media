@@ -22,13 +22,16 @@
 
 ## Default Role Map
 ### `router`
-- 기본 active: 로컬 LLM
+- 기본 active: `vibehub-router-g4` (ollama, 로컬 — Gemma 4 기반)
 
 ### `search decision`
-- 기본 active: 로컬 LLM
+- 기본 active: `vibehub-search-g4` (ollama, 로컬 — Gemma 4 기반)
 
 ### `memory extraction`
-- 기본 active: 로컬 LLM
+- 기본 active: `vibehub-memory-g4` (ollama, 로컬 — Gemma 4 기반)
+
+### `chat`
+- 기본 active: `vibehub-chat-g4` (ollama, 로컬 — Gemma 4 기반)
 
 ### `collector`
 - 기본 active: LLM 비의존 우선
@@ -45,6 +48,7 @@
 ### `draft-writer (brief)`
 - 초기 정책: 로컬과 Claude를 shadow 비교
 - 기본 active는 promote 데이터가 쌓이기 전까지 보수적으로 유지한다.
+- 2026-04-15: 로컬 후보 `gemma4:26b-a4b-it-q4_K_M` retire (하드웨어 서빙 불안정). `vibehub-chat-g4` (7.5B)로 대체.
 
 ### `draft-writer (discover)`
 - 초기 정책: 로컬과 Claude를 shadow 비교
@@ -53,6 +57,7 @@
 ### `critic`
 - 유력 후보: Claude
 - 초기 정책: 로컬도 shadow 비교
+- 2026-04-15: 로컬 후보 `gemma4:26b-a4b-it-q4_K_M` retire. `vibehub-chat-g4` (7.5B)로 대체 shadow.
 
 ### `publisher`
 - 기본 active: 규칙 엔진

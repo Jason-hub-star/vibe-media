@@ -74,7 +74,7 @@ echo "EXIT:${PIPESTATUS[0]}"
 | 1 | Source Fetch | `pipeline:live-fetch` | `run-live-source-fetch.ts` | 소스 수집 후 `materializeLiveIngestSnapshot()` + `writeLiveIngestSnapshot()`으로 스냅샷 저장 | `items fetched: N` | 120초 |
 | 2 | Ingest | `pipeline:live-ingest` | `run-live-ingest-spine.ts` | `readLiveIngestSnapshot()`으로 스냅샷 먼저 읽음. 없을 때만 `runLiveSourceFetch()` fallback | `items stored: N` | 120초 |
 | 3 | Supabase Sync | `pipeline:supabase-sync` | `run-supabase-live-ingest.ts` | 로컬 ingest 결과를 Supabase에 동기화 | `items synced: N` | 120초 |
-| 4 | Obsidian Export | `pipeline:obsidian-export` | `run-obsidian-discover-export.ts` | `discover_items`를 Obsidian vault `Radar/*` 노트로 저장하고 Telegram export summary 전송 | `items exported: N` | 120초 |
+| 4 | Obsidian Export | `pipeline:obsidian-export` | `run-obsidian-discover-export.ts` | `discover_items`를 Obsidian vault `Radar/*` 노트로 저장하고 Telegram export summary 전송. `harness_pattern` 카테고리는 `Radar/Harness Patterns/`에 저장 + 별도 Telegram 알림 | `items exported: N` | 120초 |
 
 동작 방식:
 - fetch → 스냅샷 저장 → ingest(스냅샷 읽기) → sync → obsidian export 순으로 결합된 흐름
@@ -115,6 +115,20 @@ trial:brief-draft        — Brief 초안 shadow trial
 trial:discover-draft     — Discover 초안 shadow trial
 trial:critic             — 품질 평가 shadow trial
 ```
+
+---
+
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-파이프라인복구]
+- fetch/ingest/sync 단계 실패: 로그 분석 후 재실행 또는 롤백 결정
+→ 승인 시: "`npm run pipeline:daily`" 재실행 또는 `npm run pipeline:supabase-cleanup` 또는 "git reset --hard"
+
+[PENDING-소스정리]
+- 30개 이상 소스 활성화 시 timeout 위험: 소스 비활성화 또는 timeout 증가 결정
+→ 승인 시: "source disable <id>" 또는 "timeout 조정"
 
 ---
 

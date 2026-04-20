@@ -38,6 +38,7 @@
     "trial:critic": "tsx src/workers/run-critic-shadow-trial.ts",
     "publish:channels": "tsx src/workers/run-publish-channels.ts",
     "publish:link-youtube": "tsx src/workers/run-link-youtube.ts",
+    "youtube:repair": "tsx src/workers/run-youtube-repair.ts",
     "translate:variant": "tsx src/workers/run-translate-variant.ts",
     "video:render": "tsx src/workers/run-shorts-render.ts",
     "video:locale-fanout": "tsx src/workers/run-video-locale-fanout.ts",

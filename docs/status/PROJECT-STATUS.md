@@ -51,7 +51,7 @@
 - token system: done (2026-03-22)
 - test harness: done (2026-03-22)
 - route-level design docs: in progress
-- public localized route consolidation: done (2026-03-22) — legacy `app/(public)` 제거, `app/[locale]/(public)`만 유지, 18개 파일 (`17 tsx + 1 CLAUDE.md`)
+- public localized route consolidation: done (2026-03-22) — legacy `app/(public)` 제거, `app/[locale]/(public)`만 유지, 현재 22개 파일 (`21 tsx + 1 CLAUDE.md`)
 - frontend CSS split (M1): done (2026-03-22)
 - frontend 3-state components (M2): done (2026-03-22)
 - frontend loading/error routes (M3): done (2026-03-22)
@@ -218,6 +218,13 @@
   - Backfill: 84개 중 72개 커버 이미지 채움 (GitHub social preview + og:image 크롤링)
 - /sources Submit Tool UX 개선: done (2026-04-01)
   - URL 자동 크롤링: website URL blur 시 og:title/description/image 자동 추출 + 폼 prefill
+- AdSense public review window hard lock: done (2026-04-20)
+  - `VIBEHUB_PUBLIC_REVIEW_WINDOW` 기본 ON, home/brief/trust/legal만 index surface 유지
+  - `/radar`, `/radar/[id]`, `/sources`, `/newsletter`는 public reachable + `noindex,follow`
+  - sitemap에서 trust pages 추가, radar/source/newsletter + discover detail 제외
+  - new trust pages: `/editorial-policy`, `/team`, `/contact`
+  - home/brief archive는 strongest editorial briefs 우선 정렬
+  - brief/discover quality gate 강화: source 2+, artifact/internal/marketing 차단, why-it-matters 요구, low-quality cover 차단, release-note discover hold
   - 실시간 카드 프리뷰: 폼 입력 시 오른쪽에 최종 카드 모습 실시간 업데이트 (sticky)
   - /api/tools/og-preview Route Handler 신규 (32KB 스트리밍, SSRF 방어)
   - useOgPrefill hook + ToolSubmissionPreview + ToolSubmissionFormWithPreview 컴포넌트
@@ -226,6 +233,7 @@
 - 외부 이미지 로딩 최적화: done (2026-04-02) — 외부 OG 이미지 unoptimized 전환 (Vercel 변환 0.3~0.7s → 원본 직접 0.05~0.07s, 4~13배 개선), lead brief priority 로드, 로컬 에셋은 최적화 유지
 - 주간 Self-Critique 2차 실행: done (2026-04-06) — 10건 분석 (2026-03-31~04-03), 평균 3.0/5.0, 4개 신규 제안(#5~#8) 생성. 주요 발견: exact duplicate 발행(9bd/ope 동일 OpenAI 블로그), summary truncation 4/10건, 학술 소스 무가공 노출, 최우수 브리프 GLM-5.1(4.8/5) 패턴 확인. 2026-04-01 제안 #1~#4 여전히 미적용 상태 — 우선 적용 권장.
 - 주간 Self-Critique 3차 실행: done (2026-04-13) — 4건 분석 (2026-04-06~04-12), 평균 3.5/5.0, 3개 신규 제안(#9~#11) 생성. 주요 발견: summary truncation 3주 연속 재발(제안 #6 미적용), body "Summary:" boilerplate 2건(제안 #1 미적용), 구어체 slang 제목/요약("borks"/"having a month"), NNGroup 동일일 2건 동시 발행. 최고 브리프: a-concrete-definition-of-an-ai-agent(4.2/5). 누적 미적용 제안 #1~#8 전원 대기 중 — 제안 #6·#1 최우선 적용 권장.
+- 주간 Self-Critique 4차 실행: done (2026-04-20) — 5건 분석 (2026-04-13~14), 평균 3.0/5.0, 2개 신규 제안(#12·#13) 생성. 주요 발견: Apple ML 원문 무가공 노출 4주 연속 재발(제안 #12: 소스 임시 비활성화 권장), 보도자료 날짜+카테고리 헤더 3/5건(제안 #13: 패턴 명시 추가), MIT Tech Review boilerplate summary 신규 패턴, OpenAI 2건 동일 타임스탬프 발행(제안 #11 미적용). 최고 브리프: codex-now-offers-more-flexible-pricing(3.8/5). 적용 완료 확인: 제안 #1·#2·#7·#9·#10. 승인 대기 누적 8건 — 제안 #12(Apple ML 비활성화)·#6(summary gate runtime 검증)·#11(same-source daily cap) 최우선 검토 권장.
 - YouTube 발행 복구 하드닝: done (2026-04-09)
   - `publish:channels` 단계에서 `thumbnail.png` 누락 시 자동 생성
   - 동일 brief의 기존 YouTube `https://` 성공 이력 기반 중복 업로드 skip (`--force-youtube`로 override)
@@ -587,7 +595,7 @@
 - public route consolidation (2026-03-27): done
   - 구 public route group 제거 완료 (`apps/web/app/(public)` 삭제)
   - 공개 route SSOT를 `apps/web/app/[locale]/(public)`로 고정
-  - localized public tree 현재 18개 파일 유지 (`17 tsx + 1 CLAUDE.md`)
+  - localized public tree 현재 22개 파일 유지 (`21 tsx + 1 CLAUDE.md`)
   - `/sources`는 Source Registry가 아닌 Submit Tool 허브 설명으로 문서/구현 동기화
 - imported candidate source seed hardening (2026-03-27): done
   - `tool_candidate` source registry를 migration으로 seed/upsert하도록 정리

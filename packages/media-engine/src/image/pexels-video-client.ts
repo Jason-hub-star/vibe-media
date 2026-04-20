@@ -25,6 +25,15 @@ export interface PexelsVideoResult {
 
 export type PexelsOrientation = "portrait" | "landscape";
 
+export interface SearchPexelsVideosBatchOptions {
+  /** 최근 사용 이력 등으로 제외할 비디오 ID 목록 */
+  excludeIds?: Iterable<number>;
+  /** 키워드당 조회할 후보 수 (기본 8, 최대 15) */
+  perKeywordCandidates?: number;
+  /** 키워드/후보 셔플용 시드 */
+  seed?: string;
+}
+
 interface PexelsVideoFile {
   id: number;
   quality: string;
@@ -45,6 +54,40 @@ interface PexelsVideo {
 interface PexelsVideoSearchResponse {
   videos: PexelsVideo[];
   total_results: number;
+}
+
+/**
+ * 문자열 시드를 32-bit 정수로 해시.
+ */
+function hashSeed(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/**
+ * 간단한 deterministic PRNG (mulberry32).
+ */
+function createSeededRandom(seed: string): () => number {
+  let t = hashSeed(seed) || 1;
+  return () => {
+    t += 0x6d2b79f5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleWithRandom<T>(items: T[], rand: () => number): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i]!, out[j]!] = [out[j]!, out[i]!];
+  }
+  return out;
 }
 
 /**
@@ -130,21 +173,52 @@ export async function searchPexelsVideosBatch(
   keywords: string[],
   orientation: PexelsOrientation = "portrait",
   apiKey?: string,
+  options: SearchPexelsVideosBatchOptions = {},
 ): Promise<PexelsVideoResult[]> {
   const results: PexelsVideoResult[] = [];
+  const excludeIds = new Set<number>(options.excludeIds ?? []);
   const usedIds = new Set<number>();
+  const rand = createSeededRandom(options.seed ?? `${Date.now()}`);
+  const keywordOrder = shuffleWithRandom(
+    keywords.filter((k) => k.trim().length > 0),
+    rand,
+  );
+  const perKeywordCandidates = Math.max(
+    3,
+    Math.min(options.perKeywordCandidates ?? 8, 15),
+  );
 
-  for (const keyword of keywords) {
+  for (const keyword of keywordOrder) {
     try {
-      // 중복 방지: 여러 개 요청해서 미사용 ID 선택
-      const videos = await searchPexelsVideos(keyword, orientation, 3, apiKey);
-      const unique = videos.find((v) => !usedIds.has(v.id));
+      // 중복 방지: 여러 개 요청해서 미사용/미제외 ID 선택
+      const videos = await searchPexelsVideos(
+        keyword,
+        orientation,
+        perKeywordCandidates,
+        apiKey,
+      );
+      const shuffledCandidates = shuffleWithRandom(videos, rand);
+      const unique = shuffledCandidates.find(
+        (v) => !usedIds.has(v.id) && !excludeIds.has(v.id),
+      );
       if (unique) {
         results.push(unique);
         usedIds.add(unique.id);
-      } else if (videos.length > 0) {
-        // 중복이라도 없는 것보단 나음
-        results.push(videos[0]!);
+      } else {
+        // 제외 목록 밖이면서 이번 실행에서만 미사용인 후보 우선
+        const fallback = shuffledCandidates.find((v) => !usedIds.has(v.id));
+        if (fallback) {
+          results.push(fallback);
+          usedIds.add(fallback.id);
+          continue;
+        }
+
+        // 최후 fallback: 중복이라도 없는 것보단 나음
+        if (shuffledCandidates.length > 0) {
+          const any = shuffledCandidates[0]!;
+          results.push(any);
+          usedIds.add(any.id);
+        }
       }
     } catch (err) {
       console.warn(

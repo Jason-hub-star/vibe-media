@@ -122,8 +122,8 @@
 
 ### 적용 여부
 
-- [ ] 제안 #1: daily-editorial-review.md artifact 정제 단계 추가 (운영자 승인 대기)
-- [ ] 제안 #2: daily-editorial-review.md 요약 마케팅 언어 차단 추가 (운영자 승인 대기)
+- [x] 제안 #1: daily-editorial-review.md artifact 정제 단계 추가 (2026-04-20 적용)
+- [x] 제안 #2: daily-editorial-review.md 요약 마케팅 언어 차단 추가 (2026-04-20 적용)
 - [ ] 제안 #3: AUTO-PUBLISH-RULES.md 한국어 브리프 gate 추가 (운영자 승인 대기)
 - [ ] 제안 #4: SOURCE-CATALOG.md Apple ML editorial 주석 + maxItems 2로 조정 (운영자 승인 대기)
 
@@ -238,7 +238,7 @@
 
 - [ ] 제안 #5: AUTO-PUBLISH-RULES.md 완전 중복 exact-title block + same-source 7일 dedup window (운영자 승인 대기)
 - [ ] 제안 #6: AUTO-PUBLISH-RULES.md brief summary truncation gate 160자 미만 잘림 차단 (운영자 승인 대기)
-- [ ] 제안 #7: daily-editorial-review.md 학술 소스 editorial-wrapper 필수화 (운영자 승인 대기)
+- [x] 제안 #7: daily-editorial-review.md 학술 소스 editorial-wrapper 필수화 (2026-04-20 적용)
 - [ ] 제안 #8: REVIEW-POLICY.md verbatim body 감지 human-review 진입 조건 추가 (운영자 승인 대기)
 
 > ⚠️ 참고: 2026-04-01 제안 #1~#4가 모두 미적용 상태. P2(summary truncation), P3(학술 소스), P4(artifact 보일러플레이트) 패턴이 이번 주 재발. 우선순위 높은 항목부터 적용 검토 권장.
@@ -330,8 +330,118 @@
 
 ### 적용 여부
 
-- [ ] 제안 #9: daily-editorial-review.md body "Summary:" prefix 제거 필수화 (운영자 승인 대기)
-- [ ] 제안 #10: daily-editorial-review.md 제목·요약 slang 필터 추가 (운영자 승인 대기)
+- [x] 제안 #9: daily-editorial-review.md body "Summary:" prefix 제거 필수화 (2026-04-20 적용)
+- [x] 제안 #10: daily-editorial-review.md 제목·요약 slang 필터 추가 (2026-04-20 적용)
 - [ ] 제안 #11: AUTO-PUBLISH-RULES.md 동일 소스 동일일 1건 daily cap (운영자 승인 대기)
 
 > ⚠️ 누적 미적용 현황: 제안 #1~#8 전원 미적용 상태. 이번 주 P1(summary truncation)·P2(body boilerplate) 패턴이 각각 3주, 2주 연속 재발. **제안 #6(summary truncation gate)과 제안 #1(artifact 정제)이 가장 반복 발생 빈도 높음 — 최우선 적용 권장.**
+
+---
+
+## 2026-04-20 비평 결과
+
+### 처리 브리프: 5건
+### 평균 점수: 3.0 / 5.0
+
+### 브리프별 요약
+
+| slug | 제목명확성 | 흡입력 | 요약밀도 | 본문깊이 | 톤 | 평균 |
+|------|-----------|--------|----------|----------|-----|------|
+| desalination-plants-in-the-middle-east-are-increasingly-vuln-live-a36 | 5 | 4 | 1 | 4 | 4 | 3.6 |
+| entropy-preserving-reinforcement-learning-live-62c | 2 | 1 | 2 | 1 | 1 | 1.4 |
+| create-edit-and-share-videos-at-no-cost-in-google-vids-live-ffe | 4 | 4 | 3 | 2 | 3 | 3.2 |
+| codex-now-offers-more-flexible-pricing-for-teams-live-9bd | 5 | 3 | 4 | 3 | 4 | 3.8 |
+| announcing-the-openai-safety-fellowship-live-9bd | 4 | 3 | 2 | 3 | 3 | 3.0 |
+
+### 브리프별 상세 평가
+
+**1. desalination-plants-in-the-middle-east (3.6/5)**
+- 제목명확성 5: "Middle East" + "increasingly vulnerable" 조합이 구체적이고 즉각 이해 가능
+- 흡입력 4: 지정학적 위기감이 독자 클릭을 유도
+- 요약밀도 1: "MIT Technology Review Explains: Let our writers untangle the complex, messy world of technology to help you understand what's coming next. You can read more from the series here....." — 원문 시리즈 마케팅 문구 그대로, 기사 내용 정보 0. 제안 #2(마케팅 언어 차단)가 2026-04-20 적용됐으나 이 브리프는 4/14 발행으로 그 이전
+- 본문깊이 4: 역사적 맥락·현황·취약성 분석·미래 전망까지 구조적으로 커버. 전문가 인용 풍부
+- 톤 4: 전문 미디어 언어 유지, body 전반 양호
+
+**2. entropy-preserving-reinforcement-learning (1.4/5)**
+- 제목명확성 2: 기술 전문어 집중, 일반 독자 접근 불가
+- 흡입력 1: 학술 논문 제목 그대로, 호기심 유발 요소 없음
+- 요약밀도 2: "Policy gradient algorithms have driven many recent advancements in language model reasoning. An appealing property is their ability to learn from exploration on their own trajecto..." — 논문 abstract 첫 문장 + truncation("trajecto...")
+- 본문깊이 1: 저자 affiliation 각주(`‡ Equal contribution`, `\\ Work done while at Apple`), 관계없는 related work 블럽 2건("Cut Cross-Entropy", "attention entropy"), 채용 배너("Work with us") 포함. Apple ML 소스 4주 연속 동일 오염 패턴
+- 톤 1: 학술 논문 덤프, VibeHub 전문 미디어 기준 전혀 미달
+
+**3. create-edit-and-share-videos-at-no-cost-in-google-vids (3.2/5)**
+- 제목명확성 4: "at no cost" 포인트가 명확
+- 흡입력 4: "at no cost" + 신기능 조합이 주의를 끄는 데 효과적
+- 요약밀도 3: "New AI capabilities are coming to Google Vids, powered by Lyria 3 and Veo 3.1, like high-quality video generation at no cost and more." — 핵심 정보 전달하나 "and more"가 모호
+- 본문깊이 2: "Google Vids logo surrounded by various video editing UI / Listen to article / [duration] minutes"로 시작하는 이미지 alt-text + 오디오 플레이어 boilerplate가 노출. 이후 본문은 기능별 구조화가 잘 됨. 제안 #1 적용(2026-04-20) 이후 브리프에서 개선 기대
+- 톤 3: alt-text 시작부를 제외하면 기능 발표 기사 형식에 맞는 톤
+
+**4. codex-now-offers-more-flexible-pricing-for-teams (3.8/5)**
+- 제목명확성 5: 제품·변경내용·대상을 모두 담음
+- 흡입력 3: 개발팀 관심사이나 일반 독자 파급력은 제한적
+- 요약밀도 4: 핵심 변경사항(pay-as-you-go, Business/Enterprise)을 한 문장에 정확히 압축
+- 본문깊이 3: "April 2, 2026\nProduct\n" 보도자료 헤더로 시작. 이후 pricing 세부사항·크레딧 오퍼·사용 현황 데이터 포함해 내용 충실
+- 톤 4: 전반적으로 전문 미디어 언어, 헤더 boilerplate만 제거하면 우수
+
+**5. announcing-the-openai-safety-fellowship (3.0/5)**
+- 제목명확성 4: 발표 내용이 명확
+- 흡입력 3: AI 안전 분야 관심자에게는 유의미하나 일반 독자 흡입력은 보통
+- 요약밀도 2: "A pilot program to support independent safety and alignment research and develop the next generation of talent" — 원문 subheading 그대로 복사, VibeHub 편집 관점 0. body[2]에서 동일 문장 반복
+- 본문깊이 3: "April 6, 2026\nSafety\n" 보도자료 헤더로 시작. 이후 프로그램 상세 정보는 충실하게 기술됨
+- 톤 3: 보도자료 헤더와 verbatim summary가 톤 일관성을 낮춤
+
+### 발견된 패턴
+
+- **[P1] Apple ML 원문 무가공 노출 4주 연속 (1/5건)**: `entropy-preserving-reinforcement-learning`이 또다시 논문 저자 affiliation 각주·related work 블럽·채용 배너를 그대로 포함. 2026-04-01 [P4] → 제안 #4(미적용), 2026-04-06 [P3] → 제안 #7(**2026-04-20 적용됨**으로 표시), 2026-04-13 이후에도 재발. 제안 #7 적용 내용이 daily-editorial-review.md에 반영됐으나 이 브리프는 4/13 발행으로 그 이전. 다음 주 Apple ML 브리프에서 실제 효과를 검증해야 함.
+- **[P2] 요약 마케팅 boilerplate 유입 (2/5건)**: `desalination-plants` summary가 MIT Tech Review 시리즈 홍보 문구, `announcing-openai-safety-fellowship` summary가 원문 subheading verbatim. 제안 #2(2026-04-20 적용)가 이 패턴을 커버하나, 두 브리프 모두 4/13-14 발행으로 수정 전. MIT Tech Review의 "Let our writers untangle..." 패턴은 현재 제안 #2가 명시하는 "excited to announce" 류와 다른 변형으로 추가 명시가 필요.
+- **[P3] 본문 시작 보도자료/미디어 boilerplate (3/5건)**: `create-edit-share-videos`가 이미지 alt-text + "Listen to article" 조합, `codex-pricing`이 "April 2, 2026\nProduct", `openai-safety-fellowship`이 "April 6, 2026\nSafety"로 시작. 제안 #1 artifact 정제(2026-04-20 적용)가 커버하는 범위이나 4/13 발행으로 수정 전. "월 일, 연도\n카테고리\n" 형식의 날짜+카테고리 헤더는 제안 #1의 현행 목록에 명시되지 않은 변형.
+- **[P4] OpenAI 소스 2건 동일 타임스탬프 발행**: `codex-pricing`과 `openai-safety-fellowship` 모두 openai.com 출처, 같은 published_at(2026-04-13T03:03:38.5XX). 제안 #11(same-source daily cap)이 미적용 상태. 독자 피드 동일 소스 연속 노출 지속.
+- **[P5] Summary truncation gate 실효성 의문 (1건)**: `entropy-preserving` summary가 "trajecto..."로 truncated. AUTO-PUBLISH-RULES.md 14행에 summary truncation block이 이미 존재하나, 이 브리프가 auto-approved 되어 발행됨. runtime에서 규칙이 실제 enforce되는지 검증 필요.
+
+### 개선 제안
+
+---
+
+## 제안 #12: `docs/ref/SOURCE-CATALOG.md` — Apple ML 소스 임시 비활성화 (maxItems=0)
+
+**근거:** P1 패턴 — 4주 연속 동일 소스, 동일 오염 패턴(논문 raw dump). 제안 #4(2026-04-01)와 제안 #7(2026-04-06)이 각각 editorial treatment 주석 추가와 학술 소스 editorial-wrapper 필수화를 요구했으나, 제안 #7이 적용됐더라도 4/13 브리프는 이미 발행됨. 다음 주 Apple ML 브리프에서 제안 #7 효과를 검증하기 전까지, 추가 오염 방지를 위해 maxItems를 임시로 0으로 설정 후 검증 완료 시 2로 복원한다.
+
+**현재:**
+> | Apple Machine Learning | rss | machinelearning.apple.com/rss.xml | auto-safe | 3 |
+
+**제안:**
+> | Apple Machine Learning | rss | machinelearning.apple.com/rss.xml | **manual-review** | **0** |
+> *(임시 비활성화: 제안 #7 editorial-wrapper 적용 효과 검증 후 복원. 검증 기준: 다음 주 Apple ML 브리프 1건이 저자 affiliation·related work·채용 배너 없이 발행되면 maxItems=2·auto-safe로 복원)*
+
+---
+
+## 제안 #13: `.claude/automations/daily-editorial-review.md` — 날짜+카테고리 헤더 및 MIT Tech Review 시리즈 boilerplate 명시 추가
+
+**근거:** P2·P3 패턴 — "April 2, 2026\nProduct", "April 6, 2026\nSafety" 형식의 날짜+카테고리 줄과 "MIT Technology Review Explains: Let our writers untangle the complex, messy world of technology…" 시리즈 소개 문구가 각각 body 첫 줄과 summary에 반복 유입. 제안 #1·#2의 artifact 정제 목록에 이 구체적 패턴이 누락됨.
+
+**현재:**
+> - **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
+>   - 이미지 alt-text
+>   - 팟캐스트/오디오 플레이어 요소 (`Listen to article`, `[duration] minutes`, `Play episode`)
+>   - 단독 섹션 헤더 boilerplate (`Announcements`, `Press Release`, `Editor's Note`)
+>   - 원문 사이트 자기 홍보 문구 (`X is excited to announce`, `originally published on Y`)
+
+**제안:**
+> - **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
+>   - 이미지 alt-text
+>   - 팟캐스트/오디오 플레이어 요소 (`Listen to article`, `[duration] minutes`, `Play episode`)
+>   - 단독 섹션 헤더 boilerplate (`Announcements`, `Press Release`, `Editor's Note`)
+>   - 원문 사이트 자기 홍보 문구 (`X is excited to announce`, `originally published on Y`)
+>   - **날짜+카테고리 헤더**: `April 2, 2026\nProduct`, `March 31, 2026\nCompany` 등 "월 일, 연도\n카테고리\n" 형식의 보도자료 첫 줄
+>   - **시리즈 소개 boilerplate**: "MIT Technology Review Explains: Let our writers untangle…", "This article is part of our series on…" 등 소스 자체 시리즈 홍보 문구는 summary와 body 모두에서 제거하고 기사 실제 내용으로 대체한다
+
+### 적용 여부
+
+- [ ] 제안 #12: SOURCE-CATALOG.md Apple ML 소스 임시 비활성화 maxItems=0 (운영자 승인 대기)
+- [ ] 제안 #13: daily-editorial-review.md 날짜+카테고리 헤더 및 MIT Tech Review boilerplate 명시 추가 (운영자 승인 대기)
+
+> ⚠️ 누적 현황 요약 (2026-04-20 기준)
+> - 적용 완료: 제안 #1·#2·#7·#9·#10 (2026-04-20)
+> - 운영자 승인 대기: 제안 #3·#4·#5·#6·#8·#11·#12·#13 (8건)
+> - **최우선 추천**: 제안 #12 (Apple ML 임시 비활성화, 4주 연속 재발) + 제안 #6 (summary truncation runtime enforce 검증 포함) + 제안 #11 (same-source daily cap)
+> - 제안 #7 효과 검증: 다음 주 (2026-04-27) Apple ML 소스 브리프 발행 여부 및 품질로 판단

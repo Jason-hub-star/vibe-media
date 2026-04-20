@@ -12,7 +12,9 @@ const productLinks = [
 
 const companyLinks = [
   { href: "/about", label: "About" },
-  { href: "mailto:contact@vibehub.tech", label: "Contact", external: true }
+  { href: "/team", label: "Team" },
+  { href: "/editorial-policy", label: "Editorial Policy" },
+  { href: "/contact", label: "Contact" }
 ];
 
 const legalLinks = [
@@ -52,11 +54,7 @@ export function SiteFooter() {
           <ul className="footer-links">
             {companyLinks.map((link) => (
               <li key={link.href}>
-                {link.external ? (
-                  <a href={link.href}>{link.label}</a>
-                ) : (
-                  <Link href={localize(link.href, locale)}>{link.label}</Link>
-                )}
+                <Link href={localize(link.href, locale)}>{link.label}</Link>
               </li>
             ))}
           </ul>

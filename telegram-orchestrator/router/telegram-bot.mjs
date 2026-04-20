@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -27,11 +28,77 @@ const CODEX_ENABLED = process.env.CODEX_ENABLED !== "0";
 const LOCAL_ENABLED = process.env.LOCAL_ENABLED !== "0";
 const SEARCH_ENABLED = process.env.SEARCH_ENABLED !== "0";
 const SEARCH_MAX_RESULTS = Number(process.env.SEARCH_MAX_RESULTS || "5");
+const OBSIDIAN_VAULT_ROOT =
+  process.env.OBSIDIAN_VAULT_ROOT || "/Users/family/jason/jasonob";
+const OBSIDIAN_TELEGRAM_DIR = path.join(OBSIDIAN_VAULT_ROOT, "Telegram");
 
 const state = createModelState({
   rootDir,
   defaultModelName: BOOTSTRAP_OLLAMA_MODEL,
 });
+
+// Per-chatId conversation history (last 6 turns, in-memory)
+const HISTORY_MAX = 6;
+const conversationHistory = new Map();
+
+function pushHistory(chatId, role, text) {
+  const key = String(chatId);
+  const arr = conversationHistory.get(key) || [];
+  arr.push({ role, text: text.slice(0, 300) });
+  if (arr.length > HISTORY_MAX) arr.shift();
+  conversationHistory.set(key, arr);
+}
+
+function getRecentContext(chatId) {
+  const arr = conversationHistory.get(String(chatId)) || [];
+  if (arr.length === 0) return "";
+  return arr.map((m) => `[${m.role}] ${m.text}`).join("\n");
+}
+
+// ── Obsidian 히스토리 영속화 ────────────────────────────────
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function getTimeStr() {
+  return new Date().toLocaleTimeString("ko-KR", { hour12: false }); // HH:MM:SS
+}
+
+async function appendToObsidian(chatId, role, text) {
+  try {
+    await mkdir(OBSIDIAN_TELEGRAM_DIR, { recursive: true });
+    const filePath = path.join(OBSIDIAN_TELEGRAM_DIR, `${getTodayStr()}.md`);
+    const line = `[${getTimeStr()}] [${chatId}] [${role}] ${text.slice(0, 500)}\n`;
+    await appendFile(filePath, line, "utf8");
+  } catch (e) {
+    console.error(`[obsidian] append failed: ${e.message}`);
+  }
+}
+
+async function loadHistoryFromObsidian() {
+  try {
+    const filePath = path.join(OBSIDIAN_TELEGRAM_DIR, `${getTodayStr()}.md`);
+    const content = await readFile(filePath, "utf8");
+    const lines = content.split("\n").filter(Boolean);
+    // 라인 형식: [HH:MM:SS] [chatId] [role] text
+    const re = /^\[[\d:]+\] \[(\d+)\] \[(user|assistant)\] (.+)$/;
+    const byChat = new Map();
+    for (const line of lines) {
+      const m = line.match(re);
+      if (!m) continue;
+      const [, chatId, role, text] = m;
+      if (!byChat.has(chatId)) byChat.set(chatId, []);
+      byChat.get(chatId).push({ role, text });
+    }
+    // 각 chatId별로 마지막 HISTORY_MAX 턴만 복원
+    for (const [chatId, arr] of byChat) {
+      conversationHistory.set(chatId, arr.slice(-HISTORY_MAX));
+    }
+    console.log(`[obsidian] history restored for ${byChat.size} chat(s)`);
+  } catch {
+    console.log("[obsidian] no history file for today, starting fresh");
+  }
+}
 
 if (!TELEGRAM_BOT_TOKEN) {
   console.error("Missing TELEGRAM_BOT_TOKEN. Copy .env.example to .env and set it first.");
@@ -123,6 +190,7 @@ async function ollamaGenerate(prompt, { modelName = getActiveModelName("chat"), 
       model: modelName,
       prompt,
       stream: false,
+      think: false,
       options: {
         temperature,
       },
@@ -239,10 +307,22 @@ async function classifySearchNeed(messageText, modelName = getActiveModelName("s
     };
   }
 
+  // 내부 시스템 키워드 fast-path: LLM 호출 없이 즉시 no-search 반환
+  const INTERNAL_KEYWORDS = [
+    "파이프라인", "pipeline", "오케스트레이터", "orchestrator",
+    "자동화", "봇", "telegram", "텔레그램", "ollama", "모델",
+    "오류확인", "오류 확인", "상태확인", "상태 확인", "잘 돌았", "잘돌았",
+    "vibehub", "바이브허브", "/status", "/models",
+  ];
+  const lower = messageText.toLowerCase();
+  if (INTERNAL_KEYWORDS.some((kw) => lower.includes(kw.toLowerCase()))) {
+    return { need_search: false, reason: "internal system query", search_queries: [] };
+  }
+
   const prompt = [
     "You decide whether web search is needed before answering.",
-    "Search is needed for fresh facts, current events, prices, releases, version-specific technical info, laws, medical, financial, or factual verification.",
-    "Search is not needed for casual chat, brainstorming, writing help, emotional support, or timeless explanations.",
+    "Search is needed for: current events, prices, stock/crypto, sports scores, weather, new product releases, recent laws or regulations, medical drug info, or any fact that changes over time.",
+    "Search is NOT needed for: casual chat, brainstorming, writing help, reasoning, code review, explanations of timeless concepts, internal system questions, pipeline or bot status, orchestrator queries.",
     "Return strict JSON only with keys: need_search, reason, search_queries.",
     "need_search must be true or false.",
     "search_queries must contain 0 to 2 short search queries.",
@@ -278,8 +358,11 @@ async function routeMessage(messageText, modelName = getActiveModelName("router"
   const prompt = [
     "You are a strict router.",
     "Choose exactly one route: local, claude, or codex.",
-    "Prefer local for simple chat, summarization, classification, and light planning.",
-    "Prefer claude for long-form reasoning or when Codex is unnecessary.",
+    "Prefer local for most tasks: chat, summarization, classification, planning, reasoning, analysis, code review, and explanation. The local model (Gemma4 26B) is capable of complex reasoning.",
+    "Prefer claude for: very long context (>10K tokens), multi-file code generation, explicit Claude requests, OR operator action requests targeting the VibeHub system.",
+    "OPERATOR ACTION → claude: message contains ANY of these action verbs: 등록/적용/활성화/비활성화/추가/삭제/수정/변경/업데이트/복구/롤백/재시도/재실행/재생성/발행/공개/승인/교체/반영/생성/도입/배포/실험 (with 해줘/하다/해) AND context is VibeHub system (소스/source/maxItems/모델/자동화/브리프/brief/디스커버/discover/DB/파이프라인/pipeline/이미지/SEO/하네스/editorial/drift/ingest/PENDING/보고서/report) → route: claude.",
+    "REPORT ACTION → claude: message contains a report block marker (━━━ or 📊 or PENDING or 건강성 or 드리프트 or drift or editorial or self-critique or seo or image-health or ingest) AND an action word → route: claude.",
+    "RECOVERY/ERROR → claude: message mentions 복구/롤백/재시도/오류/에러/실패/예외 in context of a pipeline, automation, or system state → route: claude.",
     "Prefer codex for repository-aware terminal work or when shell-native agent behavior is useful.",
     `Availability: ${availability}.`,
     "Return strict JSON only with keys: route, prompt, reason.",
@@ -347,11 +430,26 @@ async function handleLocal(text, mode = "default", modelName = getActiveModelNam
   return ollamaGenerate(prompt, { modelName });
 }
 
-async function handleClaude(text) {
+const VIBEHUB_CONTEXT = `
+# VibeHub 프로젝트 컨텍스트
+- 이 시스템은 VibeHub Media Hub 자동화 파이프라인의 Telegram 운영 인터페이스다.
+- 프로젝트 루트: ${path.resolve(path.join(path.dirname(fileURLToPath(import.meta.url)), "../.."))}
+- 핵심 자동화: daily-pipeline, weekly-source-health, editorial-review, drift-guard, image-health, seo-audit 등
+- Supabase DB에 sources, brief_posts, discover_items 테이블이 있다.
+- 운영자 액션(등록/적용/승인/복구 등)은 Supabase MCP 또는 로컬 스크립트로 처리한다.
+- 보고서 말미의 [PENDING-*] 블록이 처리 대상 항목이다.
+- 상세 컨텍스트: CLAUDE.md 및 docs/status/PROJECT-STATUS.md 참조.
+`.trim();
+
+async function handleClaude(text, context = "") {
   if (!CLAUDE_ENABLED) {
     return "Claude route is disabled in .env";
   }
-  return runCommand(path.join(binDir, "run-claude.sh"), [text]);
+  const parts = [VIBEHUB_CONTEXT];
+  if (context) parts.push(`대화 맥락 (최근 메시지):\n${context}`);
+  parts.push(`현재 요청: ${text}`);
+  const prompt = parts.join("\n\n");
+  return runCommand(path.join(binDir, "run-claude.sh"), [prompt]);
 }
 
 async function handleCodex(text) {
@@ -771,7 +869,7 @@ async function getStatusText() {
   return checks.join("\n");
 }
 
-async function executeAuto(text, { mode = "default", includeHeader = false, forceSearch = false } = {}) {
+async function executeAuto(text, { mode = "default", includeHeader = false, forceSearch = false, context = "" } = {}) {
   const chatModelName = getActiveModelName("chat");
   const searchModelName = getActiveModelName("search");
   const routerModelName = getActiveModelName("router");
@@ -808,7 +906,7 @@ async function executeAuto(text, { mode = "default", includeHeader = false, forc
   let body = "";
 
   if (route.route === "claude") {
-    body = await handleClaude(selectedText);
+    body = await handleClaude(selectedText, context);
   } else if (route.route === "codex") {
     body = await handleCodex(selectedText);
   } else {
@@ -830,7 +928,7 @@ async function executeAuto(text, { mode = "default", includeHeader = false, forc
   );
 }
 
-async function dispatchCommand(text) {
+async function dispatchCommand(text, context = "") {
   const trimmed = text.trim();
 
   if (trimmed === "/help") {
@@ -870,6 +968,7 @@ async function dispatchCommand(text) {
     return executeAuto(trimmed, {
       mode: "chat",
       includeHeader: false,
+      context,
     });
   }
 
@@ -927,6 +1026,7 @@ async function dispatchCommand(text) {
       mode: "default",
       includeHeader: false,
       forceSearch: true,
+      context,
     });
     return buildResult(result.text, result.telemetry, false);
   }
@@ -959,7 +1059,7 @@ async function dispatchCommand(text) {
 
   if (command === "/claude") {
     const memoryDecision = await extractMemoryDecision(rest, getActiveModelName("memory"));
-    const body = await handleClaude(rest);
+    const body = await handleClaude(rest, context);
     return buildResult(body, {
       route: "claude",
       needSearch: false,
@@ -985,6 +1085,7 @@ async function dispatchCommand(text) {
     return executeAuto(rest, {
       mode: "default",
       includeHeader: true,
+      context,
     });
   }
 
@@ -1065,7 +1166,14 @@ async function handleUpdate(update) {
 
   try {
     const startedAt = Date.now();
-    const result = await dispatchCommand(message.text);
+    pushHistory(chatId, "user", message.text);
+    await appendToObsidian(chatId, "user", message.text);
+    const context = getRecentContext(chatId);
+    const result = await dispatchCommand(message.text, context);
+    if (!result.admin) {
+      pushHistory(chatId, "assistant", result.text);
+      await appendToObsidian(chatId, "assistant", result.text);
+    }
     await sendMessage(chatId, result.text);
 
     if (!result.admin) {
@@ -1106,6 +1214,9 @@ async function main() {
   console.log(
     `Telegram orchestrator started. chat=${active.chat?.model_name || "-"} router=${active.router?.model_name || "-"} search=${active.search?.model_name || "-"} memory=${active.memory?.model_name || "-"}`,
   );
+
+  // 오늘치 Obsidian 히스토리 복원
+  await loadHistoryFromObsidian();
 
   while (true) {
     try {

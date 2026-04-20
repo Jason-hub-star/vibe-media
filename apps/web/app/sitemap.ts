@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { SITE_URL } from "@/lib/constants";
 import { SUPPORTED_LOCALES } from "@/lib/i18n";
+import { isPublicReviewWindowEnabled, shouldIncludeStaticPathInSitemap } from "@/lib/review-window";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 
@@ -15,10 +16,7 @@ function localeAlternates(path: string): MetadataRoute.Sitemap[number]["alternat
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [briefs, discoverItems] = await Promise.all([
-    listBriefs(),
-    listDiscoverItems()
-  ]);
+  const briefs = await listBriefs();
 
   const staticPaths = [
     { path: "", freq: "daily" as const, priority: 1 },
@@ -29,7 +27,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/newsletter", freq: "monthly" as const, priority: 0.5 },
     { path: "/privacy", freq: "yearly" as const, priority: 0.3 },
     { path: "/terms", freq: "yearly" as const, priority: 0.3 },
-  ];
+    { path: "/editorial-policy", freq: "monthly" as const, priority: 0.5 },
+    { path: "/team", freq: "monthly" as const, priority: 0.5 },
+    { path: "/contact", freq: "monthly" as const, priority: 0.5 },
+  ].filter((page) => shouldIncludeStaticPathInSitemap(page.path));
 
   const entries: MetadataRoute.Sitemap = [];
   const now = new Date();
@@ -61,17 +62,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Discover pages × locales
-  for (const item of discoverItems) {
-    const path = `/radar/${item.id}`;
-    for (const locale of SUPPORTED_LOCALES) {
-      entries.push({
-        url: `${SITE_URL}/${locale}${path}`,
-        ...(item.publishedAt ? { lastModified: new Date(item.publishedAt) } : {}),
-        changeFrequency: "weekly",
-        priority: 0.6,
-        alternates: localeAlternates(path),
-      });
+  if (!isPublicReviewWindowEnabled()) {
+    const discoverItems = await listDiscoverItems();
+
+    // Discover pages × locales
+    for (const item of discoverItems) {
+      const path = `/radar/${item.id}`;
+      for (const locale of SUPPORTED_LOCALES) {
+        entries.push({
+          url: `${SITE_URL}/${locale}${path}`,
+          ...(item.publishedAt ? { lastModified: new Date(item.publishedAt) } : {}),
+          changeFrequency: "weekly",
+          priority: 0.6,
+          alternates: localeAlternates(path),
+        });
+      }
     }
   }
 

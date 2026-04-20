@@ -35,6 +35,7 @@ export const DISCOVER_CATEGORIES = [
   { id: "tutorial", label: "Tutorial", group: "knowledge" },
   { id: "newsletter", label: "Newsletter", group: "knowledge" },
   { id: "repo_list", label: "Repo List", group: "knowledge" },
+  { id: "harness_pattern", label: "Harness Pattern", group: "knowledge" },
   // Opportunity
   { id: "job", label: "Job", group: "opportunity" },
   { id: "grant", label: "Grant", group: "opportunity" },

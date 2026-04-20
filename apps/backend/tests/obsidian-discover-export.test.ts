@@ -270,6 +270,34 @@ describe("obsidian discover export", () => {
     expect(movedMarkdown).toContain("Preserve during move");
   });
 
+  it("routes harness_pattern items to Harness Patterns folder", async () => {
+    const vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vibehub-obsidian-"));
+    const report = await exportDiscoverItemsToObsidian(
+      [
+        createDiscoverItem({
+          id: "discover-harness",
+          slug: "autoresearch-loop-pattern",
+          title: "Autoresearch Loop Pattern",
+          category: "harness_pattern" as any,
+          tags: ["harness", "self-improvement"],
+          actions: [{ kind: "visit", label: "Visit", href: "https://example.com/autoresearch" }]
+        })
+      ],
+      { vaultRoot, source: "mock" }
+    );
+
+    expect(report.savedCount).toBe(1);
+    expect(report.savedPaths).toContain(
+      path.join("Radar", "Harness Patterns", "autoresearch-loop-pattern.md")
+    );
+
+    const notePath = path.join(vaultRoot, "Radar", "Harness Patterns", "autoresearch-loop-pattern.md");
+    const markdown = await readFile(notePath, "utf8");
+    expect(markdown).toContain('folder_name: "Harness Patterns"');
+    expect(markdown).toContain("Harness candidate from VibeHub pipeline");
+    expect(markdown).toContain('"harness"');
+  });
+
   it("skips non-phase-one categories without failing the export", async () => {
     const vaultRoot = await mkdtemp(path.join(os.tmpdir(), "vibehub-obsidian-"));
     const report = await exportDiscoverItemsToObsidian(

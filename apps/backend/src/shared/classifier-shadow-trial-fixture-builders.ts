@@ -8,7 +8,7 @@ import type {
 } from "./classifier-shadow-trial-fixture-types";
 
 export const LOCAL_CLASSIFIER_PROVIDER: ClassifierTrialProvider = "ollama";
-export const LOCAL_CLASSIFIER_MODEL_ID: ClassifierTrialModelId = "mistral-small3.1";
+export const LOCAL_CLASSIFIER_MODEL_ID: ClassifierTrialModelId = "vibehub-classifier-g4";
 export const CANDIDATE_CLASSIFIER_PROVIDER: ClassifierTrialProvider = "anthropic";
 export const CANDIDATE_CLASSIFIER_MODEL_ID: ClassifierTrialModelId = "claude-sonnet-4-6";
 

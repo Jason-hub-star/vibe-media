@@ -16,6 +16,16 @@ export interface DiscoverQualityResult {
   failures: string[];
 }
 
+const LOW_VALUE_SUMMARY_PATTERNS = [
+  /\brelease notes?\b/i,
+  /\bchangelog\b/i,
+  /\bupdated dependencies\b/i,
+  /\bmaintenance release\b/i,
+  /\bbug fixes?\b/i,
+  /\bminor improvements?\b/i,
+  /\bversion bump\b/i,
+];
+
 /** summary가 잘린 텍스트인지 ("..." 또는 "…"로 끝남) */
 function isTruncated(text: string): boolean {
   const trimmed = text.trimEnd();
@@ -69,6 +79,10 @@ export function runDiscoverQualityCheck(input: DiscoverQualityInput): DiscoverQu
   const foundTerms = internalTerms.filter((t) => summaryLower.includes(t));
   if (foundTerms.length > 0) {
     failures.push(`internal terms in summary: ${foundTerms.join(", ")}`);
+  }
+
+  if (LOW_VALUE_SUMMARY_PATTERNS.some((pattern) => pattern.test(`${input.title}\n${input.summary}`))) {
+    failures.push("summary reads like release notes without editorial synthesis");
   }
 
   return { passed: failures.length === 0, failures };

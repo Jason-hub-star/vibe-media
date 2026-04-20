@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
@@ -19,6 +20,7 @@ export async function generateMetadata({
     title: "Radar — AI Discovery Hub",
     description:
       "Track emerging AI tools, design references, research, and trends across 25 categories.",
+    robots: getPublicPageRobots("radar-list"),
     alternates: {
       canonical: `${SITE_URL}/${locale}/radar`,
       languages: buildAlternates("/radar", SITE_URL),

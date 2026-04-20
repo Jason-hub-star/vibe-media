@@ -40,8 +40,8 @@ describe("generateVideoScript", () => {
 
     // Verify Gemini was called with shorts prompt (default=es)
     const call = mockCallGemini.mock.calls[0]![0];
-    expect(call.prompt).toContain("120-140 words");
-    expect(call.prompt).toContain("3-second hook");
+    expect(call.prompt).toContain("80-100 words");
+    expect(call.prompt).toContain("BANNED openers");
     expect(call.prompt).toContain("VibeHub");
     expect(call.responseSchema).toBeDefined();
   });
@@ -66,7 +66,7 @@ describe("generateVideoScript", () => {
 
     const call = mockCallGemini.mock.calls[0]![0];
     expect(call.prompt).toContain("300-350 words");
-    expect(call.prompt).toContain("4 chapters");
+    expect(call.prompt).toContain("watch for this");
   });
 
   it("should pass locale=es as Spanish prompt", async () => {

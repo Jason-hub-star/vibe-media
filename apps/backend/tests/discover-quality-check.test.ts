@@ -89,4 +89,16 @@ describe("runDiscoverQualityCheck", () => {
     expect(result.passed).toBe(false);
     expect(result.failures.some((f) => f.includes("internal terms"))).toBe(true);
   });
+
+  it("fails when the item reads like release notes without editorial synthesis", () => {
+    const result = runDiscoverQualityCheck({
+      ...good,
+      title: "Workbench maintenance release",
+      summary:
+        "Updated dependencies, bug fixes, and minor improvements for the latest maintenance release across the Workbench package set.",
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.failures.some((f) => f.includes("release notes"))).toBe(true);
+  });
 });

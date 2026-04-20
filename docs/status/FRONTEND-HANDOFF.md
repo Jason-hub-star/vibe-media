@@ -152,7 +152,7 @@ apps/web/
 │   ├── discovery.css             # 확장됨: category-pill, status-new, status-group 추가
 │   ├── status.css                # 신규 생성 (globals에서 미제거 상태)
 │   ├── [locale]/(public)/        # 공개 IA SSOT
-│   │   ├── 총 18개 파일          # 17 tsx + 1 CLAUDE.md
+│   │   ├── 총 22개 파일          # 21 tsx + 1 CLAUDE.md
 │   │   ├── page.tsx              # localized home
 │   │   ├── brief/page.tsx        # brief list
 │   │   ├── brief/[slug]/page.tsx # brief detail
@@ -160,7 +160,7 @@ apps/web/
 │   │   ├── radar/[id]/page.tsx   # discovery detail
 │   │   ├── sources/page.tsx      # Submit Tool hub
 │   │   ├── newsletter/page.tsx   # newsletter
-│   │   ├── about/privacy/terms   # static pages
+│   │   ├── about/editorial-policy/team/contact/privacy/terms
 │   │   ├── loading.tsx/error.tsx # route-group state
 │   │   └── CLAUDE.md
 │   └── admin/                    # 운영 IA

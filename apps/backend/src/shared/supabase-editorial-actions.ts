@@ -26,6 +26,7 @@ interface BriefLifecycleRow {
   body: string[];
   source_links: { label: string; href: string }[];
   source_count: number;
+  cover_image_url: string | null;
 }
 
 interface DiscoverLifecycleRow {
@@ -93,7 +94,7 @@ export async function applySupabaseReviewDecision(args: {
 
     if (row.target_type === "brief") {
       const briefRows = await sql<BriefLifecycleRow[]>`
-        select id, status, review_status, title, summary, body, source_links, source_count
+        select id, status, review_status, title, summary, body, source_links, source_count, cover_image_url
         from public.brief_posts
         where id = ${row.target_id}::uuid
         limit 1
@@ -215,7 +216,7 @@ export async function applySupabasePublishAction(args: {
   try {
     if (args.targetType === "brief") {
       const rows = await sql<BriefLifecycleRow[]>`
-        select id, status, review_status, title, summary, body, source_links, source_count
+        select id, status, review_status, title, summary, body, source_links, source_count, cover_image_url
         from public.brief_posts
         where id = ${toStableUuid(args.targetId)}::uuid
         limit 1

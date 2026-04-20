@@ -113,6 +113,19 @@ WHERE id = $id
 
 ---
 
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-중복처리]
+- 감지된 중복 항목: draft → discard 전환 또는 editorial 재가공 후 유지 결정
+→ 승인 시: "discard" 또는 "editorial-rewrite"
+
+[PENDING-유사도임계치]
+  (없음)
+
+---
+
 ## 6. 행동 원칙
 
 - 자동 삭제/discard하지 않는다. 태그만 달고 운영자가 판단.

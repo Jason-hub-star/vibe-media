@@ -11,7 +11,7 @@ export interface DiscoverDraftShadowTrialReport {
   stage: "discover draft";
   mode: "hybrid";
   activeProvider: "ollama";
-  activeModel: "mistral-small3.1";
+  activeModel: "vibehub-discover-draft-g4";
   candidateProvider: "anthropic";
   candidateModel: "claude-sonnet-4-6";
   sampleCount: number;
@@ -141,7 +141,7 @@ export function runDiscoverDraftShadowTrial(
     stage: "discover draft",
     mode: "hybrid",
     activeProvider: "ollama",
-    activeModel: "mistral-small3.1",
+    activeModel: "vibehub-discover-draft-g4",
     candidateProvider: "anthropic",
     candidateModel: "claude-sonnet-4-6",
     sampleCount: fixtures.length,

@@ -19,6 +19,11 @@ export interface SpawnAsyncOptions {
   stderrLimit?: number;
   /** 환경변수 (기본 process.env) */
   env?: NodeJS.ProcessEnv;
+  /**
+   * 자식 프로세스를 완전히 분리된 세션으로 실행 (기본 false).
+   * whisper-cli처럼 Metal GPU 리소스 충돌 회피가 필요한 경우 true.
+   */
+  detached?: boolean;
 }
 
 export interface SpawnAsyncResult {
@@ -47,6 +52,7 @@ export function spawnAsync(
       cwd: options?.cwd ?? process.cwd(),
       stdio: ["ignore", "pipe", "pipe"],
       env: options?.env ?? process.env,
+      detached: options?.detached ?? false,
     });
 
     child.stdout.on("data", (chunk: Buffer) => {

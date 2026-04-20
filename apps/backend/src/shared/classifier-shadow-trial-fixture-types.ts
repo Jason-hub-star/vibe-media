@@ -1,7 +1,7 @@
 import type { InboxTargetSurface } from "@vibehub/content-contracts";
 
 export type ClassifierTrialProvider = "anthropic" | "ollama";
-export type ClassifierTrialModelId = "claude-opus-4-6" | "claude-sonnet-4-6" | "mistral-small3.1";
+export type ClassifierTrialModelId = "claude-opus-4-6" | "claude-sonnet-4-6" | "vibehub-classifier-g4";
 
 export type ClassifierTrialCategory =
   | "api"

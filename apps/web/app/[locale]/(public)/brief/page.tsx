@@ -4,6 +4,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots, isPublicReviewWindowEnabled, sortBriefsForReviewWindow } from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
@@ -19,6 +20,7 @@ export async function generateMetadata({
     title: "AI Briefs Archive",
     description:
       "Browse all published AI briefs with source attribution.",
+    robots: getPublicPageRobots("brief-list"),
     alternates: {
       canonical: `${SITE_URL}/${locale}/brief`,
       languages: buildAlternates("/brief", SITE_URL),
@@ -40,11 +42,13 @@ export default async function BriefPage({
     seen.add(brief.slug);
     return true;
   });
+  const rankedBriefs = sortBriefsForReviewWindow(briefs);
   const canonical = `${SITE_URL}/${locale}/brief`;
+  const reviewWindowActive = isPublicReviewWindowEnabled();
 
   return (
     <PageFrame>
-      {briefs.length > 0 && (
+      {rankedBriefs.length > 0 && (
         <JsonLd
           data={{
             "@context": "https://schema.org",
@@ -52,9 +56,9 @@ export default async function BriefPage({
             name: "VibeHub Brief Archive",
             inLanguage: locale,
             url: canonical,
-            numberOfItems: briefs.length,
+            numberOfItems: rankedBriefs.length,
             itemListOrder: "https://schema.org/ItemListOrderDescending",
-            itemListElement: briefs.map((brief, index) => ({
+            itemListElement: rankedBriefs.map((brief, index) => ({
               "@type": "ListItem",
               position: index + 1,
               name: brief.title,
@@ -67,8 +71,14 @@ export default async function BriefPage({
         <p className="muted">
           We curate global AI sources every day and distill them into concise, actionable briefs.
         </p>
+        {reviewWindowActive && (
+          <p className="muted">
+            Review window is active. Stronger editorial briefs appear first while weaker archive
+            entries remain accessible for ongoing cleanup.
+          </p>
+        )}
 
-        {briefs.length === 0 ? (
+        {rankedBriefs.length === 0 ? (
           <div className="brief-cta-banner">
             <p>We are preparing the first briefs — published stories will appear here soon.</p>
             <Link className="button-secondary" href={`/${locale}/radar`}>
@@ -76,7 +86,7 @@ export default async function BriefPage({
             </Link>
           </div>
         ) : (
-          <BriefListWithFilter briefs={briefs} locale={locale} />
+          <BriefListWithFilter briefs={rankedBriefs} locale={locale} />
         )}
       </SectionBlock>
     </PageFrame>

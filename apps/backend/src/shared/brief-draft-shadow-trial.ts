@@ -11,7 +11,7 @@ export interface BriefDraftShadowTrialReport {
   stage: "brief draft";
   mode: "hybrid";
   activeProvider: "ollama";
-  activeModel: "mistral-small3.1";
+  activeModel: "gemma4:26b-a4b-it-q4_K_M";
   candidateProvider: "anthropic";
   candidateModel: "claude-sonnet-4-6";
   sampleCount: number;
@@ -136,7 +136,7 @@ export function runBriefDraftShadowTrial(
     stage: "brief draft",
     mode: "hybrid",
     activeProvider: "ollama",
-    activeModel: "mistral-small3.1",
+    activeModel: "gemma4:26b-a4b-it-q4_K_M",
     candidateProvider: "anthropic",
     candidateModel: "claude-sonnet-4-6",
     sampleCount: fixtures.length,

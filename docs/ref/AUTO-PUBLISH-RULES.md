@@ -11,6 +11,7 @@
 - `status IN ('review', 'scheduled')`
 - title length `15-70`
 - summary length `50-200`
+- **summary truncation block**: summary가 `...` 또는 `…`로 끝나면서 160자 미만이면 auto-approve를 막는다. 160자 이상이면 clampText 산출물로 허용 (Discover 게이트와 동일 기준)
 - body paragraphs `>= 3` (헤딩 제외)
 - source count `>= 2`
 - source URLs are all `https://`

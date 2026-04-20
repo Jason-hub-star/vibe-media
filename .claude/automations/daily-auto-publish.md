@@ -7,6 +7,7 @@ quality check 실패 항목은 `draft + pending`으로 되돌려 다음 editoria
 
 **Discover**: `review_status = pending`이고 `published_at IS NULL`인 discover 항목을 경량 quality check 후 자동으로 approved + published 전환한다.
 `/radar` 공개 페이지는 `isPublished` 게이트(`approved + published_at IS NOT NULL`)를 적용하므로, 이 단계를 거쳐야 레이더에 노출된다.
+단, AdSense 재심사 기간에는 얇은 release-note형 / changelog형 / 링크 허브형 discover 항목을 무조건 공개하지 않는다.
 
 이 프롬프트는 `daily-drift-guard.md` 실행 이후 스케줄러에서 자동 실행된다.
 
@@ -16,7 +17,8 @@ quality check 실패 항목은 `draft + pending`으로 되돌려 다음 editoria
 
 ```
 daily-pipeline → daily-editorial-review → daily-drift-guard → daily-auto-publish (이것)
-  └→ publish:channels (published 브리프 → 외부 채널 배포, §9)
+  └→ §9 번역 (translate:variant --locale=es)
+  └→ daily-media-publish: video:render → publish:channels (영상 렌더 완료 후 채널 발행)
 ```
 
 ---
@@ -122,10 +124,18 @@ ORDER BY d.created_at ASC
 
 | 항목 | 통과 조건 | 실패 동작 |
 |------|----------|----------|
-| Title | 5자 이상 | skip |
-| Summary | 20자 이상 | skip |
+| Title | 10-120자 | skip |
+| Summary | 60자 이상 | skip |
+| Truncation | `...` / `…`로 끝나면서 120자 미만 아님 | skip |
+| Quote-only | 인용구로 시작하더라도 실질 설명 40자 이상 | skip |
+| Internal terms | pipeline / ingest / classify / orchestrat 없음 | skip |
 | Actions | `discover_actions`에 1개 이상 존재 | skip |
 | Action URLs | 모든 action href가 `https://`로 시작 | skip |
+
+AdSense 재심사 기간 추가 hold 조건:
+- summary가 `Updated dependencies.`, `Maintenance release`, `release notes`, `changelog` 나열 수준이면 skip
+- 클릭 유도 외 설명이 거의 없는 디렉터리형/링크 허브형 항목이면 skip
+- 같은 카테고리의 얇은 항목이 연속 다수 쌓이면 skip 후 운영자 검토로 넘긴다
 
 액션 조회:
 ```sql
@@ -171,95 +181,24 @@ Brief 보고와 함께 Telegram에 포함한다:
 
 ### 8-6. 행동 원칙 (Discover)
 
-- Brief처럼 body 가공이나 editorial rewrite는 하지 않는다 — 파이프라인이 만든 그대로 발행한다.
+- Brief처럼 장문 본문을 쓰지는 않지만, thin-content 신호가 보이면 "그대로 발행"하지 말고 pending 상태로 남긴다.
 - 품질 검증 실패 항목은 skip만 하고 상태를 바꾸지 않는다 (다음 실행에서 재시도).
 - Brief와 Discover 보고를 하나의 Telegram 메시지로 합쳐 보낸다.
+- AdSense 재심사 기간에는 discover 양보다 공개 품질을 우선한다. 애매하면 publish보다 hold를 선택한다.
 
 ---
 
-## 9. 외부 채널 발행 (Channel Publish)
+## 9. 다국어 번역 (i18n Translation)
 
-Auto Publish에서 새로 `published` 전환된 brief를 외부 채널(Threads, YouTube 등)에 자동 배포한다.
+§3에서 새로 `published` 전환된 brief를 스페인어로 자동 번역한다.
+번역 variant가 생성되어야 `daily-media-publish`의 `publish:channels` 실행 시 locale별 발행이 이뤄진다.
 
 ### 9-1. 대상 선정
 
-Auto Publish(§3)에서 `published`로 전환된 brief slug 목록을 수집한다.
-전환된 brief가 0건이면 이 단계를 skip한다.
-
-### 9-2. 채널 발행 실행
-
-각 published brief에 대해:
-
-```bash
-ROOT_DIR="$(git rev-parse --show-toplevel)"
-cd "$ROOT_DIR"
-set -a && source .env.local 2>/dev/null || source .env 2>/dev/null || true && set +a
-npm run publish:channels <brief-slug>
-```
-
-- `PUBLISH_CHANNELS` 환경변수로 활성 채널 제어 (기본: `threads,youtube`)
-- 각 brief별로 독립 실행 — 한 brief 실패가 다른 brief에 영향 없음
-- 결과는 자동으로 DB(`channel_publish_results`)에 저장 + Telegram 보고
-- YouTube는 이 단계에서 `업로드 준비`까지만 완료된다. public YouTube URL 연결과 Pass 3은 업로드 후 별도 완료 신호가 필요하다.
-
-### 9-3. Podcast 누락 보충
-
-채널 발행 후, podcast-rss 발행이 누락된 기존 published brief를 보충한다.
-
-**대상 조회**:
-```sql
-SELECT bp.slug
-FROM public.brief_posts bp
-WHERE bp.status = 'published'
-  AND NOT EXISTS (
-    SELECT 1 FROM public.channel_publish_results cpr
-    WHERE cpr.brief_slug = bp.slug
-      AND cpr.channel_name = 'podcast-rss'
-      AND cpr.success = true
-  )
-ORDER BY bp.published_at DESC
-LIMIT 5
-```
-
-**보충 조건**: `output/<slug>/longform-voice.wav` 또는 `output/<slug>/shorts-voice.wav`가 존재해야 함.
-음성 파일이 없으면 skip (media render가 아직 안 된 것이므로 `daily-media-publish`에서 처리).
-
-**실행**:
-```bash
-npm run publish:channels <slug> --channel podcast-rss
-```
-
-- 하루 최대 5건 보충 (과부하 방지)
-- 이미 podcast 성공 기록이 있으면 자동 skip
-
-### 9-4. 안전장치
-
-- `published` 상태 brief만 대상 — draft/review/scheduled는 절대 건드리지 않음
-- 동일 brief 중복 발행 방지: `channel_publish_results` 테이블에 이전 성공 기록이 있으면 skip
-- Threads API 250건/일 제한 — 일일 brief 10건 이하이므로 안전
-- 채널별 실패 격리: `Promise.allSettled`로 한 채널 실패가 다른 채널에 영향 없음
-
-### 9-5. 행동 원칙 (Channel Publish)
-
-- Auto Publish에서 전환된 brief만 대상으로 한다 — 과거 published brief는 건드리지 않는다.
-- 발행 결과는 DB + Telegram 모두에 기록한다.
-- 실패한 채널은 다음 수동 실행 시 재시도 가능하다 (`npm run publish:channels <slug>`).
-- dry-run 모드(`--dry-run`)로 사전 검증이 가능하다.
-- YouTube 연결 완료는 `/vh-youtube <slug> <youtube-url>` 또는 `npm run publish:link-youtube <slug> <video-id-or-url>`를 별도 실행해야 한다.
-
----
-
-## 10. 다국어 번역 (i18n Translation)
-
-채널 발행(§9)에서 새로 published된 brief를 스페인어로 자동 번역한다.
-번역 variant가 생성되어야 다음 `publish:channels` 실행 시 locale별 발행이 이뤄진다.
-
-### 10-1. 대상 선정
-
-§9에서 `published`로 전환 + 채널 발행된 brief slug 목록을 사용한다.
+§3에서 `published`로 전환된 brief slug 목록을 사용한다.
 대상이 0건이면 skip.
 
-### 10-2. 번역 실행
+### 9-2. 번역 실행
 
 각 published brief에 대해:
 
@@ -275,7 +214,7 @@ npm run translate:variant <brief-slug> --locale=es
 - 품질 통과 시 `translation_status = translated`, `quality_status = passed`
 - 품질 실패 시 `translation_status = quality_failed` — 영어 발행은 계속 유지
 
-### 10-3. Discover 번역 (선택)
+### 9-3. Discover 번역 (선택)
 
 Brief 번역 완료 후, 최근 published discover 항목도 번역할 수 있다:
 
@@ -285,7 +224,7 @@ npm run translate:variant <discover-slug> --locale=es --discover
 
 Discover는 title + summary만 번역하므로 빠르다 (brief 대비 ~1/3).
 
-### 10-4. 안전장치
+### 9-4. 안전장치
 
 - 번역 실패해도 영어 발행은 절대 영향 없음 (variant 테이블 분리)
 - Gemini API 429 시 1회 자동 재시도 (2초 대기)
@@ -293,34 +232,54 @@ Discover는 title + summary만 번역하므로 빠르다 (brief 대비 ~1/3).
 - 잘못된 locale(`kr` 등) 전달 시 즉시 거부
 - canonical locale(`en`) 번역 시도 시 즉시 거부
 
-### 10-5. 행동 원칙 (Translation)
+### 9-5. 행동 원칙 (Translation)
 
 - 번역은 published brief만 대상 — draft/review 상태는 건드리지 않는다
 - 품질 실패 variant는 admin `/admin/translations`에서 수동 확인 가능
 - 번역된 variant는 다음 `publish:channels` 실행 시 자동으로 es 발행에 포함된다
 - `daily-media-publish`의 SRT 번역(§3)과는 독립 — 텍스트 번역과 영상 자막은 별개 파이프라인
 
-### 10-6. 결과 보고
+### 9-6. 결과 보고
 
 Telegram 보고는 별도로 하지 않는다 (번역 워커 자체는 console 출력만).
 품질 실패 건이 있으면 `/admin/translations`에서 확인.
 
 ---
 
-## 11. 미디어 + 뉴스레터 발행 연결
+## 🔖 운영자 승인 대기 항목
 
-채널 발행(§9) + 번역(§10) 완료 후, 미디어와 뉴스레터 파이프라인이 이어서 실행된다.
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-번역처리]
+- 번역 실패 항목: 재시도 또는 영어만 발행 유지 여부 확인
+- 품질 실패 variant: `/admin/translations`에서 수동 수정 또는 폐기
+→ 승인 시: "번역 variant 승인 후 publish:channels 재실행" 또는 "variant 폐기"
+
+[PENDING-미디어발행]
+- 영상 생성 대기: `daily-media-publish`로 렌더/발행 진행
+→ 승인 시: "`npm run video:render <slug>`로 영상 생성 후 `npm run publish:channels <slug>`"
+
+---
+
+## 10. 미디어 + 뉴스레터 발행 연결
+
+번역(§9) 완료 후, 미디어와 뉴스레터 파이프라인이 이어서 실행된다.
 
 ```
-daily-auto-publish (§9 채널 발행 → §10 번역)
+daily-auto-publish (§9 번역)
   ├→ daily-media-publish
-  │    ├─ Shorts: Gemini → MimikaStudio TTS → Remotion BriefShort → YouTube API (unlisted)
-  │    ├─ Longform: Gemini → MimikaStudio TTS → Remotion BriefLongform → YouTube API (unlisted)
-  │    └─ publish:channels → Threads + YouTube 자동 업로드 + brief 자동 연결
+  │    ├─ Shorts: Gemini → MimikaStudio TTS → Remotion BriefShort → ffmpeg
+  │    ├─ Longform: Gemini → MimikaStudio TTS → Remotion BriefLongform → ffmpeg
+  │    └─ publish:channels → Threads + YouTube API 자동 업로드 (unlisted) + brief 자동 연결
+  ├→ daily-youtube-repair
+  │    ├─ YouTube 누락 업로드 백필
+  │    └─ unlisted/private → public 전환
   └→ newsletter:send (EN + ES Resend Broadcasts, blocking: false)
 ```
 
-- **미디어**: `daily-media-publish.md` — Shorts + Longform 두 트랙 → `publish:channels`가 YouTube API로 자동 업로드
-- **YouTube 업로드**: `YOUTUBE_*` 환경변수 설정 시 자동, 미설정 시 메타데이터만 저장 (수동 업로드)
+- **채널 발행 + 미디어**: `daily-media-publish.md` — 영상 렌더 완료 후 `publish:channels` 실행 (Threads · YouTube · Podcast)
+  - `publish:channels`는 반드시 영상 렌더 이후 — `daily-auto-publish`에서 직접 실행하지 않음
+- **YouTube 복구 + 공개 전환**: `daily-youtube-repair.md` — 미디어 발행 직후 누락 업로드 백필 + 공개 승격
+- **YouTube 업로드**: `YOUTUBE_*` 환경변수 설정 시 자동 (unlisted), 미설정 시 메타데이터만 저장 (수동 업로드)
 - **뉴스레터**: `npm run newsletter:send` — daily pipeline 마지막 단계에서 자동 실행
 - Shorts 트랙은 MimikaStudio 서버(localhost:7693) 기동 여부로 자동 on/off

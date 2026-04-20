@@ -211,6 +211,52 @@ export async function sendNewsletterReport(input: NewsletterReportInput): Promis
   await sendTelegramMessage(chatId, text, botToken);
 }
 
+/* ── Harness pattern reports ── */
+
+export interface HarnessPatternReport {
+  items: Array<{ title: string; slug: string; source?: string }>;
+  totalCount: number;
+}
+
+export function buildHarnessPatternReportText(report: HarnessPatternReport): string {
+  if (report.totalCount === 0) return "";
+
+  const lines = [
+    "🔧 새 하네스 후보 발견",
+    "━━━━━━━━━━━━━━━━━━",
+  ];
+
+  for (const item of report.items.slice(0, 5)) {
+    const source = item.source ? ` (${item.source})` : "";
+    lines.push(`- ${item.title}${source}`);
+  }
+
+  if (report.totalCount > 5) {
+    lines.push(`  ...외 ${report.totalCount - 5}건`);
+  }
+
+  lines.push("━━━━━━━━━━━━━━━━━━");
+  lines.push(`→ ~/jasonob/Radar/Harness Patterns/`);
+  lines.push(`총 ${report.totalCount}건 · keep/discard 테스트 필요`);
+
+  return lines.join("\n");
+}
+
+export async function sendHarnessPatternReport(report: HarnessPatternReport): Promise<void> {
+  if (report.totalCount === 0) return;
+
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_REPORT_CHAT_ID;
+
+  if (!botToken || !chatId) {
+    console.warn("[telegram-report] TELEGRAM_BOT_TOKEN or TELEGRAM_REPORT_CHAT_ID not set, skipping harness report");
+    return;
+  }
+
+  const text = buildHarnessPatternReportText(report);
+  await sendTelegramMessage(chatId, text, botToken);
+}
+
 export async function sendSubscriberAlert(maskedEmail: string, locale: string, totalCount: number): Promise<void> {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_REPORT_CHAT_ID;

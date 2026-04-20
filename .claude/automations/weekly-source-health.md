@@ -98,7 +98,30 @@ ORDER BY brief_count DESC
 
 ---
 
-## 4. 신규 소스 자동 발견
+## 4. render-required 소스 수동 점검
+
+RSS 피드가 없어 자동 수집이 불가한 소스를 브라우저로 직접 확인하고, 주목할 새 항목이 있으면 후보로 보고한다.
+
+### 점검 대상
+
+| 소스 | URL | 확인 항목 |
+|------|-----|----------|
+| DESIGN.md | https://designmd.ai/ | "Just Added" 섹션의 신규 디자인 시스템 목록 |
+
+### 점검 방법
+
+1. `mcp__Claude_in_Chrome` 브라우저로 URL 접근
+2. "Just Added" 또는 "Trending" 섹션에서 최근 추가된 항목 목록 추출
+3. 항목명 / 설명 / 태그(category) 수집
+4. 기존 brief/discover와 중복되지 않는 항목이 있으면 후보로 보고:
+   ```
+   후보 발견 (render-required): {항목명} — {URL} — {카테고리 태그}
+   ```
+5. **자동 등록하지 않는다.** 후보 보고만 하고 운영자가 결정.
+
+---
+
+## 5. 신규 소스 자동 발견
 
 ### 4-1. brief source_links 역추적
 
@@ -127,7 +150,7 @@ WHERE published_at > now() - interval '7 days'
 
 ---
 
-## 5. 결과 보고
+## 6. 결과 보고
 
 ```
 ## Weekly Source Health Report
@@ -148,9 +171,33 @@ WHERE published_at > now() - interval '7 days'
 | ... | ... | ... |
 ```
 
+보고서 말미에는 반드시 아래 **구조화된 승인 대기 항목** 블록을 포함한다.
+이 블록이 있어야 운영자가 "등록해줘" / "적용해줘"라고 말했을 때 LLM이 무엇을 실행해야 하는지 파악할 수 있다.
+
+```
+━━━ 🔖 운영자 승인 대기 항목 ━━━
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-maxItems]
+  - 인공지능신문: max_items 3 → 5  (월 23건 실적)
+  - AI Times Korea: max_items 3 → 5  (월 22건 실적)
+→ 승인 시: "maxItems 적용해줘" 또는 "등록해줘"
+
+[PENDING-discover]
+  - Flip7 Card Game — https://... — game/UI  (⭐44)
+  - Red Broadcast — https://... — broadcast  (⭐39)
+  - Octo Code — https://... — devtools  (⭐24)
+  - LongCipher Design — https://... — typography  (⭐16)
+→ 승인 시: "discover 등록해줘" 또는 항목명 언급
+
+[PENDING-sources]  ← 이번 주 해당 없음
+  (없음)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
 ---
 
-## 6. Telegram 보고
+## 7. Telegram 보고
 
 ```bash
 ROOT_DIR="$(git rev-parse --show-toplevel)"
@@ -167,7 +214,7 @@ fi
 
 ---
 
-## 7. 행동 원칙
+## 8. 행동 원칙
 
 - 자동 비활성화는 실패 소스만. 성과 기반 조정은 제안만 하고 운영자가 결정.
 - 신규 소스는 자동 등록하지 않는다. 후보로만 보고.

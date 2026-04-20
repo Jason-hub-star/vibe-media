@@ -20,27 +20,7 @@
 10. `docs/ref/PRD.md`
 
 ### Tier 3: Reference (필요 시 검색)
-- `docs/ref/DISCOVERY-TAXONOMY.md`
-- `docs/ref/AGENT-OPERATING-MODEL.md`
-- `docs/ref/REVIEW-POLICY.md`
-- `docs/ref/AUTO-PUBLISH-RULES.md`
-- `docs/ref/SOURCE-TIER-POLICY.md`
-- `docs/ref/ORCHESTRATION-EVALUATION.md`
-- `docs/ref/SOURCE-RESEARCH-METHOD.md`
-- `docs/ref/INGEST-STACK-DECISION.md`
-- `docs/ref/SOURCE-CATALOG.md`
-- `docs/ref/LLM-ORCHESTRATION-MAP.md`
-- `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
-- `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
-- `docs/ref/VIDEO-WORKER-CONTRACT.md`
-- `docs/ref/STITCH-WORKFLOW.md`
-- `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
-- `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
-- `docs/status/DECISION-LOG.md`
-- `docs/status/ORCHESTRATION-TRIAL-LOG.md`
-- `docs/status/PAGE-UPGRADE-BOARD.md`
-- `docs/status/PIPELINE-DIAGRAM.md`
-- `docs/status/SELF-CRITIQUE-LOG.md`
+→ `docs/ref/INDEX.md` 참조 (16개 ref + 5개 status 문서 목록)
 
 ## Doc Update Principle
 - **정본 1곳 원칙**: 하나의 사실은 한 문서에만 기록한다. 나머지는 링크로 참조.
@@ -79,6 +59,7 @@
 - `weekly-seo-audit.md` — 공개 사이트 SEO 건강성 주간 점검
 - `weekly-image-health.md` — cover_image_url 건강성 점검 + 깨진 URL 자동 복구
 - `youtube-link-intake.md` — YouTube URL을 brief에 수동 연결
+- `daily-telegram-consolidate.md` — Telegram 대화 에피소드 → Obsidian 의미기억 야간 공고화
 
 ### Skills
 - `skills/doc-sync/SKILL.md` — 코드 변경에 필요한 문서 동기화 점검
@@ -92,6 +73,7 @@
 - `skills/media-publish/prompt.md` — 미디어 발행 프롬프트
 - `skills/shorts-render/prompt.md` — Shorts 렌더 프롬프트
 - `skills/screenshot-check/SKILL.md` — Playwright 기반 시각 점검
+- `skills/telegram-memory/SKILL.md` — Telegram 대화 히스토리 조회·수동 공고화·초기화
 
 ### Commands
 - `commands/learn.md` — 교정 사항을 feedback memory로 저장 (`/learn`)
@@ -171,34 +153,5 @@
 - 문서의 상태와 구현 상태가 충돌하면 구현을 확인하고 `docs/status/*`를 먼저 동기화한다
 
 ## Source Of Truth
-- `docs/ref/PRD.md`
-- `docs/ref/SCHEMA.md`
-- `docs/ref/ARCHITECTURE.md`
-- `docs/ref/ASSET-GUIDE.md`
-- `docs/ref/DISCOVERY-TAXONOMY.md`
-- `docs/ref/PIPELINE-OPERATING-MODEL.md`
-- `docs/ref/AGENT-OPERATING-MODEL.md`
-- `docs/ref/REVIEW-POLICY.md`
-- `docs/ref/AUTO-PUBLISH-RULES.md`
-- `docs/ref/SOURCE-TIER-POLICY.md`
-- `docs/ref/ORCHESTRATION-EVALUATION.md`
-- `docs/ref/SOURCE-RESEARCH-METHOD.md`
-- `docs/ref/INGEST-STACK-DECISION.md`
-- `docs/ref/SOURCE-CATALOG.md`
-- `docs/ref/LLM-ORCHESTRATION-MAP.md`
-- `docs/ref/ORCHESTRATION-TRIAL-RUNBOOK.md`
-- `docs/ref/TELEGRAM-ORCHESTRATOR-CONTRACT.md`
-- `docs/ref/VIDEO-PIPELINE.md`
-- `docs/ref/VIDEO-WORKER-CONTRACT.md`
-- `docs/ref/STITCH-WORKFLOW.md`
-- `docs/ref/ROUTE-SPECS.md`
-- `docs/ref/CHANNEL-PUBLISH-PIPELINE.md`
-- `docs/ref/SEO-COMMERCIALIZATION-AUDIT.md`
-- `docs/ref/SOURCE-EXPANSION-STRATEGY.md`
-- `docs/status/PROJECT-STATUS.md`
-- `docs/status/EXECUTION-CHECKLIST.md`
-- `docs/status/PAGE-UPGRADE-BOARD.md`
-- `docs/status/DECISION-LOG.md`
-- `docs/status/ORCHESTRATION-TRIAL-LOG.md`
-- `docs/status/PIPELINE-DIAGRAM.md`
-- `docs/status/SELF-CRITIQUE-LOG.md`
+Tier 1~2 문서 + `docs/ref/INDEX.md` 전체가 SSOT다.
+구현과 문서 충돌 시 구현 → `docs/status/*` 순으로 확인.

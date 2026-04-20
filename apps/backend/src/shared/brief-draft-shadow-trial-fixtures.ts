@@ -1,5 +1,5 @@
 export type BriefDraftTrialProvider = "anthropic" | "ollama";
-export type BriefDraftTrialModelId = "claude-sonnet-4-6" | "mistral-small3.1";
+export type BriefDraftTrialModelId = "claude-sonnet-4-6" | "gemma4:26b-a4b-it-q4_K_M";
 
 export interface BriefDraftShadowTrialExpected {
   sourceFidelityTarget: number;
@@ -35,7 +35,7 @@ export interface BriefDraftShadowTrialFixture {
 }
 
 const LOCAL_PROVIDER: BriefDraftTrialProvider = "ollama";
-const LOCAL_MODEL_ID: BriefDraftTrialModelId = "mistral-small3.1";
+const LOCAL_MODEL_ID: BriefDraftTrialModelId = "gemma4:26b-a4b-it-q4_K_M";
 const CANDIDATE_PROVIDER: BriefDraftTrialProvider = "anthropic";
 const CANDIDATE_MODEL_ID: BriefDraftTrialModelId = "claude-sonnet-4-6";
 

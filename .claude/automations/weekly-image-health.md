@@ -46,6 +46,20 @@ ORDER BY category;
 UPDATE discover_items SET cover_image_url = '{new_url}' WHERE id = '{id}';
 ```
 
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-이미지교체]
+- 복구 실패 항목: GitHub OG 생성 또는 Pexels 대체 이미지 수동 선택
+→ 승인 시: "대체 이미지 URL 제공" 또는 "NULL 유지 (gradient fallback)"
+
+[PENDING-원본확인]
+- 자동 복구된 이미지: 실제 표시 확인 후 승인
+→ 승인 시: "프론트에서 시각 확인 후 승인" 또는 "다시 NULL 처리"
+
+---
+
 ## 3. 리포트
 
 | 항목 | 값 |

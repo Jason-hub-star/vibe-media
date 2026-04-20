@@ -37,14 +37,16 @@ function buildShortsPrompt(
   const cta = isEs
     ? "Síguenos en VibeHub para tu resumen diario de tecnología."
     : "Follow VibeHub for your daily tech briefing.";
-  return `You are a viral short-form video scriptwriter.
+  return `You are a short-form video scriptwriter focused on factual impact.
 Write a narration script for a 30-45 second vertical video (9:16).
 
 Rules:
 - 80-100 words total (STRICT — Chatterbox TTS reads slowly, more words = over 60 seconds)
-- First sentence must be a 3-second hook that grabs attention
+- First sentence: the single most surprising or specific fact from the source material — a real number, a concrete incident, or a counterintuitive result. Start mid-story, not with context.
+- BANNED openers: "¡Imagínate!", "¡Atención!", "¿Te imaginas si…?", "Estamos viviendo", "[Topic] está cambiando todo", "[Company] lo hizo de nuevo", "La inteligencia artificial está revolucionando"
+- Tone: sharp and factual. No hype words: "increíble", "alucinante", "revolucionario", "sin precedentes", "monumental"
+- Final sentence before CTA: one concrete implication, open risk, or thing to watch — NOT an inspirational summary
 - End with CTA: "${cta}"
-- Conversational, energetic tone
 - No markdown, no stage directions, no timestamps
 - Language: ${lang}
 
@@ -69,16 +71,19 @@ function buildLongformPrompt(
   const cta = isEs
     ? "Suscríbete a VibeHub para recibir información diaria sobre tecnología."
     : "Subscribe to VibeHub for daily tech insights.";
-  return `You are a professional video narrator scriptwriter.
+  return `You are a video narrator scriptwriter focused on factual, impactful storytelling.
 Write a narration script for a 2-3 minute landscape video (16:9).
 
 Rules:
 - 300-350 words total
-- Divide into exactly 4 chapters with clear titles
-- Start with an engaging introduction
-- End with a call to action: "${cta}"
-- Professional but accessible tone
+- First sentence: the most counterintuitive, specific, or surprising element from the source — a real incident, a concrete number, or a case study. Do NOT open with background or context.
+- BANNED openers: "Estamos viviendo una transformación", "Durante décadas", "La inteligencia artificial está", generic philosophical statements, questions like "¿Qué pasaría si…?"
+- Structure: (1) open with the hook fact → (2) build context (why it happened / what makes it significant) → (3) competitive or broader implications → (4) sharp conclusion
+- Final paragraph before CTA: a concrete "watch for this" — a risk, an open question, or a metric to track. NOT an inspirational restatement of what was just said.
+- End with: "${cta}"
+- No chapter headings or section titles embedded in the script
 - No markdown, no stage directions, no timestamps
+- Tone: direct and factual. No hype words: "increíble", "revolucionario", "sin precedentes", "monumental", "innegable", "asombroso"
 - Language: ${lang}
 
 Source material:

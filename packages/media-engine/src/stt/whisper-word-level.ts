@@ -9,7 +9,10 @@
 
 import fs from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "url";
 import { spawnAsync } from "../spawn-async";
+
+const _dirname = path.dirname(fileURLToPath(import.meta.url));
 import type { ShortWord } from "../remotion/BriefShort";
 
 // ---------------------------------------------------------------------------
@@ -161,6 +164,41 @@ async function convertToWav(inputPath: string, outputDir: string): Promise<strin
 
 const DEFAULT_BINARY = "/opt/homebrew/Cellar/whisper-cpp/1.8.4/bin/whisper-cli";
 
+// ---------------------------------------------------------------------------
+// faster-whisper (CPU) fallback
+// MimikaStudio TTS 직후 Metal GPU 점유로 whisper-cli가 exit code 3 크래시.
+// MimikaStudio venv에 faster-whisper가 있으므로 CPU 전용 Python 스크립트로 대체.
+// ---------------------------------------------------------------------------
+
+const FASTER_WHISPER_PYTHON = "/Users/family/MimikaStudio/venv/bin/python";
+const FASTER_WHISPER_SCRIPT = path.join(_dirname, "faster-whisper-words.py");
+
+/**
+ * faster-whisper (CPU) 기반 전사.
+ * whisper-cli Metal 크래시 시 자동 대체 경로로 사용.
+ */
+async function transcribeWithFasterWhisper(
+  wavPath: string,
+  jsonPath: string,
+  language: string,
+  model: string,
+  fps: number,
+): Promise<ShortWord[]> {
+  await spawnAsync(FASTER_WHISPER_PYTHON, [
+    FASTER_WHISPER_SCRIPT,
+    wavPath,
+    "--output", jsonPath,
+    "--language", language,
+    "--model", model,
+    "--fps", String(fps),
+  ], {
+    timeout: 600_000, // CPU는 느리므로 10분
+  });
+
+  const raw = await fs.readFile(jsonPath, "utf-8");
+  return JSON.parse(raw) as ShortWord[];
+}
+
 /** Walk up from cwd to find models/ggml-{model}.bin */
 function findModelPath(model: string): string {
   const filename = `ggml-${model}.bin`;
@@ -208,38 +246,19 @@ export async function transcribeWordLevel(
     // 1) Convert to 16kHz mono WAV
     const wavPath = await convertToWav(audioPath, outputDir);
 
-    // 2) Run whisper-cpp with JSON full output
-    // GGML_METAL_DISABLE=1: MimikaStudio TTS 후 Metal GPU 컨텍스트 오염으로
-    // whisper-cli가 exit code 3으로 크래시하는 문제 방지 (CPU fallback 사용).
-    await spawnAsync(binaryPath, [
-      "-m", modelPath,
-      "-f", wavPath,
-      "-l", language,
-      "--output-json-full",
-      "-of", outputBase,
-    ], {
-      timeout: 300_000, // 5분
-      env: { ...process.env, GGML_METAL_DISABLE: "1" },
-    });
+    // 2) faster-whisper (CPU) 로 전사
+    // whisper-cli(ggml Metal)는 MimikaStudio TTS 직후 Metal GPU 충돌로 exit code 3 크래시.
+    // MimikaStudio venv에 faster-whisper가 이미 설치되어 있으므로 CPU 전용으로 대체.
+    const words = await transcribeWithFasterWhisper(wavPath, jsonPath, language, model, fps);
 
-    // 3) Read JSON output
-    const jsonOutputPath = `${outputBase}.json`;
-    const raw = await fs.readFile(jsonOutputPath, "utf-8");
-    const data = JSON.parse(raw) as WhisperCppJsonFull;
+    // duration = 마지막 word의 endFrame → sec
+    const lastWord = words[words.length - 1];
+    const durationSec = lastWord ? lastWord.endFrame / fps : 0;
 
-    // 4) Parse tokens to words
-    const words = parseCppTokensToWords(data, fps);
+    // 3) words.json은 transcribeWithFasterWhisper 내부에서 이미 저장됨
 
-    // duration = last segment end (ms → sec)
-    const lastSeg = data.transcription[data.transcription.length - 1];
-    const durationSec = lastSeg ? lastSeg.offsets.to / 1000 : 0;
-
-    // 5) Save words JSON
-    await fs.writeFile(jsonPath, JSON.stringify(words, null, 2));
-
-    // Cleanup temp files
+    // Cleanup temp WAV
     await fs.unlink(wavPath).catch(() => {});
-    await fs.unlink(jsonOutputPath).catch(() => {});
 
     return { words, jsonPath, durationSec, success: true };
   } catch (err) {

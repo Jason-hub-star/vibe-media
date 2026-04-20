@@ -17,6 +17,7 @@ interface PendingBriefRow {
   body: string[];
   source_links: { label: string; href: string }[];
   source_count: number;
+  cover_image_url: string | null;
   source_item_id: string | null;
   confidence: number | null;
   target_surface: string | null;
@@ -176,6 +177,7 @@ export async function runAutoApprove(opts: { maxBriefs?: number } = {}): Promise
           briefs.body,
           briefs.source_links,
           briefs.source_count,
+          briefs.cover_image_url,
           briefs.source_item_id,
           classifications.confidence,
           classifications.target_surface,

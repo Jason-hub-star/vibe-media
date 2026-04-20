@@ -1,0 +1,124 @@
+import { afterEach, describe, expect, it } from "vitest";
+
+import {
+  classifyBriefForReviewWindow,
+  getPublicPageRobots,
+  selectReviewWindowFeaturedBriefs,
+  shouldIncludeStaticPathInSitemap,
+} from "@/lib/review-window";
+
+const ORIGINAL_REVIEW_WINDOW = process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+afterEach(() => {
+  if (ORIGINAL_REVIEW_WINDOW === undefined) {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+    return;
+  }
+
+  process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW = ORIGINAL_REVIEW_WINDOW;
+});
+
+describe("review window helpers", () => {
+  it("noindexes radar, sources, and newsletter pages while the review window is active", () => {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+    expect(getPublicPageRobots("radar-list")).toEqual({ index: false, follow: true });
+    expect(getPublicPageRobots("radar-detail")).toEqual({ index: false, follow: true });
+    expect(getPublicPageRobots("sources")).toEqual({ index: false, follow: true });
+    expect(getPublicPageRobots("newsletter")).toEqual({ index: false, follow: true });
+    expect(getPublicPageRobots("brief-list")).toEqual({ index: true, follow: true });
+    expect(getPublicPageRobots("contact")).toEqual({ index: true, follow: true });
+  });
+
+  it("keeps radar out of the sitemap while preserving trust pages", () => {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+    expect(shouldIncludeStaticPathInSitemap("/radar")).toBe(false);
+    expect(shouldIncludeStaticPathInSitemap("/sources")).toBe(false);
+    expect(shouldIncludeStaticPathInSitemap("/newsletter")).toBe(false);
+    expect(shouldIncludeStaticPathInSitemap("/brief")).toBe(true);
+    expect(shouldIncludeStaticPathInSitemap("/editorial-policy")).toBe(true);
+    expect(shouldIncludeStaticPathInSitemap("/team")).toBe(true);
+    expect(shouldIncludeStaticPathInSitemap("/contact")).toBe(true);
+  });
+
+  it("buckets strong, rewrite-needed, and low-value briefs for the review window", () => {
+    const keep = classifyBriefForReviewWindow({
+      slug: "openai-enterprise-controls",
+      title: "OpenAI adds enterprise controls for multi-team deployments",
+      summary:
+        "OpenAI introduced broader admin controls for enterprise teams, expanding governance options while reducing rollout friction for larger organizations.",
+      status: "published",
+      publishedAt: "2026-04-20T00:00:00.000Z",
+      sourceCount: 3,
+      readTimeMinutes: 4,
+      bodyPreview:
+        "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
+      coverImage: "https://images.example.com/openai-controls.jpg",
+    });
+    const rewrite = classifyBriefForReviewWindow({
+      slug: "anthropic-product-update",
+      title: "Anthropic expands admin tooling for Claude teams",
+      summary:
+        "Anthropic expanded admin tooling for team deployments and outlined new policy controls for enterprise customers across Claude workspaces.",
+      status: "published",
+      publishedAt: "2026-04-19T00:00:00.000Z",
+      sourceCount: 2,
+      readTimeMinutes: 3,
+      bodyPreview:
+        "Anthropic published an update for enterprise customers and the story still needs editorial cleanup before it should lead the public surface.",
+      coverImage: "https://cdn.example.com/favicon-32x32.png",
+    });
+    const hide = classifyBriefForReviewWindow({
+      slug: "tooling-changelog",
+      title: "Workbench changelog and updated dependencies",
+      summary: "Updated dependencies and release notes for the latest maintenance release.",
+      status: "published",
+      publishedAt: "2026-04-18T00:00:00.000Z",
+      sourceCount: 1,
+      readTimeMinutes: 1,
+      bodyPreview: "Maintenance update only.",
+      coverImage: "https://cdn.example.com/favicon.ico",
+    });
+
+    expect(keep).toBe("keep");
+    expect(rewrite).toBe("rewrite");
+    expect(hide).toBe("hide");
+  });
+
+  it("only features keep-tier briefs on the home surface during the review window", () => {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+    const featured = selectReviewWindowFeaturedBriefs([
+      {
+        slug: "keep-brief",
+        title: "OpenAI adds enterprise controls for multi-team deployments",
+        summary:
+          "OpenAI introduced broader admin controls for enterprise teams, expanding governance options while reducing rollout friction for larger organizations.",
+        status: "published",
+        publishedAt: "2026-04-20T00:00:00.000Z",
+        sourceCount: 3,
+        readTimeMinutes: 4,
+        bodyPreview:
+          "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
+        coverImage: "https://images.example.com/openai-controls.jpg",
+      },
+      {
+        slug: "rewrite-brief",
+        title: "Anthropic expands admin tooling for Claude teams",
+        summary:
+          "Anthropic expanded admin tooling for team deployments and outlined new policy controls for enterprise customers across Claude workspaces.",
+        status: "published",
+        publishedAt: "2026-04-19T00:00:00.000Z",
+        sourceCount: 2,
+        readTimeMinutes: 3,
+        bodyPreview:
+          "Anthropic published an update for enterprise customers and the story still needs editorial cleanup before it should lead the public surface.",
+        coverImage: "https://cdn.example.com/favicon-32x32.png",
+      },
+    ]);
+
+    expect(featured).toHaveLength(1);
+    expect(featured[0]?.slug).toBe("keep-brief");
+  });
+});

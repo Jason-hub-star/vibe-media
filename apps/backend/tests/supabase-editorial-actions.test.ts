@@ -67,11 +67,86 @@ describe("supabase editorial actions", () => {
         { label: "OpenAI Blog", href: "https://openai.com/blog/" },
         { label: "TechCrunch", href: "https://techcrunch.com/openai-gpt54/" }
       ],
-      source_count: 2
+      source_count: 2,
+      cover_image_url: "https://images.openai.com/blog/gpt-5-4-mini-cover.jpg"
     });
 
     expect(good.passed).toBe(true);
     expect(good.failures).toHaveLength(0);
+  });
+
+  it("blocks briefs with artifact text or invalid icon-only cover images", () => {
+    const result = runBriefQualityCheck({
+      title: "Anthropic expands Claude deployment controls for teams",
+      summary: "Summary: Anthropic added deployment controls for enterprise teams and outlined how admins can manage access across multiple workspaces.",
+      body: [
+        "Anthropic rolled out broader deployment controls for enterprise admins this week.",
+        "## Why it matters",
+        "Centralized access rules make it easier for larger teams to govern model usage without slowing down product teams.",
+        "## Details",
+        "The update adds workspace-level controls, policy settings, and expanded audit visibility for administrators."
+      ],
+      source_links: [
+        { label: "Anthropic", href: "https://www.anthropic.com/news/" },
+        { label: "The Verge", href: "https://www.theverge.com/anthropic-admin-controls" }
+      ],
+      source_count: 2,
+      cover_image_url: "https://cdn.example.com/favicon-32x32.png"
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.failures.some((failure) => failure.includes("artifact text found"))).toBe(true);
+    expect(
+      result.failures.some((failure) => failure.includes("cover image failed publisher-quality validation"))
+    ).toBe(true);
+  });
+
+  it("accepts a reader-facing angle without requiring a literal 'Why it matters' heading", () => {
+    const result = runBriefQualityCheck({
+      title: "Anthropic adds admin controls for enterprise Claude rollouts",
+      summary:
+        "Anthropic expanded admin controls for enterprise Claude deployments, giving larger teams more visibility into rollout policy and workspace governance.",
+      body: [
+        "Anthropic introduced broader admin controls for enterprise customers managing Claude deployments across multiple teams.",
+        "The update gives admins more policy visibility and reduces rollout friction for organizations that need tighter governance before wider adoption.",
+        "Anthropic says the new controls are designed to help larger companies manage workspace usage, access settings, and operational risk more consistently."
+      ],
+      source_links: [
+        { label: "Anthropic", href: "https://www.anthropic.com/news/" },
+        { label: "TechCrunch", href: "https://techcrunch.com/anthropic-admin-controls/" }
+      ],
+      source_count: 2,
+      cover_image_url: "https://images.example.com/anthropic-admin-controls.jpg"
+    });
+
+    expect(result.passed).toBe(true);
+    expect(
+      result.failures.some((failure) => failure.includes("missing reader-facing angle"))
+    ).toBe(false);
+  });
+
+  it("does not reject substantive briefs just because a source mentions release notes in the body", () => {
+    const result = runBriefQualityCheck({
+      title: "Vercel expands deployment controls for regulated teams",
+      summary:
+        "Vercel added new deployment controls for regulated teams, with broader policy management that matters to organizations balancing speed and compliance.",
+      body: [
+        "Vercel published a product update that references earlier release notes while outlining a larger push into compliance-focused deployment controls.",
+        "The change matters for teams that need clearer approval paths because it reduces rollout risk and gives organizations a more practical way to manage production access.",
+        "Vercel said the new controls cover policy settings, role boundaries, and audit support for customers with stricter operational requirements."
+      ],
+      source_links: [
+        { label: "Vercel", href: "https://vercel.com/changelog/" },
+        { label: "InfoQ", href: "https://www.infoq.com/news/2026/04/vercel-deployment-controls/" }
+      ],
+      source_count: 2,
+      cover_image_url: "https://images.example.com/vercel-controls.jpg"
+    });
+
+    expect(result.passed).toBe(true);
+    expect(
+      result.failures.some((failure) => failure.includes("low-value changelog pattern"))
+    ).toBe(false);
   });
 
   it("blocks canonical briefs that still contain Hangul", () => {

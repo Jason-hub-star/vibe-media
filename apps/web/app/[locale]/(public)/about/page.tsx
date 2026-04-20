@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 import { NewsletterForm } from "@/features/newsletter/view/NewsletterForm";
@@ -16,6 +18,7 @@ export async function generateMetadata({
     title: "About",
     description:
       "VibeHub delivers daily AI briefs curated from global sources — only what matters, every day.",
+    robots: getPublicPageRobots("about"),
     alternates: {
       canonical: `${SITE_URL}/${locale}/about`,
       languages: buildAlternates("/about", SITE_URL),
@@ -68,6 +71,23 @@ export default async function AboutPage({
             <a href="mailto:contact@vibehub.tech" className="inline-link">
               contact@vibehub.tech
             </a>
+          </p>
+
+          <h3>Trust center</h3>
+          <p>
+            Read our{" "}
+            <Link className="inline-link" href={`/${locale}/editorial-policy`}>
+              Editorial Policy
+            </Link>
+            , meet the{" "}
+            <Link className="inline-link" href={`/${locale}/team`}>
+              team behind VibeHub
+            </Link>
+            , or visit the{" "}
+            <Link className="inline-link" href={`/${locale}/contact`}>
+              Contact page
+            </Link>
+            {" "}for support, legal, and business inquiries.
           </p>
         </div>
       </SectionBlock>

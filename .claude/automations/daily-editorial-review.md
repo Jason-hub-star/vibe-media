@@ -39,6 +39,14 @@ ORDER BY slug ASC
 
 각 draft 브리프에 대해 아래를 수행한다. **한 번에 최대 5개**만 처리.
 
+### 3-0. 발행 가치 선별
+아래 패턴이면 애드센스/공개 품질 관점에서 **저가치 후보**로 보고 자동 가공하지 않는다. `status = draft`는 유지하고 결과 보고의 "건너뜀"에 사유를 남긴다.
+
+- glossary/definition/how-to 기초 설명 글이라 시의성 있는 뉴스 가치가 약한 경우
+- 원문이 릴리스 노트 나열형 changelog인데 사용자 영향/시장 맥락을 충분히 설명할 근거가 부족한 경우
+- 소스가 1개뿐이고 추가 확인 가능한 신뢰 소스를 찾지 못해 독자용 해설을 만들 수 없는 경우
+- 원문이 사실상 홍보/보도자료이며 독자 관점의 추가 가치 없이 재작성만 하게 되는 경우
+
 ### 3-1. 원문 수집
 1. `source_links[0].href`에서 원문 페이지를 WebFetch로 가져온다
 2. 실패하면 WebSearch로 `"{title}" site:원문도메인`을 검색한다
@@ -47,7 +55,8 @@ ORDER BY slug ASC
 ### 3-2. OG 이미지 추출
 1. 원문 HTML에서 `og:image` meta tag를 추출한다
 2. 없으면 WebSearch 결과에서 이미지 URL을 찾는다
-3. 없으면 `cover_image_url = null`로 둔다
+3. 아래 패턴이면 대표 이미지로 쓰지 않는다: `favicon`, `apple-touch-icon`, `icon`, `logo`, 128px 이하 소형 이미지, SVG 아이콘만 있는 경우
+4. 위 조건에 맞는 기사 대표 이미지가 없으면 `cover_image_url = null`로 두고 결과 보고에 `image-missing`으로 기록한다
 
 ### 3-3. 본문 작성
 
@@ -68,11 +77,18 @@ LIMIT 3
 - 영어, 15-70자
 - `[주체] [동사] [대상] — [부가설명]` 형태
 - 원문 제목을 그대로 쓰지 말고, 핵심 사실을 요약
+- 과장/선정/슬랭 금지: `borks`, `having a month`, `game changer` 같은 표현 금지
 
 #### 요약(summary) 규칙
 - 영어, 50-200자
 - 1-2문장, `[누가] [무엇을] [왜]` 구조
 - 원문 요약과 다른 표현으로 재작성
+- 금지 패턴:
+  - `X is excited/proud/pleased/happy to announce`
+  - `originally published on ...`
+  - `Summary:` / `TL;DR:` / `Listen to article`
+  - 슬랭/밈/과장 카피
+- VibeHub 독자 관점의 뉴스 한 줄 요약으로 다시 쓴다. 원문의 자기 홍보 문구를 옮기지 않는다.
 
 #### 본문(body) 규칙
 - **최소 5개 요소**: 리드 단락 + 2개 이상의 `## 헤딩` + 각 헤딩 아래 본문
@@ -87,7 +103,15 @@ LIMIT 3
   [7] 맥락 분석 단락
   ```
 - JSON 배열로 저장: 각 헤딩과 단락이 별도 요소
+- **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
+  - 이미지 alt-text (`The X logo sits next to...`, `Photo of...`)
+  - 팟캐스트/오디오 플레이어 요소 (`Listen to article`, `[duration] minutes`, `Play episode`)
+  - 보일러플레이트 헤더 (`Announcements`, `Press Release`, `Company`, `Editor's Note`)
+  - 본문 첫 줄 `Summary:` / `Summary`
+  - 저자 affiliation 각주, related work 블럽, 채용/구독 배너, 원문 사이트 자기 홍보 문구
+- **학술 소스 필수 재작성**: `arxiv.org`, `machinelearning.apple.com`, `research.*` 계열은 abstract/저자 목록을 그대로 쓰지 않는다. 일반 독자가 이해할 언어로 다시 쓰고 jargon/각주를 제거한다.
 - 내부 용어 금지: pipeline, ingest, draft, classify, orchestrat 등
+- 독자가 다시 검색하지 않아도 핵심 맥락을 이해할 수 있게 쓴다. 내부 운영 판단이나 모델 선택 메모를 공개 문장에 넣지 않는다.
 
 #### 소스(source_links) 규칙
 - 최소 2개, 가능하면 3개
@@ -110,7 +134,7 @@ LIMIT 3
 
 ### 3-5. 품질 검증 (자체 체크)
 
-작성 후 아래 6항목을 자체 검증한다:
+작성 후 아래 10항목을 자체 검증한다:
 
 | 항목 | 통과 조건 |
 |------|----------|
@@ -120,8 +144,12 @@ LIMIT 3
 | Source count | ≥2 |
 | Source URLs | 전부 https:// |
 | Internal terms | pipeline, ingest, draft, classify, orchestrat 포함 안 됨 |
+| Artifact scrub | `Summary:`, `Listen to article`, `Announcements`, alt-text boilerplate 없음 |
+| Marketing tone | `excited to announce`, `originally published on` 등 소스 홍보 문구 없음 |
+| Reader value | glossary/definition/changelog 나열만으로 끝나지 않고 독자용 맥락이 있음 |
+| Image quality | favicon/icon만 대표 이미지로 저장하지 않음 |
 
-**6/6 통과해야만 DB에 기록한다.** 하나라도 실패하면 해당 브리프는 건너뛰고 사유를 기록한다.
+**10/10 통과해야만 DB에 기록한다.** 하나라도 실패하면 해당 브리프는 건너뛰고 사유를 기록한다.
 
 ### 3-6. DB 업데이트
 
@@ -168,7 +196,7 @@ npm run review:auto-approve -- --max=10 2>&1
 ```
 
 자동 승인 기준:
-- quality gate 6/6 통과
+- quality gate 10/10 통과
 - `qualityScore >= 70` (B 이상 권장 구간)
 - classifier confidence `>= 0.85`
 - `duplicate_of IS NULL`
@@ -205,6 +233,20 @@ npm run review:auto-approve -- --max=10 2>&1
 
 ---
 
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-가공보류]
+- 자동 보류 항목: 예외 사유 확인 후 수동 가공 또는 폐기 결정
+→ 승인 시: "수동 가공 진행" 또는 "discard로 전환"
+
+[PENDING-원문실패]
+- 원문 접근 실패 항목: 수동으로 콘텐츠 수집 후 가공 여부 결정
+→ 승인 시: "수동 입력" 또는 "draft 상태 유지"
+
+---
+
 ## 5. Telegram 보고
 
 결과 보고 직후 아래 curl로 Telegram에 전송한다.
@@ -237,5 +279,7 @@ fi
 - 사실만 작성한다. 원문에 없는 내용을 추측하지 않는다.
 - "## Why it matters"에서 VibeHub 관점이 아니라 **업계/독자 관점**으로 작성한다.
 - 원문이 GitHub release changelog인 경우: 주요 feature/breaking change만 추려서 사람이 읽을 수 있는 요약으로 변환한다.
+- glossary/definition 성격의 evergreen 설명 글은 뉴스 가치가 낮으면 과감히 skip한다.
+- favicon/icon 수준 이미지밖에 없으면 억지로 쓰지 않는다. 대표 이미지 없이 두고 후속 이미지 헬스 체크에 넘긴다.
 - 원문 접근이 완전히 실패하면 그 브리프는 건너뛴다. 추측으로 채우지 않는다.
 - 이미 `review`/`scheduled`/`published` 상태인 브리프는 절대 건드리지 않는다.

@@ -144,6 +144,20 @@ npx playwright test apps/web/tests/e2e/pipeline-to-ui.spec.ts
 
 ---
 
+## 🔖 운영자 승인 대기 항목
+
+(아래 항목은 자동 실행되지 않았습니다. 운영자가 확인 후 결정합니다.)
+
+[PENDING-회귀복구]
+- 감지된 회귀: 원인 분석 후 해당 구간 롤백 또는 수정 필요 여부 확인
+→ 승인 시: "git revert" 또는 "git reset" 또는 "hotfix 커밋"
+
+[PENDING-드리프트대응]
+- orchestration drift 경고: 자동 롤백 조건 충족 여부 확인 후 모델 상태 롤백 결정
+→ 승인 시: "/model-rollback" 또는 "모니터링 계속"
+
+---
+
 ## 5. Telegram 보고
 
 섹션 4의 보고 형식을 작성한 직후 아래 curl로 전송한다.

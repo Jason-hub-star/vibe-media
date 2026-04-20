@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 
@@ -14,6 +15,7 @@ export async function generateMetadata({
   return {
     title: "Privacy Policy",
     description: "VibeHub privacy policy — how we collect, use, and protect your data.",
+    robots: getPublicPageRobots("privacy"),
     alternates: {
       canonical: `${SITE_URL}/${locale}/privacy`,
       languages: buildAlternates("/privacy", SITE_URL),

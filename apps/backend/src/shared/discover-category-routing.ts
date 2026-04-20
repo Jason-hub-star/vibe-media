@@ -9,7 +9,8 @@ const DISCOVER_SURFACE_CATEGORIES = new Set<DiscoverCategory>([
   "grant",
   "community",
   "asset",
-  "design_token"
+  "design_token",
+  "harness_pattern"
 ]);
 
 function normalizeTag(tag: string) {
@@ -22,6 +23,9 @@ function hasTag(tags: Set<string>, signals: string[]) {
 
 export function inferDiscoverCategoryFromTags(tags: string[]): DiscoverCategory | null {
   const normalizedTags = new Set(tags.map(normalizeTag).filter(Boolean));
+
+  // harness_pattern은 최우선 — 전용 태그로 명시적으로 지정된 패턴 소스
+  if (hasTag(normalizedTags, ["harness"])) return "harness_pattern";
 
   if (hasTag(normalizedTags, ["sdk"])) return "sdk";
   if (hasTag(normalizedTags, ["api"])) return "api";

@@ -6,6 +6,7 @@ import {
   getLocaleFromParams,
   getOgLocale,
 } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { PlaceholderArt } from "@/components/PlaceholderArt";
 import { SectionBlock } from "@/components/SectionBlock";
@@ -27,6 +28,7 @@ export async function generateMetadata({
     title: "Submit a Tool",
     description:
       "Share your tool with a fast, no-login form and get screened for VibeHub listings and Showcase Picks.",
+    robots: getPublicPageRobots("sources"),
     alternates: {
       canonical: `${SITE_URL}/${locale}/sources`,
       languages: buildAlternates("/sources", SITE_URL),
@@ -35,7 +37,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function SourcesPage() {
+export default async function SourcesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = await getLocaleFromParams(params);
   const [showcasePicks, latestSubmissions, importedCandidates] = await Promise.all([
     listShowcasePicksForSubmitHub(),
     listLatestToolSubmissions(),
@@ -93,6 +100,10 @@ export default async function SourcesPage() {
         sectionId="submit-tool"
         title="Quick intake built for busy builders"
       >
+        <p className="muted">
+          During our review window, the core indexed surface stays focused on briefs and trust
+          pages. Tool intake remains open here for direct visitors.
+        </p>
         <ToolSubmissionFormWithPreview />
       </SectionBlock>
 

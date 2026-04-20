@@ -22,6 +22,7 @@ import { BriefSourcePanel } from "@/features/brief/view/BriefSourcePanel";
 import { presentRelativeDate } from "@/features/shared/presenter/present-relative-date";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
+import { getPublicPageRobots } from "@/lib/review-window";
 
 const BRIEF_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_BRIEF_SLOT?.trim();
 
@@ -44,6 +45,7 @@ export async function generateMetadata({
   return {
     title,
     description: summary,
+    robots: getPublicPageRobots("brief-detail"),
     openGraph: {
       type: "article",
       title,
