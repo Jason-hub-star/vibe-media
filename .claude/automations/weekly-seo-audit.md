@@ -100,7 +100,9 @@ apps/web/app/[locale]/(public)/terms/page.tsx
   - `Updated dependencies`, `release notes`, `changelog` 나열형 discover 상세
   - 1-2문장뿐인 radar 상세 다수
   - 기사 본문에 `pipeline`, `ingest`, `draft`, `classify`, `orchestrat` 등 내부 용어 노출
-  - `Summary:`, `Listen to article`, `Announcements`, alt-text boilerplate 유입
+  - `Summary:`, `Listen to article`, `Announcements`, source-series intro, alt-text boilerplate 유입
+  - `MIT Technology Review Explains`, `Let our writers untangle...`, `You can read more from the series here` 같은 출처 사이트 소개문 유입
+  - 13개 초과 body 요소 또는 `###`/`####` heading으로 public brief 가독성이 깨진 항목
   - favicon/icon 수준 대표 이미지
 - radar 상세 중 저가치 후보가 많으면 `noindex` 또는 sitemap 제외 후보 개수를 보고한다.
 - AdSense 재심사 기간에는 `sitemap.xml`의 brief URL을 샘플링해 `source count ≥2`, `body words ≥550`, `duplicate title 없음`, `reader angle 있음`을 통과하는지 별도 집계한다.

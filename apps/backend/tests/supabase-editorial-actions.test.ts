@@ -112,6 +112,72 @@ describe("supabase editorial actions", () => {
     ).toBe(true);
   });
 
+  it("blocks source boilerplate dumps and unsupported heading levels", () => {
+    const result = runBriefQualityCheck({
+      title: "Desalination plants face rising water security risks",
+      summary:
+        "Desalination plants are becoming a critical water-security risk as conflict, pollution, and outages expose fragile infrastructure across the Gulf.",
+      body: [
+        "MIT Technology Review Explains: Let our writers untangle the complex, messy world of technology to help you understand what is coming next.",
+        "### A vital resource",
+        `Desalination systems matter for residents, hospitals, companies, and operators because disruptions can affect drinking water, cooling, food production, and industrial operations at the same time. ${LONG_READER_CONTEXT}`,
+        "### Uneven vulnerabilities",
+        `Large plants depend on intakes, pumps, filters, power supply, and distribution networks, so a single failure can interrupt the wider system. ${LONG_TECH_CONTEXT}`,
+        "### Escalating threats",
+        `Regional conflict, oil spills, algae blooms, cyclones, and power outages all create practical risks that water planners need to treat as more than background infrastructure problems. ${LONG_MARKET_CONTEXT}`,
+        "### Storage gaps",
+        `Strategic reserves give governments more time to respond when a facility shuts down, but weak backup planning can leave communities exposed even when total capacity looks high. ${LONG_ADOPTION_CONTEXT}`,
+      ],
+      source_links: [
+        { label: "MIT Technology Review", href: "https://www.technologyreview.com/desalination-risk/" },
+        { label: "BISI", href: "https://bisi.org.uk/reports/desalination-risk/" },
+      ],
+      source_count: 2,
+      cover_image_url: "https://images.example.com/desalination.jpg",
+    });
+
+    expect(result.passed).toBe(false);
+    expect(
+      result.failures.some((failure) => failure.includes("artifact text found: source-series boilerplate"))
+    ).toBe(true);
+    expect(result.failures).toContain("unsupported markdown heading level found; use ## headings only");
+  });
+
+  it("blocks overly fragmented source-dump bodies", () => {
+    const result = runBriefQualityCheck({
+      title: "Desalination plants face rising water security risks",
+      summary:
+        "Desalination plants are becoming a critical water-security risk as conflict, pollution, and outages expose fragile infrastructure across the Gulf.",
+      body: [
+        "Desalination has become strategic infrastructure for water-stressed countries that need more reliable municipal supply.",
+        "## Why it matters",
+        `The issue matters for residents, companies, hospitals, and operators because a water outage can affect public health, cooling, agriculture, and industrial activity at once. ${LONG_READER_CONTEXT}`,
+        "## Risk chain",
+        `A plant depends on intakes, pumps, filters, power supply, and distribution networks working in order, so a failure in one part can interrupt the entire operation. ${LONG_TECH_CONTEXT}`,
+        "Extra source paragraph one.",
+        "Extra source paragraph two.",
+        "Extra source paragraph three.",
+        "Extra source paragraph four.",
+        "Extra source paragraph five.",
+        "Extra source paragraph six.",
+        "Extra source paragraph seven.",
+        "Extra source paragraph eight.",
+        "Extra source paragraph nine.",
+      ],
+      source_links: [
+        { label: "MIT Technology Review", href: "https://www.technologyreview.com/desalination-risk/" },
+        { label: "BISI", href: "https://bisi.org.uk/reports/desalination-risk/" },
+      ],
+      source_count: 2,
+      cover_image_url: "https://images.example.com/desalination.jpg",
+    });
+
+    expect(result.passed).toBe(false);
+    expect(
+      result.failures.some((failure) => failure.includes("body elements 14 (expected ≤13"))
+    ).toBe(true);
+  });
+
   it("blocks truncated summaries and notes-style topics before publication", () => {
     const result = runBriefQualityCheck({
       title: "Generative UI Notes from a product prototype",

@@ -7,6 +7,10 @@ const ARTIFACT_RULES = [
   { label: "Listen to article", pattern: /listen to article/i },
   { label: "Announcements", pattern: /\bannouncements\b/i },
   { label: "Play episode", pattern: /play episode/i },
+  {
+    label: "source-series boilerplate",
+    pattern: /MIT Technology Review Explains|Let our writers untangle|You can read more from the series/i,
+  },
 ];
 const MARKETING_RULES = [
   { label: "excited to announce", pattern: /\b(excited|proud|pleased|happy)\s+to\s+announce\b/i },
@@ -27,6 +31,7 @@ const THIN_TITLE_RULES = [
   { label: "MVP definition topic", pattern: /\bmvp\b/i },
 ];
 const MIN_BODY_WORDS = 550;
+const MAX_BODY_ELEMENTS = 13;
 const AUDIENCE_SIGNAL_PATTERN =
   /\b(developers?|teams?|customers?|users?|companies?|startups?|enterprises?|admins?|operators?|buyers?|creators?|organizations?)\b/i;
 const IMPACT_SIGNAL_PATTERN =
@@ -175,6 +180,7 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   const titleLen = brief.title?.length ?? 0;
   const summaryLen = brief.summary?.length ?? 0;
   const bodyWordCount = countBodyWords(brief.body ?? []);
+  const bodyElements = (brief.body ?? []).filter((line) => line.trim().length > 0).length;
   const bodyParagraphs = (brief.body ?? []).filter(
     (line) => !line.startsWith("## ")
   ).length;
@@ -196,6 +202,12 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   }
   if (bodyWordCount < MIN_BODY_WORDS) {
     failures.push(`body word count ${bodyWordCount} (expected ≥${MIN_BODY_WORDS})`);
+  }
+  if (bodyElements > MAX_BODY_ELEMENTS) {
+    failures.push(`body elements ${bodyElements} (expected ≤${MAX_BODY_ELEMENTS} for readable brief structure)`);
+  }
+  if ((brief.body ?? []).some((line) => /^#{3,6}\s/.test(line.trim()))) {
+    failures.push("unsupported markdown heading level found; use ## headings only");
   }
   if (sourceCount < 2) {
     failures.push(`source count ${sourceCount} (expected ≥2)`);

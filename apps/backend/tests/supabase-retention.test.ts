@@ -4,7 +4,7 @@ import { resolveSupabaseRetentionPolicy } from "../src/shared/supabase-retention
 
 describe("supabase retention policy", () => {
   it("uses defaults when env is empty", () => {
-    const policy = resolveSupabaseRetentionPolicy({});
+    const policy = resolveSupabaseRetentionPolicy({ NODE_ENV: "test" });
 
     expect(policy).toEqual({
       channelPublishResultsDays: 180,
@@ -20,6 +20,7 @@ describe("supabase retention policy", () => {
 
   it("accepts valid overrides and ignores invalid values", () => {
     const policy = resolveSupabaseRetentionPolicy({
+      NODE_ENV: "test",
       SUPABASE_RETENTION_CHANNEL_PUBLISH_DAYS: "90",
       SUPABASE_RETENTION_INGEST_RUN_ATTEMPT_DAYS: "-1",
       SUPABASE_RETENTION_VIDEO_JOB_ATTEMPT_DAYS: "abc",

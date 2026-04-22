@@ -97,6 +97,8 @@ LIMIT 3
 
 #### 본문(body) 규칙
 - **최소 550단어 + 5개 요소**: 리드 단락 + 2개 이상의 `## 헤딩` + 각 헤딩 아래 본문
+- **가독성 목표**: 레퍼런스 brief처럼 `lead → ## Why it matters → ## How/Details → ## Context/What to watch` 흐름으로 7-11개 body 요소를 목표로 한다. 13개를 넘는 원문 단락 덤프는 저장하지 않는다.
+- 헤딩은 반드시 `## `만 사용한다. `###`, `####` 등은 public presenter에서 구조가 깨지므로 금지한다.
 - 구조:
   ```
   [1] 리드 단락 — 핵심 사실 요약 (summary와 다르게)
@@ -116,6 +118,8 @@ LIMIT 3
   - 보일러플레이트 헤더 (`Announcements`, `Press Release`, `Company`, `Editor's Note`)
   - 본문 첫 줄 `Summary:` / `Summary`
   - 저자 affiliation 각주, related work 블럽, 채용/구독 배너, 원문 사이트 자기 홍보 문구
+  - 출처 시리즈 소개 문구 (`MIT Technology Review Explains`, `Let our writers untangle...`, `You can read more from the series here`)
+- **원문 덤프 금지**: 원문 순서대로 15-30개 단락을 옮기는 방식은 실패로 처리한다. 원문을 요약한 뒤 독자용 해설 중심의 3-5개 `##` 섹션으로 재구성한다.
 - **학술 소스 필수 재작성**: `arxiv.org`, `machinelearning.apple.com`, `research.*` 계열은 abstract/저자 목록을 그대로 쓰지 않는다. 일반 독자가 이해할 언어로 다시 쓰고 jargon/각주를 제거한다.
 - 내부 용어 금지: pipeline, ingest, draft, classify, orchestrat 등
 - 독자가 다시 검색하지 않아도 핵심 맥락을 이해할 수 있게 쓴다. 내부 운영 판단이나 모델 선택 메모를 공개 문장에 넣지 않는다.
@@ -151,11 +155,12 @@ LIMIT 3
 | Summary truncation | `...` / `…`로 끝나는 잘린 문장 아님 |
 | Body paragraphs | ≥3 (헤딩 제외) |
 | Body words | ≥550 words |
+| Body readability | 7-11개 요소 권장, 13개 초과 금지, heading은 `##`만 사용 |
 | Source count | ≥2 |
 | Source domains | ≥2 distinct domains |
 | Source URLs | 전부 https:// |
 | Internal terms | pipeline, ingest, draft, classify, orchestrat 포함 안 됨 |
-| Artifact scrub | `Summary:`, `Listen to article`, `Announcements`, alt-text boilerplate 없음 |
+| Artifact scrub | `Summary:`, `Listen to article`, `Announcements`, source-series intro, alt-text boilerplate 없음 |
 | Marketing tone | `excited to announce`, `originally published on` 등 소스 홍보 문구 없음 |
 | Reader value | glossary/definition/notes/how-to/changelog 나열만으로 끝나지 않고 독자용 맥락이 있음 |
 | Image quality | favicon/icon만 대표 이미지로 저장하지 않음 |
