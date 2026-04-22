@@ -19,6 +19,14 @@ function wordCount(paragraphs: string[]): number {
   return paragraphs.reduce((n, p) => n + p.split(/\s+/).filter(Boolean).length, 0);
 }
 
+function bodyElementCount(paragraphs: string[]): number {
+  return paragraphs.filter((p) => p.trim().length > 0).length;
+}
+
+function headingCount(paragraphs: string[]): number {
+  return paragraphs.filter((p) => p.trim().startsWith("## ")).length;
+}
+
 function buildPreview(paragraphs: string[], maxLen = 200): string {
   const joined = paragraphs.slice(0, 2).join(" ");
   if (joined.length <= maxLen) return joined;
@@ -36,6 +44,8 @@ export async function listBriefs() {
         ...item,
         sourceDomains: extractDomains(sourceLinks),
         readTimeMinutes: Math.max(1, Math.ceil(wordCount(body) / 200)),
+        bodyElementCount: bodyElementCount(body),
+        headingCount: headingCount(body),
         bodyPreview: buildPreview(body)
       })) ?? []
   );

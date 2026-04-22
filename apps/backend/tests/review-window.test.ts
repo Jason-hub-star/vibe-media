@@ -54,6 +54,8 @@ describe("review window helpers", () => {
       publishedAt: "2026-04-20T00:00:00.000Z",
       sourceCount: 3,
       readTimeMinutes: 4,
+      bodyElementCount: 9,
+      headingCount: 4,
       bodyPreview:
         "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
       coverImage: "https://images.example.com/openai-controls.jpg",
@@ -66,7 +68,9 @@ describe("review window helpers", () => {
       status: "published",
       publishedAt: "2026-04-19T00:00:00.000Z",
       sourceCount: 2,
-      readTimeMinutes: 3,
+      readTimeMinutes: 2,
+      bodyElementCount: 7,
+      headingCount: 3,
       bodyPreview:
         "Anthropic published an update for enterprise customers and the story still needs editorial cleanup before it should lead the public surface.",
       coverImage: "https://cdn.example.com/favicon-32x32.png",
@@ -79,6 +83,8 @@ describe("review window helpers", () => {
       publishedAt: "2026-04-18T00:00:00.000Z",
       sourceCount: 1,
       readTimeMinutes: 1,
+      bodyElementCount: 3,
+      headingCount: 0,
       bodyPreview: "Maintenance update only.",
       coverImage: "https://cdn.example.com/favicon.ico",
     });
@@ -101,6 +107,8 @@ describe("review window helpers", () => {
         publishedAt: "2026-04-20T00:00:00.000Z",
         sourceCount: 3,
         readTimeMinutes: 4,
+        bodyElementCount: 9,
+        headingCount: 4,
         bodyPreview:
           "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
         coverImage: "https://images.example.com/openai-controls.jpg",
@@ -113,7 +121,9 @@ describe("review window helpers", () => {
         status: "published",
         publishedAt: "2026-04-19T00:00:00.000Z",
         sourceCount: 2,
-        readTimeMinutes: 3,
+        readTimeMinutes: 2,
+        bodyElementCount: 7,
+        headingCount: 3,
         bodyPreview:
           "Anthropic published an update for enterprise customers and the story still needs editorial cleanup before it should lead the public surface.",
         coverImage: "https://cdn.example.com/favicon-32x32.png",
@@ -136,6 +146,8 @@ describe("review window helpers", () => {
       publishedAt: "2026-04-20T00:00:00.000Z",
       sourceCount: 3,
       readTimeMinutes: 4,
+      bodyElementCount: 9,
+      headingCount: 4,
       bodyPreview:
         "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
       coverImage: "https://images.example.com/openai-controls.jpg",
@@ -154,5 +166,39 @@ describe("review window helpers", () => {
     expect(shouldIndexBriefInReviewWindow(quarantinedBrief)).toBe(false);
     expect(shouldIndexBriefInReviewWindow(rewriteBrief)).toBe(false);
     expect(getPublicBriefRobots(quarantinedBrief)).toEqual({ index: false, follow: true });
+  });
+
+  it("blocks short or source-dump briefs from the review-window index", () => {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+    const shortBrief = {
+      slug: "short-but-polished",
+      title: "Google opens Personal Intelligence to more free users",
+      summary:
+        "Google expanded Personal Intelligence to free users, connecting Gemini and Search with personal account data in ways that raise privacy questions.",
+      status: "published" as const,
+      publishedAt: "2026-04-20T00:00:00.000Z",
+      sourceCount: 3,
+      readTimeMinutes: 2,
+      bodyElementCount: 7,
+      headingCount: 3,
+      bodyPreview:
+        "Google expanded the feature to more users and explained the privacy controls that matter for account-level personalization.",
+      coverImage: "https://images.example.com/google-personal-intelligence.jpg",
+    };
+    const sourceDumpBrief = {
+      ...shortBrief,
+      slug: "source-dump",
+      readTimeMinutes: 8,
+      bodyElementCount: 29,
+      headingCount: 0,
+      bodyPreview:
+        "For decades, artificial intelligence has been evaluated through narrow tests. #### What happens when AI fails",
+    };
+
+    expect(classifyBriefForReviewWindow(shortBrief)).toBe("rewrite");
+    expect(classifyBriefForReviewWindow(sourceDumpBrief)).toBe("hide");
+    expect(shouldIndexBriefInReviewWindow(shortBrief)).toBe(false);
+    expect(shouldIndexBriefInReviewWindow(sourceDumpBrief)).toBe(false);
   });
 });

@@ -27,6 +27,10 @@ export interface BriefListItem {
   sourceDomains?: string[];
   /** Derived: estimated read time from body word count */
   readTimeMinutes?: number;
+  /** Derived: count of non-empty body array entries */
+  bodyElementCount?: number;
+  /** Derived: count of public-renderable ## section headings */
+  headingCount?: number;
   /** Derived: first ~200 chars of body for hover preview */
   bodyPreview?: string;
   /** Editorial: one-sentence "why it matters" insight (requires DB column) */

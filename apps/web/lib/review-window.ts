@@ -39,7 +39,7 @@ const INDEXABLE_STATIC_PATHS = new Set([
 
 const INTERNAL_TERMS = ["pipeline", "ingest", "draft", "classify", "orchestrat"];
 const ARTIFACT_PATTERN =
-  /\bsummary:|listen to article|announcements|play episode|\[duration\]\s+minutes/i;
+  /\bsummary:|listen to article|announcements|play episode|\[duration\]\s+minutes|MIT Technology Review Explains|Let our writers untangle|You can read more from the series/i;
 const MARKETING_PATTERN =
   /\b(excited|proud|pleased|happy)\s+to\s+announce\b|originally published on/i;
 const LOW_VALUE_PATTERN =
@@ -110,7 +110,10 @@ export function classifyBriefForReviewWindow(brief: BriefListItem): ReviewConten
 
   const weakSources = (brief.sourceCount ?? 0) < 2;
   const thinSummary = summary.trim().length < 60 || isShortTruncated(summary);
-  const thinBody = (brief.readTimeMinutes ?? 0) < 2 || preview.trim().length < 120;
+  const thinBody = (brief.readTimeMinutes ?? 0) < 3 || preview.trim().length < 120;
+  const tooFragmented = (brief.bodyElementCount ?? 0) > 13;
+  const weakStructure = (brief.headingCount ?? 0) < 2;
+  const unsupportedHeadings = /^#{3,6}\s/m.test(preview);
   const hasArtifacts = ARTIFACT_PATTERN.test(combined);
   const hasMarketing = MARKETING_PATTERN.test(`${title}\n${summary}`);
   const lowValueTopic = LOW_VALUE_PATTERN.test(`${title}\n${summary}`);
@@ -121,7 +124,8 @@ export function classifyBriefForReviewWindow(brief: BriefListItem): ReviewConten
     lowValueTopic ||
     (weakSources && thinSummary) ||
     (weakSources && thinBody) ||
-    (hasArtifacts && weakSources)
+    (hasArtifacts && weakSources) ||
+    (tooFragmented && weakStructure)
   ) {
     return "hide";
   }
@@ -129,6 +133,9 @@ export function classifyBriefForReviewWindow(brief: BriefListItem): ReviewConten
   if (
     thinSummary ||
     thinBody ||
+    tooFragmented ||
+    weakStructure ||
+    unsupportedHeadings ||
     weakSources ||
     hasArtifacts ||
     hasMarketing ||
