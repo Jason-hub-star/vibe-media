@@ -22,6 +22,11 @@ const CHANGELOG_RULES = [
   { label: "maintenance release", pattern: /\bmaintenance release\b/i },
   { label: "updated dependencies", pattern: /\bupdated dependencies\b/i },
 ];
+const THIN_TITLE_RULES = [
+  { label: "notes-style topic", pattern: /\bnotes\b/i },
+  { label: "MVP definition topic", pattern: /\bmvp\b/i },
+];
+const MIN_BODY_WORDS = 550;
 const AUDIENCE_SIGNAL_PATTERN =
   /\b(developers?|teams?|customers?|users?|companies?|startups?|enterprises?|admins?|operators?|buyers?|creators?|organizations?)\b/i;
 const IMPACT_SIGNAL_PATTERN =
@@ -92,16 +97,25 @@ function scoreStructure(body: string[]): number {
 }
 
 function scoreSourceDiversity(links: { label: string; href: string }[]): number {
-  const domains = new Set(
-    links.map((l) => {
-      try { return new URL(l.href).hostname.replace(/^www\./, ""); }
-      catch { return "unknown"; }
-    })
-  );
+  const domains = getSourceDomains(links);
   if (domains.size >= 3) return 10;
   if (domains.size === 2) return 7;
   if (domains.size === 1) return 4;
   return 0;
+}
+
+function getSourceDomains(links: { label: string; href: string }[]): Set<string> {
+  return new Set(
+    links
+      .map((l) => {
+        try {
+          return new URL(l.href).hostname.replace(/^www\./, "");
+        } catch {
+          return "";
+        }
+      })
+      .filter(Boolean)
+  );
 }
 
 function scoreReadability(body: string[]): number {
@@ -142,15 +156,30 @@ function hasReaderFacingAngle(body: string[]) {
   });
 }
 
+function countBodyWords(body: string[]) {
+  return body
+    .filter((line) => !line.startsWith("## "))
+    .join(" ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
+
+function isTruncatedSummary(summary: string) {
+  const trimmed = summary.trimEnd();
+  return (trimmed.endsWith("...") || trimmed.endsWith("…")) && trimmed.length < 180;
+}
+
 export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResult {
   const failures: string[] = [];
 
   const titleLen = brief.title?.length ?? 0;
   const summaryLen = brief.summary?.length ?? 0;
+  const bodyWordCount = countBodyWords(brief.body ?? []);
   const bodyParagraphs = (brief.body ?? []).filter(
     (line) => !line.startsWith("## ")
   ).length;
   const sourceCount = brief.source_count ?? (brief.source_links ?? []).length;
+  const sourceDomainCount = getSourceDomains(brief.source_links ?? []).size;
 
   // --- 기존 pass/fail 게이트 (하위호환) ---
   if (titleLen < 15 || titleLen > 70) {
@@ -159,11 +188,20 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   if (summaryLen < 50 || summaryLen > 200) {
     failures.push(`summary length ${summaryLen} (expected 50-200)`);
   }
+  if (isTruncatedSummary(brief.summary ?? "")) {
+    failures.push("summary appears truncated");
+  }
   if (bodyParagraphs < 3) {
     failures.push(`body paragraphs ${bodyParagraphs} (expected ≥3)`);
   }
+  if (bodyWordCount < MIN_BODY_WORDS) {
+    failures.push(`body word count ${bodyWordCount} (expected ≥${MIN_BODY_WORDS})`);
+  }
   if (sourceCount < 2) {
     failures.push(`source count ${sourceCount} (expected ≥2)`);
+  }
+  if ((brief.source_links ?? []).length > 0 && sourceDomainCount < 2) {
+    failures.push(`source domain count ${sourceDomainCount} (expected ≥2)`);
   }
 
   if (briefContainsHangulContent({
@@ -201,6 +239,13 @@ export function runBriefQualityCheck(brief: BriefQualityInput): BriefQualityResu
   );
   if (foundExplainers.length > 0) {
     failures.push(`low-value topic pattern found: ${foundExplainers.join(", ")}`);
+  }
+
+  const foundThinTitlePatterns = THIN_TITLE_RULES.filter((rule) => rule.pattern.test(titleSummaryText)).map(
+    (rule) => rule.label
+  );
+  if (foundThinTitlePatterns.length > 0) {
+    failures.push(`thin title pattern found: ${foundThinTitlePatterns.join(", ")}`);
   }
 
   const readerFacingAngle = hasReaderFacingAngle(brief.body ?? []);

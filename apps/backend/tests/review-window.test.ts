@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import {
   classifyBriefForReviewWindow,
+  getPublicBriefRobots,
   getPublicPageRobots,
   selectReviewWindowFeaturedBriefs,
+  shouldIndexBriefInReviewWindow,
   shouldIncludeStaticPathInSitemap,
 } from "@/lib/review-window";
 
@@ -120,5 +122,37 @@ describe("review window helpers", () => {
 
     expect(featured).toHaveLength(1);
     expect(featured[0]?.slug).toBe("keep-brief");
+  });
+
+  it("keeps quarantined or rewrite-tier briefs out of the review-window index", () => {
+    delete process.env.VIBEHUB_PUBLIC_REVIEW_WINDOW;
+
+    const strongBrief = {
+      slug: "strong-brief",
+      title: "OpenAI adds enterprise controls for multi-team deployments",
+      summary:
+        "OpenAI introduced broader admin controls for enterprise teams, expanding governance options while reducing rollout friction for larger organizations.",
+      status: "published" as const,
+      publishedAt: "2026-04-20T00:00:00.000Z",
+      sourceCount: 3,
+      readTimeMinutes: 4,
+      bodyPreview:
+        "OpenAI expanded enterprise control features for admins this week, adding more visibility into workspace usage and policy settings. The update gives larger organizations a clearer path to safe deployment at scale.",
+      coverImage: "https://images.example.com/openai-controls.jpg",
+    };
+    const quarantinedBrief = {
+      ...strongBrief,
+      slug: "elon-musk-s-last-co-founder-reportedly-leaves-xai-live-b73",
+    };
+    const rewriteBrief = {
+      ...strongBrief,
+      slug: "one-source-brief",
+      sourceCount: 1,
+    };
+
+    expect(shouldIndexBriefInReviewWindow(strongBrief)).toBe(true);
+    expect(shouldIndexBriefInReviewWindow(quarantinedBrief)).toBe(false);
+    expect(shouldIndexBriefInReviewWindow(rewriteBrief)).toBe(false);
+    expect(getPublicBriefRobots(quarantinedBrief)).toEqual({ index: false, follow: true });
   });
 });

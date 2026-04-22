@@ -43,9 +43,13 @@ ORDER BY slug ASC
 아래 패턴이면 애드센스/공개 품질 관점에서 **저가치 후보**로 보고 자동 가공하지 않는다. `status = draft`는 유지하고 결과 보고의 "건너뜀"에 사유를 남긴다.
 
 - glossary/definition/how-to 기초 설명 글이라 시의성 있는 뉴스 가치가 약한 경우
+- `Notes`, `MVP Definition`, 단순 용어 설명처럼 evergreen glossary로 읽히는 경우
 - 원문이 릴리스 노트 나열형 changelog인데 사용자 영향/시장 맥락을 충분히 설명할 근거가 부족한 경우
 - 소스가 1개뿐이고 추가 확인 가능한 신뢰 소스를 찾지 못해 독자용 해설을 만들 수 없는 경우
 - 원문이 사실상 홍보/보도자료이며 독자 관점의 추가 가치 없이 재작성만 하게 되는 경우
+- 550단어 이상의 독자용 해설로 확장할 수 없는 경우
+- 동일 제목/동일 원문에서 이미 published brief가 있는 경우
+- 제목이 슬랭/내부 메모처럼 보이는 경우 (`having a month`, `notes`, `borks`, `definition`, `how to`)
 
 ### 3-1. 원문 수집
 1. `source_links[0].href`에서 원문 페이지를 WebFetch로 가져온다
@@ -83,6 +87,7 @@ LIMIT 3
 - 영어, 50-200자
 - 1-2문장, `[누가] [무엇을] [왜]` 구조
 - 원문 요약과 다른 표현으로 재작성
+- `...` 또는 `…`로 끝나는 잘린 문장 금지
 - 금지 패턴:
   - `X is excited/proud/pleased/happy to announce`
   - `originally published on ...`
@@ -91,7 +96,7 @@ LIMIT 3
 - VibeHub 독자 관점의 뉴스 한 줄 요약으로 다시 쓴다. 원문의 자기 홍보 문구를 옮기지 않는다.
 
 #### 본문(body) 규칙
-- **최소 5개 요소**: 리드 단락 + 2개 이상의 `## 헤딩` + 각 헤딩 아래 본문
+- **최소 550단어 + 5개 요소**: 리드 단락 + 2개 이상의 `## 헤딩` + 각 헤딩 아래 본문
 - 구조:
   ```
   [1] 리드 단락 — 핵심 사실 요약 (summary와 다르게)
@@ -103,6 +108,8 @@ LIMIT 3
   [7] 맥락 분석 단락
   ```
 - JSON 배열로 저장: 각 헤딩과 단락이 별도 요소
+- 각 일반 단락은 90단어 이상을 목표로 하며, 1-2문장 메모처럼 짧게 끝내지 않는다.
+- 1-source 원문은 보조 신뢰 소스를 찾아 2개 이상의 서로 다른 도메인을 확보하지 못하면 공개 brief로 만들지 않는다.
 - **artifact 정제 필수**: 아래 패턴은 본문에서 반드시 제거한다
   - 이미지 alt-text (`The X logo sits next to...`, `Photo of...`)
   - 팟캐스트/오디오 플레이어 요소 (`Listen to article`, `[duration] minutes`, `Play episode`)
@@ -115,6 +122,7 @@ LIMIT 3
 
 #### 소스(source_links) 규칙
 - 최소 2개, 가능하면 3개
+- 최소 2개 이상의 서로 다른 도메인
 - `[0]`: 원문 (기존 유지)
 - `[1]+`: WebSearch로 찾은 관련 보도/문서
 - 각 소스: `{ "label": "사이트명", "href": "https://..." }`
@@ -140,16 +148,20 @@ LIMIT 3
 |------|----------|
 | Title length | 15-70자 |
 | Summary length | 50-200자 |
+| Summary truncation | `...` / `…`로 끝나는 잘린 문장 아님 |
 | Body paragraphs | ≥3 (헤딩 제외) |
+| Body words | ≥550 words |
 | Source count | ≥2 |
+| Source domains | ≥2 distinct domains |
 | Source URLs | 전부 https:// |
 | Internal terms | pipeline, ingest, draft, classify, orchestrat 포함 안 됨 |
 | Artifact scrub | `Summary:`, `Listen to article`, `Announcements`, alt-text boilerplate 없음 |
 | Marketing tone | `excited to announce`, `originally published on` 등 소스 홍보 문구 없음 |
-| Reader value | glossary/definition/changelog 나열만으로 끝나지 않고 독자용 맥락이 있음 |
+| Reader value | glossary/definition/notes/how-to/changelog 나열만으로 끝나지 않고 독자용 맥락이 있음 |
 | Image quality | favicon/icon만 대표 이미지로 저장하지 않음 |
+| Duplicate check | 같은 제목/같은 원문 published brief 없음 |
 
-**10/10 통과해야만 DB에 기록한다.** 하나라도 실패하면 해당 브리프는 건너뛰고 사유를 기록한다.
+**12/12 통과해야만 DB에 기록한다.** 하나라도 실패하면 해당 브리프는 건너뛰고 사유를 기록한다.
 
 ### 3-6. DB 업데이트
 
@@ -197,7 +209,7 @@ npm run review:auto-approve -- --max=10 2>&1
 
 자동 승인 기준:
 - quality gate 10/10 통과
-- `qualityScore >= 70` (B 이상 권장 구간)
+- `qualityScore >= 80` (B 상단 이상 권장 구간)
 - classifier confidence `>= 0.85`
 - `duplicate_of IS NULL`
 - `exception_reason IS NULL`

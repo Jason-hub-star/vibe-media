@@ -4,7 +4,12 @@ import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/constants";
 import { getLocaleFromParams, buildAlternates, getOgLocale } from "@/lib/i18n";
-import { getPublicPageRobots, isPublicReviewWindowEnabled, sortBriefsForReviewWindow } from "@/lib/review-window";
+import {
+  getPublicPageRobots,
+  isPublicReviewWindowEnabled,
+  shouldIndexBriefInReviewWindow,
+  sortBriefsForReviewWindow,
+} from "@/lib/review-window";
 import { PageFrame } from "@/components/PageFrame";
 import { SectionBlock } from "@/components/SectionBlock";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
@@ -42,9 +47,11 @@ export default async function BriefPage({
     seen.add(brief.slug);
     return true;
   });
-  const rankedBriefs = sortBriefsForReviewWindow(briefs);
-  const canonical = `${SITE_URL}/${locale}/brief`;
   const reviewWindowActive = isPublicReviewWindowEnabled();
+  const rankedBriefs = sortBriefsForReviewWindow(
+    reviewWindowActive ? briefs.filter((brief) => shouldIndexBriefInReviewWindow(brief)) : briefs
+  );
+  const canonical = `${SITE_URL}/${locale}/brief`;
 
   return (
     <PageFrame>
@@ -73,8 +80,8 @@ export default async function BriefPage({
         </p>
         {reviewWindowActive && (
           <p className="muted">
-            Review window is active. Stronger editorial briefs appear first while weaker archive
-            entries remain accessible for ongoing cleanup.
+            Review window is active. Only publisher-quality briefs are listed while weaker archive
+            entries stay reachable but out of the index for cleanup.
           </p>
         )}
 

@@ -93,12 +93,17 @@ apps/web/app/[locale]/(public)/terms/page.tsx
 
 - 홈, brief list, brief detail, radar list, radar detail의 live HTML을 샘플링해 본문 밀도를 확인한다.
 - 아래 패턴이 반복되면 `ADSENSE-BLOCKER`로 보고한다:
+  - indexable brief 중 1-source 항목
+  - indexable brief 중 550단어 미만 또는 3분 미만으로 보이는 항목
+  - sitemap에 rewrite/hide tier brief가 남아 있는 경우
+  - 같은 제목/같은 원문이 여러 slug로 sitemap에 들어간 경우
   - `Updated dependencies`, `release notes`, `changelog` 나열형 discover 상세
   - 1-2문장뿐인 radar 상세 다수
   - 기사 본문에 `pipeline`, `ingest`, `draft`, `classify`, `orchestrat` 등 내부 용어 노출
   - `Summary:`, `Listen to article`, `Announcements`, alt-text boilerplate 유입
   - favicon/icon 수준 대표 이미지
 - radar 상세 중 저가치 후보가 많으면 `noindex` 또는 sitemap 제외 후보 개수를 보고한다.
+- AdSense 재심사 기간에는 `sitemap.xml`의 brief URL을 샘플링해 `source count ≥2`, `body words ≥550`, `duplicate title 없음`, `reader angle 있음`을 통과하는지 별도 집계한다.
 
 ## 10. Trust Surface 점검
 

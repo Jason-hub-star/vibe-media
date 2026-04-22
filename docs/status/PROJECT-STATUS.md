@@ -225,6 +225,12 @@
   - new trust pages: `/editorial-policy`, `/team`, `/contact`
   - home/brief archive는 strongest editorial briefs 우선 정렬
   - brief/discover quality gate 강화: source 2+, artifact/internal/marketing 차단, why-it-matters 요구, low-quality cover 차단, release-note discover hold
+- AdSense brief quality quarantine: done (2026-04-22)
+  - live brief audit 기준 high-risk/duplicate/thin slugs를 review-window quarantine에 추가
+  - review-window 중 sitemap과 brief archive는 keep-tier + non-quarantined brief만 노출
+  - quarantined/rewrite-tier brief detail은 public reachable 유지 + `noindex,follow`
+  - brief quality gate 강화: 550+ body words, 2+ distinct source domains, truncated summary 차단, `Notes`/`MVP Definition` thin title 차단
+  - daily editorial/auto-publish/weekly SEO automation prompts를 동일 기준으로 동기화
   - 실시간 카드 프리뷰: 폼 입력 시 오른쪽에 최종 카드 모습 실시간 업데이트 (sticky)
   - /api/tools/og-preview Route Handler 신규 (32KB 스트리밍, SSRF 방어)
   - useOgPrefill hook + ToolSubmissionPreview + ToolSubmissionFormWithPreview 컴포넌트

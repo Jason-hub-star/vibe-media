@@ -2,7 +2,11 @@ import type { MetadataRoute } from "next";
 
 import { SITE_URL } from "@/lib/constants";
 import { SUPPORTED_LOCALES } from "@/lib/i18n";
-import { isPublicReviewWindowEnabled, shouldIncludeStaticPathInSitemap } from "@/lib/review-window";
+import {
+  isPublicReviewWindowEnabled,
+  shouldIncludeStaticPathInSitemap,
+  shouldIndexBriefInReviewWindow,
+} from "@/lib/review-window";
 import { listBriefs } from "@/features/brief/use-case/list-briefs";
 import { listDiscoverItems } from "@/features/discover/use-case/list-discover-items";
 
@@ -49,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Brief pages × locales
-  for (const brief of briefs) {
+  for (const brief of briefs.filter((item) => shouldIndexBriefInReviewWindow(item))) {
     const path = `/brief/${brief.slug}`;
     for (const locale of SUPPORTED_LOCALES) {
       entries.push({

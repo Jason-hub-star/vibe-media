@@ -68,12 +68,26 @@ npm run publish:auto 2>&1
 |------|----------|
 | Title length | 15-70자 |
 | Summary length | 50-200자 |
+| Summary truncation | `...` / `…`로 끝나는 잘린 문장 아님 |
 | Body paragraphs | ≥3 (헤딩 제외) |
+| Body words | ≥550 words |
 | Source count | ≥2 |
+| Source domains | ≥2 distinct domains |
 | Source URLs | 전부 https:// |
 | Internal terms | pipeline, ingest, classify, orchestrat 없음 |
+| Artifact scrub | `Summary:`, `Listen to article`, `Announcements`, `Play episode` 없음 |
+| Reader angle | 독자/팀/조직에 미치는 영향이 본문에 명시됨 |
+| Thin topic | `Notes`, `MVP Definition`, glossary/definition/how-to 단독 글 아님 |
+| Image quality | favicon/icon/저품질 대표 이미지 아님 |
 
-**6/6 통과해야만 전환.** 하나라도 실패하면 skip으로 기록하고 `draft + pending`으로 되돌린다.
+**12/12 통과해야만 전환.** 하나라도 실패하면 skip으로 기록하고 `draft + pending`으로 되돌린다.
+
+AdSense 재심사 기간에는 published 후보라도 아래 중 하나면 반드시 발행 보류한다:
+- 1-source 기사
+- 550단어 미만 또는 3분 미만으로 보이는 얇은 본문
+- 같은 제목/같은 원문의 기존 published brief가 있는 중복 후보
+- `Notes`, `Definition`, `How to`, 릴리스 노트, 학술 abstract 요약처럼 추가 해설 없이 끝나는 글
+- 독자용 `why it matters` 문단이 없거나 원문 홍보 문구를 재작성하지 않은 글
 
 ---
 
@@ -101,6 +115,7 @@ npm run publish:auto 2>&1
 - 대상이 없으면 짧게 보고하고 종료한다.
 - 전환 발생 시 Telegram으로 자동 보고된다 (워커 내장).
 - quality check 실패 항목은 skip 사유와 함께 기록한다.
+- skip 사유가 `source count`, `body word count`, `thin title pattern`, `summary appears truncated`, `missing reader-facing angle`이면 자동 복구 발행하지 말고 editorial rewrite 대상으로만 남긴다.
 
 ---
 
